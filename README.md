@@ -20,12 +20,12 @@ Only RAML version 1.0 RC is supported.
 
 ## Usage
 
-go-raml is a commandline tool. To include the codegeneration in the go build, specify the generation in 1 of your go source files:
+go-raml is a commandline tool. To invoke the codegeneration using `go generate`, specify the generation in 1 of your go source files:
 `//go:generate go-raml ...`
 
 go-raml needs to be on the path for this to work off course.
 
-To use it on the commandline yourself, just execute `go-raml` without any arguments, it will output the help on the stdout:
+To use it on the commandline yourself, just execute `go-raml` without any arguments, it will output the help on the stdout.
 
 
 ## Code generation
@@ -38,8 +38,12 @@ To generate the go code for implementing the server in a design first approach, 
 
 `go-raml server ...`
 
+The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
-
+Generated codestructure:
+TODO:
+* Interfaces types, always regenerated
+* Implementing types, only generated when the file is not present
 
 
 ## Client
@@ -56,10 +60,12 @@ A python 3.5 compatible client is generated.
 
 Besides generation of a new RAML specification file, updating an existing raml file is also supported. This way the raml filestructure that can be included in the main raml file is honored.
 
+`go-raml spec ...`
+
 ## roadmap
 **v0.1**
 
-* Generation of the server
+* Generation of the server using gorilla mux
 * Generation of a go client
 * Generation of a python 3.5 client
 
