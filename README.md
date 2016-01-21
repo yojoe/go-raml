@@ -72,8 +72,12 @@ Besides generation of a new RAML specification file, updating an existing raml f
 **v0.2**
 
 * OAuth 2.0 support
-* Generation of a new RAML specification file
+* Possibility to generate a default server implementation to MongoDB
 
 **v0.3**
+
+* Generation of a new RAML specification file
+
+**v0.4**
 
 * Update of a RAML specification file
