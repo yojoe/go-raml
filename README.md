@@ -65,7 +65,7 @@ Besides generation of a new RAML specification file, updating an existing raml f
 ## roadmap
 **v0.1**
 
-* Generation of the server using gorilla mux
+* Generation of the server using [gorilla mux](http://www.gorillatoolkit.org/pkg/mux)
 * Generation of a go client
 * Generation of a python 3.5 client
 
