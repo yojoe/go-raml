@@ -1,4 +1,5 @@
-# go-raml
+# go-raml 
+[![Build Status](https://travis-ci.org/Jumpscale/go-raml.svg?branch=master)](https://travis-ci.org/Jumpscale/go-raml)
 
 ## What is go-raml
 
