@@ -18,6 +18,7 @@ As a specification format, it uses [RAML 1.0](http://raml.org) .
 ## RAML versions
 Only RAML version 1.0 RC is supported.
 
+Currently there are still some [limitations](docs/limitations.md) on the RAML 1.0 features that are supported.
 
 ## Usage
 
@@ -75,10 +76,14 @@ Besides generation of a new RAML specification file, updating an existing raml f
 * OAuth 2.0 support
 * Possibility to generate a default server implementation to MongoDB
 
-**v0.3**
+**v0.4**
+
+* Input validation according to the RAML type definitions
+
+**v0.5**
 
 * Generation of a new RAML specification file
 
-**v0.4**
+**v0.6**
 
 * Update of a RAML specification file
