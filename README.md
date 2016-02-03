@@ -47,6 +47,42 @@ TODO:
 * Interfaces types, always regenerated
 * Implementing types, only generated when the file is not present
 
+## Type
+
+[types](http://docs.raml.org/specs/1.0/#raml-10-spec-types) is mapped to struct.
+
+Some rules about properties naming:
+
+- capitalizing first character of the properties.
+- json tag is the same as property name
+
+File name is the same as types name.
+struct name = types name.
+
+## Bodies
+[Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
+and following same rule as types above.
+
+struct name = [Resource name][Method name]Body
+
+## Resource
+[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) is mapped into:
+- interface:
+
+	- file name = [resource]_if.go
+	- always be regenerated
+	- interface name = [resource]Interface
+
+- API implementation that implements the interface
+	- file name = [resource]_api.go
+	- only generated when the file is not present
+	- struct name = [resource]API
+
+- routes generator to generate all necessary routes:
+	- func name = [Resource]InterfaceRoutes
+
+TODO : nested resource
+
 
 ## Client
 
