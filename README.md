@@ -49,9 +49,9 @@ TODO:
 
 ## Type
 
-[types](http://docs.raml.org/specs/1.0/#raml-10-spec-types) diterjemahkan ke struct.
+[types](http://docs.raml.org/specs/1.0/#raml-10-spec-types) is mapped to struct.
 
-Properties dari types diterjemahkan ke field dari struct, some rules:
+Some rules about properties naming:
 
 - capitalizing first character of the properties.
 - json tag is the same as property name
