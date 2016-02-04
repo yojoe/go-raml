@@ -2,6 +2,7 @@ package commands
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -38,5 +39,8 @@ func TestResource(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 		})
 
+		Reset(func() {
+			os.RemoveAll("./tmp")
+		})
 	})
 }
