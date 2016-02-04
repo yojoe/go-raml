@@ -7,17 +7,17 @@ import (
 type DeliveriesAPI struct {
 }
 
-func (api *API) Get(http.ResponseWriter, *http.Request) {
+func (api *DeliveriesAPI) Get(http.ResponseWriter, *http.Request) {
 }
 
-func (api *API) Post(http.ResponseWriter, *http.Request) {
+func (api *DeliveriesAPI) Post(http.ResponseWriter, *http.Request) {
 }
 
-func (api *API) deliveryIdGet(http.ResponseWriter, *http.Request) {
+func (api *DeliveriesAPI) deliveryIdGet(http.ResponseWriter, *http.Request) {
 }
 
-func (api *API) deliveryIdPatch(http.ResponseWriter, *http.Request) {
+func (api *DeliveriesAPI) deliveryIdPatch(http.ResponseWriter, *http.Request) {
 }
 
-func (api *API) deliveryIdDelete(http.ResponseWriter, *http.Request) {
+func (api *DeliveriesAPI) deliveryIdDelete(http.ResponseWriter, *http.Request) {
 }

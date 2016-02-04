@@ -4,13 +4,13 @@ package main
 import (
 	"net/http"
 )
-
+{{$apiName := .Name}}
 type {{.Name}}API struct {
 }
 
 
 {{ range $k, $v := .Methods }} 
-	func(api *API) {{$v.MethodName}}(http.ResponseWriter, *http.Request) {
+	func(api *{{$apiName}}API) {{$v.MethodName}}(http.ResponseWriter, *http.Request) {
 	}
 {{ end }}
 
