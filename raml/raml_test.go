@@ -25,7 +25,7 @@
 // the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of DoAT.
 
-package parser
+package raml
 
 // This file contains tests.
 

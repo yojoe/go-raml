@@ -28,7 +28,7 @@
 // This package contains the parser, validator and types that implement the
 // RAML specification, as documented here:
 // http://raml.org/spec.html
-package parser
+package raml
 
 // This file contains all of the RAML types.
 
