@@ -123,15 +123,17 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 }
 
 func PostProcess(d *APIDefinition) {
-	for _, r := range d.Resources {
-		addMethodNames(&r)
+	for k, r := range d.Resources {
+		addMethodNames(k, nil, &r)
 	}
 }
 
-func addMethodNames(r *Resource) {
-	if r == nil { // TODO : ibk, move it to other func, initialize the resource
+func addMethodNames(uri string, parentResource, r *Resource) {
+	if r == nil {
 		return
 	}
+	r.URI = uri
+	r.Parent = parentResource
 	if r.Get != nil {
 		r.Get.Name = "GET"
 	}
@@ -151,8 +153,8 @@ func addMethodNames(r *Resource) {
 		r.Delete.Name = "DELETE"
 	}
 
-	for _, n := range r.Nested {
-		addMethodNames(n)
+	for k, n := range r.Nested {
+		addMethodNames(k, r, n)
 	}
 }
 

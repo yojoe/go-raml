@@ -62,13 +62,9 @@ func TestFailedParsing(t *testing.T) {
 
 func TestParsing(t *testing.T) {
 
-	fileNames := []string{"./samples/example.raml",
-		"./samples/simple_example.raml",
-		"./samples/other_example.raml",
+	fileNames := []string{
 		"./samples/congo/api.raml",
-		"./samples/notes/api.raml",
-		"./samples/github/github-api-v3.raml",
-		"./samples/raml-tutorial-200/jukebox-api.raml"}
+	}
 
 	for _, fileName := range fileNames {
 
@@ -82,7 +78,7 @@ func TestParsing(t *testing.T) {
 			fmt.Printf("Successfully parsed file %s!\n", fileName)
 		}
 
-		if apiDefinition.RAMLVersion != "#%RAML 0.8" {
+		if apiDefinition.RAMLVersion != "#%RAML 1.0" {
 			t.Fatalf("Detected erroneous RAML version: %s",
 				apiDefinition.RAMLVersion)
 		}
@@ -93,6 +89,7 @@ func TestParsing(t *testing.T) {
 
 func TestMethodStringer(t *testing.T) {
 	def, _ := ParseFile("./samples/simple_example.raml")
+
 	r := def.Resources["/resources"]
 	if r.Get.Name != "GET" {
 		t.Errorf("Got %s, instead of GET", r.Get.Name)

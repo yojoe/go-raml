@@ -223,6 +223,9 @@ type Bodies struct {
 	// not matching other defined data types MUST be accepted. Processing
 	// applications MUST match the most descriptive media type first if
 	// "*/*" is used.
+	ApplicationJson *BodiesProperty `yaml:"application/json"`
+
+	Type string `yaml:"type"`
 }
 
 // Resource methods MAY have one or more responses.
@@ -869,4 +872,9 @@ type Type struct {
 
 	// The properties that instances of this type may or must have.
 	Properties map[string]Property
+}
+
+type BodiesProperty struct {
+	Properties map[string]Property `yaml:"properties"`
+	Type       string
 }
