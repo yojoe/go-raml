@@ -2,6 +2,7 @@ package commands
 
 import (
 	"os"
+	"os/exec"
 	"strings"
 	"text/template"
 )
@@ -27,7 +28,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string) error {
 	if err := t.ExecuteTemplate(f, tmplName, data); err != nil {
 		return err
 	}
-	return runGoTools(cmdFormatCode, filename)
+	return runGoFmt(filename)
 }
 
 func checkCreateDir(dir string) error {
@@ -37,4 +38,10 @@ func checkCreateDir(dir string) error {
 		}
 	}
 	return nil
+}
+
+func runGoFmt(filePath string) error {
+	args := []string{"fmt", filePath}
+
+	return exec.Command("go", args...).Run()
 }

@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/Jumpscale/go-raml",
-	"GoVersion": "go1.5.1",
+	"GoVersion": "go1.5.3",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -8,9 +11,32 @@
 			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
 		},
 		{
+			"ImportPath": "github.com/buddhamagnet/yaml",
+			"Rev": "8e72a68a3483a9d044e4c6f49cc695b5ee60c671"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-187-gc31a797",
 			"Rev": "c31a7975863e7810c92e2e288a9ab074f9a88f29"
+		},
+		{
+			"ImportPath": "github.com/jtolds/gls",
+			"Rev": "9a4a02dbe491bef4bab3c24fd9f3087d6c4c6690"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/assertions",
+			"Comment": "1.5.0-405-g01fedaa",
+			"Rev": "01fedaa993c0a9f9aa55111501cd7c81a49e812e"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/goconvey/convey",
+			"Comment": "1.5.0-455-g8d46e6d",
+			"Rev": "8d46e6d51692cda11b447f0d01ce83a0ad84aeab"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Comment": "v1.0-12-g7e4a149",
+			"Rev": "7e4a149930b09fe4c2b134c50ce637457ba6e966"
 		}
 	]
 }
