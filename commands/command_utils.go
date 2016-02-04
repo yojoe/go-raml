@@ -11,7 +11,7 @@ const (
 )
 
 var (
-	availableGoTools = []string{cmdFormatCode, cmdGenerateImport}
+	availableGoTools = []string{cmdFormatCode}
 )
 
 var (
