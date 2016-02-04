@@ -25,7 +25,7 @@ func TestResource(t *testing.T) {
 			s, err := testLoadFile("./tmp/deliveries_if.go")
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/deliveries_if.go")
+			tmpl, err := testLoadFile("./fixtures/deliveries_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -33,7 +33,7 @@ func TestResource(t *testing.T) {
 			s, err = testLoadFile("./tmp/deliveries_api.go")
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/deliveries_api.go")
+			tmpl, err = testLoadFile("./fixtures/deliveries_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})
