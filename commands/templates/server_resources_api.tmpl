@@ -1,0 +1,17 @@
+{{define "resource_api_template"}}
+package main
+
+import (
+	"net/http"
+)
+{{$apiName := .Name}}
+type {{.Name}}API struct {
+}
+
+
+{{ range $k, $v := .Methods }} 
+	func(api *{{$apiName}}API) {{$v.MethodName}}(http.ResponseWriter, *http.Request) {
+	}
+{{ end }}
+
+{{ end }}
