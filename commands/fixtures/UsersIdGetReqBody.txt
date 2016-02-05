@@ -1,0 +1,6 @@
+package main
+
+type UsersIdGetReqBody struct {
+	Age int    `json:"Age"`
+	ID  string `json:"ID"`
+}

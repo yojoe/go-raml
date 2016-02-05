@@ -1,0 +1,16 @@
+package main
+
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+type UsersInterface interface {
+	Post(http.ResponseWriter, *http.Request)
+}
+
+func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
+
+	r.HandleFunc("/users", i.Post).Methods("POST")
+
+}
