@@ -1,0 +1,8 @@
+{{define "struct_template"}}
+package main
+
+type {{ .Name }} struct {
+    {{ range $key, $value := .Fields }}{{$key}} {{$value.Type}} `json:"{{$key}}"`
+    {{end}}
+}
+{{end}}

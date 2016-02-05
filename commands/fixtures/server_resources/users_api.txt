@@ -1,0 +1,19 @@
+package main
+
+import (
+	"net/http"
+)
+
+type UsersAPI struct {
+}
+
+func (api *UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
+
+	var reqBody User
+
+	if err := json.NewDecoder(r).Decode(&reqBody); err != nil {
+		w.WriteHeader(400)
+		return
+	}
+
+}

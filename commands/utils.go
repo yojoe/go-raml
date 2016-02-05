@@ -3,18 +3,33 @@ package commands
 import (
 	"os"
 	"os/exec"
+
 	"strings"
 	"text/template"
 )
 
-func normalizeURI(URI string) string {
+func doNormalizeURI(URI string) string {
 	normalizeSlash := strings.Replace(URI, "/", " ", -1)
 	normalizeLeftBracket := strings.Replace(normalizeSlash, "{", "", -1)
-	normalizeRightBracket := strings.Replace(normalizeLeftBracket, "}", "", -1)
-	return strings.Replace(normalizeRightBracket, " ", "", -1)
+	return strings.Replace(normalizeLeftBracket, "}", "", -1)
 }
 
-func generateFile(data interface{}, tmplFile, tmplName, filename string) error {
+func normalizeURI(URI string) string {
+	return strings.Replace(doNormalizeURI(URI), " ", "", -1)
+}
+
+func normalizeURITitle(URI string) string {
+	titleString := strings.Title(doNormalizeURI(URI))
+	return strings.Replace(titleString, " ", "", -1)
+
+}
+
+// generate Go file from a template.
+// if file already exist and overwrite=false, file won't be regenerated
+func generateFile(data interface{}, tmplFile, tmplName, filename string, overwrite bool) error {
+	if !overwrite && isFileExist(filename) {
+		return nil
+	}
 	t, err := template.ParseFiles(tmplFile)
 	if err != nil {
 		return err
@@ -31,6 +46,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string) error {
 	return runGoFmt(filename)
 }
 
+// create directory if not exist
 func checkCreateDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		if err := os.Mkdir(dir, 0777); err != nil {
@@ -40,6 +56,16 @@ func checkCreateDir(dir string) error {
 	return nil
 }
 
+// cek if a file exist
+func isFileExist(filePath string) bool {
+	if _, err := os.Stat(filePath); os.IsExist(err) {
+		return true
+	}
+
+	return false
+}
+
+// run `go fmt` command to a file
 func runGoFmt(filePath string) error {
 	args := []string{"fmt", filePath}
 

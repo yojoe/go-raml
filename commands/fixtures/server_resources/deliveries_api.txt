@@ -1,0 +1,28 @@
+package main
+
+import (
+	"net/http"
+)
+
+type DeliveriesAPI struct {
+}
+
+func (api *DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (api *DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (api *DeliveriesAPI) deliveryIdGet(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (api *DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (api *DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
+
+}
