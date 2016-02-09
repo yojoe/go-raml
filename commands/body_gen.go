@@ -8,7 +8,7 @@ const (
 )
 
 //GenerateBodyStruct generate body
-func GenerateBodyStruct(dir string, apiDef *raml.APIDefinition) error {
+func GenerateBodyStruct(apiDef *raml.APIDefinition, dir string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
@@ -89,7 +89,10 @@ func buildBodyFromMethod(structName, methodName, dir string, method *raml.Method
 }
 
 func generateStructFromBody(structNamePrefix, dir string, body *raml.Bodies, isPartial bool) error {
-	if body == nil || len(body.ApplicationJson.Properties) == 0 || len(body.ApplicationJson.Type) > 0 {
+	hasJSONBody := func() bool {
+		return body.ApplicationJson != nil && (len(body.ApplicationJson.Properties) > 0 || len(body.ApplicationJson.Type) > 0)
+	}
+	if body == nil || !hasJSONBody() {
 		return nil
 	}
 

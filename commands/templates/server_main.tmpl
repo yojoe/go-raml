@@ -1,0 +1,22 @@
+{{define "server_main_template"}}
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+func main() {
+	r := mux.NewRouter()
+
+	{{ range $k, $v := .ResourcesDef }}
+	{{.Name}}InterfaceRoutes(r, {{.Name}}API{})
+	{{ end }}
+
+	log.Println("starting server")
+	http.ListenAndServe(":8080", r)
+}
+
+{{ end }}

@@ -1,0 +1,81 @@
+{{define "client_resources2"}}
+package main
+
+import (
+	"net/http"
+    "strings"
+)
+
+const (
+	rootURL = "http://localhost:8080"
+)
+
+{{$apiName := .Name}}
+type {{.Name}} struct {
+}
+
+func New{{.Name}}() *{{.Name}} {
+	c := new({{.Name}})
+	c.client = http.Client{}
+	return c
+}
+
+{{ range $k, $v := .Methods }}
+func(c *{{$apiName}}) {{$v.MethodName}}({{$v.ReqBody | ToLower}} {{$v.ReqBody}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
+	{{if eq $v.Verb "GET"}}
+		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
+
+		// create request object
+		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", nil)
+		if err != nil {
+			{{if ne $v.RespBody "" }} return u, nil, err
+			{{else}} return nil, err
+			{{end}}
+		}
+
+		//do the request
+		resp, err := c.client.Do(req)
+		if err != nil {
+			{{if ne $v.RespBody "" }} return u, nil, err
+			{{else}} return nil, err
+			{{end}}
+		}
+		defer resp.Body.Close()
+
+		{{if ne $v.RespBody "" }}
+			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+		{{else}}
+			return resp, nil
+		{{end}}
+
+	{{else if eq $v.Verb "DELETE"}}
+		// create request object
+		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", nil)
+		if err != nil {
+			return nil, err
+		}
+
+		//do the request
+		return c.client.Do(req)
+
+	{{else}}
+		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
+
+	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", {{$v.ReqBody | ToLower}}, c.client)
+		if err != nil {
+			{{if ne $v.RespBody "" }} return u, nil, err
+			{{else}} return nil, err
+			{{end}}
+		}
+		defer resp.Body.Close()
+
+		{{if ne $v.RespBody "" }}
+			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+		{{else}}
+			return resp, nil
+		{{end}}
+	{{end}}
+}
+{{ end }}
+
+{{ end }}

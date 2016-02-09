@@ -1,0 +1,30 @@
+#%RAML 1.0
+title: Congo API For Drone Deliveries
+mediaType: application/json
+/deliveries:
+  get:
+    description: Get a list of deliveries
+  post:
+    description: Create/request a new delivery
+  /{deliveryId}:
+    get:
+      description: Get information on a specific delivery
+    patch:
+      description: Update the information on a specific delivery
+    delete:
+      description: Cancel a specific delivery
+/drones:
+  get:
+    description: Get a list of drones
+  post:
+    description: Add a new drone to the fleet
+  /{droneId}:
+    get:
+      description: Get information on a specific drone
+    patch:
+      description: Update the information on a specific drone
+    delete:
+      description: Remove a drone from the fleet
+    /deliveries:
+      get:
+        description: The deliveries scheduled for the current drone

@@ -92,7 +92,7 @@ func (sd structDef) generate(dir string) error {
 }
 
 //GenerateStruct generate struct
-func GenerateStruct(dir string, apiDefinition *raml.APIDefinition) error {
+func GenerateStruct(apiDefinition *raml.APIDefinition, dir string) error {
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}

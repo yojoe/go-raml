@@ -2,6 +2,7 @@
 package main
 
 import (
+	{{ if .NeedJSON }}"encoding/json"{{ end }}
 	"net/http"
 )
 {{$apiName := .Name}}
@@ -10,11 +11,11 @@ type {{.Name}}API struct {
 
 
 {{ range $k, $v := .Methods }} 
-func(api *{{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {
+func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {
 	{{if .ReqBody}}
 	var reqBody {{.ReqBody}}
 
-	if err := json.NewDecoder(r).Decode(&reqBody); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(400)
 		return
 	}

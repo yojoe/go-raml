@@ -10,8 +10,7 @@ import (
 
 func doNormalizeURI(URI string) string {
 	normalizeSlash := strings.Replace(URI, "/", " ", -1)
-	normalizeLeftBracket := strings.Replace(normalizeSlash, "{", "", -1)
-	return strings.Replace(normalizeLeftBracket, "}", "", -1)
+	return normalizeBracket(normalizeSlash)
 }
 
 func normalizeURI(URI string) string {
@@ -24,13 +23,24 @@ func normalizeURITitle(URI string) string {
 
 }
 
+func normalizeBracket(URI string) string {
+	normalizeLeftBracket := strings.Replace(URI, "{", "", -1)
+	return strings.Replace(normalizeLeftBracket, "}", "", -1)
+}
+
 // generate Go file from a template.
-// if file already exist and overwrite=false, file won't be regenerated
-func generateFile(data interface{}, tmplFile, tmplName, filename string, overwrite bool) error {
-	if !overwrite && isFileExist(filename) {
+// if file already exist and override==false, file won't be regenerated
+// funcMap = this parameter is used for passing go function to the template
+func generateFile(data interface{}, tmplFile, tmplName, filename string, override bool) error {
+	if !override && isFileExist(filename) {
 		return nil
 	}
-	t, err := template.ParseFiles(tmplFile)
+
+	funcMap := template.FuncMap{
+		"ToLower": strings.ToLower,
+	}
+
+	t, err := template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
 	if err != nil {
 		return err
 	}
