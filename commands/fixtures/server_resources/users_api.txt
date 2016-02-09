@@ -1,17 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
 type UsersAPI struct {
 }
 
-func (api *UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
+func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 
 	var reqBody User
 
-	if err := json.NewDecoder(r).Decode(&reqBody); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(400)
 		return
 	}

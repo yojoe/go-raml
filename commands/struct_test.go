@@ -51,7 +51,7 @@ func TestGenerateStruct(t *testing.T) {
 		apiDef := setupGenerateStruct()
 
 		Convey("Simple struct", func() {
-			err := GenerateStruct("./test", apiDef)
+			err := GenerateStruct(apiDef, "./test")
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile("./test/City.go")
@@ -75,7 +75,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			err = GenerateStruct("./test", apiDef)
+			err = GenerateStruct(apiDef, "./test")
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile("./test/City.go")

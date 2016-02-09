@@ -1,0 +1,91 @@
+package main
+
+import (
+	"net/http"
+	"strings"
+)
+
+const (
+	rootURL = "http://localhost:8080"
+)
+
+type StructAPITest struct {
+}
+
+func NewStructAPITest() *StructAPITest {
+	c := new(StructAPITest)
+	c.client = http.Client{}
+	return c
+}
+
+func (c *StructAPITest) UsersGet() (*http.Response, error) {
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/users", nil)
+	if err != nil {
+		return nil, err
+
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+
+	}
+	defer resp.Body.Close()
+
+	return resp, nil
+
+}
+
+func (c *StructAPITest) UsersPost(city City) (City, *http.Response, error) {
+
+	var u City
+
+	resp, err := doReqWithBody("POST", rootURL+"/users", city, c.client)
+	if err != nil {
+		return u, nil, err
+
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+
+}
+
+func (c *StructAPITest) UsersIdGet() (City, *http.Response, error) {
+
+	var u City
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/users/id", nil)
+	if err != nil {
+		return u, nil, err
+
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return u, nil, err
+
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+
+}
+
+func (c *StructAPITest) UsersIdDelete() (*http.Response, error) {
+
+	// create request object
+	req, err := http.NewRequest("DELETE", rootURL+"/users/id", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	//do the request
+	return c.client.Do(req)
+
+}
