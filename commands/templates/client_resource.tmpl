@@ -1,17 +1,18 @@
-{{define "client_resources2"}}
-package main
+{{define "client_resource"}}
+package client
 
 import (
 	"net/http"
-    "strings"
+		"encoding/json"
 )
 
 const (
-	rootURL = "http://localhost:8080"
+	rootURL = "{{.BaseURI}}"
 )
 
 {{$apiName := .Name}}
 type {{.Name}} struct {
+	client http.Client
 }
 
 func New{{.Name}}() *{{.Name}} {
@@ -21,12 +22,12 @@ func New{{.Name}}() *{{.Name}} {
 }
 
 {{ range $k, $v := .Methods }}
-func(c *{{$apiName}}) {{$v.MethodName}}({{$v.ReqBody | ToLower}} {{$v.ReqBody}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
+func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
 	{{if eq $v.Verb "GET"}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
 		// create request object
-		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", nil)
+		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, nil)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
@@ -50,7 +51,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.ReqBody | ToLower}} {{$v.ReqBody}})
 
 	{{else if eq $v.Verb "DELETE"}}
 		// create request object
-		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", nil)
+		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +62,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.ReqBody | ToLower}} {{$v.ReqBody}})
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
-	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}"{{$v.ResourcePath}}", {{$v.ReqBody | ToLower}}, c.client)
+	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{$v.ReqBody | ToLower}}, c.client)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err

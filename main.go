@@ -10,7 +10,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-//Version
+//Version define software version
 var Version = "0.1-Dev"
 
 //ApplicationName is the name of the application
@@ -49,6 +49,20 @@ func main() {
 		{
 			Name:  "server",
 			Usage: "Generate a go server according to a RAML specification",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "dir",
+					Value:       ".",
+					Usage:       "target directory",
+					Destination: &serverCommand.Dir,
+				},
+				cli.StringFlag{
+					Name:        "ramlfile",
+					Value:       ".",
+					Usage:       "Source raml file",
+					Destination: &serverCommand.RamlFile,
+				},
+			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
 					log.Error(err)
@@ -65,6 +79,18 @@ func main() {
 					Value:       "go",
 					Usage:       "Language to construct a client for",
 					Destination: &clientCommand.Language,
+				},
+				cli.StringFlag{
+					Name:        "dir",
+					Value:       ".",
+					Usage:       "target directory",
+					Destination: &clientCommand.Dir,
+				},
+				cli.StringFlag{
+					Name:        "ramlfile",
+					Value:       ".",
+					Usage:       "Source raml file",
+					Destination: &clientCommand.RamlFile,
 				},
 			},
 			Action: func(c *cli.Context) {

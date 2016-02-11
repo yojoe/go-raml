@@ -1,0 +1,17 @@
+{{ define "python_client_template" }}
+import requests
+
+BASE_URI = "{{.BaseURI}}"
+
+class Client:
+    def __init__(self,url):
+        self.url = BASE_URI
+
+{{ range $k, $v := .PythonMethods }}
+
+	def {{$v.MethodName}}({{$v.Params}}):
+		uri = {{$v.URIArgs}}
+		return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}})
+{{ end }}
+
+{{ end }}

@@ -1,0 +1,5 @@
+package main
+
+type CatCat struct {
+	Cat []Cat `json:"Cat"`
+}

@@ -8,12 +8,13 @@ import (
 )
 
 func TestGenerateClientFromRaml(t *testing.T) {
-	Convey("generate struct from raml", t, func() {
+	Convey("generate client from raml", t, func() {
+		testMode = true
 		apiDef, err := raml.ParseFile("./fixtures/client_resources/client.raml")
 		So(err, ShouldBeNil)
 
-		Convey("Simple struct from raml", func() {
-			err = GenerateClient(apiDef, "./test")
+		Convey("Simple client from raml", func() {
+			err = GenerateClient(apiDef, "./test", "go")
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile("./test/client_structapitest.go")

@@ -1,0 +1,43 @@
+#%RAML 1.0
+title: User API
+baseUri: http://api.jumpscale.com/{version}
+version: v3
+mediaType: application/json
+types:
+  User:
+    properties:
+      names:
+        type: enum
+  Address:
+    properties:
+      name:
+        type: string
+/users:
+  get:
+    description: Get a list of test
+  post:
+    description: create users
+    body:
+      type: User
+    responses:
+      200:
+        body:
+          type: User
+  /{userId}:
+    get:
+      description: get id
+      responses:
+        200:
+          body:
+            type: User
+    delete:
+      responses:
+        200:
+    /address:
+      /{addressId}:
+        get:
+          description : get address id
+          responses:
+            200:
+              body:
+                type: Address

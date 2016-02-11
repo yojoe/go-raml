@@ -1,4 +1,4 @@
-# go-raml 
+# go-raml
 [![Build Status](https://travis-ci.org/Jumpscale/go-raml.svg?branch=master)](https://travis-ci.org/Jumpscale/go-raml)
 
 ## What is go-raml
@@ -20,6 +20,32 @@ Only RAML version 1.0 RC is supported.
 
 Currently there are still some [limitations](docs/limitations.md) on the RAML 1.0 features that are supported.
 
+## Install
+
+Install `godep` as package manager
+
+`$go get -u github.com/tools/godep`
+
+Install go-bindata, we need it to compile the template files to .go file
+
+`go get -u github.com/jteeuwen/go-bindata/...`
+
+### Build
+First, we need to compile the templates
+
+```
+$cd commands
+$go-bindata ./templates/...
+$sed -i -- 's/package\ main/package\ commands/g' bindata.go
+```
+
+Then, go back to go-raml directory and then install it like usual
+
+`$go install -v ./...`
+
+There is `build.sh` script to automate this build
+
+
 ## Usage
 
 go-raml is a commandline tool. To invoke the codegeneration using `go generate`, specify the generation in 1 of your go source files:
@@ -38,7 +64,7 @@ Internally, go templates are used to generate the code, this provides a flexible
 
 To generate the go code for implementing the server in a design first approach, execute
 
-`go-raml server ...`
+`go-raml server --dir ./result_directory --ramlfile api.raml`
 
 The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
@@ -46,6 +72,17 @@ Generated codestructure:
 TODO:
 * Interfaces types, always regenerated
 * Implementing types, only generated when the file is not present
+
+
+## Client
+
+`go-raml client --language go  --dir ./result_directory --ramlfile api.raml`
+
+A go 1.5.x compatible client is generated in result_directory directory.
+
+`go-raml client --language python --dir ./result_directory --ramlfile api.raml`
+
+A python 3.5 compatible client is generated in result_directory directory.
 
 ## Type
 
@@ -56,17 +93,31 @@ Some rules about properties naming:
 - capitalizing first character of the properties.
 - json tag is the same as property name
 
-File name is the same as types name.
+File name is the same as types name with lowercase letter.
 struct name = types name.
+
+#### Type Mapping
+    Raml        |  Go   
+    ----------- | -----------
+    string      | string
+    number      | float
+    integer     | int
+    boolean     | bool
+    date        | Date
+    enum        | []string
+    file        | string
+    Object[]    | []Object
 
 ## Bodies
 [Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
 and following same rule as types above.
 
-struct name = [Resource name][Method name]Body
+struct name = [Resource name][Method name][ReqBody|RespBody]
+RequestBody generated from body node below method.
+ResponseBody generated from body node below responses.
 
 ## Resource
-[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) is mapped into:
+[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) in server is mapped into:
 - interface:
 
 	- file name = [resource]_if.go
@@ -81,18 +132,6 @@ struct name = [Resource name][Method name]Body
 - routes generator to generate all necessary routes:
 	- func name = [Resource]InterfaceRoutes
 
-TODO : nested resource
-
-
-## Client
-
-`go-raml client --language go ...`
-
-A go 1.5.x compatible client is generated.
-
-`go-raml client --language python ...`
-
-A python 3.5 compatible client is generated.
 
 ## Specification file
 

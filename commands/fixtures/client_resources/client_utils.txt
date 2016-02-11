@@ -1,0 +1,31 @@
+package client
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+)
+
+func encodeBody(data interface{}) (io.Reader, error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(b), nil
+}
+
+func doReqWithBody(method, urlStr string, data interface{}, client http.Client) (*http.Response, error) {
+	body, err := encodeBody(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// create the request
+	req, err := http.NewRequest(method, urlStr, body)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.Do(req)
+}

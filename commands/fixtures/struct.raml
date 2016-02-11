@@ -4,8 +4,29 @@ mediaType: application/json
 types:
   City:
     properties:
-      names:
-        type: enum
+      name:
+        type: string
+  Animal:
+    type: object
+    properties:
+      name:
+        type: string
+  Mammal:
+    type: Animal
+    properties:
+      name:
+        type: string
+  Cat:
+    properties:
+      kind:
+        type: string
+  Anggora:
+    type: [ Animal , Cat ]
+    properties:
+      color:
+        type: string
+  CatCat:
+    type: Cat[]
 /users:
   get:
     description: Get a list of test
@@ -15,14 +36,14 @@ types:
           age:
             type: integer
           ID:
-            type: string
   /{id}:
     get:
       description: get id
-      body:
-        application/json:
-          properties:
-            age:
-              type: integer
-            ID:
-              type: string
+      responses:
+        200:
+          body:
+            application/json:
+              properties:
+                age:
+                  type: integer
+                ID:

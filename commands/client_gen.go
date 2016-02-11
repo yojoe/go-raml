@@ -13,14 +13,39 @@ const (
 
 type clientDef struct {
 	Name    string
+	BaseURI string
 	Methods []interfaceMethod
 }
 
-func newClientDef(name string) clientDef {
-	return clientDef{Name: name}
+func newClientDef(apiDef *raml.APIDefinition) clientDef {
+	cd := clientDef{
+		Name:    normalizeURI(apiDef.Title),
+		BaseURI: apiDef.BaseUri,
+	}
+	if strings.Index(cd.BaseURI, "{version}") > 0 {
+		cd.BaseURI = strings.Replace(cd.BaseURI, "{version}", apiDef.Version, -1)
+	}
+	return cd
 }
 
-func (cd clientDef) generate(dir string) error {
+func (cd clientDef) generate(apiDef *raml.APIDefinition, dir, lang string) error {
+	if lang == "python" {
+		return cd.generatePython(dir)
+	}
+	return cd.generateGo(apiDef, dir)
+}
+
+func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
+	//generate struct
+	if err := GenerateStruct(apiDef, dir, "client"); err != nil {
+		return err
+	}
+
+	//generate body struct
+	if err := GenerateBodyStruct(apiDef, dir, "client"); err != nil {
+		return err
+	}
+
 	if err := cd.generateHelperFile(dir); err != nil {
 		return err
 	}
@@ -28,13 +53,13 @@ func (cd clientDef) generate(dir string) error {
 }
 
 //GenerateClient generate client code
-func GenerateClient(apiDef *raml.APIDefinition, dir string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
 
-	cd := newClientDef(normalizeURI(apiDef.Title))
+	cd := newClientDef(apiDef)
 
 	for k, v := range apiDef.Resources {
 		rd := newResourceDef(normalizeURITitle(apiDef.Title))
@@ -42,7 +67,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir string) error {
 		cd.Methods = append(cd.Methods, rd.Methods...)
 	}
 
-	if err := cd.generate(dir); err != nil {
+	if err := cd.generate(apiDef, dir, lang); err != nil {
 		return err
 	}
 	return nil
@@ -53,7 +78,7 @@ func (cd *clientDef) generateHelperFile(dir string) error {
 }
 
 func (cd *clientDef) generateClientFile(dir string) error {
-	return generateFile(cd, clientResourceTemplate, "client_resources2", cd.clientFileName(dir), false)
+	return generateFile(cd, clientResourceTemplate, "client_resource", cd.clientFileName(dir), false)
 }
 
 func (cd *clientDef) clientFileName(dir string) string {

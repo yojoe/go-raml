@@ -1,0 +1,5 @@
+package main
+
+type Address struct {
+	Name string `json:"Name"`
+}

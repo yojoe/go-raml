@@ -20,6 +20,11 @@ func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	{{ end }}
+
+	{{ if .RespBody }}
+	var respBody {{.RespBody}}
+	json.NewEncoder(w).Encode(respBody);
+	{{ end }}
 }
 {{ end }}
 
