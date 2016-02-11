@@ -49,6 +49,20 @@ func main() {
 		{
 			Name:  "server",
 			Usage: "Generate a go server according to a RAML specification",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "dir",
+					Value:       ".",
+					Usage:       "target directory",
+					Destination: &serverCommand.Dir,
+				},
+				cli.StringFlag{
+					Name:        "ramlfile",
+					Value:       ".",
+					Usage:       "Source raml file",
+					Destination: &serverCommand.RamlFile,
+				},
+			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
 					log.Error(err)

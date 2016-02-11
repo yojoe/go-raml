@@ -1,12 +1,22 @@
 package commands
 
-import log "github.com/Sirupsen/logrus"
+import (
+	"github.com/Jumpscale/go-raml/raml"
+	log "github.com/Sirupsen/logrus"
+)
 
 //ServerCommand is executed to generate a go server from a RAML specification
-type ServerCommand struct{}
+type ServerCommand struct {
+	Dir      string //target dir
+	RamlFile string //raml file
+}
 
 //Execute generates a go server from a RAML specification
 func (command *ServerCommand) Execute() error {
 	log.Debug("Generating a go server")
-	return nil
+	apiDef, err := raml.ParseFile(command.RamlFile)
+	if err != nil {
+		return err
+	}
+	return ServerMainGen(apiDef, command.Dir)
 }

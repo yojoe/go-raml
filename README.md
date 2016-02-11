@@ -64,7 +64,7 @@ Internally, go templates are used to generate the code, this provides a flexible
 
 To generate the go code for implementing the server in a design first approach, execute
 
-`go-raml server ...`
+`go-raml server --dir ./result_directory --ramlfile api.raml`
 
 The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
@@ -72,7 +72,7 @@ Generated codestructure:
 TODO:
 * Interfaces types, always regenerated
 * Implementing types, only generated when the file is not present
- 
+
 
 ## Client
 
