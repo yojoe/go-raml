@@ -548,9 +548,8 @@ type Method struct {
 	// TODO: To indicate that the method may be called without applying any
 	// securityScheme, the method may be annotated with the null securityScheme.
 
-	// The method's non-standard HTTP headers. The headers property is a map
-	// in which the key is the name of the header, and the value is itself a
-	// map specifying the header attributes.
+	// Object whose property names are the query parameter names
+	// and whose values describe the values.
 	Headers map[HTTPHeader]Header `yaml:"headers"`
 	// TODO: Examples for headers are REQUIRED.
 	// TODO: If the header name contains the placeholder token {*}, processing
@@ -596,20 +595,18 @@ type Resource struct {
 	// Resources are identified by their relative URI, which MUST begin with
 	// a slash (/).
 	URI string
-	// TODO: Fill this during the post-processing phase
 
 	// A resource defined as a child property of another resource is called a
 	// nested resource, and its property's key is its URI relative to its
 	// parent resource's URI. If this is not nil, then this resource is a
 	// child resource.
 	Parent *Resource
-	// TODO: Fill this during the post-processing phase
 
 	// A friendly name to the resource
 	DisplayName string `yaml:"displayName"`
 
 	// Briefly describes the resource
-	Description string
+	Description string `yaml:"description"`
 
 	// A securityScheme may also be applied to a resource by using the
 	// securedBy key, which is equivalent to applying the securityScheme to
@@ -618,16 +615,6 @@ type Resource struct {
 	SecuredBy []DefinitionChoice `yaml:"securedBy"`
 	// TODO: To indicate that the method may be called without applying any
 	// securityScheme, the method may be annotated with the null securityScheme.
-
-	// A resource or a method can override a base URI template's values.
-	// This is useful to restrict or change the default or parameter selection
-	// in the base URI. The baseUriParameters property MAY be used to override
-	// any or all parameters defined at the root level baseUriParameters
-	// property, as well as base URI parameters not specified at the root level.
-	// In a resource structure of resources and nested resources with their
-	// methods, the most specific baseUriParameter fully overrides any
-	// baseUriParameter definition made before
-	BaseUriParameters map[string]NamedParameter `yaml:"baseUriParameters"`
 
 	// Template URIs containing URI parameters can be used to define a
 	// resource's relative URI when it contains variable elements.
@@ -668,12 +655,13 @@ type Resource struct {
 	// resource. A method MUST be one of the HTTP methods defined in the
 	// HTTP version 1.1 specification [RFC2616] and its extension,
 	// RFC5789 [RFC5789].
-	Get    *Method `yaml:"get"`
-	Head   *Method `yaml:"head"`
-	Post   *Method `yaml:"post"`
-	Put    *Method `yaml:"put"`
-	Delete *Method `yaml:"delete"`
-	Patch  *Method `yaml:"patch"`
+	Get     *Method `yaml:"get"`
+	Patch   *Method `yaml:"patch"`
+	Put     *Method `yaml:"put"`
+	Head    *Method `yaml:"head"`
+	Post    *Method `yaml:"post"`
+	Delete  *Method `yaml:"delete"`
+	Options *Method `yaml:"options"`
 
 	// A resource defined as a child property of another resource is called a
 	// nested resource, and its property's key is its URI relative to its

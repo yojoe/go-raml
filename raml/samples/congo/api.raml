@@ -5,7 +5,16 @@ types:
   User:
     properties:
         firstName:
+          type: string
         lastName:
+        age:
+          type: integer
+        height:
+          type: number
+        iscrazy:
+          type: boolean
+        dob:
+          type: date
 /deliveries:
   get:
     description: Get a list of deliveries
@@ -30,7 +39,7 @@ types:
         headers:
           Location:
         body:
-          application/json:  
+          application/json:
             type: User
   /{deliveryId}:
     get:
