@@ -1,0 +1,32 @@
+package main
+
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+type UsersInterface interface {
+	Get(http.ResponseWriter, *http.Request)
+
+	Post(http.ResponseWriter, *http.Request)
+
+	userIdGet(http.ResponseWriter, *http.Request)
+
+	userIdDelete(http.ResponseWriter, *http.Request)
+
+	userIdaddressaddressIdGet(http.ResponseWriter, *http.Request)
+}
+
+func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
+
+	r.HandleFunc("/users", i.Get).Methods("GET")
+
+	r.HandleFunc("/users", i.Post).Methods("POST")
+
+	r.HandleFunc("/users/{userId}", i.userIdGet).Methods("GET")
+
+	r.HandleFunc("/users/{userId}", i.userIdDelete).Methods("DELETE")
+
+	r.HandleFunc("/users/{userId}/address/{addressId}", i.userIdaddressaddressIdGet).Methods("GET")
+
+}

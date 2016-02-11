@@ -1,0 +1,50 @@
+#%RAML 1.0
+title: Struct API Test
+baseUri: http://api.jumpscale.com/{version}
+version: v3
+mediaType: application/json
+types:
+  City:
+    properties:
+      names:
+        type: enum
+  Address:
+    properties:
+      name:
+        type: string
+/users:
+  get:
+    description: Get a list of test
+    body:
+      application/json:
+        properties:
+          age:
+            type: integer
+          ID:
+            type: string
+  post:
+    description: create users
+    body:
+      type: City
+    responses:
+      200:
+        body:
+          type: City
+  /{userId}:
+    get:
+      description: get id
+      responses:
+        200:
+          body:
+            type: City
+    delete:
+      responses:
+        200:
+    /address:
+      /{addressId}:
+        get:
+          description : get address id
+          responses:
+            200:
+              body:
+                type: Address

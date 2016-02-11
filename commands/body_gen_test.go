@@ -23,6 +23,7 @@ var (
 
 func TestGenerateStructBodyFromRaml(t *testing.T) {
 	Convey("generate struct body from raml", t, func() {
+		testMode = true
 		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
 		So(err, ShouldBeNil)
 
@@ -30,44 +31,26 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := GenerateBodyStruct(apiDef, dir+"/test")
+			err := GenerateBodyStruct(apiDef, dir+"/test", "main")
 			So(err, ShouldBeNil)
 
-			//load and compare TestusersIdGetReqBody
-			s, err := testLoadFile("./test/UsersIdGetReqBody.go")
+			//load and compare UsersIdGetRespBody
+			s2, err := testLoadFile("./test/usersidgetrespbody.go")
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/UsersIdGetReqBody.txt")
-			So(err, ShouldBeNil)
-
-			So(tmpl, ShouldEqual, s)
-
-			//load and compare TestusersIdGetRespBody
-			s2, err := testLoadFile("./test/UsersIdGetRespBody.go")
-			So(err, ShouldBeNil)
-
-			tmpl2, err := testLoadFile("./fixtures/UsersIdGetRespBody.txt")
+			tmpl2, err := testLoadFile("./fixtures/usersidgetrespbody.txt")
 			So(err, ShouldBeNil)
 
 			So(tmpl2, ShouldEqual, s2)
 
-			//load and compare TestusersGetReqBody
-			tUserGetReqBody, err := testLoadFile("./test/UsersGetReqBody.go")
+			//load and compare usersgetreqbody
+			tUserGetReqBody, err := testLoadFile("./test/usersgetreqbody.go")
 			So(err, ShouldBeNil)
 
-			fUserGetReqBody, err := testLoadFile("./fixtures/UsersGetReqBody.txt")
+			fUserGetReqBody, err := testLoadFile("./fixtures/usersgetreqbody.txt")
 			So(err, ShouldBeNil)
 
 			So(tUserGetReqBody, ShouldEqual, fUserGetReqBody)
-
-			//load and compare TestusersGetRespBody
-			tUserGetRespBody, err := testLoadFile("./test/UsersGetRespBody.go")
-			So(err, ShouldBeNil)
-
-			fUserGetRespBody, err := testLoadFile("./fixtures/UsersGetRespBody.txt")
-			So(err, ShouldBeNil)
-
-			So(tUserGetRespBody, ShouldEqual, fUserGetRespBody)
 		})
 
 		Reset(func() {

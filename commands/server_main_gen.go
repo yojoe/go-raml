@@ -19,12 +19,12 @@ func (sd serverDef) generate(dir string) error {
 
 func ServerMainGen(apiDef *raml.APIDefinition, dir string) error {
 	// generate all Type structs
-	if err := GenerateStruct(apiDef, dir); err != nil {
+	if err := GenerateStruct(apiDef, dir, "main"); err != nil {
 		return err
 	}
 
 	// generate all request & response body
-	if err := GenerateBodyStruct(apiDef, dir); err != nil {
+	if err := GenerateBodyStruct(apiDef, dir, "main"); err != nil {
 		return err
 	}
 

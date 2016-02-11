@@ -1,0 +1,6 @@
+package client
+
+type UsersUserIdAddressPostReqBody struct {
+	Age int    `json:"Age"`
+	ID  string `json:"ID"`
+}

@@ -8,7 +8,7 @@ const (
 )
 
 //GenerateBodyStruct generate body
-func GenerateBodyStruct(apiDef *raml.APIDefinition, dir string) error {
+func GenerateBodyStruct(apiDef *raml.APIDefinition, dir, packageName string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
@@ -16,7 +16,7 @@ func GenerateBodyStruct(apiDef *raml.APIDefinition, dir string) error {
 
 	//generate
 	for _, v := range apiDef.Resources {
-		if err := generateBodyFromResources("", dir, &v); err != nil {
+		if err := generateBodyFromResources("", dir, packageName, &v); err != nil {
 			return err
 		}
 	}
@@ -24,7 +24,7 @@ func GenerateBodyStruct(apiDef *raml.APIDefinition, dir string) error {
 	return nil
 }
 
-func generateBodyFromResources(resourcePath, dir string, r *raml.Resource) error {
+func generateBodyFromResources(resourcePath, dir, packageName string, r *raml.Resource) error {
 	if r == nil {
 		return nil
 	}
@@ -33,33 +33,33 @@ func generateBodyFromResources(resourcePath, dir string, r *raml.Resource) error
 	structName := normalizeURITitle(resourcePath + r.URI)
 
 	//build
-	if err := buildBodyFromMethod(structName, "Get", dir, r.Get); err != nil {
+	if err := buildBodyFromMethod(structName, "Get", dir, packageName, r.Get); err != nil {
 		return err
 	}
 
-	if err := buildBodyFromMethod(structName, "Post", dir, r.Post); err != nil {
+	if err := buildBodyFromMethod(structName, "Post", dir, packageName, r.Post); err != nil {
 		return err
 	}
 
-	if err := buildBodyFromMethod(structName, "Head", dir, r.Head); err != nil {
+	if err := buildBodyFromMethod(structName, "Head", dir, packageName, r.Head); err != nil {
 		return err
 	}
 
-	if err := buildBodyFromMethod(structName, "Put", dir, r.Put); err != nil {
+	if err := buildBodyFromMethod(structName, "Put", dir, packageName, r.Put); err != nil {
 		return err
 	}
 
-	if err := buildBodyFromMethod(structName, "Delete", dir, r.Delete); err != nil {
+	if err := buildBodyFromMethod(structName, "Delete", dir, packageName, r.Delete); err != nil {
 		return err
 	}
 
-	if err := buildBodyFromMethod(structName, "Patch", dir, r.Patch); err != nil {
+	if err := buildBodyFromMethod(structName, "Patch", dir, packageName, r.Patch); err != nil {
 		return err
 	}
 
 	//build child
 	for _, v := range r.Nested {
-		if err := generateBodyFromResources(resourcePath+r.URI, dir, v); err != nil {
+		if err := generateBodyFromResources(resourcePath+r.URI, dir, packageName, v); err != nil {
 			return err
 		}
 	}
@@ -67,19 +67,19 @@ func generateBodyFromResources(resourcePath, dir string, r *raml.Resource) error
 	return nil
 }
 
-func buildBodyFromMethod(structName, methodName, dir string, method *raml.Method) error {
+func buildBodyFromMethod(structName, methodName, dir, packageName string, method *raml.Method) error {
 	if method == nil {
 		return nil
 	}
 
 	//generate struct for body node below method
-	if err := generateStructFromBody(structName+methodName, dir, &method.Bodies, false); err != nil {
+	if err := generateStructFromBody(structName+methodName, dir, packageName, &method.Bodies, true); err != nil {
 		return err
 	}
 
 	//generate struct for body node below response
 	for _, val := range method.Responses {
-		if err := generateStructFromBody(structName+methodName, dir, &val.Bodies, true); err != nil {
+		if err := generateStructFromBody(structName+methodName, dir, packageName, &val.Bodies, false); err != nil {
 			return err
 		}
 
@@ -88,7 +88,7 @@ func buildBodyFromMethod(structName, methodName, dir string, method *raml.Method
 	return nil
 }
 
-func generateStructFromBody(structNamePrefix, dir string, body *raml.Bodies, isPartial bool) error {
+func generateStructFromBody(structNamePrefix, dir, packageName string, body *raml.Bodies, isGenerateRequest bool) error {
 	hasJSONBody := func() bool {
 		return body.ApplicationJson != nil && (len(body.ApplicationJson.Properties) > 0 || len(body.ApplicationJson.Type) > 0)
 	}
@@ -97,13 +97,8 @@ func generateStructFromBody(structNamePrefix, dir string, body *raml.Bodies, isP
 	}
 
 	//construct struct from body
-	reqStructDef, respStructDef := newStructDefFromBody(body, structNamePrefix, isPartial)
-	if !isPartial {
-		if err := reqStructDef.generate(dir); err != nil {
-			return err
-		}
-	}
+	structDef := newStructDefFromBody(body, structNamePrefix, packageName, isGenerateRequest)
 
 	//generate
-	return respStructDef.generate(dir)
+	return structDef.generate(dir)
 }

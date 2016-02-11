@@ -1,8 +1,8 @@
-package main
+package client
 
 import (
+	"encoding/json"
 	"net/http"
-	"strings"
 )
 
 const (
@@ -10,6 +10,7 @@ const (
 )
 
 type StructAPITest struct {
+	client http.Client
 }
 
 func NewStructAPITest() *StructAPITest {
@@ -18,24 +19,26 @@ func NewStructAPITest() *StructAPITest {
 	return c
 }
 
-func (c *StructAPITest) UsersGet() (*http.Response, error) {
+func (c *StructAPITest) UsersGet() (UsersGetRespBody, *http.Response, error) {
+
+	var u UsersGetRespBody
 
 	// create request object
 	req, err := http.NewRequest("GET", rootURL+"/users", nil)
 	if err != nil {
-		return nil, err
+		return u, nil, err
 
 	}
 
 	//do the request
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, err
+		return u, nil, err
 
 	}
 	defer resp.Body.Close()
 
-	return resp, nil
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 
 }
 
@@ -54,12 +57,12 @@ func (c *StructAPITest) UsersPost(city City) (City, *http.Response, error) {
 
 }
 
-func (c *StructAPITest) UsersIdGet() (City, *http.Response, error) {
+func (c *StructAPITest) UsersUserIdGet(userId string) (City, *http.Response, error) {
 
 	var u City
 
 	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users/id", nil)
+	req, err := http.NewRequest("GET", rootURL+"/users/"+userId, nil)
 	if err != nil {
 		return u, nil, err
 
@@ -77,15 +80,53 @@ func (c *StructAPITest) UsersIdGet() (City, *http.Response, error) {
 
 }
 
-func (c *StructAPITest) UsersIdDelete() (*http.Response, error) {
+func (c *StructAPITest) UsersUserIdDelete(userId string) (*http.Response, error) {
 
 	// create request object
-	req, err := http.NewRequest("DELETE", rootURL+"/users/id", nil)
+	req, err := http.NewRequest("DELETE", rootURL+"/users/"+userId, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	//do the request
 	return c.client.Do(req)
+
+}
+
+func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddresspostreqbody UsersUserIdAddressPostReqBody) (UsersUserIdAddressPostRespBody, *http.Response, error) {
+
+	var u UsersUserIdAddressPostRespBody
+
+	resp, err := doReqWithBody("POST", rootURL+"/users/"+userId+"/address", usersuseridaddresspostreqbody, c.client)
+	if err != nil {
+		return u, nil, err
+
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+
+}
+
+func (c *StructAPITest) UsersUserIdAddressAddressIdGet(addressId, userId string) (Address, *http.Response, error) {
+
+	var u Address
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+"/address/"+addressId, nil)
+	if err != nil {
+		return u, nil, err
+
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return u, nil, err
+
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 
 }

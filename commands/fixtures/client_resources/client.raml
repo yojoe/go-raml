@@ -1,21 +1,28 @@
 #%RAML 1.0
 title: Struct API Test
+baseUri: http://localhost:8080
 mediaType: application/json
 types:
   City:
     properties:
       names:
         type: enum
+  Address:
+    properties:
+      name:
+        type: string
 /users:
   get:
     description: Get a list of test
-    body:
-      application/json:
-        properties:
-          age:
-            type: integer
-          ID:
-            type: string
+    responses:
+      200:
+        body:
+          application/json:
+            properties:
+              age:
+                type: integer
+              ID:
+                type: string
   post:
     description: create users
     body:
@@ -24,9 +31,9 @@ types:
       200:
         body:
           type: City
-  /{id}:
+  /{userId}:
     get:
-      description: get id 
+      description: get id
       responses:
         200:
           body:
@@ -34,3 +41,26 @@ types:
     delete:
       responses:
         200:
+    /address:
+      /{addressId}:
+        get:
+          description : get address id
+          responses:
+            200:
+              body:
+                type: Address
+      post:
+        body:
+          application/json:
+            properties:
+              age:
+                type: integer
+              ID:
+                type: string
+        responses:
+          200:
+            body:
+              application/json:
+                properties:
+                  address:
+                    type: string
