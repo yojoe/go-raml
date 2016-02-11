@@ -1,0 +1,3 @@
+#!/bin/bash
+./build_template.sh
+go install -v ./...
