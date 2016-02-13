@@ -4,6 +4,7 @@ package client
 import (
 	"net/http"
 		"encoding/json"
+		"fmt"
 )
 
 const (
@@ -23,16 +24,21 @@ func New{{.Name}}() *{{.Name}} {
 
 {{ range $k, $v := .Methods }}
 func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
+	qsParam := buildQueryString(queryParams)
 	{{if eq $v.Verb "GET"}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
 		// create request object
-		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, nil)
+		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
 			{{end}}
 		}
+
+		for k, v := range headers {
+         req.Header.Set(k, fmt.Sprintf("%v", v))
+    }
 
 		//do the request
 		resp, err := c.client.Do(req)
@@ -51,10 +57,14 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if
 
 	{{else if eq $v.Verb "DELETE"}}
 		// create request object
-		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, nil)
+		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
 		if err != nil {
 			return nil, err
 		}
+
+		for k, v := range headers {
+         req.Header.Set(k, fmt.Sprintf("%v", v))
+    }
 
 		//do the request
 		return c.client.Do(req)
@@ -62,7 +72,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
-	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{$v.ReqBody | ToLower}}, c.client)
+	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{$v.ReqBody | ToLower}}, c.client, headers, qsParam)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err

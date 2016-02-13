@@ -11,7 +11,7 @@ class Client:
 
 	def {{$v.MethodName}}({{$v.Params}}):
 		uri = {{$v.URIArgs}}
-		return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}})
+		return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}},headers=headers)
 {{ end }}
 
 {{ end }}

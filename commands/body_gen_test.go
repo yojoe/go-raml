@@ -8,19 +8,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var (
-	bodyPropertyMap = map[string]raml.Property{
-		"ID": raml.Property{
-			Type:     "string",
-			Required: true,
-		},
-		"age": raml.Property{
-			Type:     "integer",
-			Required: false,
-		},
-	}
-)
-
 func TestGenerateStructBodyFromRaml(t *testing.T) {
 	Convey("generate struct body from raml", t, func() {
 		testMode = true

@@ -10,8 +10,11 @@ type {{.Name}}API struct {
 }
 
 
-{{ range $k, $v := .Methods }} 
+{{ range $k, $v := .Methods }}
 func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {
+	{{range $kq, $vq := $v.QueryParameters}}
+    // {{$kq}} := req.FormValue("{{$kq}}")
+	{{end}}
 	{{if .ReqBody}}
 	var reqBody {{.ReqBody}}
 
@@ -25,6 +28,9 @@ func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Reque
 	var respBody {{.RespBody}}
 	json.NewEncoder(w).Encode(respBody);
 	{{ end }}
+
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }
 {{ end }}
 

@@ -87,6 +87,12 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 			paramsStr += strings.ToLower(bodyType) + " " + bodyType
 		}
 
+		//append header
+		if len(paramsStr) > 0 {
+			paramsStr += ","
+		}
+		paramsStr += "headers,queryParams map[string]interface{}"
+
 		return paramsStr
 	}
 

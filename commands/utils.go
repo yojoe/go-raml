@@ -8,6 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
+	"github.com/Jumpscale/go-raml/commands/bindata"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -101,7 +102,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		t, err = template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
 	} else {
 		tmplFile = strings.Replace(tmplFile, "./", "", -1)
-		data, err := Asset(tmplFile)
+		data, err := bindata.Asset(tmplFile)
 		if err != nil {
 			return err
 		}

@@ -9,20 +9,30 @@ type DeliveriesAPI struct {
 
 func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }
 
 func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }
 
 func (api DeliveriesAPI) deliveryIdGet(w http.ResponseWriter, r *http.Request) {
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }
 
 func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }
 
 func (api DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }

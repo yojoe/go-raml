@@ -5,8 +5,10 @@ import (
 )
 
 const (
-	pythonClientTmplFile = "./templates/python_client.tmpl"
-	pythonClientTmplName = "python_client_template"
+	pythonClientTmplFile     = "./templates/python_client.tmpl"
+	pythonClientUtilTmplFile = "./templates/python_client_utils.tmpl"
+	pythonClientTmplName     = "python_client_template"
+	pythonClientUtilTmplName = "python_client_utils"
 )
 
 type pythonMethod struct {
@@ -22,6 +24,9 @@ type pythonClientDef struct {
 }
 
 func (pcd pythonClientDef) generate(dir string) error {
+	if err := generateFile(nil, pythonClientUtilTmplFile, pythonClientUtilTmplName, dir+"/client_utils.py", false); err != nil {
+		return err
+	}
 	return generateFile(pcd, pythonClientTmplFile, pythonClientTmplName, dir+"/client.py", true)
 }
 
@@ -35,9 +40,10 @@ func (cd clientDef) generatePython(dir string) error {
 			params = append(params, "data")
 			prArgs = ", data"
 		}
+		params = append(params, getResourceParams(m.Resource)...)
 		pm := pythonMethod{
 			interfaceMethod: m,
-			Params:          strings.Join(append(params, getResourceParams(m.Resource)...), ","),
+			Params:          strings.Join(append(params, "headers=None,queryParams=None"), ","),
 			URIArgs:         paramizingURI(`"` + completeResourceURI(m.Resource) + `"`),
 			PRArgs:          prArgs,
 		}

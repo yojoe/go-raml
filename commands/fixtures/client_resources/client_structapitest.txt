@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -19,15 +20,20 @@ func NewStructAPITest() *StructAPITest {
 	return c
 }
 
-func (c *StructAPITest) UsersGet() (UsersGetRespBody, *http.Response, error) {
+func (c *StructAPITest) UsersGet(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	var u UsersGetRespBody
 
 	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users", nil)
+	req, err := http.NewRequest("GET", rootURL+"/users"+qsParam, nil)
 	if err != nil {
 		return u, nil, err
 
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
 	}
 
 	//do the request
@@ -42,11 +48,12 @@ func (c *StructAPITest) UsersGet() (UsersGetRespBody, *http.Response, error) {
 
 }
 
-func (c *StructAPITest) UsersPost(city City) (City, *http.Response, error) {
+func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	var u City
 
-	resp, err := doReqWithBody("POST", rootURL+"/users", city, c.client)
+	resp, err := doReqWithBody("POST", rootURL+"/users", city, c.client, headers, qsParam)
 	if err != nil {
 		return u, nil, err
 
@@ -57,15 +64,20 @@ func (c *StructAPITest) UsersPost(city City) (City, *http.Response, error) {
 
 }
 
-func (c *StructAPITest) UsersUserIdGet(userId string) (City, *http.Response, error) {
+func (c *StructAPITest) UsersUserIdGet(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	var u City
 
 	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users/"+userId, nil)
+	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+qsParam, nil)
 	if err != nil {
 		return u, nil, err
 
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
 	}
 
 	//do the request
@@ -80,12 +92,17 @@ func (c *StructAPITest) UsersUserIdGet(userId string) (City, *http.Response, err
 
 }
 
-func (c *StructAPITest) UsersUserIdDelete(userId string) (*http.Response, error) {
+func (c *StructAPITest) UsersUserIdDelete(userId string, headers, queryParams map[string]interface{}) (*http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	// create request object
-	req, err := http.NewRequest("DELETE", rootURL+"/users/"+userId, nil)
+	req, err := http.NewRequest("DELETE", rootURL+"/users/"+userId+qsParam, nil)
 	if err != nil {
 		return nil, err
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
 	}
 
 	//do the request
@@ -93,11 +110,12 @@ func (c *StructAPITest) UsersUserIdDelete(userId string) (*http.Response, error)
 
 }
 
-func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddresspostreqbody UsersUserIdAddressPostReqBody) (UsersUserIdAddressPostRespBody, *http.Response, error) {
+func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddresspostreqbody UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	var u UsersUserIdAddressPostRespBody
 
-	resp, err := doReqWithBody("POST", rootURL+"/users/"+userId+"/address", usersuseridaddresspostreqbody, c.client)
+	resp, err := doReqWithBody("POST", rootURL+"/users/"+userId+"/address", usersuseridaddresspostreqbody, c.client, headers, qsParam)
 	if err != nil {
 		return u, nil, err
 
@@ -108,15 +126,20 @@ func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddress
 
 }
 
-func (c *StructAPITest) UsersUserIdAddressAddressIdGet(addressId, userId string) (Address, *http.Response, error) {
+func (c *StructAPITest) UsersUserIdAddressAddressIdGet(addressId, userId string, headers, queryParams map[string]interface{}) (Address, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
 
 	var u Address
 
 	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+"/address/"+addressId, nil)
+	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+"/address/"+addressId+qsParam, nil)
 	if err != nil {
 		return u, nil, err
 
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
 	}
 
 	//do the request

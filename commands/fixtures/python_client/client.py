@@ -9,28 +9,28 @@ class Client:
 
 
 
-	def UsersGet(self):
+	def UsersGet(self,headers=None,queryParams=None):
 		uri = "/users"
-		return requests.get(self.url + uri)
+		return requests.get(self.url + uri,headers=headers)
 
 
-	def UsersPost(self,data):
+	def UsersPost(self,data,headers=None,queryParams=None):
 		uri = "/users"
-		return requests.post(self.url + uri, data)
+		return requests.post(self.url + uri, data,headers=headers)
 
 
-	def UsersUserIdGet(self,userId):
+	def UsersUserIdGet(self,userId,headers=None,queryParams=None):
 		uri = "/users/"+userId
-		return requests.get(self.url + uri)
+		return requests.get(self.url + uri,headers=headers)
 
 
-	def UsersUserIdDelete(self,userId):
+	def UsersUserIdDelete(self,userId,headers=None,queryParams=None):
 		uri = "/users/"+userId
-		return requests.delete(self.url + uri)
+		return requests.delete(self.url + uri,headers=headers)
 
 
-	def UsersUserIdAddressAddressIdGet(self,addressId,userId):
+	def UsersUserIdAddressAddressIdGet(self,addressId,userId,headers=None,queryParams=None):
 		uri = "/users/"+userId+"/address/"+addressId
-		return requests.get(self.url + uri)
+		return requests.get(self.url + uri,headers=headers)
 
 
