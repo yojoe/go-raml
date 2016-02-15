@@ -113,7 +113,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	if testMode {
 		t, err = template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
 	} else {
-		tmplFile = strings.Replace(tmplFile, "./", "", -1)
+		tmplFile = strings.Replace(tmplFile, "./", "../", -1)
 		data, err := bindata.Asset(tmplFile)
 		if err != nil {
 			return err
