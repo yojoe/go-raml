@@ -64,9 +64,13 @@ func getResourceParams(r *raml.Resource) []string {
 	return _getResourceParams(r, params)
 }
 
+// create parameterized URI
+// Input : raw string, ex : /users/{userId}/address/{addressId}
+// Output : "/users/"+userId+"/address/"+addressId
 func paramizingURI(URI string) string {
+	uri := `"` + URI + `"`
 	// replace { with "+
-	uri := strings.Replace(URI, "{", `"+`, -1)
+	uri = strings.Replace(uri, "{", `"+`, -1)
 
 	// if ended with }/" or }", remove trailing "
 	if strings.HasSuffix(uri, `}/"`) || strings.HasSuffix(uri, `}"`) {
@@ -158,27 +162,11 @@ func runGoFmt(filePath string) error {
 	return exec.Command("go", args...).Run()
 }
 
-//templatingResourcePath build resourcePath for templating purpose
-//Input : raw string, ex : /users/{userId}/address/{addressId}
-//Output : "/users/"+userId+"/address/"+addressId
-func templatingResourcePath(rawURI string) string {
-	replaceLeftBracket := strings.Replace(rawURI, "{", "\"+", -1)
-	finalURI := strings.Replace(replaceLeftBracket, "}", "+\"", -1)
-
-	if strings.HasSuffix(finalURI, "+\"") {
-		finalURI = "\"" + finalURI[:len(finalURI)-2]
-	} else {
-		finalURI = "\"" + finalURI + "\""
-	}
-
-	return finalURI
-}
-
-//convert interface type to string
-//example :
-//1. string type, result would be string
-//2. []interface{} type, result would be array of string. ex: a,b,c
-//Please add other type as needed
+// convert interface type to string
+// example :
+// 1. string type, result would be string
+// 2. []interface{} type, result would be array of string. ex: a,b,c
+// Please add other type as needed
 func interfaceToString(data interface{}) string {
 	switch data.(type) {
 	case string:

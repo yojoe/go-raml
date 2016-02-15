@@ -11,12 +11,14 @@ const (
 	clientHelperResourceTemplate = "./templates/client_helper_resource.tmpl"
 )
 
+// API client definition
 type clientDef struct {
 	Name    string
 	BaseURI string
 	Methods []interfaceMethod
 }
 
+// create client definition from RAML API definition
 func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	cd := clientDef{
 		Name:    normalizeURI(apiDef.Title),
@@ -28,6 +30,7 @@ func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	return cd
 }
 
+// generate client files
 func (cd clientDef) generate(apiDef *raml.APIDefinition, dir, lang string) error {
 	if lang == "python" {
 		return cd.generatePython(dir)
@@ -35,14 +38,15 @@ func (cd clientDef) generate(apiDef *raml.APIDefinition, dir, lang string) error
 	return cd.generateGo(apiDef, dir)
 }
 
+// generate Go client files
 func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
-	//generate struct
-	if err := GenerateStruct(apiDef, dir, "client"); err != nil {
+	// generate struct
+	if err := generateStructs(apiDef, dir, "client"); err != nil {
 		return err
 	}
 
-	//generate body struct
-	if err := GenerateBodyStruct(apiDef, dir, "client"); err != nil {
+	// generate strucs from bodies
+	if err := generateBodyStructs(apiDef, dir, "client"); err != nil {
 		return err
 	}
 
@@ -52,8 +56,8 @@ func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
 	return cd.generateClientFile(dir)
 }
 
-//GenerateClient generate client code
-func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
+// generate client library
+func generateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
@@ -73,10 +77,12 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	return nil
 }
 
+// generate client helper
 func (cd *clientDef) generateHelperFile(dir string) error {
 	return generateFile(cd, clientHelperResourceTemplate, "client_helper_resources", cd.clientHelperName(dir), false)
 }
 
+// generate main client lib file
 func (cd *clientDef) generateClientFile(dir string) error {
 	return generateFile(cd, clientResourceTemplate, "client_resource", cd.clientFileName(dir), false)
 }

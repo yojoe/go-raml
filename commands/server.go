@@ -5,18 +5,18 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-//ServerCommand is executed to generate a go server from a RAML specification
+// ServerCommand is executed to generate a go server from a RAML specification
 type ServerCommand struct {
 	Dir      string //target dir
 	RamlFile string //raml file
 }
 
-//Execute generates a go server from a RAML specification
+// Execute generates a Go server from an RAML specification
 func (command *ServerCommand) Execute() error {
 	log.Debug("Generating a go server")
 	apiDef, err := raml.ParseFile(command.RamlFile)
 	if err != nil {
 		return err
 	}
-	return ServerMainGen(apiDef, command.Dir)
+	return generateServer(apiDef, command.Dir)
 }

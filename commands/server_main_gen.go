@@ -9,27 +9,30 @@ const (
 	serverMainTmplName = "server_main_template"
 )
 
+// API server definition
 type serverDef struct {
 	ResourcesDef []resourceDef
 }
 
+// generate server main file
 func (sd serverDef) generate(dir string) error {
 	return generateFile(sd, serverMainTmplFile, serverMainTmplName, dir+"/main.go", true)
 }
 
-func ServerMainGen(apiDef *raml.APIDefinition, dir string) error {
+// generate API server files
+func generateServer(apiDef *raml.APIDefinition, dir string) error {
 	// generate all Type structs
-	if err := GenerateStruct(apiDef, dir, "main"); err != nil {
+	if err := generateStructs(apiDef, dir, "main"); err != nil {
 		return err
 	}
 
 	// generate all request & response body
-	if err := GenerateBodyStruct(apiDef, dir, "main"); err != nil {
+	if err := generateBodyStructs(apiDef, dir, "main"); err != nil {
 		return err
 	}
 
 	// genereate resources
-	rds, err := ServerResourcesGen(apiDef.Resources, dir)
+	rds, err := generateServerResources(apiDef.Resources, dir)
 	if err != nil {
 		return err
 	}

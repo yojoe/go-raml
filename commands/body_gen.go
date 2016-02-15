@@ -7,16 +7,16 @@ const (
 	respBodySuffix = "RespBody"
 )
 
-//GenerateBodyStruct generate body
-func GenerateBodyStruct(apiDef *raml.APIDefinition, dir, packageName string) error {
-	//check create dir
+// generate Go struct from RAML definition
+func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName string) error {
+	// check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
 
-	//generate
+	// generate
 	for _, v := range apiDef.Resources {
-		if err := generateBodyFromResources("", dir, packageName, &v); err != nil {
+		if err := generateStructsFromResourceBody("", dir, packageName, &v); err != nil {
 			return err
 		}
 	}
@@ -24,7 +24,8 @@ func GenerateBodyStruct(apiDef *raml.APIDefinition, dir, packageName string) err
 	return nil
 }
 
-func generateBodyFromResources(resourcePath, dir, packageName string, r *raml.Resource) error {
+// generate all structs from a resource
+func generateStructsFromResourceBody(resourcePath, dir, packageName string, r *raml.Resource) error {
 	if r == nil {
 		return nil
 	}
@@ -59,7 +60,7 @@ func generateBodyFromResources(resourcePath, dir, packageName string, r *raml.Re
 
 	//build child
 	for _, v := range r.Nested {
-		if err := generateBodyFromResources(resourcePath+r.URI, dir, packageName, v); err != nil {
+		if err := generateStructsFromResourceBody(resourcePath+r.URI, dir, packageName, v); err != nil {
 			return err
 		}
 	}
@@ -88,6 +89,7 @@ func buildBodyFromMethod(structName, methodName, dir, packageName string, method
 	return nil
 }
 
+// generate a struct from an RAML request/response body
 func generateStructFromBody(structNamePrefix, dir, packageName string, body *raml.Bodies, isGenerateRequest bool) error {
 	hasJSONBody := func() bool {
 		return body.ApplicationJson != nil && (len(body.ApplicationJson.Properties) > 0 || len(body.ApplicationJson.Type) > 0)
@@ -96,9 +98,9 @@ func generateStructFromBody(structNamePrefix, dir, packageName string, body *ram
 		return nil
 	}
 
-	//construct struct from body
+	// construct struct from body
 	structDef := newStructDefFromBody(body, structNamePrefix, packageName, isGenerateRequest)
 
-	//generate
+	// generate
 	return structDef.generate(dir)
 }

@@ -20,6 +20,7 @@ func NewStructAPITest() *StructAPITest {
 	return c
 }
 
+// Get a list of test
 func (c *StructAPITest) UsersGet(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 
@@ -48,6 +49,7 @@ func (c *StructAPITest) UsersGet(headers, queryParams map[string]interface{}) (U
 
 }
 
+// create users
 func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 
@@ -64,6 +66,7 @@ func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]int
 
 }
 
+// get id
 func (c *StructAPITest) UsersUserIdGet(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 
@@ -126,6 +129,7 @@ func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddress
 
 }
 
+// get address id
 func (c *StructAPITest) UsersUserIdAddressAddressIdGet(addressId, userId string, headers, queryParams map[string]interface{}) (Address, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 
