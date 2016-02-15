@@ -9,9 +9,14 @@ class Client:
 
 {{ range $k, $v := .PythonMethods }}
 
-	def {{$v.MethodName}}({{$v.Params}}):
-		uri = {{$v.URIArgs}}
-		return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}})
+    def {{$v.MethodName}}({{$v.Params}}):
+        {{$commentlength := len $v.FuncComments}}
+        {{if ne $commentlength 0 }}"""
+        {{ range $kf, $vf := $v.FuncComments }}{{$vf}}{{end}}
+        """
+        {{end}}
+        uri = {{$v.ResourcePath}}
+        return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}},headers=headers)
 {{ end }}
 
 {{ end }}

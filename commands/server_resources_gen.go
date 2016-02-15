@@ -40,8 +40,8 @@ func (rd *resourceDef) generate(r *raml.Resource, URI, dir string) error {
 	return rd.generateAPIFile(dir)
 }
 
-// ServerResourceGen generate Server's Go representation of RAML resource
-func ServerResourcesGen(rs map[string]raml.Resource, directory string) ([]resourceDef, error) {
+// generate Server's Go representation of RAML resources
+func generateServerResources(rs map[string]raml.Resource, directory string) ([]resourceDef, error) {
 	var rds []resourceDef
 
 	if err := checkCreateDir(directory); err != nil {

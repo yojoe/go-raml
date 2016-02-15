@@ -17,4 +17,6 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// uncomment below line to add header
+	// w.Header.Set("key","value")
 }

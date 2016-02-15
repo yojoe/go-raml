@@ -6,14 +6,19 @@ import (
 )
 
 type UsersInterface interface {
+
+	// Get a list of test
 	Get(http.ResponseWriter, *http.Request)
 
+	// create users
 	Post(http.ResponseWriter, *http.Request)
 
+	// get id
 	userIdGet(http.ResponseWriter, *http.Request)
 
 	userIdDelete(http.ResponseWriter, *http.Request)
 
+	// get address id
 	userIdaddressaddressIdGet(http.ResponseWriter, *http.Request)
 }
 

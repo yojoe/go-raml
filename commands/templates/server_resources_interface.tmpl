@@ -7,13 +7,14 @@ import (
 )
 
 type {{.Name}}Interface interface{
-	{{ range $k, $v := .Methods }} 
+	{{ range $k, $v := .Methods }}
+	  {{ range $kf, $vf := $v.FuncComments}}// {{$vf}}{{end}}
 		{{$v.MethodName}}(http.ResponseWriter, *http.Request)
 	{{ end }}
 }
 
 func {{.Name}}InterfaceRoutes(r *mux.Router, i {{.Name}}Interface)  {
-	{{ range $k, $v := .Methods }} 
+	{{ range $k, $v := .Methods }}
 		r.HandleFunc("{{$v.Endpoint}}", i.{{$v.MethodName}}).Methods("{{$v.Verb}}")
 	{{ end }}
 }

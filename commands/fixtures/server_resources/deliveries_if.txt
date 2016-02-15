@@ -6,14 +6,20 @@ import (
 )
 
 type DeliveriesInterface interface {
+
+	// Get a list of deliveries
 	Get(http.ResponseWriter, *http.Request)
 
+	// Create/request a new delivery
 	Post(http.ResponseWriter, *http.Request)
 
+	// Get information on a specific delivery
 	deliveryIdGet(http.ResponseWriter, *http.Request)
 
+	// Update the information on a specific delivery
 	deliveryIdPatch(http.ResponseWriter, *http.Request)
 
+	// Cancel a specific delivery
 	deliveryIdDelete(http.ResponseWriter, *http.Request)
 }
 

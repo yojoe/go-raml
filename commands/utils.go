@@ -3,12 +3,18 @@ package commands
 import (
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"text/template"
 
 	log "github.com/Sirupsen/logrus"
 
+	"github.com/Jumpscale/go-raml/commands/bindata"
 	"github.com/Jumpscale/go-raml/raml"
+)
+
+var (
+	regex = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
 )
 
 func doNormalizeURI(URI string) string {
@@ -47,9 +53,12 @@ func _getResourceParams(r *raml.Resource, params []string) []string {
 	if r == nil {
 		return params
 	}
-	if strings.HasPrefix(r.URI, "/{") && strings.HasSuffix(r.URI, "}") {
-		params = append(params, r.URI[2:len(r.URI)-1])
+
+	matches := regex.FindAllString(r.URI, -1)
+	for _, v := range matches {
+		params = append(params, v[1:len(v)-1])
 	}
+
 	return _getResourceParams(r.Parent, params)
 }
 
@@ -63,9 +72,13 @@ func getResourceParams(r *raml.Resource) []string {
 	return _getResourceParams(r, params)
 }
 
+// create parameterized URI
+// Input : raw string, ex : /users/{userId}/address/{addressId}
+// Output : "/users/"+userId+"/address/"+addressId
 func paramizingURI(URI string) string {
+	uri := `"` + URI + `"`
 	// replace { with "+
-	uri := strings.Replace(URI, "{", `"+`, -1)
+	uri = strings.Replace(uri, "{", `"+`, -1)
 
 	// if ended with }/" or }", remove trailing "
 	if strings.HasSuffix(uri, `}/"`) || strings.HasSuffix(uri, `}"`) {
@@ -101,7 +114,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		t, err = template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
 	} else {
 		tmplFile = strings.Replace(tmplFile, "./", "", -1)
-		data, err := Asset(tmplFile)
+		data, err := bindata.Asset(tmplFile)
 		if err != nil {
 			return err
 		}
@@ -157,27 +170,11 @@ func runGoFmt(filePath string) error {
 	return exec.Command("go", args...).Run()
 }
 
-//templatingResourcePath build resourcePath for templating purpose
-//Input : raw string, ex : /users/{userId}/address/{addressId}
-//Output : "/users/"+userId+"/address/"+addressId
-func templatingResourcePath(rawURI string) string {
-	replaceLeftBracket := strings.Replace(rawURI, "{", "\"+", -1)
-	finalURI := strings.Replace(replaceLeftBracket, "}", "+\"", -1)
-
-	if strings.HasSuffix(finalURI, "+\"") {
-		finalURI = "\"" + finalURI[:len(finalURI)-2]
-	} else {
-		finalURI = "\"" + finalURI + "\""
-	}
-
-	return finalURI
-}
-
-//convert interface type to string
-//example :
-//1. string type, result would be string
-//2. []interface{} type, result would be array of string. ex: a,b,c
-//Please add other type as needed
+// convert interface type to string
+// example :
+// 1. string type, result would be string
+// 2. []interface{} type, result would be array of string. ex: a,b,c
+// Please add other type as needed
 func interfaceToString(data interface{}) string {
 	switch data.(type) {
 	case string:

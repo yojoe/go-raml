@@ -112,8 +112,10 @@ struct name = types name.
 [Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
 and following same rule as types above.
 
-struct name = [Resource name][Method name][ReqBody|RespBody]
+struct name = [Resource name][Method name][ReqBody|RespBody].
+
 RequestBody generated from body node below method.
+
 ResponseBody generated from body node below responses.
 
 ## Resource
@@ -131,6 +133,28 @@ ResponseBody generated from body node below responses.
 
 - routes generator to generate all necessary routes:
 	- func name = [Resource]InterfaceRoutes
+
+
+## Header
+
+Code related to request [headers](http://docs.raml.org/specs/1.0/#raml-10-spec-headers) only generated in Client lib. All functions has arguments to send any request headers, current client lib will not check the headers against RAML specifications.
+
+
+Response headers related code only generated in server in the form of commented code, example:
+```
+// uncomment below line to add header
+// w.Header.Set("key","value")
+```
+
+## Query Strings and Query Parameters
+
+All client library functions has argument to send [Query Strings and Query Parameters](http://docs.raml.org/specs/1.0/#raml-10-spec-query-strings-and-query-parameters), current client lib will not check it against RAML specifications.
+
+Generated code in server is in the form of commented code, example:
+
+```
+// name := req.FormValue("name")
+```
 
 
 ## Specification file

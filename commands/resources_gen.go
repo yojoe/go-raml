@@ -4,15 +4,20 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
+	log "github.com/Sirupsen/logrus"
+)
+
+const (
+	maxCommentPerLine = 80
 )
 
 // resourceDef is Go code representation of a resource
 type resourceDef struct {
-	Name     string
-	Endpoint string
-	Methods  []interfaceMethod
-	IsServer bool
-	NeedJSON bool
+	Name     string            // resource name
+	Endpoint string            // root endpoint
+	Methods  []interfaceMethod // all methods of this resource
+	IsServer bool              // true if it is resource definition for server
+	NeedJSON bool              // if true, the API implementation to import encoding/json package
 }
 
 // create a resource definition
@@ -35,6 +40,7 @@ type interfaceMethod struct {
 	ResourcePath string         // normalized resource path
 	Resource     *raml.Resource // resource object of this method
 	MethodParam  string
+	FuncComments []string
 }
 
 // create an interfaceMethod object
@@ -46,6 +52,7 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 		Resource: r,
 	}
 
+	// set request body
 	if m.Bodies.Type != "" {
 		im.ReqBody = m.Bodies.Type
 		rd.NeedJSON = true
@@ -54,8 +61,39 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 	//set response body
 	for k, v := range m.Responses {
 		if k >= 200 && k < 300 {
-			im.RespBody = assignBodyName(v.Bodies, normalizeURITitle(parentEndpoint)+normalizeURITitle(curEndpoint)+methodName, "RespBody")
+			im.RespBody = assignBodyName(v.Bodies, normalizeURITitle(im.Endpoint)+methodName, "RespBody")
 		}
+		if im.RespBody != "" {
+			rd.NeedJSON = true
+		}
+	}
+
+	// create comment string from raml description field.
+	// comment is around 80 characters per line
+	funcCommentBuilder := func(desc string) []string {
+		tmpDesc := ""
+		var results []string
+
+		splittedDesc := strings.Split(desc, " ")
+
+		for _, v := range splittedDesc {
+			tmpDesc += v + " "
+			if len(tmpDesc) > 80 {
+				results = append(results, tmpDesc+"\n")
+				tmpDesc = ""
+			}
+		}
+
+		if len(tmpDesc) > 0 {
+			results = append(results, tmpDesc)
+		}
+
+		return results
+	}
+
+	// set func comment
+	if len(m.Description) > 0 {
+		im.FuncComments = funcCommentBuilder(m.Description)
 	}
 
 	return im
@@ -64,22 +102,23 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
-	name := normalizeURI(parentEndpoint) + normalizeURI(curEndpoint)
+	name := normalizeURI(im.Endpoint)
 	im.MethodName = name[len(rd.Name):] + methodName
 
 	return im
 }
 
-func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) interfaceMethod {
+func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) (interfaceMethod, error) {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
-	postBuildParams := func(r *raml.Resource, bodyType string) string {
+	// build func/method params
+	postBuildParams := func(r *raml.Resource, bodyType string) (string, error) {
 		paramsStr := strings.Join(getResourceParams(r), ",")
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
 		}
 
-		//append body type
+		// append request body type
 		if len(bodyType) > 0 {
 			if len(paramsStr) > 0 {
 				paramsStr += ", "
@@ -87,26 +126,37 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 			paramsStr += strings.ToLower(bodyType) + " " + bodyType
 		}
 
-		return paramsStr
+		// append header
+		if len(paramsStr) > 0 {
+			paramsStr += ","
+		}
+		paramsStr += "headers,queryParams map[string]interface{}"
+
+		return paramsStr, nil
 	}
 
-	im.ResourcePath = templatingResourcePath(parentEndpoint + curEndpoint)
+	im.ResourcePath = paramizingURI(im.Endpoint)
 
-	name := normalizeURITitle(parentEndpoint + curEndpoint)
+	name := normalizeURITitle(im.Endpoint)
 	im.MethodName = strings.Title(name + methodName)
 
 	im.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
-	im.MethodParam = postBuildParams(r, im.ReqBody)
 
-	return im
+	methodParam, err := postBuildParams(r, im.ReqBody)
+	if err != nil {
+		return im, err
+	}
+	im.MethodParam = methodParam
+
+	return im, nil
 }
 
-//assignBodyName assign bodies by bodies.Type or bodies.ApplicationJson
-//if bodiesType generated from bodies.Type we dont need append prefix and suffix
-//example : bodies.Type = City, so bodiesType = City
-//if bodiesType generated from bodies.ApplicationJson, we get that value from prefix and suffix
-//suffix = [ReqBody | RespBody] and prefix should be uri + method name.
-//example prefix could be UsersUserIdDelete
+// assignBodyName assign bodies by bodies.Type or bodies.ApplicationJson
+// if bodiesType generated from bodies.Type we dont need append prefix and suffix
+// 		example : bodies.Type = City, so bodiesType = City
+// if bodiesType generated from bodies.ApplicationJson, we get that value from prefix and suffix
+//		suffix = [ReqBody | RespBody] and prefix should be uri + method name.
+//		example prefix could be UsersUserIdDelete
 func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	var bodiesType string
 
@@ -125,10 +175,15 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 		return
 	}
 	var im interfaceMethod
+	var err error
 	if rd.IsServer {
 		im = newServerInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 	} else {
-		im = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		im, err = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		if err != nil {
+			log.Errorf("client interface method error, err = %v", err)
+			return
+		}
 	}
 	rd.Methods = append(rd.Methods, im)
 }

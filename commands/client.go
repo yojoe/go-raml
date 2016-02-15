@@ -19,5 +19,5 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return GenerateClient(apiDef, command.Dir, command.Language)
+	return generateClient(apiDef, command.Dir, command.Language)
 }

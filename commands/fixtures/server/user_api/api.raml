@@ -15,6 +15,10 @@ types:
 /users:
   get:
     description: Get a list of test
+    queryParameters:
+      name:
+        type: string
+        example: test
   post:
     description: create users
     body:

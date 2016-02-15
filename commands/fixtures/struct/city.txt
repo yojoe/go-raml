@@ -1,5 +1,6 @@
 package main
 
+// city of angel
 type City struct {
 	Name string `json:"Name"`
 }
