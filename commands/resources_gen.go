@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -107,11 +108,11 @@ func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 	return im
 }
 
-func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) interfaceMethod {
+func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) (interfaceMethod, error) {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
 	// build func/method params
-	postBuildParams := func(r *raml.Resource, bodyType string) string {
+	postBuildParams := func(r *raml.Resource, bodyType string) (string, error) {
 		paramsStr := strings.Join(getResourceParams(r), ",")
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
@@ -131,7 +132,7 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 		}
 		paramsStr += "headers,queryParams map[string]interface{}"
 
-		return paramsStr
+		return paramsStr, nil
 	}
 
 	im.ResourcePath = paramizingURI(im.Endpoint)
@@ -140,9 +141,14 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 	im.MethodName = strings.Title(name + methodName)
 
 	im.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
-	im.MethodParam = postBuildParams(r, im.ReqBody)
 
-	return im
+	methodParam, err := postBuildParams(r, im.ReqBody)
+	if err != nil {
+		return im, err
+	}
+	im.MethodParam = methodParam
+
+	return im, nil
 }
 
 // assignBodyName assign bodies by bodies.Type or bodies.ApplicationJson
@@ -169,10 +175,15 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 		return
 	}
 	var im interfaceMethod
+	var err error
 	if rd.IsServer {
 		im = newServerInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 	} else {
-		im = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		im, err = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		if err != nil {
+			log.Errorf("client interface method error, err = %v", err)
+			return
+		}
 	}
 	rd.Methods = append(rd.Methods, im)
 }

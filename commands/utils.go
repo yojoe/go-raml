@@ -3,6 +3,7 @@ package commands
 import (
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -10,6 +11,10 @@ import (
 
 	"github.com/Jumpscale/go-raml/commands/bindata"
 	"github.com/Jumpscale/go-raml/raml"
+)
+
+var (
+	regex = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
 )
 
 func doNormalizeURI(URI string) string {
@@ -48,9 +53,12 @@ func _getResourceParams(r *raml.Resource, params []string) []string {
 	if r == nil {
 		return params
 	}
-	if strings.HasPrefix(r.URI, "/{") && strings.HasSuffix(r.URI, "}") {
-		params = append(params, r.URI[2:len(r.URI)-1])
+
+	matches := regex.FindAllString(r.URI, -1)
+	for _, v := range matches {
+		params = append(params, v[1:len(v)-1])
 	}
+
 	return _getResourceParams(r.Parent, params)
 }
 

@@ -45,6 +45,7 @@ func (cd clientDef) generatePython(dir string) error {
 			params = append(params, "data")
 			prArgs = ", data"
 		}
+
 		params = append(params, getResourceParams(m.Resource)...)
 
 		pm := pythonMethod{
