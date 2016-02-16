@@ -107,22 +107,14 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		"ToLower": strings.ToLower,
 	}
 
-	var t *template.Template
-	var err error
-
-	if testMode {
-		t, err = template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
-	} else {
-		tmplFile = strings.Replace(tmplFile, "./", "../", -1)
-		data, err := bindata.Asset(tmplFile)
-		if err != nil {
-			return err
-		}
-
-		//get string from byte
-		t, err = template.New(tmplName).Funcs(funcMap).Parse(string(data))
+	tmplFile = strings.Replace(tmplFile, "./", "../", -1)
+	byteData, err := bindata.Asset(tmplFile)
+	if err != nil {
+		return err
 	}
 
+	//get string from byte
+	t, err := template.New(tmplName).Funcs(funcMap).Parse(string(byteData))
 	if err != nil {
 		return err
 	}

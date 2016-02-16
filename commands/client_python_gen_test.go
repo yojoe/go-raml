@@ -9,7 +9,6 @@ import (
 
 func TestGeneratePythonClientFromRaml(t *testing.T) {
 	Convey("generate python client", t, func() {
-		testMode = true
 		apiDef, err := raml.ParseFile("./fixtures/python_client/client.raml")
 		So(err, ShouldBeNil)
 

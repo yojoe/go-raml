@@ -10,7 +10,6 @@ import (
 
 func TestServer(t *testing.T) {
 	Convey("server generator", t, func() {
-		testMode = true
 		Convey("simple server", func() {
 			apiDef, err := raml.ParseFile("./fixtures/server/user_api/api.raml")
 			So(err, ShouldBeNil)
