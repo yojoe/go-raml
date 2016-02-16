@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"regexp"
@@ -161,7 +162,11 @@ func isFileExist(filePath string) bool {
 func runGoFmt(filePath string) error {
 	args := []string{"fmt", filePath}
 
-	return exec.Command("go", args...).Run()
+	if out, err := exec.Command("go", args...).CombinedOutput(); err != nil {
+		log.Errorf("Error running go fmt on '%s' failed:\n%s", filePath, string(out))
+		return errors.New("go fmt failed")
+	}
+	return nil
 }
 
 // convert interface type to string
