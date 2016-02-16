@@ -53,19 +53,18 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 	}
 
 	// set request body
-	if m.Bodies.Type != "" {
-		im.ReqBody = m.Bodies.Type
-		rd.NeedJSON = true
-	}
+	im.ReqBody = assignBodyName(m.Bodies, normalizeURITitle(im.Endpoint)+methodName, "ReqBody")
 
 	//set response body
 	for k, v := range m.Responses {
 		if k >= 200 && k < 300 {
 			im.RespBody = assignBodyName(v.Bodies, normalizeURITitle(im.Endpoint)+methodName, "RespBody")
 		}
-		if im.RespBody != "" {
-			rd.NeedJSON = true
-		}
+	}
+
+	// if there is request/response body, then it needs to import encoding/json
+	if im.RespBody != "" || im.ReqBody != "" {
+		rd.NeedJSON = true
 	}
 
 	// create comment string from raml description field.
@@ -163,7 +162,11 @@ func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	if len(bodies.Type) > 0 {
 		bodiesType = bodies.Type
 	} else if bodies.ApplicationJson != nil {
-		bodiesType = prefix + suffix
+		if bodies.ApplicationJson.Type != "" {
+			bodiesType = bodies.ApplicationJson.Type
+		} else {
+			bodiesType = prefix + suffix
+		}
 	}
 
 	return bodiesType

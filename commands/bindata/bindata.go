@@ -2,7 +2,6 @@
 // sources:
 // ../templates/client_helper_resource.tmpl
 // ../templates/client_resource.tmpl
-// ../templates/date.tmpl
 // ../templates/generic_main.tmpl
 // ../templates/python_client.tmpl
 // ../templates/python_client_utils.tmpl
@@ -92,7 +91,7 @@ func TemplatesClient_helper_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1804, mode: os.FileMode(420), modTime: time.Unix(1455614731, 0)}
+	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1804, mode: os.FileMode(420), modTime: time.Unix(1455619563, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -113,26 +112,6 @@ func TemplatesClient_resourceTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2189, mode: os.FileMode(420), modTime: time.Unix(1455498512, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _TemplatesDateTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xcc\x93\x31\x6f\xf2\x30\x10\x86\xe7\xf8\x57\xdc\x97\xc9\x06\x04\x03\x13\x9f\xc4\xd4\x8a\xa1\x52\x29\x2a\x74\xaa\xaa\x62\xc8\x41\xad\x62\x27\x72\x2e\x55\x91\x95\xff\x5e\x3b\x01\x9a\x94\x96\xad\x52\x97\xc8\xb9\xbb\xf7\xee\xb9\xd7\x89\x73\x09\x6e\x94\x41\x88\x13\x49\xf8\x4c\xa8\xb3\x9d\x3f\xc4\x65\xc9\x32\xb9\x7e\x95\x5b\x04\xe7\xfa\xb3\xfa\x38\x95\x1a\x7d\x82\x29\x9d\xa5\x96\x80\xb3\x28\x26\xa5\x31\x66\x82\xb1\xc1\xe0\xda\xeb\xc0\x62\x66\x31\x47\x43\x70\x3f\xb9\x1a\x0e\x47\x23\x08\x7d\x19\xed\x33\x84\xaa\x20\x08\xfa\x0b\xff\x08\x92\x5b\x69\xf3\x17\xb9\xbb\x99\xdf\x4d\x21\x7d\x43\x6b\x55\x82\xa0\x3f\x83\x6c\x53\x98\x35\x70\x82\x4e\xd0\x0a\x68\xd4\x73\x01\xfc\xf1\x69\xb5\x27\xec\x81\x17\xa6\x56\x80\x63\x91\x45\x2a\xac\x81\x3a\xc1\x4f\xb3\x78\x87\x44\x7f\x92\x5a\x2d\x89\x2f\xe3\x25\x74\x6b\x8c\x0a\x71\x38\xf2\xaf\x3e\x28\x44\x0f\x8c\xda\xb1\xb2\x01\xb6\xc0\x77\x3a\x03\x0b\xc1\x1f\xc0\x42\xea\x77\xc1\x1e\x8c\xfe\xce\xb3\xc2\x5c\x70\xad\xa5\xe1\xab\x03\x84\xa8\xe9\x02\x1c\xe5\x15\x2a\xfc\x1f\xd7\xe3\x67\xbe\x1c\x03\x4f\xb7\x49\xd3\xf5\x81\x1e\xe4\x64\x95\xd9\xf2\x95\x10\x2c\x52\x9b\x4a\xf6\x6f\x1c\xf8\x42\xa3\xe3\x9a\x3e\xca\x22\xcf\x1b\x75\x08\xc6\xd5\xbd\x73\xca\xc5\xc9\x85\xf3\x6d\xda\x46\x17\xe6\x82\xd5\x2d\xcd\x1f\xda\xe6\x0b\xe6\xbc\xee\x2c\x0e\x23\x1a\xdf\x40\xfb\xf2\x8f\x75\xa1\x85\x73\x80\x26\x01\xff\x8b\x7d\x04\x00\x00\xff\xff\x6b\xc2\xe5\x52\x97\x03\x00\x00")
-
-func TemplatesDateTmplBytes() ([]byte, error) {
-	return bindataRead(
-		_TemplatesDateTmpl,
-		"../templates/date.tmpl",
-	)
-}
-
-func TemplatesDateTmpl() (*asset, error) {
-	bytes, err := TemplatesDateTmplBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "../templates/date.tmpl", size: 919, mode: os.FileMode(420), modTime: time.Unix(1455614049, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -212,7 +191,7 @@ func TemplatesServer_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1159, mode: os.FileMode(420), modTime: time.Unix(1455614397, 0)}
+	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1159, mode: os.FileMode(420), modTime: time.Unix(1455619563, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -331,7 +310,6 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"../templates/client_helper_resource.tmpl": TemplatesClient_helper_resourceTmpl,
 	"../templates/client_resource.tmpl": TemplatesClient_resourceTmpl,
-	"../templates/date.tmpl": TemplatesDateTmpl,
 	"../templates/generic_main.tmpl": TemplatesGeneric_mainTmpl,
 	"../templates/python_client.tmpl": TemplatesPython_clientTmpl,
 	"../templates/python_client_utils.tmpl": TemplatesPython_client_utilsTmpl,
@@ -385,7 +363,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"templates": &bintree{nil, map[string]*bintree{
 			"client_helper_resource.tmpl": &bintree{TemplatesClient_helper_resourceTmpl, map[string]*bintree{}},
 			"client_resource.tmpl": &bintree{TemplatesClient_resourceTmpl, map[string]*bintree{}},
-			"date.tmpl": &bintree{TemplatesDateTmpl, map[string]*bintree{}},
 			"generic_main.tmpl": &bintree{TemplatesGeneric_mainTmpl, map[string]*bintree{}},
 			"python_client.tmpl": &bintree{TemplatesPython_clientTmpl, map[string]*bintree{}},
 			"python_client_utils.tmpl": &bintree{TemplatesPython_client_utilsTmpl, map[string]*bintree{}},
