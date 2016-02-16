@@ -37,6 +37,7 @@ func normalizeBracket(URI string) string {
 	return strings.Replace(normalizeLeftBracket, "}", "", -1)
 }
 
+/*
 func _completeResourceURI(r *raml.Resource, completeURI string) string {
 	if r == nil {
 		return completeURI
@@ -48,6 +49,7 @@ func _completeResourceURI(r *raml.Resource, completeURI string) string {
 func completeResourceURI(r *raml.Resource) string {
 	return _completeResourceURI(r, "")
 }
+*/
 
 func _getResourceParams(r *raml.Resource, params []string) []string {
 	if r == nil {
@@ -107,22 +109,14 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		"ToLower": strings.ToLower,
 	}
 
-	var t *template.Template
-	var err error
-
-	if testMode {
-		t, err = template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFile)
-	} else {
-		tmplFile = strings.Replace(tmplFile, "./", "../", -1)
-		data, err := bindata.Asset(tmplFile)
-		if err != nil {
-			return err
-		}
-
-		//get string from byte
-		t, err = template.New(tmplName).Funcs(funcMap).Parse(string(data))
+	tmplFile = strings.Replace(tmplFile, "./", "../", -1)
+	byteData, err := bindata.Asset(tmplFile)
+	if err != nil {
+		return err
 	}
 
+	//get string from byte
+	t, err := template.New(tmplName).Funcs(funcMap).Parse(string(byteData))
 	if err != nil {
 		return err
 	}

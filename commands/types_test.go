@@ -11,7 +11,7 @@ func TestTypeConversion(t *testing.T) {
 	Convey("Test Type Conversion", t, func() {
 		Convey("Type conversion", func() {
 			So(convertToGoType("string"), ShouldEqual, "string")
-			So(convertToGoType("number"), ShouldEqual, "float")
+			So(convertToGoType("number"), ShouldEqual, "float64")
 			So(convertToGoType("integer"), ShouldEqual, "int")
 			So(convertToGoType("boolean"), ShouldEqual, "bool")
 			So(convertToGoType("date"), ShouldEqual, "Date")

@@ -15,7 +15,6 @@ func testLoadFile(filename string) (string, error) {
 }
 func TestResource(t *testing.T) {
 	Convey("resource generator", t, func() {
-		testMode = true
 		Convey("simple resource", func() {
 			apiDef, err := raml.ParseFile("./fixtures/server_resources/deliveries.raml")
 			So(err, ShouldBeNil)

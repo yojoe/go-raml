@@ -9,7 +9,6 @@ import (
 
 func TestGenerateStructFromRaml(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
-		testMode = true
 		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
 		So(err, ShouldBeNil)
 
