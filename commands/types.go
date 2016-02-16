@@ -50,7 +50,7 @@ func convertToGoType(source string) string {
 	case "string":
 		result = "string"
 	case "number":
-		result = "float"
+		result = "float64"
 	case "integer":
 		result = "int"
 	case "boolean":
