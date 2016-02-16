@@ -78,7 +78,7 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 
 		for _, v := range splittedDesc {
 			tmpDesc += v + " "
-			if len(tmpDesc) > 80 {
+			if len(tmpDesc) > maxCommentPerLine {
 				results = append(results, tmpDesc+"\n")
 				tmpDesc = ""
 			}
