@@ -18,6 +18,7 @@ func TestTypeConversion(t *testing.T) {
 			So(convertToGoType("enum"), ShouldEqual, "[]string")
 			So(convertToGoType("file"), ShouldEqual, "string")
 			So(convertToGoType("Object"), ShouldEqual, "Object")
+			So(convertToGoType("string[]"), ShouldEqual, "[]string")
 		})
 	})
 }

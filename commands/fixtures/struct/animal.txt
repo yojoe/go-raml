@@ -1,5 +1,7 @@
 package main
 
 type Animal struct {
-	Name string `json:"Name"`
+	Cities  []City   `json:"Cities"`
+	Colours []string `json:"Colours"`
+	Name    string   `json:"Name"`
 }
