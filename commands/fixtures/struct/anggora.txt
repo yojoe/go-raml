@@ -1,7 +1,7 @@
 package main
 
 type Anggora struct {
-	Animal Animal `json:"Animal"`
-	Cat    Cat    `json:"Cat"`
-	Color  string `json:"Color"`
+	Animal
+	Cat
+	Color string `json:"color"`
 }

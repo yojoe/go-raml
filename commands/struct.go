@@ -12,8 +12,9 @@ var (
 
 // FieldDef defines a field of a struct
 type fieldDef struct {
-	Name string
-	Type string
+	Name          string
+	Type          string
+	IsComposition bool
 }
 
 // StructDef defines a struct
@@ -24,65 +25,46 @@ type structDef struct {
 	Fields      map[string]fieldDef
 }
 
-// create struct definition from RAML Type node
-func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
-	structField := make(map[string]fieldDef)
-	for k, v := range t.Properties {
-		// upper first char
-		fieldName := strings.Title(k)
-
-		// convert to internal field type
-		fieldType := convertToGoType(v.Type)
-
+// create new struct def
+func newStructDef(name, packageName, description string, properties map[string]raml.Property) structDef {
+	// generate struct's fields from type properties
+	fields := make(map[string]fieldDef)
+	for k, v := range properties {
 		fd := fieldDef{
-			Name: fieldName,
-			Type: fieldType,
+			Name: strings.Title(k),
+			Type: convertToGoType(v.Type), // convert to internal field type
 		}
-
-		structField[fieldName] = fd
+		fields[k] = fd
 	}
 
-	// handle inheritance on raml1.0
-	addStructInheritance(structField, t)
-
-	structDef := structDef{
-		Name:        strings.Title(sName),
+	return structDef{
+		Name:        strings.Title(name),
 		PackageName: packageName,
-		Fields:      structField,
+		Fields:      fields,
 		Description: description,
 	}
+
+}
+
+// create struct definition from RAML Type node
+func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
+	structDef := newStructDef(sName, packageName, description, t.Properties)
+
+	// handle inheritance on raml1.0
+	structDef.addInheritance(t)
+
 	return structDef
 }
 
 // create struct definition from RAML Body node
 func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName string, isGenerateRequest bool) structDef {
-	structField := make(map[string]fieldDef)
-
-	for k, v := range body.ApplicationJson.Properties {
-		// upper first char
-		fieldName := strings.Title(k)
-
-		// convert to internal field type
-		fieldType := convertToGoType(v.Type)
-
-		fd := fieldDef{
-			Name: fieldName,
-			Type: fieldType,
-		}
-
-		structField[fieldName] = fd
-	}
-
-	structName := strings.Title(structNamePrefix + respBodySuffix)
+	// set struct name based on request or response
+	structName := structNamePrefix + respBodySuffix
 	if isGenerateRequest {
-		structName = strings.Title(structNamePrefix + reqBodySuffix)
+		structName = structNamePrefix + reqBodySuffix
 	}
 
-	return structDef{
-		Name:        structName,
-		Fields:      structField,
-		PackageName: packageName,
-	}
+	return newStructDef(structName, packageName, "", body.ApplicationJson.Properties)
 }
 
 // generate Go struct
@@ -115,8 +97,8 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 //     properties:
 //       name:
 //         type: string
-// the additional fieldDef would be Animal Animal
-func addStructInheritance(structField map[string]fieldDef, t raml.Type) {
+// the additional fieldDef would be Animal composition
+func (sd *structDef) addInheritance(t raml.Type) {
 	if t.Type == nil {
 		return
 	}
@@ -125,18 +107,17 @@ func addStructInheritance(structField map[string]fieldDef, t raml.Type) {
 	if strings.ToLower(strType) == "object" {
 		return
 	}
-	//handle multiple([A , B]) or common inheritance
-	if len(strings.Split(strType, ",")) > 1 {
-		constructMultipleInheritance(structField, strType)
-	} else if strings.HasSuffix(strType, "[]") {
-		constructArrayTypeInheritance(structField, strType)
+	if len(strings.Split(strType, ",")) > 1 { //handle multiple([A , B]) or common inheritance
+		sd.addMultipleInheritance(strType)
+	} else if strings.HasSuffix(strType, "[]") { // array
+		sd.addArraySpecialization(strType)
 	} else {
 		fd := fieldDef{
-			Name: strings.Title(strType),
-			Type: strings.Title(strType),
+			Name:          strings.Title(strType),
+			Type:          strings.Title(strType),
+			IsComposition: true,
 		}
-
-		structField[strType] = fd
+		sd.Fields[strType] = fd
 	}
 }
 
@@ -147,19 +128,17 @@ func addStructInheritance(structField map[string]fieldDef, t raml.Type) {
 //	 properties:
 //		color:
 //			type: string
-// The additional fielddef would be :
-// Animal Animal and Cat Cat
-func constructMultipleInheritance(structField map[string]fieldDef, strType string) {
+// The additional fielddef would be a composition of Animal & Cat
+func (sd *structDef) addMultipleInheritance(strType string) {
 	for _, s := range strings.Split(strType, ",") {
 		fieldType := strings.TrimSpace(s)
-		fieldName := strings.Title(fieldType)
-
 		fd := fieldDef{
-			Name: strings.Title(fieldName),
-			Type: fieldType,
+			Name:          strings.Title(fieldType),
+			Type:          fieldType,
+			IsComposition: true,
 		}
 
-		structField[fieldName] = fd
+		sd.Fields[fd.Name] = fd
 	}
 }
 
@@ -168,16 +147,15 @@ func constructMultipleInheritance(structField map[string]fieldDef, strType strin
 //  MyType:
 //	  type: Person[]
 // Additional structField would be :
-//  person []Person
-func constructArrayTypeInheritance(structField map[string]fieldDef, strType string) {
-	replaceBracketAndTrimmed := strings.TrimSpace(strings.Replace(strType, "[]", "", -1))
-	fieldName := replaceBracketAndTrimmed
-	fieldType := "[]" + strings.Title(replaceBracketAndTrimmed)
+//  Person []Person
+func (sd *structDef) addArraySpecialization(strType string) {
+	fieldName := strings.TrimSpace(strings.Replace(strType, "[]", "", -1))
+	fieldType := "[]" + strings.Title(fieldName)
 
 	fd := fieldDef{
 		Name: strings.Title(fieldName),
 		Type: fieldType,
 	}
 
-	structField[fieldName] = fd
+	sd.Fields[fieldName] = fd
 }

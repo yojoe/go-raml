@@ -1,5 +1,5 @@
 package client
 
 type UsersUserIdAddressPostRespBody struct {
-	Address string `json:"Address"`
+	Address string `json:"address"`
 }

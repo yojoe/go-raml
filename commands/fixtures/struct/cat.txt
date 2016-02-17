@@ -1,5 +1,5 @@
 package main
 
 type Cat struct {
-	Kind string `json:"Kind"`
+	Kind string `json:"kind"`
 }

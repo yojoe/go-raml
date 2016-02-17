@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"strings"
 	"time"
 )
 
@@ -63,6 +64,18 @@ func convertToGoType(source string) string {
 		result = "string"
 	default:
 		result = source
+	}
+
+	// other types that need some processing
+	if result == source {
+		switch {
+		case strings.HasSuffix(source, "[][]"):
+			result = "[][]" + convertToGoType(source[:len(source)-4])
+		case strings.HasSuffix(source, "[]"):
+			result = "[]" + convertToGoType(source[:len(source)-2])
+		case strings.HasSuffix(source, "{}"):
+			result = "map[string]" + convertToGoType(source[:len(source)-2])
+		}
 	}
 	return result
 }

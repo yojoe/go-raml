@@ -106,7 +106,9 @@ struct name = types name.
     date        | Date
     enum        | []string
     file        | string
-    Object[]    | []Object
+    sometype[]  | []sometype
+    sometype[][]| [][]sometype
+    sometype{}  | map[string]sometype
 
 ## Bodies
 [Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
