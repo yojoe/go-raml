@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -12,13 +14,15 @@ func TestGenerateStructFromRaml(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
 		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
 		So(err, ShouldBeNil)
+		targetdir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			err = generateStructs(apiDef, "./test", "main")
+			err = generateStructs(apiDef, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			//first test
-			s, err := testLoadFile("./test/city.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "city.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/struct/city.txt")
@@ -27,7 +31,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(tmpl, ShouldEqual, s)
 
 			//second test
-			s, err = testLoadFile("./test/animal.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "animal.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/animal.txt")
@@ -36,7 +40,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(tmpl, ShouldEqual, s)
 
 			//third test, single inheritance
-			s, err = testLoadFile("./test/mammal.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "mammal.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/mammal.txt")
@@ -45,7 +49,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(tmpl, ShouldEqual, s)
 
 			//fourth test, multiple inheritance
-			s, err = testLoadFile("./test/anggora.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "anggora.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/anggora.txt")
@@ -54,7 +58,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(tmpl, ShouldEqual, s)
 
 			//fifth test, array of object
-			s, err = testLoadFile("./test/catcat.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "catcat.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/catcat.txt")
@@ -64,7 +68,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll("./test")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

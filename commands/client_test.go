@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -9,16 +11,19 @@ import (
 
 func TestClientGeneration(t *testing.T) {
 	Convey("test command client generattion", t, func() {
+		targetdir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
 		Convey("Test run client command using go language", func() {
 			cmd := ClientCommand{
 				Language: "go",
-				Dir:      "./test_client_command",
+				Dir:      targetdir,
 				RamlFile: "./fixtures/client_resources/client.raml",
 			}
 			err := cmd.Execute()
 			So(err, ShouldBeNil)
 
-			s, err := testLoadFile("./test_client_command/client_structapitest.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/client_resources/client_structapitest.txt")
@@ -29,7 +34,7 @@ func TestClientGeneration(t *testing.T) {
 
 		Reset(func() {
 			//cleanup
-			os.RemoveAll("./test_client_command")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

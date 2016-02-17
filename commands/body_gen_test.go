@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,14 +15,15 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
 		So(err, ShouldBeNil)
 
+		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, "./test", "main")
+			err := generateBodyStructs(apiDef, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			//load and compare UsersIdGetRespBody
-			s2, err := testLoadFile("./test/usersidgetrespbody.go")
+			s2, err := testLoadFile(filepath.Join(targetdir, "usersidgetrespbody.go"))
 			So(err, ShouldBeNil)
 
 			tmpl2, err := testLoadFile("./fixtures/usersidgetrespbody.txt")
@@ -29,7 +32,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(tmpl2, ShouldEqual, s2)
 
 			//load and compare usersgetreqbody
-			tUserGetReqBody, err := testLoadFile("./test/usersgetreqbody.go")
+			tUserGetReqBody, err := testLoadFile(filepath.Join(targetdir, "usersgetreqbody.go"))
 			So(err, ShouldBeNil)
 
 			fUserGetReqBody, err := testLoadFile("./fixtures/usersgetreqbody.txt")
@@ -39,7 +42,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll("./test")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

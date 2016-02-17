@@ -12,6 +12,7 @@ const (
 // API server definition
 type serverDef struct {
 	ResourcesDef []resourceDef
+	PackageName  string // Name of the package this server resides in
 }
 
 // generate server main file
@@ -20,24 +21,24 @@ func (sd serverDef) generate(dir string) error {
 }
 
 // generate API server files
-func generateServer(apiDef *raml.APIDefinition, dir string) error {
+func generateServer(apiDef *raml.APIDefinition, dir, packageName string) error {
 	// generate all Type structs
-	if err := generateStructs(apiDef, dir, "main"); err != nil {
+	if err := generateStructs(apiDef, dir, packageName); err != nil {
 		return err
 	}
 
 	// generate all request & response body
-	if err := generateBodyStructs(apiDef, dir, "main"); err != nil {
+	if err := generateBodyStructs(apiDef, dir, packageName); err != nil {
 		return err
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(apiDef.Resources, dir)
+	rds, err := generateServerResources(apiDef.Resources, dir, packageName)
 	if err != nil {
 		return err
 	}
 
-	sd := serverDef{ResourcesDef: rds}
+	sd := serverDef{ResourcesDef: rds, PackageName: packageName}
 
 	return sd.generate(dir)
 }
