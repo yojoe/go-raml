@@ -55,7 +55,7 @@ func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]int
 
 	var u City
 
-	resp, err := doReqWithBody("POST", rootURL+"/users", city, c.client, headers, qsParam)
+	resp, err := doReqWithBody("POST", rootURL+"/users", &city, c.client, headers, qsParam)
 	if err != nil {
 		return u, nil, err
 
@@ -118,7 +118,7 @@ func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddress
 
 	var u UsersUserIdAddressPostRespBody
 
-	resp, err := doReqWithBody("POST", rootURL+"/users/"+userId+"/address", usersuseridaddresspostreqbody, c.client, headers, qsParam)
+	resp, err := doReqWithBody("POST", rootURL+"/users/"+userId+"/address", &usersuseridaddresspostreqbody, c.client, headers, qsParam)
 	if err != nil {
 		return u, nil, err
 
