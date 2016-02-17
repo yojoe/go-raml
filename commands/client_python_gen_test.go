@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -27,7 +28,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		})
 
 		Reset(func() {
-			cleanTestingDir()
+			os.RemoveAll("./tmp")
 		})
 	})
 }

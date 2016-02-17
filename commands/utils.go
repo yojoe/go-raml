@@ -103,6 +103,7 @@ func paramizingURI(URI string) string {
 // funcMap = this parameter is used for passing go function to the template
 func generateFile(data interface{}, tmplFile, tmplName, filename string, override bool) error {
 	if !override && isFileExist(filename) {
+		log.Infof("file %v already exist and override=false, no need to regenerate", filename)
 		return nil
 	}
 
@@ -151,11 +152,10 @@ func checkCreateDir(dir string) error {
 
 // cek if a file exist
 func isFileExist(filePath string) bool {
-	if _, err := os.Stat(filePath); os.IsExist(err) {
-		return true
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return false
 	}
-
-	return false
+	return true
 }
 
 // run `go fmt` command to a file
