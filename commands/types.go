@@ -68,8 +68,13 @@ func convertToGoType(source string) string {
 
 	// other types that need some processing
 	if result == source {
-		if strings.HasSuffix(source, "[]") {
-			result = "[]" + source[:len(source)-2]
+		switch {
+		case strings.HasSuffix(source, "[][]"):
+			result = "[][]" + convertToGoType(source[:len(source)-4])
+		case strings.HasSuffix(source, "[]"):
+			result = "[]" + convertToGoType(source[:len(source)-2])
+		case strings.HasSuffix(source, "{}"):
+			result = "map[string]" + convertToGoType(source[:len(source)-2])
 		}
 	}
 	return result

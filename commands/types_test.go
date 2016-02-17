@@ -19,6 +19,8 @@ func TestTypeConversion(t *testing.T) {
 			So(convertToGoType("file"), ShouldEqual, "string")
 			So(convertToGoType("Object"), ShouldEqual, "Object")
 			So(convertToGoType("string[]"), ShouldEqual, "[]string")
+			So(convertToGoType("string[][]"), ShouldEqual, "[][]string")
+			So(convertToGoType("number{}"), ShouldEqual, "map[string]float64")
 		})
 	})
 }
