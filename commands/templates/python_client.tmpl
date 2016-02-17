@@ -1,10 +1,11 @@
 {{ define "python_client_template" }}
 import requests
+from client_utils import buildQueryString
 
 BASE_URI = "{{.BaseURI}}"
 
 class Client:
-    def __init__(self,url):
+    def __init__(self):
         self.url = BASE_URI
 
 {{ range $k, $v := .PythonMethods }}
@@ -16,7 +17,7 @@ class Client:
         """
         {{end}}
         uri = {{$v.ResourcePath}}
-        return requests.{{$v.Verb | ToLower}}(self.url + uri{{$v.PRArgs}},headers=headers)
+        return requests.{{$v.Verb | ToLower}}(self.url + uri + buildQueryString(queryParams){{$v.PRArgs}} ,headers=headers)
 {{ end }}
 
 {{ end }}

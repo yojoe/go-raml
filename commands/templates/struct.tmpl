@@ -3,7 +3,7 @@ package {{.PackageName}}
 
 {{if ne $.Description "" }}//{{end}} {{.Description}}
 type {{ .Name }} struct {
-    {{ range $key, $value := .Fields }}{{$key}} {{$value.Type}} `json:"{{$key}}"`
+    {{ range $key, $value := .Fields }}{{$value.Name}}  {{if eq $value.IsComposition false}} {{$value.Type}} `json:"{{$key}}"` {{end}}
     {{end}}
 }
 {{end}}
