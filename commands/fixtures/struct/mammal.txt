@@ -1,6 +1,6 @@
 package main
 
 type Mammal struct {
-	Animal Animal `json:"Animal"`
-	Name   string `json:"Name"`
+	Animal
+	Name string `json:"name"`
 }
