@@ -5,8 +5,10 @@ mediaType: application/json
 types:
   City:
     properties:
-      names:
-        type: enum
+      name:
+        type: string
+      built:
+        type: date
   Address:
     properties:
       name:
@@ -14,6 +16,13 @@ types:
 /users:
   get:
     description: Get a list of test
+    queryParameters:
+      page:
+        description: Specify the page that you want to retrieve
+        type:        integer
+      per_page:
+        description: Specify the amount of items that will be retrieved per page
+        type:        integer
     responses:
       200:
         body:

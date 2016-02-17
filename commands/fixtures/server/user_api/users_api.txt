@@ -26,7 +26,7 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var respBody User
-	json.NewEncoder(w).Encode(respBody)
+	json.NewEncoder(w).Encode(&respBody)
 
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
@@ -35,7 +35,7 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 
 	var respBody User
-	json.NewEncoder(w).Encode(respBody)
+	json.NewEncoder(w).Encode(&respBody)
 
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
@@ -50,7 +50,7 @@ func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) userIdaddressaddressIdGet(w http.ResponseWriter, r *http.Request) {
 
 	var respBody Address
-	json.NewEncoder(w).Encode(respBody)
+	json.NewEncoder(w).Encode(&respBody)
 
 	// uncomment below line to add header
 	// w.Header.Set("key","value")

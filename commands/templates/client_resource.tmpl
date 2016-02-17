@@ -73,7 +73,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
-	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{$v.ReqBody | ToLower}}, c.client, headers, qsParam)
+	    resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&{{end}}{{$v.ReqBody | ToLower}}, c.client, headers, qsParam)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
