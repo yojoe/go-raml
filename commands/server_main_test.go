@@ -48,7 +48,3 @@ func TestServer(t *testing.T) {
 		})
 	})
 }
-
-func cleanTestingDir() {
-	os.RemoveAll("./test")
-}

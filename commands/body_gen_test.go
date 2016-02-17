@@ -13,11 +13,10 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
 		So(err, ShouldBeNil)
 
-		dir, err := os.Getwd()
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, dir+"/test", "main")
+			err := generateBodyStructs(apiDef, "./test", "main")
 			So(err, ShouldBeNil)
 
 			//load and compare UsersIdGetRespBody
@@ -40,7 +39,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		})
 
 		Reset(func() {
-			cleanTestingDir()
+			os.RemoveAll("./test")
 		})
 	})
 }

@@ -152,7 +152,7 @@ func checkCreateDir(dir string) error {
 
 // cek if a file exist
 func isFileExist(filePath string) bool {
-	if _, err := os.Stat(filePath); os.IsExist(err) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return false
 	}
 	return true
