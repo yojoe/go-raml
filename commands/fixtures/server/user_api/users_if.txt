@@ -11,17 +11,22 @@ import (
 type UsersInterface interface {
 
 	// Get a list of test
+	// It is handler for GET /users
 	Get(http.ResponseWriter, *http.Request)
 
 	// create users
+	// It is handler for POST /users
 	Post(http.ResponseWriter, *http.Request)
 
 	// get id
+	// It is handler for GET /users/{userId}
 	userIdGet(http.ResponseWriter, *http.Request)
 
+	// It is handler for DELETE /users/{userId}
 	userIdDelete(http.ResponseWriter, *http.Request)
 
 	// get address id
+	// It is handler for GET /users/{userId}/address/{addressId}
 	userIdaddressaddressIdGet(http.ResponseWriter, *http.Request)
 }
 

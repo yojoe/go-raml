@@ -77,11 +77,13 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 
 		splittedDesc := strings.Split(desc, " ")
 
-		for _, v := range splittedDesc {
-			tmpDesc += v + " "
+		for i, v := range splittedDesc {
+			tmpDesc += v
 			if len(tmpDesc) > maxCommentPerLine {
-				results = append(results, tmpDesc+"\n")
+				results = append(results, tmpDesc)
 				tmpDesc = ""
+			} else if i < len(splittedDesc)-1 { // add space to non last word
+				tmpDesc += " "
 			}
 		}
 

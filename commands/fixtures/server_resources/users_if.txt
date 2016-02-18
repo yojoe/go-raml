@@ -9,6 +9,8 @@ import (
 )
 
 type UsersInterface interface {
+
+	// It is handler for POST /users
 	Post(http.ResponseWriter, *http.Request)
 }
 

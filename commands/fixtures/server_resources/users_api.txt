@@ -8,6 +8,7 @@ import (
 type UsersAPI struct {
 }
 
+// It is handler for POST /users
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 
 	var reqBody User

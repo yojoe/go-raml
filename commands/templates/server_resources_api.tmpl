@@ -11,6 +11,9 @@ type {{.Name}}API struct {
 
 
 {{ range $k, $v := .Methods }}
+{{ range $kf, $vf := $v.FuncComments}}
+// {{$vf}}{{end}}
+// It is handler for {{$v.Verb}} {{$v.Endpoint}} 
 func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {
 	{{range $kq, $vq := $v.QueryParameters}}
     // {{$kq}} := req.FormValue("{{$kq}}")

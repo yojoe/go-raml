@@ -38,20 +38,6 @@ func normalizeBracket(URI string) string {
 	return strings.Replace(normalizeLeftBracket, "}", "", -1)
 }
 
-/*
-func _completeResourceURI(r *raml.Resource, completeURI string) string {
-	if r == nil {
-		return completeURI
-	}
-	return _completeResourceURI(r.Parent, r.URI+completeURI)
-}
-
-// get complete URI of a resource
-func completeResourceURI(r *raml.Resource) string {
-	return _completeResourceURI(r, "")
-}
-*/
-
 func _getResourceParams(r *raml.Resource, params []string) []string {
 	if r == nil {
 		return params
