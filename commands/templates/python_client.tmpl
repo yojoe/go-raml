@@ -1,23 +1,20 @@
 {{ define "python_client_template" }}
 import requests
-from client_utils import buildQueryString
+from client_utils import build_query_string
 
 BASE_URI = "{{.BaseURI}}"
+
 
 class Client:
     def __init__(self):
         self.url = BASE_URI
-
 {{ range $k, $v := .PythonMethods }}
-
     def {{$v.MethodName}}({{$v.Params}}):
-        {{$commentlength := len $v.FuncComments}}
-        {{if ne $commentlength 0 }}"""
-        {{ range $kf, $vf := $v.FuncComments }}{{$vf}}{{end}}
+        """{{ range $kf, $vf := $v.FuncComments }}
+        {{$vf}}{{end}}
+        It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
-        {{end}}
-        uri = {{$v.ResourcePath}}
-        return requests.{{$v.Verb | ToLower}}(self.url + uri + buildQueryString(queryParams){{$v.PRArgs}} ,headers=headers)
-{{ end }}
-
-{{ end }}
+        uri = self.url + {{$v.ResourcePath}}
+        uri = uri + build_query_string(query_params)
+        return requests.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
+{{ end }}{{ end }}{{/* put the end here to avoid introducing unnecessary newline */}}

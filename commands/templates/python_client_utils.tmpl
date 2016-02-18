@@ -1,10 +1,10 @@
 {{define "python_client_utils"}}
-def buildQueryString(queryParams=None):
-    if queryParams is None:
+def build_query_string(query_params=None):
+    if query_params is None:
         return ""
 
     qs = "?"
-    for key, elem in queryParams:
+    for key, elem in query_params:
         qs += key + "=" + str(elem) + "&"
 
     return qs[:-1]

@@ -1,59 +1,55 @@
 
 import requests
-from client_utils import buildQueryString
+from client_utils import build_query_string
 
 BASE_URI = "http://api.jumpscale.com/v3"
+
 
 class Client:
     def __init__(self):
         self.url = BASE_URI
 
-
-
-    def UsersGet(self,headers=None,queryParams=None):
-        
+    def users_get(self, headers=None, query_params=None):
         """
-        Get a list of test 
+        Get a list of test, this comment is very long, to test our comment generator. Is it
+        good?
+        It is method for GET /users
         """
-        
-        uri = "/users"
-        return requests.get(self.url + uri + buildQueryString(queryParams) ,headers=headers)
+        uri = self.url + "/users"
+        uri = uri + build_query_string(query_params)
+        return requests.get(uri, headers=headers)
 
-
-    def UsersPost(self,data,headers=None,queryParams=None):
-        
+    def users_post(self, data, headers=None, query_params=None):
         """
-        create users 
+        create users
+        It is method for POST /users
         """
-        
-        uri = "/users"
-        return requests.post(self.url + uri + buildQueryString(queryParams), data ,headers=headers)
+        uri = self.url + "/users"
+        uri = uri + build_query_string(query_params)
+        return requests.post(uri, data, headers=headers)
 
-
-    def UsersUserIdGet(self,userId,headers=None,queryParams=None):
-        
+    def users_byUserId_get(self, userId, headers=None, query_params=None):
         """
-        get id 
+        get id
+        It is method for GET /users/{userId}
         """
-        
-        uri = "/users/"+userId
-        return requests.get(self.url + uri + buildQueryString(queryParams) ,headers=headers)
+        uri = self.url + "/users/"+userId
+        uri = uri + build_query_string(query_params)
+        return requests.get(uri, headers=headers)
 
-
-    def UsersUserIdDelete(self,userId,headers=None,queryParams=None):
-        
-        
-        uri = "/users/"+userId
-        return requests.delete(self.url + uri + buildQueryString(queryParams) ,headers=headers)
-
-
-    def UsersUserIdAddressAddressIdGet(self,addressId,userId,headers=None,queryParams=None):
-        
+    def users_byUserId_delete(self, userId, headers=None, query_params=None):
         """
-        get address id 
+        It is method for DELETE /users/{userId}
         """
-        
-        uri = "/users/"+userId+"/address/"+addressId
-        return requests.get(self.url + uri + buildQueryString(queryParams) ,headers=headers)
+        uri = self.url + "/users/"+userId
+        uri = uri + build_query_string(query_params)
+        return requests.delete(uri, headers=headers)
 
-
+    def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
+        """
+        get address id
+        It is method for GET /users/{userId}/address/{addressId}
+        """
+        uri = self.url + "/users/"+userId+"/address/"+addressId
+        uri = uri + build_query_string(query_params)
+        return requests.get(uri, headers=headers)
