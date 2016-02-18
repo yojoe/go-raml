@@ -11,7 +11,6 @@ class Client:
 
     def users_get(self, headers=None, query_params=None):
         """
-        
         Get a list of test, this comment is very long, to test our comment generator. Is it
         good?
         It is method for GET /users
@@ -22,7 +21,6 @@ class Client:
 
     def users_post(self, data, headers=None, query_params=None):
         """
-        
         create users
         It is method for POST /users
         """
@@ -32,7 +30,6 @@ class Client:
 
     def users_byUserId_get(self, userId, headers=None, query_params=None):
         """
-        
         get id
         It is method for GET /users/{userId}
         """
@@ -42,7 +39,6 @@ class Client:
 
     def users_byUserId_delete(self, userId, headers=None, query_params=None):
         """
-        
         It is method for DELETE /users/{userId}
         """
         uri = self.url + "/users/"+userId
@@ -51,7 +47,6 @@ class Client:
 
     def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
         """
-        
         get address id
         It is method for GET /users/{userId}/address/{addressId}
         """

@@ -10,8 +10,7 @@ class Client:
         self.url = BASE_URI
 {{ range $k, $v := .PythonMethods }}
     def {{$v.MethodName}}({{$v.Params}}):
-        """
-        {{ range $kf, $vf := $v.FuncComments }}
+        """{{ range $kf, $vf := $v.FuncComments }}
         {{$vf}}{{end}}
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
