@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -46,6 +47,34 @@ func TestServerGeneration(t *testing.T) {
 			tmpl, err = testLoadFile("./fixtures/server/user_api/main.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
+		})
+
+		Reset(func() {
+			//cleanup
+			os.RemoveAll(targetdir)
+		})
+	})
+}
+
+func TestServerNoMainGeneration(t *testing.T) {
+	Convey("test command server generation without a main", t, func() {
+		targetdir, err := ioutil.TempDir("", "test_server_command")
+		So(err, ShouldBeNil)
+		Convey("Test run server command without a main", func() {
+
+			cmd := ServerCommand{
+				Dir:              targetdir,
+				RamlFile:         "./fixtures/server/user_api/api.raml",
+				PackageName:      "main",
+				NoMainGeneration: true,
+			}
+			err := cmd.Execute()
+			So(err, ShouldBeNil)
+
+			// check main fil
+			if _, err := os.Stat(filepath.Join(targetdir, "main.go")); err == nil {
+				So(errors.New("main.go file exists"), ShouldBeNil)
+			}
 		})
 
 		Reset(func() {

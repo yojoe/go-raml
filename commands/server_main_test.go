@@ -18,7 +18,7 @@ func TestServer(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/server/user_api/api.raml")
 			So(err, ShouldBeNil)
 
-			err = generateServer(apiDef, targetdir, "main")
+			err = generateServer(apiDef, targetdir, "main", true)
 			So(err, ShouldBeNil)
 
 			// check users api implementation

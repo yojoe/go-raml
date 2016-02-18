@@ -21,7 +21,7 @@ func (sd serverDef) generate(dir string) error {
 }
 
 // generate API server files
-func generateServer(apiDef *raml.APIDefinition, dir, packageName string) error {
+func generateServer(apiDef *raml.APIDefinition, dir, packageName string, generateMain bool) error {
 	// generate all Type structs
 	if err := generateStructs(apiDef, dir, packageName); err != nil {
 		return err
@@ -38,7 +38,9 @@ func generateServer(apiDef *raml.APIDefinition, dir, packageName string) error {
 		return err
 	}
 
-	sd := serverDef{ResourcesDef: rds, PackageName: packageName}
-
-	return sd.generate(dir)
+	if generateMain {
+		sd := serverDef{ResourcesDef: rds, PackageName: packageName}
+		err = sd.generate(dir)
+	}
+	return err
 }

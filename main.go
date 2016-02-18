@@ -68,6 +68,11 @@ func main() {
 					Usage:       "package name",
 					Destination: &serverCommand.PackageName,
 				},
+				cli.BoolFlag{
+					Name:        "no-main",
+					Usage:       "Do not generate a main.go file",
+					Destination: &serverCommand.NoMainGeneration,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
