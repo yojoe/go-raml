@@ -3,6 +3,7 @@ package commands
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -15,15 +16,18 @@ func testLoadFile(filename string) (string, error) {
 }
 func TestResource(t *testing.T) {
 	Convey("resource generator", t, func() {
+		targetdir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
 		Convey("simple resource", func() {
 			apiDef, err := raml.ParseFile("./fixtures/server_resources/deliveries.raml")
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef.Resources, "./tmp")
+			_, err = generateServerResources(apiDef.Resources, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// check interface file
-			s, err := testLoadFile("./tmp/deliveries_if.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_if.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/server_resources/deliveries_if.txt")
@@ -31,7 +35,7 @@ func TestResource(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check api implemetation file
-			s, err = testLoadFile("./tmp/deliveries_api.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "deliveries_api.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server_resources/deliveries_api.txt")
@@ -43,11 +47,11 @@ func TestResource(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/server_resources/usergroups.raml")
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef.Resources, "./tmp")
+			_, err = generateServerResources(apiDef.Resources, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// check users api implementation
-			s, err := testLoadFile("./tmp/users_api.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/server_resources/users_api.txt")
@@ -55,7 +59,7 @@ func TestResource(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check user interface
-			s, err = testLoadFile("./tmp/users_if.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server_resources/users_if.txt")
@@ -65,7 +69,7 @@ func TestResource(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll("./tmp")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

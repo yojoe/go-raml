@@ -13,19 +13,21 @@ const (
 
 // resourceDef is Go code representation of a resource
 type resourceDef struct {
-	Name     string            // resource name
-	Endpoint string            // root endpoint
-	Methods  []interfaceMethod // all methods of this resource
-	IsServer bool              // true if it is resource definition for server
-	NeedJSON bool              // if true, the API implementation to import encoding/json package
+	Name        string            // resource name
+	Endpoint    string            // root endpoint
+	Methods     []interfaceMethod // all methods of this resource
+	IsServer    bool              // true if it is resource definition for server
+	NeedJSON    bool              // if true, the API implementation to import encoding/json package
+	PackageName string            // Name of the package this resource resides in
 }
 
 // create a resource definition
-func newResourceDef(endpoint string) resourceDef {
+func newResourceDef(endpoint, packageName string) resourceDef {
 	rd := resourceDef{
 		Endpoint: endpoint,
 	}
 	rd.Name = strings.Title(normalizeURI(endpoint))
+	rd.PackageName = packageName
 	return rd
 }
 

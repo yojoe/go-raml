@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -10,15 +12,17 @@ import (
 
 func TestServer(t *testing.T) {
 	Convey("server generator", t, func() {
+		targetdir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
 		Convey("simple server", func() {
 			apiDef, err := raml.ParseFile("./fixtures/server/user_api/api.raml")
 			So(err, ShouldBeNil)
 
-			err = generateServer(apiDef, "./tmp")
+			err = generateServer(apiDef, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// check users api implementation
-			s, err := testLoadFile("./tmp/users_api.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/server/user_api/users_api.txt")
@@ -26,7 +30,7 @@ func TestServer(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check user interface
-			s, err = testLoadFile("./tmp/users_if.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server/user_api/users_if.txt")
@@ -34,7 +38,7 @@ func TestServer(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check main file
-			s, err = testLoadFile("./tmp/main.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "main.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server/user_api/main.txt")
@@ -44,7 +48,7 @@ func TestServer(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll("./tmp")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

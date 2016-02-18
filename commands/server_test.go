@@ -1,24 +1,30 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestServerGeneration(t *testing.T) {
-	Convey("test command server generattion", t, func() {
+	Convey("test command server generation", t, func() {
+		targetdir, err := ioutil.TempDir("", "test_server_command")
+		So(err, ShouldBeNil)
 		Convey("Test run server command using go language", func() {
+
 			cmd := ServerCommand{
-				Dir:      "./test_server_command",
-				RamlFile: "./fixtures/server/user_api/api.raml",
+				Dir:         targetdir,
+				RamlFile:    "./fixtures/server/user_api/api.raml",
+				PackageName: "main",
 			}
 			err := cmd.Execute()
 			So(err, ShouldBeNil)
 
 			// check users api implementation
-			s, err := testLoadFile("./test_server_command/users_api.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/server/user_api/users_api.txt")
@@ -26,7 +32,7 @@ func TestServerGeneration(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check user interface
-			s, err = testLoadFile("./test_server_command/users_if.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server/user_api/users_if.txt")
@@ -34,7 +40,7 @@ func TestServerGeneration(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// check main file
-			s, err = testLoadFile("./test_server_command/main.go")
+			s, err = testLoadFile(filepath.Join(targetdir, "main.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/server/user_api/main.txt")
@@ -44,7 +50,7 @@ func TestServerGeneration(t *testing.T) {
 
 		Reset(func() {
 			//cleanup
-			os.RemoveAll("./test_server_command")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

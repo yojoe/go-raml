@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,11 +15,14 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		apiDef, err := raml.ParseFile("./fixtures/client_resources/client.raml")
 		So(err, ShouldBeNil)
 
+		targetdir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
 		Convey("Simple client from raml", func() {
-			err = generateClient(apiDef, "./test", "go")
+			err = generateClient(apiDef, targetdir, "go")
 			So(err, ShouldBeNil)
 
-			s, err := testLoadFile("./test/client_structapitest.go")
+			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/client_resources/client_structapitest.txt")
@@ -27,7 +32,7 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll("./test")
+			os.RemoveAll(targetdir)
 		})
 	})
 }

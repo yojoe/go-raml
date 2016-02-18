@@ -66,7 +66,7 @@ func generateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	cd := newClientDef(apiDef)
 
 	for k, v := range apiDef.Resources {
-		rd := newResourceDef(normalizeURITitle(apiDef.Title))
+		rd := newResourceDef(normalizeURITitle(apiDef.Title), "main")
 		rd.generateMethods(&v, "", k)
 		cd.Methods = append(cd.Methods, rd.Methods...)
 	}

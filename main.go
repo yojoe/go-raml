@@ -62,6 +62,12 @@ func main() {
 					Usage:       "Source raml file",
 					Destination: &serverCommand.RamlFile,
 				},
+				cli.StringFlag{
+					Name:        "package",
+					Value:       "main",
+					Usage:       "package name",
+					Destination: &serverCommand.PackageName,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
