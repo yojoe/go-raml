@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -53,8 +54,18 @@ func generateServerResources(rs map[string]raml.Resource, directory, packageName
 	if err := checkCreateDir(directory); err != nil {
 		return rds, err
 	}
+	// sort the keys, so we have resource sorted by keys.
+	// the generated code actually don't need it to be sorted.
+	// but test fixture need it
+	var keys []string
+	for k := range rs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	// create resource def
-	for k, r := range rs {
+	for _, k := range keys {
+		r := rs[k]
 		rd := newResourceDef(k, packageName)
 		rd.IsServer = true
 		if err := rd.generate(&r, k, directory, lang); err != nil {
