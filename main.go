@@ -54,7 +54,7 @@ func main() {
 					Name:        "language, l",
 					Value:       "go",
 					Usage:       "Language to construct a server for",
-					Destination: &clientCommand.Language,
+					Destination: &serverCommand.Language,
 				},
 				cli.StringFlag{
 					Name:        "dir",
