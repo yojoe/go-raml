@@ -5,8 +5,10 @@ import (
 )
 
 const (
-	serverMainTmplFile = "./templates/server_main.tmpl"
-	serverMainTmplName = "server_main_template"
+	serverMainTmplFile       = "./templates/server_main.tmpl"
+	serverMainTmplName       = "server_main_template"
+	serverPythonMainTmplFile = "./templates/server_python_main.tmpl"
+	serverPythonMainTmplName = "server_python_main_template"
 )
 
 // API server definition
@@ -15,32 +17,45 @@ type serverDef struct {
 	PackageName  string // Name of the package this server resides in
 }
 
-// generate server main file
-func (sd serverDef) generate(dir string) error {
+// generate Go server main file
+func (sd serverDef) generateGo(dir string) error {
 	return generateFile(sd, serverMainTmplFile, serverMainTmplName, dir+"/main.go", true)
 }
 
-// generate API server files
-func generateServer(apiDef *raml.APIDefinition, dir, packageName string, generateMain bool) error {
-	// generate all Type structs
-	if err := generateStructs(apiDef, dir, packageName); err != nil {
-		return err
-	}
+func (sd serverDef) generatePython(dir string) error {
+	return generateFile(sd, serverPythonMainTmplFile, serverPythonMainTmplName, dir+"/app.py", true)
+}
 
-	// generate all request & response body
-	if err := generateBodyStructs(apiDef, dir, packageName); err != nil {
-		return err
+func (sd serverDef) generate(dir, lang string) error {
+	if lang == "go" {
+		return sd.generateGo(dir)
+	}
+	return sd.generatePython(dir)
+}
+
+// generate API server files
+func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, generateMain bool) error {
+	if lang == "go" {
+		// generate all Type structs
+		if err := generateStructs(apiDef, dir, packageName); err != nil {
+			return err
+		}
+
+		// generate all request & response body
+		if err := generateBodyStructs(apiDef, dir, packageName); err != nil {
+			return err
+		}
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(apiDef.Resources, dir, packageName)
+	rds, err := generateServerResources(apiDef.Resources, dir, packageName, lang)
 	if err != nil {
 		return err
 	}
 
 	if generateMain {
 		sd := serverDef{ResourcesDef: rds, PackageName: packageName}
-		err = sd.generate(dir)
+		err = sd.generate(dir, lang)
 	}
 	return err
 }

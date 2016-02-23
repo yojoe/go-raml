@@ -17,6 +17,7 @@ func TestServerGeneration(t *testing.T) {
 		Convey("Test run server command using go language", func() {
 
 			cmd := ServerCommand{
+				Language:    "go",
 				Dir:         targetdir,
 				RamlFile:    "./fixtures/server/user_api/api.raml",
 				PackageName: "main",

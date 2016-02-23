@@ -7,6 +7,7 @@ import (
 
 // ServerCommand is executed to generate a go server from a RAML specification
 type ServerCommand struct {
+	Language         string // target language
 	Dir              string //target dir
 	RamlFile         string //raml file
 	PackageName      string //package name in the generated go source files
@@ -20,5 +21,5 @@ func (command *ServerCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return generateServer(apiDef, command.Dir, command.PackageName, !command.NoMainGeneration)
+	return generateServer(apiDef, command.Dir, command.PackageName, command.Language, !command.NoMainGeneration)
 }

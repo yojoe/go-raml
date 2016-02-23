@@ -16,7 +16,6 @@ const (
 // defines a python client lib method
 type pythonMethod struct {
 	interfaceMethod
-	Params string // methods params
 	PRArgs string // python requests's args
 }
 
@@ -52,9 +51,9 @@ func (cd clientDef) generatePython(dir string) error {
 
 		pm := pythonMethod{
 			interfaceMethod: m,
-			Params:          strings.Join(append(params, "headers=None, query_params=None"), ", "),
 			PRArgs:          prArgs,
 		}
+		pm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
 		pm.MethodName = snakeCaseResourceURI(m.Resource) + "_" + strings.ToLower(m.Verb)
 		pms = append(pms, pm)
 	}

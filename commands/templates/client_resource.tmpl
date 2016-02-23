@@ -25,7 +25,7 @@ func New{{.Name}}() *{{.Name}} {
 {{ range $k, $v := .Methods }}
 {{ range $kf, $vf := $v.FuncComments }}
 // {{$vf}} {{end}}
-func(c *{{$apiName}}) {{$v.MethodName}}({{$v.MethodParam}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
+func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
 	qsParam := buildQueryString(queryParams)
 	{{if eq $v.Verb "GET"}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}

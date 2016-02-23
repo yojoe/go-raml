@@ -1,0 +1,19 @@
+{{- define "resource_python_template" -}}
+{{- $apiName := .Name -}}
+from flask import Blueprint, jsonify, request
+
+{{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
+{{ range $k, $v := .Methods }}
+
+@{{$apiName | ToLower}}_api.route('{{$v.Endpoint}}', methods=['{{$v.Verb}}'])
+def {{$v.MethodName}}({{$v.Params}}):
+    '''
+    {{range $kf, $vf := $v.FuncComments -}}
+    {{$vf}}
+    {{end -}}
+    It is handler for {{$v.Verb}} {{$v.Endpoint}}
+    '''
+    return jsonify()
+{{ end -}}
+
+{{end -}}

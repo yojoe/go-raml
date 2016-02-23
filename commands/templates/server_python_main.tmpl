@@ -1,0 +1,16 @@
+{{- define "server_python_main_template" -}}
+from flask import Flask
+
+{{ range $k, $v := .ResourcesDef -}}
+from {{.Name | ToLower}} import {{.Name | ToLower}}_api
+{{end }}
+
+app = Flask(__name__)
+
+{{range $k, $v := .ResourcesDef -}}
+app.register_blueprint({{.Name | ToLower }}_api)
+{{end}}
+
+if __name__ == "__main__":
+    app.run(debug=True)
+{{end -}}
