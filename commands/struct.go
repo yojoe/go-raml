@@ -20,7 +20,7 @@ type fieldDef struct {
 // StructDef defines a struct
 type structDef struct {
 	Name        string
-	Description string
+	Description []string
 	PackageName string
 	Fields      map[string]fieldDef
 }
@@ -41,7 +41,7 @@ func newStructDef(name, packageName, description string, properties map[string]r
 		Name:        strings.Title(name),
 		PackageName: packageName,
 		Fields:      fields,
-		Description: description,
+		Description: funcCommentBuilder(description),
 	}
 
 }

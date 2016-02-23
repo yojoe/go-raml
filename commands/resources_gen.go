@@ -41,7 +41,7 @@ type interfaceMethod struct {
 	RespBody     string         // response body type
 	ResourcePath string         // normalized resource path
 	Resource     *raml.Resource // resource object of this method
-	MethodParam  string
+	Params       string         // methods params
 	FuncComments []string
 }
 
@@ -69,31 +69,6 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 		rd.NeedJSON = true
 	}
 
-	// create comment string from raml description field.
-	// comment is around 80 characters per line
-	funcCommentBuilder := func(desc string) []string {
-		tmpDesc := ""
-		var results []string
-
-		splittedDesc := strings.Split(desc, " ")
-
-		for i, v := range splittedDesc {
-			tmpDesc += v
-			if len(tmpDesc) > maxCommentPerLine {
-				results = append(results, tmpDesc)
-				tmpDesc = ""
-			} else if i < len(splittedDesc)-1 { // add space to non last word
-				tmpDesc += " "
-			}
-		}
-
-		if len(tmpDesc) > 0 {
-			results = append(results, tmpDesc)
-		}
-
-		return results
-	}
-
 	// set func comment
 	if len(m.Description) > 0 {
 		im.FuncComments = funcCommentBuilder(m.Description)
@@ -102,11 +77,18 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 	return im
 }
 
-func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) interfaceMethod {
+func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
 	name := normalizeURI(im.Endpoint)
-	im.MethodName = name[len(rd.Name):] + methodName
+	if lang == "go" {
+		im.MethodName = name[len(rd.Name):] + methodName
+	} else {
+		im.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(im.Verb)
+		im.Params = strings.Join(getResourceParams(r), ", ")
+		im.Endpoint = strings.Replace(im.Endpoint, "{", "<", -1)
+		im.Endpoint = strings.Replace(im.Endpoint, "}", ">", -1)
+	}
 
 	return im
 }
@@ -149,7 +131,7 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 	if err != nil {
 		return im, err
 	}
-	im.MethodParam = methodParam
+	im.Params = methodParam
 
 	return im, nil
 }
@@ -177,14 +159,14 @@ func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 }
 
 // add a method to resource definition
-func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, parentEndpoint, curEndpoint string) {
+func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) {
 	if m == nil {
 		return
 	}
 	var im interfaceMethod
 	var err error
 	if rd.IsServer {
-		im = newServerInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		im = newServerInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
 	} else {
 		im, err = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 		if err != nil {
@@ -196,14 +178,14 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 }
 
 // generate all methods of a resource recursively
-func (rd *resourceDef) generateMethods(r *raml.Resource, parentEndpoint, curEndpoint string) {
-	rd.addMethod(r, r.Get, "Get", parentEndpoint, curEndpoint)
-	rd.addMethod(r, r.Post, "Post", parentEndpoint, curEndpoint)
-	rd.addMethod(r, r.Put, "Put", parentEndpoint, curEndpoint)
-	rd.addMethod(r, r.Patch, "Patch", parentEndpoint, curEndpoint)
-	rd.addMethod(r, r.Delete, "Delete", parentEndpoint, curEndpoint)
+func (rd *resourceDef) generateMethods(r *raml.Resource, parentEndpoint, curEndpoint, lang string) {
+	rd.addMethod(r, r.Get, "Get", parentEndpoint, curEndpoint, lang)
+	rd.addMethod(r, r.Post, "Post", parentEndpoint, curEndpoint, lang)
+	rd.addMethod(r, r.Put, "Put", parentEndpoint, curEndpoint, lang)
+	rd.addMethod(r, r.Patch, "Patch", parentEndpoint, curEndpoint, lang)
+	rd.addMethod(r, r.Delete, "Delete", parentEndpoint, curEndpoint, lang)
 
 	for k, v := range r.Nested {
-		rd.generateMethods(v, parentEndpoint+curEndpoint, k)
+		rd.generateMethods(v, parentEndpoint+curEndpoint, k, lang)
 	}
 }

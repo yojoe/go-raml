@@ -51,6 +51,12 @@ func main() {
 			Usage: "Generate a go server according to a RAML specification",
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name:        "language, l",
+					Value:       "go",
+					Usage:       "Language to construct a server for",
+					Destination: &serverCommand.Language,
+				},
+				cli.StringFlag{
 					Name:        "dir",
 					Value:       ".",
 					Usage:       "target directory",
