@@ -16,7 +16,7 @@ type ServerCommand struct {
 
 // Execute generates a Go server from an RAML specification
 func (command *ServerCommand) Execute() error {
-	log.Debug("Generating a go server")
+	log.Infof("Generating a %v server", command.Language)
 	apiDef, err := raml.ParseFile(command.RamlFile)
 	if err != nil {
 		return err
