@@ -32,7 +32,7 @@ func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(&respBody);
 	{{- end }}
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
 {{- end -}}
 

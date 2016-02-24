@@ -12,7 +12,7 @@ type UsersAPI struct {
 // It is handler for GET /users
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
 
 // create users
@@ -27,7 +27,7 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	var respBody User
 	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
 
 // get id
@@ -36,13 +36,13 @@ func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 	var respBody User
 	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
 
 // It is handler for DELETE /users/{userId}
 func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
 
 // get address id
@@ -51,5 +51,5 @@ func (api UsersAPI) userIdaddressaddressIdGet(w http.ResponseWriter, r *http.Req
 	var respBody Address
 	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
