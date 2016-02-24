@@ -1,6 +1,6 @@
 package main
 
-type Anggora struct {
+type MultipleInheritance struct {
 	Animal
 	Cat
 	Color string `json:"color"`

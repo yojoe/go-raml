@@ -15,7 +15,6 @@ func TestTypeConversion(t *testing.T) {
 			So(convertToGoType("integer"), ShouldEqual, "int")
 			So(convertToGoType("boolean"), ShouldEqual, "bool")
 			So(convertToGoType("date"), ShouldEqual, "Date")
-			So(convertToGoType("enum"), ShouldEqual, "[]string")
 			So(convertToGoType("file"), ShouldEqual, "string")
 			So(convertToGoType("Object"), ShouldEqual, "Object")
 			So(convertToGoType("string[]"), ShouldEqual, "[]string")

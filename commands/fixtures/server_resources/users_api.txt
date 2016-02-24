@@ -10,14 +10,12 @@ type UsersAPI struct {
 
 // It is handler for POST /users
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
-
 	var reqBody User
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(400)
 		return
 	}
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }

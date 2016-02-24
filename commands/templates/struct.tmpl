@@ -3,8 +3,12 @@ package {{.PackageName}}
 
 {{ range $v := .Description }}
 // {{$v}} {{end}}
+{{ if .IsOneLineDef -}}
+{{ .OneLineDef }}
+{{- else -}}
 type {{ .Name }} struct {
     {{ range $key, $value := .Fields }}{{$value.Name}}  {{if eq $value.IsComposition false}} {{$value.Type}} `json:"{{$key}}"` {{end}}
     {{end}}
 }
+{{- end -}}
 {{end}}

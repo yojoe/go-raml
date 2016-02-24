@@ -1,4 +1,4 @@
-{{define "server_main_template"}}
+{{- define "server_main_template" -}}
 package {{.PackageName}}
 
 import (
@@ -59,4 +59,4 @@ func main() {
 	http.ListenAndServe(":8080", r)
 }
 
-{{ end }}
+{{- end -}}

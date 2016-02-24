@@ -9,7 +9,6 @@ import (
 )
 
 type UsersInterface interface {
-
 	// Get a list of test
 	// It is handler for GET /users
 	Get(http.ResponseWriter, *http.Request)
@@ -31,15 +30,9 @@ type UsersInterface interface {
 }
 
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
-
 	r.HandleFunc("/users", i.Get).Methods("GET")
-
 	r.HandleFunc("/users", i.Post).Methods("POST")
-
 	r.HandleFunc("/users/{userId}", i.userIdGet).Methods("GET")
-
 	r.HandleFunc("/users/{userId}", i.userIdDelete).Methods("DELETE")
-
 	r.HandleFunc("/users/{userId}/address/{addressId}", i.userIdaddressaddressIdGet).Methods("GET")
-
 }

@@ -12,7 +12,7 @@ import (
 
 func TestGenerateStructFromRaml(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
-		apiDef, err := raml.ParseFile("./fixtures/struct.raml")
+		apiDef, err := raml.ParseFile("./fixtures/struct/struct.raml")
 		So(err, ShouldBeNil)
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
@@ -22,13 +22,13 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			//first test
-			s, err := testLoadFile(filepath.Join(targetdir, "city.go"))
+			s, err := testLoadFile(filepath.Join(targetdir, "enumcity.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/struct/city.txt")
+			tmpl, err := testLoadFile("./fixtures/struct/enumcity.txt")
 			So(err, ShouldBeNil)
 
-			So(tmpl, ShouldEqual, s)
+			So(s, ShouldEqual, tmpl)
 
 			//second test
 			s, err = testLoadFile(filepath.Join(targetdir, "animal.go"))
@@ -37,34 +37,53 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			tmpl, err = testLoadFile("./fixtures/struct/animal.txt")
 			So(err, ShouldBeNil)
 
-			So(tmpl, ShouldEqual, s)
+			So(s, ShouldEqual, tmpl)
 
 			//third test, single inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "mammal.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "singleinheritance.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/mammal.txt")
+			tmpl, err = testLoadFile("./fixtures/struct/singleinheritance.txt")
 			So(err, ShouldBeNil)
 
-			So(tmpl, ShouldEqual, s)
+			So(s, ShouldEqual, tmpl)
 
 			//fourth test, multiple inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "anggora.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "multipleinheritance.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/anggora.txt")
+			tmpl, err = testLoadFile("./fixtures/struct/multipleinheritance.txt")
 			So(err, ShouldBeNil)
 
-			So(tmpl, ShouldEqual, s)
+			So(s, ShouldEqual, tmpl)
 
 			//fifth test, array of object
-			s, err = testLoadFile(filepath.Join(targetdir, "catcat.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "arrayofcats.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/catcat.txt")
+			tmpl, err = testLoadFile("./fixtures/struct/arrayofcats.txt")
 			So(err, ShouldBeNil)
 
-			So(tmpl, ShouldEqual, s)
+			So(s, ShouldEqual, tmpl)
+
+			// bidimensional array
+			s, err = testLoadFile(filepath.Join(targetdir, "bidimensionalarrayofcats.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/bidimensionalarrayofcats.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// map type
+			s, err = testLoadFile(filepath.Join(targetdir, "mapofcats.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/mapofcats.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

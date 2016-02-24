@@ -16,6 +16,12 @@ types:
           type: boolean
         dob:
           type: date
+        assets:
+          type: string
+          enum: [ car, motor, house ]
+  EnumAddress:
+    type: string
+    enum: [ city a, city b ]   
 /deliveries:
   get:
     description: Get a list of deliveries

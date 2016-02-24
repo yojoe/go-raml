@@ -32,6 +32,10 @@ package raml
 
 // This file contains all of the RAML types.
 
+import (
+	"strings"
+)
+
 // TODO: We don't support !include of non-text files. RAML supports including
 //       of many file types.
 
@@ -829,8 +833,9 @@ func (r *APIDefinition) GetResource(path string) *Resource {
 }
 
 type Property struct {
-	Type     string `yaml:"type"`
-	Required bool   `yaml:"required"`
+	Type     string      `yaml:"type"`
+	Required bool        `yaml:"required"`
+	Enum     interface{} `yaml:"enum"`
 }
 type Type struct {
 	// Alias for the equivalent "type" property,
@@ -859,7 +864,66 @@ type Type struct {
 	Description string `yaml:"description"`
 
 	// The properties that instances of this type may or must have.
-	Properties map[string]Property
+	Properties map[string]Property `yaml:"properties"`
+
+	// JSON schema style syntax for declaring maps
+	AdditionalProperties string `yaml:"additionalProperties"`
+
+	// Enum type
+	Enum interface{} `yaml:"enum"`
+}
+
+// IsMap checks if a type is a Map type as defined in http://docs.raml.org/specs/1.0/#raml-10-spec-types
+// map types could be written in these forms:
+// - a `[]` property TODO:property keys need to be changed to interface{}
+// - a regex within `[]` property. example : [a-zA-Z]
+// - additionalProperties fied in Type
+// - patternProperties filed in Type TODO
+// Type's type must be `object`
+func (t Type) IsMap() bool {
+	tipe, ok := t.Type.(string)
+	if !ok {
+		return false
+	}
+
+	// make sure the `type` value is `object`
+	if tipe != "object" {
+		return false
+	}
+
+	// check if this map type written using `[]`
+	squareBracketPropCheck := func() bool {
+		if len(t.Properties) != 1 {
+			return false
+		}
+		for k := range t.Properties {
+			if strings.HasPrefix(k, "[") && strings.HasSuffix(k, "]") {
+				return true
+			}
+		}
+		return false
+	}
+
+	switch {
+	case squareBracketPropCheck():
+		return true
+	case t.AdditionalProperties != "":
+		return true
+	default:
+		return false
+	}
+}
+
+// IsArray checks if this type is an Array
+// see specs at http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
+func (t Type) IsArray() bool {
+	return strings.HasSuffix(t.Type.(string), "[]")
+}
+
+// IsEnum type check if this type is an enum
+// http://docs.raml.org/specs/1.0/#raml-10-spec-enums
+func (t Type) IsEnum() bool {
+	return t.Enum != nil
 }
 
 type BodiesProperty struct {

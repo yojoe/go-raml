@@ -10,7 +10,6 @@ type DeliveriesAPI struct {
 // Get a list of deliveries
 // It is handler for GET /deliveries
 func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }
@@ -18,7 +17,6 @@ func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
 // Create/request a new delivery
 // It is handler for POST /deliveries
 func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }
@@ -26,7 +24,6 @@ func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
 // Get information on a specific delivery
 // It is handler for GET /deliveries/{deliveryId}
 func (api DeliveriesAPI) deliveryIdGet(w http.ResponseWriter, r *http.Request) {
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }
@@ -34,7 +31,6 @@ func (api DeliveriesAPI) deliveryIdGet(w http.ResponseWriter, r *http.Request) {
 // Update the information on a specific delivery
 // It is handler for PATCH /deliveries/{deliveryId}
 func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }
@@ -42,7 +38,6 @@ func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request)
 // Cancel a specific delivery
 // It is handler for DELETE /deliveries/{deliveryId}
 func (api DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
-
 	// uncomment below line to add header
 	// w.Header.Set("key","value")
 }

@@ -58,8 +58,6 @@ func convertToGoType(source string) string {
 		result = "bool"
 	case "date":
 		result = "Date"
-	case "enum":
-		result = "[]string"
 	case "file":
 		result = "string"
 	default:

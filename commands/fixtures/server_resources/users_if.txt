@@ -9,13 +9,10 @@ import (
 )
 
 type UsersInterface interface {
-
 	// It is handler for POST /users
 	Post(http.ResponseWriter, *http.Request)
 }
 
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
-
 	r.HandleFunc("/users", i.Post).Methods("POST")
-
 }

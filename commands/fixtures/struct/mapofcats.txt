@@ -1,0 +1,3 @@
+package main
+
+type MapOfCats map[string]Cat

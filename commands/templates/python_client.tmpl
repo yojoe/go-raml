@@ -1,4 +1,4 @@
-{{ define "python_client_template" }}
+{{- define "python_client_template" -}}
 import requests
 from client_utils import build_query_string
 
@@ -17,4 +17,5 @@ class Client:
         uri = self.url + {{$v.ResourcePath}}
         uri = uri + build_query_string(query_params)
         return requests.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
-{{ end }}{{ end }}{{/* put the end here to avoid introducing unnecessary newline */}}
+{{ end }}
+{{- end -}}
