@@ -1,7 +1,7 @@
 package main
 
 type MultipleInheritance struct {
-	Animal
 	Cat
+	animal
 	Color string `json:"color"`
 }

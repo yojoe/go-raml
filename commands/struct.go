@@ -44,9 +44,8 @@ func newStructDef(name, packageName, description string, properties map[string]r
 		}
 		fields[k] = fd
 	}
-
 	return structDef{
-		Name:        strings.Title(name),
+		Name:        name,
 		PackageName: packageName,
 		Fields:      fields,
 		Description: funcCommentBuilder(description),
@@ -134,8 +133,7 @@ func (sd *structDef) handleAdvancedType(t raml.Type) {
 // spec : http://docs.raml.org/specs/1.0/#raml-10-spec-inheritance-and-specialization
 func (sd *structDef) addSingleInheritance(strType string) {
 	fd := fieldDef{
-		Name:          strings.Title(strType),
-		Type:          strings.Title(strType),
+		Name:          strType,
 		IsComposition: true,
 	}
 	sd.Fields[strType] = fd
@@ -155,8 +153,7 @@ func (sd *structDef) addMultipleInheritance(strType string) {
 	for _, s := range strings.Split(strType, ",") {
 		fieldType := strings.TrimSpace(s)
 		fd := fieldDef{
-			Name:          strings.Title(fieldType),
-			Type:          fieldType,
+			Name:          fieldType,
 			IsComposition: true,
 		}
 

@@ -13,7 +13,7 @@ types:
       enum_homeNum:
         type: integer
         enum: [ 1, 2, 3 ]
-  Animal:
+  animal:
     type: object
     properties:
       name:
@@ -23,7 +23,7 @@ types:
       cities:
         type: EnumCity[]
   SingleInheritance:
-    type: Animal
+    type: animal
     properties:
       name:
         type: string
@@ -32,7 +32,7 @@ types:
       kind:
         type: string
   MultipleInheritance:
-    type: [ Animal , Cat ]
+    type: [ animal , Cat ]
     properties:
       color:
         type: string
@@ -40,12 +40,18 @@ types:
     type: Cat[]
   BidimensionalArrayOfCats:
     type: Cat[][]
-  MapOfCats:
+  mapOfCats:
     type: object
     additionalProperties: Cat
   EnumString:
     type: string
     enum: [ str_a, str_b ]
+  petshop:
+    properties:
+      name:
+        type: string
+      cats:
+        type: mapOfCats
 /users:
   get:
     description: Get a list of test

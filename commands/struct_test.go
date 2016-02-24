@@ -84,6 +84,15 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// using map type & testing case sensitive type name
+			s, err = testLoadFile(filepath.Join(targetdir, "petshop.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/petshop.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

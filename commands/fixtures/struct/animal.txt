@@ -1,6 +1,6 @@
 package main
 
-type Animal struct {
+type animal struct {
 	Cities  []EnumCity `json:"cities"`
 	Colours []string   `json:"colours"`
 	Name    string     `json:"name"`
