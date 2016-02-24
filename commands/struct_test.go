@@ -22,7 +22,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			//first test
-			s, err := testLoadFile(filepath.Join(targetdir, "enumcity.go"))
+			s, err := testLoadFile(filepath.Join(targetdir, "EnumCity.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/struct/enumcity.txt")
@@ -40,7 +40,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			//third test, single inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "singleinheritance.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "SingleInheritance.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/singleinheritance.txt")
@@ -49,7 +49,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			//fourth test, multiple inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "multipleinheritance.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "MultipleInheritance.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/multipleinheritance.txt")
@@ -58,7 +58,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			//fifth test, array of object
-			s, err = testLoadFile(filepath.Join(targetdir, "arrayofcats.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfCats.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/arrayofcats.txt")
@@ -67,7 +67,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// bidimensional array
-			s, err = testLoadFile(filepath.Join(targetdir, "bidimensionalarrayofcats.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "BidimensionalArrayOfCats.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/bidimensionalarrayofcats.txt")
@@ -76,7 +76,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			// map type
-			s, err = testLoadFile(filepath.Join(targetdir, "mapofcats.go"))
+			s, err = testLoadFile(filepath.Join(targetdir, "mapOfCats.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/mapofcats.txt")

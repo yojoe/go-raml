@@ -77,7 +77,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 
 // generate Go struct
 func (sd structDef) generate(dir string) error {
-	fileName := dir + "/" + strings.ToLower(sd.Name) + ".go"
+	fileName := dir + "/" + sd.Name + ".go"
 	if err := generateFile(sd, structTemplateLocation, "struct_template", fileName, false); err != nil {
 		return err
 	}

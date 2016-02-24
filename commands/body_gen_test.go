@@ -23,7 +23,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			//load and compare UsersIdGetRespBody
-			s2, err := testLoadFile(filepath.Join(targetdir, "usersidgetrespbody.go"))
+			s2, err := testLoadFile(filepath.Join(targetdir, "UsersIdGetRespBody.go"))
 			So(err, ShouldBeNil)
 
 			tmpl2, err := testLoadFile("./fixtures/usersidgetrespbody.txt")
@@ -32,7 +32,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(tmpl2, ShouldEqual, s2)
 
 			//load and compare usersgetreqbody
-			tUserGetReqBody, err := testLoadFile(filepath.Join(targetdir, "usersgetreqbody.go"))
+			tUserGetReqBody, err := testLoadFile(filepath.Join(targetdir, "UsersGetReqBody.go"))
 			So(err, ShouldBeNil)
 
 			fUserGetReqBody, err := testLoadFile("./fixtures/usersgetreqbody.txt")
