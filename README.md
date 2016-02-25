@@ -176,10 +176,14 @@ Besides generation of a new RAML specification file, updating an existing raml f
 * Generation of the server using [gorilla mux](http://www.gorillatoolkit.org/pkg/mux)
 * Generation of a go client
 * Generation of a python 3.5 client
+* Generation of a python flask server
 
 **v0.2**
 
 * OAuth 2.0 support
+
+**v0.3**
+
 * Possibility to generate a default server implementation to MongoDB
 
 **v0.4**

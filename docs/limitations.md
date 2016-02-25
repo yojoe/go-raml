@@ -3,8 +3,7 @@
 ## Unsupported RAML 1.0 features
 
 * Types
-    * [Map](http://docs.raml.org/specs/1.0/#raml-10-spec-map-types) only supported using `additionalProperties` field
-    * [Shortcuts and syntactic sugar](http://docs.raml.org/specs/1.0/#shortcuts-and-syntactic-sugar)
+    * [Map](http://docs.raml.org/specs/1.0/#raml-10-spec-map-types) only supported using `additionalProperties` or an [Inline Map](http://docs.raml.org/specs/1.0/#shortcuts-and-syntactic-sugar)
 
 
 * Modularization
