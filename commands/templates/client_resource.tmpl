@@ -1,4 +1,4 @@
-{{define "client_resource"}}
+{{- define "client_resource" -}}
 package client
 
 import (
@@ -27,7 +27,7 @@ func New{{.Name}}() *{{.Name}} {
 // {{$vf}} {{end}}
 func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
 	qsParam := buildQueryString(queryParams)
-	{{if eq $v.Verb "GET"}}
+	{{- if eq $v.Verb "GET" }}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
 		// create request object
@@ -35,7 +35,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
-			{{end}}
+			{{- end -}}
 		}
 
 		for k, v := range headers {
@@ -47,7 +47,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
-			{{end}}
+			{{- end -}}
 		}
 		defer resp.Body.Close()
 
@@ -55,8 +55,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 		{{else}}
 			return resp, nil
-		{{end}}
-
+		{{- end -}}
 	{{else if eq $v.Verb "DELETE"}}
 		// create request object
 		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
@@ -70,7 +69,6 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 
 		//do the request
 		return c.client.Do(req)
-
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
@@ -78,7 +76,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
-			{{end}}
+			{{- end -}}
 		}
 		defer resp.Body.Close()
 
@@ -86,9 +84,9 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 		{{else}}
 			return resp, nil
-		{{end}}
-	{{end}}
+		{{- end -}}
+	{{- end -}}
 }
-{{ end }}
+{{- end -}}
 
-{{ end }}
+{{- end -}}

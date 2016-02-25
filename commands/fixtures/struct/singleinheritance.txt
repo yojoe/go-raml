@@ -1,6 +1,6 @@
 package main
 
-type Mammal struct {
-	Animal
+type SingleInheritance struct {
+	animal
 	Name string `json:"name"`
 }

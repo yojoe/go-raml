@@ -2,22 +2,25 @@
 title: Struct API Test
 mediaType: application/json
 types:
-  City:
+  EnumCity:
     description: city of angel city of angel city of angel city of angel city of angel city of angel city of angel city of angel city of angelcity of angelcity of angelcity of angelcity of angel city of angel
     properties:
-      name:
+      name: string
+      enum_parks:
         type: string
-  Animal:
+        enum: [ park_a, park_b ]
+      enum_homeNum:
+        type: integer
+        enum: [ 1, 2, 3 ]
+  animal:
     type: object
     properties:
-      name:
-        type: string
+      name?: string
       colours:
         type: string[]
-      cities:
-        type: City[]
-  Mammal:
-    type: Animal
+      cities: EnumCity[]
+  SingleInheritance:
+    type: animal
     properties:
       name:
         type: string
@@ -25,13 +28,35 @@ types:
     properties:
       kind:
         type: string
-  Anggora:
-    type: [ Animal , Cat ]
+  MultipleInheritance:
+    type: [ animal , Cat ]
     properties:
       color:
         type: string
-  CatCat:
+  ArrayOfCats:
     type: Cat[]
+  BidimensionalArrayOfCats:
+    type: Cat[][]
+  mapOfCats:
+    type: object
+    additionalProperties: Cat
+  EnumString:
+    type: string
+    enum: [ str_a, str_b ]
+  Pet:
+    type: Cat | animal
+    discriminator: kind
+  ArrayOfPets:
+    type: (Cat | animal)[]
+  Specialization:
+    type: number
+    minimum: 0
+  petshop:
+    properties:
+      name:
+        type: string
+      cats:
+        type: mapOfCats
 /users:
   get:
     description: Get a list of test
@@ -49,6 +74,5 @@ types:
           body:
             application/json:
               properties:
-                age:
-                  type: integer
+                age: integer
                 ID:

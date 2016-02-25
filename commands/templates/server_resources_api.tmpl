@@ -1,4 +1,4 @@
-{{define "resource_api_template"}}
+{{- define "resource_api_template" -}}
 package {{.PackageName}}
 
 import (
@@ -13,28 +13,27 @@ type {{.Name}}API struct {
 {{ range $k, $v := .Methods }}
 {{ range $kf, $vf := $v.FuncComments}}
 // {{$vf}}{{end}}
-// It is handler for {{$v.Verb}} {{$v.Endpoint}} 
+// It is handler for {{$v.Verb}} {{$v.Endpoint}}
 func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {
-	{{range $kq, $vq := $v.QueryParameters}}
+	{{- range $kq, $vq := $v.QueryParameters -}}
     // {{$kq}} := req.FormValue("{{$kq}}")
-	{{end}}
-	{{if .ReqBody}}
+	{{- end }}
+	{{- if .ReqBody -}}
 	var reqBody {{.ReqBody}}
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(400)
 		return
 	}
-	{{ end }}
+	{{- end }}
 
-	{{ if .RespBody }}
+	{{- if .RespBody }}
 	var respBody {{.RespBody}}
 	json.NewEncoder(w).Encode(&respBody);
-	{{ end }}
-
+	{{- end }}
 	// uncomment below line to add header
-	// w.Header.Set("key","value")
+	// w.Header().Set("key","value")
 }
-{{ end }}
+{{- end -}}
 
-{{ end }}
+{{- end -}}

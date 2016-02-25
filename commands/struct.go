@@ -14,31 +14,40 @@ var (
 type fieldDef struct {
 	Name          string
 	Type          string
+	Required      bool
 	IsComposition bool
 }
 
 // StructDef defines a struct
 type structDef struct {
-	Name        string
-	Description []string
-	PackageName string
-	Fields      map[string]fieldDef
+	Name         string              // struct's name
+	Description  []string            // structs description
+	PackageName  string              // package name
+	Fields       map[string]fieldDef // all struct's fields
+	OneLineDef   string              // not empty if this struct can defined in one line
+	IsOneLineDef bool
+	t            raml.Type // raml.Type of this struct
 }
 
 // create new struct def
-func newStructDef(name, packageName, description string, properties map[string]raml.Property) structDef {
+func newStructDef(name, packageName, description string, properties map[string]interface{}) structDef {
 	// generate struct's fields from type properties
 	fields := make(map[string]fieldDef)
 	for k, v := range properties {
-		fd := fieldDef{
-			Name: strings.Title(k),
-			Type: convertToGoType(v.Type), // convert to internal field type
+		prop := raml.ToProperty(k, v)
+		goType := convertToGoType(prop.Type)
+		if prop.Enum != nil {
+			goType = "[]" + goType
 		}
-		fields[k] = fd
-	}
 
+		fd := fieldDef{
+			Name: strings.Title(prop.Name),
+			Type: goType, // convert to internal field type
+		}
+		fields[prop.Name] = fd
+	}
 	return structDef{
-		Name:        strings.Title(name),
+		Name:        name,
 		PackageName: packageName,
 		Fields:      fields,
 		Description: funcCommentBuilder(description),
@@ -48,12 +57,13 @@ func newStructDef(name, packageName, description string, properties map[string]r
 
 // create struct definition from RAML Type node
 func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
-	structDef := newStructDef(sName, packageName, description, t.Properties)
+	sd := newStructDef(sName, packageName, description, t.Properties)
+	sd.t = t
 
-	// handle inheritance on raml1.0
-	structDef.addInheritance(t)
+	// handle advanced type on raml1.0
+	sd.handleAdvancedType()
 
-	return structDef
+	return sd
 }
 
 // create struct definition from RAML Body node
@@ -69,7 +79,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 
 // generate Go struct
 func (sd structDef) generate(dir string) error {
-	fileName := dir + "/" + strings.ToLower(sd.Name) + ".go"
+	fileName := dir + "/" + sd.Name + ".go"
 	if err := generateFile(sd, structTemplateLocation, "struct_template", fileName, false); err != nil {
 		return err
 	}
@@ -90,7 +100,7 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 	return nil
 }
 
-// add inheritance type into structField
+// handle advance type type into structField
 // example:
 //   Mammal:
 //     type: Animal
@@ -98,27 +108,42 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 //       name:
 //         type: string
 // the additional fieldDef would be Animal composition
-func (sd *structDef) addInheritance(t raml.Type) {
-	if t.Type == nil {
+func (sd *structDef) handleAdvancedType() {
+	if sd.t.Type == nil {
 		return
 	}
-	strType := interfaceToString(t.Type)
+	strType := interfaceToString(sd.t.Type)
 
-	if strings.ToLower(strType) == "object" {
-		return
-	}
-	if len(strings.Split(strType, ",")) > 1 { //handle multiple([A , B]) or common inheritance
+	switch {
+	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
 		sd.addMultipleInheritance(strType)
-	} else if strings.HasSuffix(strType, "[]") { // array
-		sd.addArraySpecialization(strType)
-	} else {
-		fd := fieldDef{
-			Name:          strings.Title(strType),
-			Type:          strings.Title(strType),
-			IsComposition: true,
-		}
-		sd.Fields[strType] = fd
+	case sd.t.IsUnion():
+		sd.buildUnion()
+	case sd.t.IsArray(): // arary type
+		sd.buildArray()
+	case sd.t.IsMap(): // map
+		sd.buildMap()
+	case strings.ToLower(strType) == "object": // plain type
+		return
+	case sd.t.IsEnum(): // enum
+		sd.buildEnum()
+	case len(sd.t.Properties) == 0: // specialization
+		sd.buildSpecialization()
+	default: // single inheritance
+		sd.addSingleInheritance(strType)
 	}
+}
+
+// add single inheritance
+// inheritance is implemented as composition
+// spec : http://docs.raml.org/specs/1.0/#raml-10-spec-inheritance-and-specialization
+func (sd *structDef) addSingleInheritance(strType string) {
+	fd := fieldDef{
+		Name:          strType,
+		IsComposition: true,
+	}
+	sd.Fields[strType] = fd
+
 }
 
 // construct multiple inheritance to Go type
@@ -129,12 +154,12 @@ func (sd *structDef) addInheritance(t raml.Type) {
 //		color:
 //			type: string
 // The additional fielddef would be a composition of Animal & Cat
+// http://docs.raml.org/specs/1.0/#raml-10-spec-multiple-inheritance
 func (sd *structDef) addMultipleInheritance(strType string) {
 	for _, s := range strings.Split(strType, ",") {
 		fieldType := strings.TrimSpace(s)
 		fd := fieldDef{
-			Name:          strings.Title(fieldType),
-			Type:          fieldType,
+			Name:          fieldType,
 			IsComposition: true,
 		}
 
@@ -142,20 +167,55 @@ func (sd *structDef) addMultipleInheritance(strType string) {
 	}
 }
 
-// Construct array specialization from inheritance spec
-// example :
-//  MyType:
-//	  type: Person[]
-// Additional structField would be :
-//  Person []Person
-func (sd *structDef) addArraySpecialization(strType string) {
-	fieldName := strings.TrimSpace(strings.Replace(strType, "[]", "", -1))
-	fieldType := "[]" + strings.Title(fieldName)
-
-	fd := fieldDef{
-		Name: strings.Title(fieldName),
-		Type: fieldType,
+// buildEnum based on http://docs.raml.org/specs/1.0/#raml-10-spec-enums
+// example result  `type TypeName []data_type`
+func (sd *structDef) buildEnum() {
+	if _, ok := sd.t.Type.(string); !ok {
+		return
 	}
 
-	sd.Fields[fieldName] = fd
+	sd.IsOneLineDef = true
+	sd.OneLineDef = "type " + sd.Name + "[]" + convertToGoType(sd.t.Type.(string))
+}
+
+// build map type based on http://docs.raml.org/specs/1.0/#raml-10-spec-map-types
+// result is `type TypeName map[string]something`
+func (sd *structDef) buildMap() {
+	typeFromSquareBracketProp := func() string {
+		var p raml.Property
+		for k, v := range sd.t.Properties {
+			p = raml.ToProperty(k, v)
+			break
+		}
+		return p.Type
+	}
+	switch {
+	case sd.t.AdditionalProperties != "":
+		sd.buildOneLine(" map[string]" + convertToGoType(sd.t.AdditionalProperties))
+	case len(sd.t.Properties) == 1:
+		sd.buildOneLine(" map[string]" + typeFromSquareBracketProp())
+	}
+}
+
+// build array type
+// spec http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
+// example result  `type TypeName []something`
+func (sd *structDef) buildArray() {
+	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+}
+
+// build union type
+// union type is implemented as `interface{}`
+// example result `type sometype interface{}`
+func (sd *structDef) buildUnion() {
+	sd.buildOneLine(convertUnion(sd.t.Type.(string)))
+}
+
+func (sd *structDef) buildSpecialization() {
+	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+}
+
+func (sd *structDef) buildOneLine(tipe string) {
+	sd.IsOneLineDef = true
+	sd.OneLineDef = "type " + sd.Name + " " + tipe
 }

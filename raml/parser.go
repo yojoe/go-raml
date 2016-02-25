@@ -130,16 +130,6 @@ func PostProcess(d *APIDefinition) {
 		addMethodNames(k, nil, &r)
 		d.Resources[k] = r
 	}
-
-	//fill empty type
-	for _, v := range d.Types {
-		for k, p := range v.Properties {
-			if len(p.Type) == 0 {
-				p.Type = "string"
-				v.Properties[k] = p
-			}
-		}
-	}
 }
 
 func addMethodNames(uri string, parentResource, r *Resource) {
@@ -148,27 +138,21 @@ func addMethodNames(uri string, parentResource, r *Resource) {
 	}
 	if r.Get != nil {
 		r.Get.Name = "GET"
-		postBodiesProcess(r.Get)
 	}
 	if r.Post != nil {
 		r.Post.Name = "POST"
-		postBodiesProcess(r.Post)
 	}
 	if r.Put != nil {
 		r.Put.Name = "PUT"
-		postBodiesProcess(r.Put)
 	}
 	if r.Patch != nil {
 		r.Patch.Name = "PATCH"
-		postBodiesProcess(r.Patch)
 	}
 	if r.Head != nil {
 		r.Head.Name = "HEAD"
-		postBodiesProcess(r.Head)
 	}
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
-		postBodiesProcess(r.Delete)
 	}
 
 	for k := range r.Nested {
@@ -177,31 +161,6 @@ func addMethodNames(uri string, parentResource, r *Resource) {
 		n.Parent = r
 		addMethodNames(k, r, n)
 		r.Nested[k] = n
-	}
-}
-
-func postBodiesProcess(method *Method) {
-	if method == nil {
-		return
-	}
-
-	overrideBodies := func(bodies *Bodies) {
-		if bodies == nil || bodies.ApplicationJson == nil {
-			return
-		}
-		for k, v := range bodies.ApplicationJson.Properties {
-			if len(v.Type) == 0 {
-				v.Type = "string"
-				bodies.ApplicationJson.Properties[k] = v
-			}
-		}
-	}
-
-	overrideBodies(&method.Bodies)
-
-	//override body responses
-	for _, v := range method.Responses {
-		overrideBodies(&v.Bodies)
 	}
 }
 

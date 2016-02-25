@@ -32,6 +32,10 @@ package raml
 
 // This file contains all of the RAML types.
 
+import (
+	"strings"
+)
+
 // TODO: We don't support !include of non-text files. RAML supports including
 //       of many file types.
 
@@ -828,10 +832,58 @@ func (r *APIDefinition) GetResource(path string) *Resource {
 	return nil
 }
 
+// Property defines a Type property
 type Property struct {
-	Type     string `yaml:"type"`
-	Required bool   `yaml:"required"`
+	Name     string
+	Type     string      `yaml:"type"`
+	Required bool        `yaml:"required"`
+	Enum     interface{} `yaml:"enum"`
 }
+
+// ToProperty creates a property from an interface
+// we use `interface{}` as property type to support syntactic sugar & shortcut
+func ToProperty(name string, p interface{}) Property {
+	// convert from map of interface to property
+	mapToProperty := func(val map[interface{}]interface{}) Property {
+		var p Property
+		for k, v := range val {
+			switch k {
+			case "type":
+				p.Type = v.(string)
+			case "required":
+				p.Required = v.(bool)
+			case "enum":
+				p.Enum = v
+			}
+		}
+		return p
+	}
+
+	var prop Property
+	switch p.(type) {
+	case string:
+		prop = Property{Type: p.(string)}
+	case map[interface{}]interface{}:
+		prop = mapToProperty(p.(map[interface{}]interface{}))
+	case Property:
+		prop = p.(Property)
+	}
+
+	if prop.Type == "" { // if has no type, we set it as string
+		prop.Type = "string"
+	}
+
+	prop.Name = name
+
+	// if has "?" suffix, remove the "?" and set required=false
+	if strings.HasSuffix(prop.Name, "?") {
+		prop.Required = false
+		prop.Name = prop.Name[:len(prop.Name)-1]
+	}
+	return prop
+
+}
+
 type Type struct {
 	// Alias for the equivalent "type" property,
 	// for compatibility with RAML 0.8.
@@ -859,10 +911,82 @@ type Type struct {
 	Description string `yaml:"description"`
 
 	// The properties that instances of this type may or must have.
-	Properties map[string]Property
+	// we use `interface{}` as property type to support syntactic sugar & shortcut
+	Properties map[string]interface{} `yaml:"properties"`
+
+	// JSON schema style syntax for declaring maps
+	AdditionalProperties string `yaml:"additionalProperties"`
+
+	// Enum type
+	Enum interface{} `yaml:"enum"`
+
+	// Type property name to be used as a discriminator or boolean
+	Discriminator string `yaml:"discriminator"`
 }
 
+// IsMap checks if a type is a Map type as defined in http://docs.raml.org/specs/1.0/#raml-10-spec-types
+// map types could be written in these forms:
+// - a `[]` property TODO:property keys need to be changed to interface{}
+// - a regex within `[]` property. example : [a-zA-Z]
+// - additionalProperties fied in Type
+// - patternProperties filed in Type TODO
+// Type's type must be `object`
+func (t Type) IsMap() bool {
+	tipe, ok := t.Type.(string)
+	if !ok {
+		return false
+	}
+
+	// make sure the `type` value is `object`
+	if tipe != "object" {
+		return false
+	}
+
+	// check if this map type written using `[]`
+	squareBracketPropCheck := func() bool {
+		if len(t.Properties) != 1 {
+			return false
+		}
+		for k := range t.Properties {
+			if strings.HasPrefix(k, "[") && strings.HasSuffix(k, "]") {
+				return true
+			}
+		}
+		return false
+	}
+
+	switch {
+	case squareBracketPropCheck():
+		return true
+	case t.AdditionalProperties != "":
+		return true
+	default:
+		return false
+	}
+}
+
+// IsArray checks if this type is an Array
+// see specs at http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
+func (t Type) IsArray() bool {
+	return strings.HasSuffix(t.Type.(string), "[]")
+}
+
+// IsEnum type check if this type is an enum
+// http://docs.raml.org/specs/1.0/#raml-10-spec-enums
+func (t Type) IsEnum() bool {
+	return t.Enum != nil
+}
+
+// IsUnion checks if a type is Union type
+// see http://docs.raml.org/specs/1.0/#raml-10-spec-union-types
+func (t Type) IsUnion() bool {
+	return strings.Index(t.Type.(string), "|") > 0
+}
+
+// BodiesProperty defines a Body's property
 type BodiesProperty struct {
-	Properties map[string]Property `yaml:"properties"`
-	Type       string
+	// we use `interface{}` as property type to support syntactic sugar & shortcut
+	Properties map[string]interface{} `yaml:"properties"`
+
+	Type string
 }

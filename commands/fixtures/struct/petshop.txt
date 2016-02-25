@@ -1,0 +1,6 @@
+package main
+
+type petshop struct {
+	Cats mapOfCats `json:"cats"`
+	Name string    `json:"name"`
+}

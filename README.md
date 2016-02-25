@@ -113,6 +113,7 @@ struct name = types name.
     sometype[]  | []sometype
     sometype[][]| [][]sometype
     sometype{}  | map[string]sometype
+    Union       | interface{}
 
 ## Bodies
 [Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
