@@ -190,14 +190,11 @@ func (sd *structDef) buildMap() {
 		}
 		return p.Type
 	}
-	sd.IsOneLineDef = true
 	switch {
 	case sd.t.AdditionalProperties != "":
-		sd.OneLineDef = "type " + sd.Name + " map[string]" + convertToGoType(sd.t.AdditionalProperties)
+		sd.buildOneLine(" map[string]" + convertToGoType(sd.t.AdditionalProperties))
 	case len(sd.t.Properties) == 1:
-		sd.OneLineDef = "type " + sd.Name + " map[string]" + typeFromSquareBracketProp()
-	default:
-		sd.IsOneLineDef = false
+		sd.buildOneLine(" map[string]" + typeFromSquareBracketProp())
 	}
 }
 
@@ -205,19 +202,21 @@ func (sd *structDef) buildMap() {
 // spec http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 // example result  `type TypeName []something`
 func (sd *structDef) buildArray() {
-	sd.IsOneLineDef = true
-	sd.OneLineDef = "type " + sd.Name + " " + convertToGoType(sd.t.Type.(string))
+	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
 }
 
 // build union type
 // union type is implemented as `interface{}`
 // example result `type sometype interface{}`
 func (sd *structDef) buildUnion() {
-	sd.IsOneLineDef = true
-	sd.OneLineDef = "type " + sd.Name + " " + convertUnion(sd.t.Type.(string))
+	sd.buildOneLine(convertUnion(sd.t.Type.(string)))
 }
 
 func (sd *structDef) buildSpecialization() {
+	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+}
+
+func (sd *structDef) buildOneLine(tipe string) {
 	sd.IsOneLineDef = true
-	sd.OneLineDef = "type " + sd.Name + " " + convertToGoType(sd.t.Type.(string))
+	sd.OneLineDef = "type " + sd.Name + " " + tipe
 }
