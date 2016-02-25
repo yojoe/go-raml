@@ -871,6 +871,9 @@ type Type struct {
 
 	// Enum type
 	Enum interface{} `yaml:"enum"`
+
+	// Type property name to be used as a discriminator or boolean
+	Discriminator string `yaml:"discriminator"`
 }
 
 // IsMap checks if a type is a Map type as defined in http://docs.raml.org/specs/1.0/#raml-10-spec-types
@@ -924,6 +927,12 @@ func (t Type) IsArray() bool {
 // http://docs.raml.org/specs/1.0/#raml-10-spec-enums
 func (t Type) IsEnum() bool {
 	return t.Enum != nil
+}
+
+// IsUnion checks if a type is Union type
+// see http://docs.raml.org/specs/1.0/#raml-10-spec-union-types
+func (t Type) IsUnion() bool {
+	return strings.Index(t.Type.(string), "|") > 0
 }
 
 type BodiesProperty struct {

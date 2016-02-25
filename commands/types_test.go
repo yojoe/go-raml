@@ -20,6 +20,8 @@ func TestTypeConversion(t *testing.T) {
 			So(convertToGoType("string[]"), ShouldEqual, "[]string")
 			So(convertToGoType("string[][]"), ShouldEqual, "[][]string")
 			So(convertToGoType("number{}"), ShouldEqual, "map[string]float64")
+			So(convertToGoType("string | Person"), ShouldEqual, "interface{}")
+			So(convertToGoType("(string | Person)[]"), ShouldEqual, "[]interface{}")
 		})
 	})
 }

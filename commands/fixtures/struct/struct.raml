@@ -46,6 +46,11 @@ types:
   EnumString:
     type: string
     enum: [ str_a, str_b ]
+  Pet:
+    type: Cat | animal
+    discriminator: kind
+  ArrayOfPets:
+    type: (Cat | animal)[]
   petshop:
     properties:
       name:

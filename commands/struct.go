@@ -115,6 +115,8 @@ func (sd *structDef) handleAdvancedType(t raml.Type) {
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
 		sd.addMultipleInheritance(strType)
+	case sd.t.IsUnion():
+		sd.buildUnion()
 	case sd.t.IsArray(): // arary type
 		sd.buildArray()
 	case sd.t.IsMap(): // map
@@ -203,4 +205,12 @@ func (sd *structDef) buildMap() {
 func (sd *structDef) buildArray() {
 	sd.IsOneLineDef = true
 	sd.OneLineDef = "type " + sd.Name + " " + convertToGoType(sd.t.Type.(string))
+}
+
+// build union type
+// union type is implemented as `interface{}`
+// example result `type sometype interface{}`
+func (sd *structDef) buildUnion() {
+	sd.IsOneLineDef = true
+	sd.OneLineDef = "type " + sd.Name + " " + convertUnion(sd.t.Type.(string))
 }

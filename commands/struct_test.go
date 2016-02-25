@@ -93,6 +93,24 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// Union
+			s, err = testLoadFile(filepath.Join(targetdir, "Pet.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/Pet.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// Array of union
+			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfPets.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/ArrayOfPets.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

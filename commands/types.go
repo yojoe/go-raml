@@ -44,36 +44,38 @@ func (t *Date) String() string {
 	return time.Time(*t).String()
 }
 
+func convertUnion(strType string) string {
+	if strings.Index(strType, "[]") > 0 {
+		return "[]interface{}"
+	}
+	return "interface{}"
+}
+
 //ConvertToGoType handle convert from raml to go type
 func convertToGoType(source string) string {
-	var result string
 	switch source {
-	case "string":
-		result = "string"
+	case "string", "file":
+		return "string"
 	case "number":
-		result = "float64"
+		return "float64"
 	case "integer":
-		result = "int"
+		return "int"
 	case "boolean":
-		result = "bool"
+		return "bool"
 	case "date":
-		result = "Date"
-	case "file":
-		result = "string"
-	default:
-		result = source
+		return "Date"
 	}
 
 	// other types that need some processing
-	if result == source {
-		switch {
-		case strings.HasSuffix(source, "[][]"):
-			result = "[][]" + convertToGoType(source[:len(source)-4])
-		case strings.HasSuffix(source, "[]"):
-			result = "[]" + convertToGoType(source[:len(source)-2])
-		case strings.HasSuffix(source, "{}"):
-			result = "map[string]" + convertToGoType(source[:len(source)-2])
-		}
+	switch {
+	case strings.HasSuffix(source, "[][]"): // bidimensional array
+		return "[][]" + convertToGoType(source[:len(source)-4])
+	case strings.HasSuffix(source, "[]"): // array
+		return "[]" + convertToGoType(source[:len(source)-2])
+	case strings.HasSuffix(source, "{}"): // map
+		return "map[string]" + convertToGoType(source[:len(source)-2])
+	case strings.Index(source, "|") > 0:
+		return convertUnion(source)
 	}
-	return result
+	return source
 }
