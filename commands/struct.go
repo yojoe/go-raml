@@ -58,8 +58,8 @@ func newStructDefFromType(t raml.Type, sName, packageName, description string) s
 	sd := newStructDef(sName, packageName, description, t.Properties)
 	sd.t = t
 
-	// handle inheritance on raml1.0
-	sd.handleAdvancedType(t)
+	// handle advanced type on raml1.0
+	sd.handleAdvancedType()
 
 	return sd
 }
@@ -106,11 +106,11 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 //       name:
 //         type: string
 // the additional fieldDef would be Animal composition
-func (sd *structDef) handleAdvancedType(t raml.Type) {
-	if t.Type == nil {
+func (sd *structDef) handleAdvancedType() {
+	if sd.t.Type == nil {
 		return
 	}
-	strType := interfaceToString(t.Type)
+	strType := interfaceToString(sd.t.Type)
 
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
@@ -123,8 +123,10 @@ func (sd *structDef) handleAdvancedType(t raml.Type) {
 		sd.buildMap()
 	case strings.ToLower(strType) == "object": // plain type
 		return
-	case sd.t.IsEnum():
+	case sd.t.IsEnum(): // enum
 		sd.buildEnum()
+	case len(sd.t.Properties) == 0: // specialization
+		sd.buildSpecialization()
 	default: // single inheritance
 		sd.addSingleInheritance(strType)
 	}
@@ -213,4 +215,9 @@ func (sd *structDef) buildArray() {
 func (sd *structDef) buildUnion() {
 	sd.IsOneLineDef = true
 	sd.OneLineDef = "type " + sd.Name + " " + convertUnion(sd.t.Type.(string))
+}
+
+func (sd *structDef) buildSpecialization() {
+	sd.IsOneLineDef = true
+	sd.OneLineDef = "type " + sd.Name + " " + convertToGoType(sd.t.Type.(string))
 }

@@ -111,6 +111,15 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// Specialization
+			s, err = testLoadFile(filepath.Join(targetdir, "Specialization.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/Specialization.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {
