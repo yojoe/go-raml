@@ -5,8 +5,7 @@ types:
   EnumCity:
     description: city of angel city of angel city of angel city of angel city of angel city of angel city of angel city of angel city of angelcity of angelcity of angelcity of angelcity of angel city of angel
     properties:
-      name:
-        type: string
+      name: string
       enum_parks:
         type: string
         enum: [ park_a, park_b ]
@@ -16,12 +15,10 @@ types:
   animal:
     type: object
     properties:
-      name:
-        type: string
+      name?: string
       colours:
         type: string[]
-      cities:
-        type: EnumCity[]
+      cities: EnumCity[]
   SingleInheritance:
     type: animal
     properties:
@@ -77,6 +74,5 @@ types:
           body:
             application/json:
               properties:
-                age:
-                  type: integer
+                age: integer
                 ID:

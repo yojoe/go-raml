@@ -832,11 +832,58 @@ func (r *APIDefinition) GetResource(path string) *Resource {
 	return nil
 }
 
+// Property defines a Type property
 type Property struct {
+	Name     string
 	Type     string      `yaml:"type"`
 	Required bool        `yaml:"required"`
 	Enum     interface{} `yaml:"enum"`
 }
+
+// ToProperty creates a property from an interface
+// we use `interface{}` as property type to support syntactic sugar & shortcut
+func ToProperty(name string, p interface{}) Property {
+	// convert from map of interface to property
+	mapToProperty := func(val map[interface{}]interface{}) Property {
+		var p Property
+		for k, v := range val {
+			switch k {
+			case "type":
+				p.Type = v.(string)
+			case "required":
+				p.Required = v.(bool)
+			case "enum":
+				p.Enum = v
+			}
+		}
+		return p
+	}
+
+	var prop Property
+	switch p.(type) {
+	case string:
+		prop = Property{Type: p.(string)}
+	case map[interface{}]interface{}:
+		prop = mapToProperty(p.(map[interface{}]interface{}))
+	case Property:
+		prop = p.(Property)
+	}
+
+	if prop.Type == "" { // if has no type, we set it as string
+		prop.Type = "string"
+	}
+
+	prop.Name = name
+
+	// if has "?" suffix, remove the "?" and set required=false
+	if strings.HasSuffix(prop.Name, "?") {
+		prop.Required = false
+		prop.Name = prop.Name[:len(prop.Name)-1]
+	}
+	return prop
+
+}
+
 type Type struct {
 	// Alias for the equivalent "type" property,
 	// for compatibility with RAML 0.8.
@@ -864,7 +911,8 @@ type Type struct {
 	Description string `yaml:"description"`
 
 	// The properties that instances of this type may or must have.
-	Properties map[string]Property `yaml:"properties"`
+	// we use `interface{}` as property type to support syntactic sugar & shortcut
+	Properties map[string]interface{} `yaml:"properties"`
 
 	// JSON schema style syntax for declaring maps
 	AdditionalProperties string `yaml:"additionalProperties"`
@@ -935,7 +983,10 @@ func (t Type) IsUnion() bool {
 	return strings.Index(t.Type.(string), "|") > 0
 }
 
+// BodiesProperty defines a Body's property
 type BodiesProperty struct {
-	Properties map[string]Property `yaml:"properties"`
-	Type       string
+	// we use `interface{}` as property type to support syntactic sugar & shortcut
+	Properties map[string]interface{} `yaml:"properties"`
+
+	Type string
 }

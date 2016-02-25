@@ -14,6 +14,7 @@ var (
 type fieldDef struct {
 	Name          string
 	Type          string
+	Required      bool
 	IsComposition bool
 }
 
@@ -29,20 +30,21 @@ type structDef struct {
 }
 
 // create new struct def
-func newStructDef(name, packageName, description string, properties map[string]raml.Property) structDef {
+func newStructDef(name, packageName, description string, properties map[string]interface{}) structDef {
 	// generate struct's fields from type properties
 	fields := make(map[string]fieldDef)
 	for k, v := range properties {
-		goType := convertToGoType(v.Type)
-		if v.Enum != nil {
+		prop := raml.ToProperty(k, v)
+		goType := convertToGoType(prop.Type)
+		if prop.Enum != nil {
 			goType = "[]" + goType
 		}
 
 		fd := fieldDef{
-			Name: strings.Title(k),
+			Name: strings.Title(prop.Name),
 			Type: goType, // convert to internal field type
 		}
-		fields[k] = fd
+		fields[prop.Name] = fd
 	}
 	return structDef{
 		Name:        name,
@@ -181,11 +183,8 @@ func (sd *structDef) buildEnum() {
 func (sd *structDef) buildMap() {
 	typeFromSquareBracketProp := func() string {
 		var p raml.Property
-		for _, v := range sd.t.Properties {
-			if v.Type == "" {
-				v.Type = "string"
-			}
-			p = v
+		for k, v := range sd.t.Properties {
+			p = raml.ToProperty(k, v)
 			break
 		}
 		return p.Type
