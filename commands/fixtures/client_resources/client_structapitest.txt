@@ -20,7 +20,9 @@ func NewStructAPITest() *StructAPITest {
 	return c
 }
 
-// Get a list of test
+// get users.
+// This method will be return list user.
+// Use it wisely.
 func (c *StructAPITest) UsersGet(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 	var u UsersGetRespBody

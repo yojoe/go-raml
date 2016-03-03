@@ -178,24 +178,28 @@ func interfaceToString(data interface{}) string {
 
 // create comment string from raml description field.
 // comment is around 80 characters per line
-func funcCommentBuilder(desc string) []string {
+func commentBuilder(desc string) []string {
 	tmpDesc := ""
 	var results []string
 
-	splittedDesc := strings.Split(desc, " ")
+	splitByCarriageReturn := strings.Split(desc, "\n")
 
-	for i, v := range splittedDesc {
-		tmpDesc += v
-		if len(tmpDesc) > maxCommentPerLine {
+	for _, vv := range splitByCarriageReturn {
+		splittedDesc := strings.Split(vv, " ")
+		for i, v := range splittedDesc {
+			tmpDesc += v
+			if len(tmpDesc) > maxCommentPerLine {
+				results = append(results, tmpDesc)
+				tmpDesc = ""
+			} else if i < len(splittedDesc)-1 { // add space to non last word
+				tmpDesc += " "
+			}
+		}
+
+		if len(tmpDesc) > 0 {
 			results = append(results, tmpDesc)
 			tmpDesc = ""
-		} else if i < len(splittedDesc)-1 { // add space to non last word
-			tmpDesc += " "
 		}
-	}
-
-	if len(tmpDesc) > 0 {
-		results = append(results, tmpDesc)
 	}
 
 	return results

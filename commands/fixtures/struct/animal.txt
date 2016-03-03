@@ -1,5 +1,8 @@
 package main
 
+// Animal represent animal object.
+// It contains field that construct animal
+// such as : name, colours, and cities.
 type animal struct {
 	Cities  []EnumCity `json:"cities"`
 	Colours []string   `json:"colours"`
