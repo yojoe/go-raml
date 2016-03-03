@@ -13,6 +13,10 @@ types:
         type: integer
         enum: [ 1, 2, 3 ]
   animal:
+    description: |
+      Animal represent animal object.
+      It contains field that construct animal
+      such as : name, colours, and cities.
     type: object
     properties:
       name?: string
@@ -68,7 +72,10 @@ types:
           ID:
   /{id}:
     get:
-      description: get id
+      description: |
+        get id of users.
+        This method will be return single user object.
+        Replace ID with user defined field.
       responses:
         200:
           body:

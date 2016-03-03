@@ -71,7 +71,7 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 
 	// set func comment
 	if len(m.Description) > 0 {
-		im.FuncComments = funcCommentBuilder(m.Description)
+		im.FuncComments = commentBuilder(m.Description)
 	}
 
 	return im

@@ -47,6 +47,7 @@ class Client:
     def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
         """
         get address id
+        of address
         It is method for GET /users/{userId}/address/{addressId}
         """
         uri = self.url + "/users/"+userId+"/address/"+addressId

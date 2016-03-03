@@ -50,7 +50,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		Name:        name,
 		PackageName: packageName,
 		Fields:      fields,
-		Description: funcCommentBuilder(description),
+		Description: commentBuilder(description),
 	}
 
 }
