@@ -146,10 +146,10 @@ func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	var bodiesType string
 
 	if len(bodies.Type) > 0 {
-		bodiesType = bodies.Type
+		bodiesType = convertToGoType(bodies.Type)
 	} else if bodies.ApplicationJson != nil {
 		if bodies.ApplicationJson.Type != "" {
-			bodiesType = bodies.ApplicationJson.Type
+			bodiesType = convertToGoType(bodies.ApplicationJson.Type)
 		} else {
 			bodiesType = prefix + suffix
 		}
