@@ -1,5 +1,5 @@
 package client
 
-type Address struct {
+type address struct {
 	Name string `json:"Name"`
 }
