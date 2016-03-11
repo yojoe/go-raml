@@ -54,7 +54,13 @@ func (cd clientDef) generatePython(dir string) error {
 			PRArgs:          prArgs,
 		}
 		pm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
-		pm.MethodName = snakeCaseResourceURI(m.Resource) + "_" + strings.ToLower(m.Verb)
+
+		if len(pm.DisplayName) > 0 {
+			pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
+		} else {
+			pm.MethodName = snakeCaseResourceURI(m.Resource) + "_" + strings.ToLower(m.Verb)
+		}
+
 		pms = append(pms, pm)
 	}
 

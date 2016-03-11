@@ -1,0 +1,3 @@
+package main
+
+type mapOfNumber map[string]float64

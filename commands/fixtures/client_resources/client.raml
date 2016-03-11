@@ -15,6 +15,7 @@ types:
         type: string
 /users:
   get:
+    displayName: GetUsers
     description: |
       get users.
       This method will be return list user.
@@ -45,6 +46,7 @@ types:
           type: City
   /{userId}:
     get:
+      displayName: Get User By ID
       description: get id
       responses:
         200:

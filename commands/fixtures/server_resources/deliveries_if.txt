@@ -19,7 +19,7 @@ type DeliveriesInterface interface {
 
 	// Get information on a specific delivery
 	// It is handler for GET /deliveries/{deliveryId}
-	deliveryIdGet(http.ResponseWriter, *http.Request)
+	getDeliveriesByDeliveryID(http.ResponseWriter, *http.Request)
 
 	// Update the information on a specific delivery
 	// It is handler for PATCH /deliveries/{deliveryId}
@@ -33,7 +33,7 @@ type DeliveriesInterface interface {
 func DeliveriesInterfaceRoutes(r *mux.Router, i DeliveriesInterface) {
 	r.HandleFunc("/deliveries", i.Get).Methods("GET")
 	r.HandleFunc("/deliveries", i.Post).Methods("POST")
-	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdGet).Methods("GET")
+	r.HandleFunc("/deliveries/{deliveryId}", i.getDeliveriesByDeliveryID).Methods("GET")
 	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdPatch).Methods("PATCH")
 	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdDelete).Methods("DELETE")
 }

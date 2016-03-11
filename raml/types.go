@@ -926,22 +926,12 @@ type Type struct {
 
 // IsMap checks if a type is a Map type as defined in http://docs.raml.org/specs/1.0/#raml-10-spec-types
 // map types could be written in these forms:
-// - a `[]` property TODO:property keys need to be changed to interface{}
+// - a `[]` property
 // - a regex within `[]` property. example : [a-zA-Z]
 // - additionalProperties fied in Type
 // - patternProperties filed in Type TODO
 // Type's type must be `object`
 func (t Type) IsMap() bool {
-	tipe, ok := t.Type.(string)
-	if !ok {
-		return false
-	}
-
-	// make sure the `type` value is `object`
-	if tipe != "object" {
-		return false
-	}
-
 	// check if this map type written using `[]`
 	squareBracketPropCheck := func() bool {
 		if len(t.Properties) != 1 {
@@ -955,14 +945,14 @@ func (t Type) IsMap() bool {
 		return false
 	}
 
-	switch {
-	case squareBracketPropCheck():
+	if squareBracketPropCheck() {
 		return true
-	case t.AdditionalProperties != "":
-		return true
-	default:
-		return false
 	}
+
+	if t.AdditionalProperties != "" {
+		return true
+	}
+	return false
 }
 
 // IsArray checks if this type is an Array

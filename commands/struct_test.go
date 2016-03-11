@@ -120,6 +120,32 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// Map of cat
+			s, err = testLoadFile(filepath.Join(targetdir, "mapOfCat.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/mapOfCat.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// Map of number
+			s, err = testLoadFile(filepath.Join(targetdir, "mapOfNumber.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/mapOfNumber.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// Map of string
+			s, err = testLoadFile(filepath.Join(targetdir, "mapOfString.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/mapOfString.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
 		})
 
 		Reset(func() {

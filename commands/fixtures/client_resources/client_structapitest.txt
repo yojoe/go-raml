@@ -23,7 +23,7 @@ func NewStructAPITest() *StructAPITest {
 // get users.
 // This method will be return list user.
 // Use it wisely.
-func (c *StructAPITest) UsersGet(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
+func (c *StructAPITest) GetUsers(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 	var u UsersGetRespBody
 
@@ -62,7 +62,7 @@ func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]int
 }
 
 // get id
-func (c *StructAPITest) UsersUserIdGet(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+func (c *StructAPITest) GetUserByID(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
 	var u City
 

@@ -47,7 +47,7 @@ func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
 
 // get address id
 // It is handler for GET /users/{userId}/address/{addressId}
-func (api UsersAPI) userIdaddressaddressIdGet(w http.ResponseWriter, r *http.Request) {
+func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
 	var respBody Address
 	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header

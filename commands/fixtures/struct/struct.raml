@@ -61,6 +61,20 @@ types:
         type: string
       cats:
         type: mapOfCats
+  mapOfString:
+    type: object
+    properties:
+      "[]":
+        type: string
+  mapOfCat:
+    type: object
+    properties:
+      "[]":
+        type: Cat
+  mapOfNumber:
+    properties:
+      "[]":
+        type: number
 /users:
   get:
     description: Get a list of test
