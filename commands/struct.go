@@ -110,8 +110,9 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 // the additional fieldDef would be Animal composition
 func (sd *structDef) handleAdvancedType() {
 	if sd.t.Type == nil {
-		return
+		sd.t.Type = "object"
 	}
+
 	strType := interfaceToString(sd.t.Type)
 
 	switch {
@@ -121,7 +122,7 @@ func (sd *structDef) handleAdvancedType() {
 		sd.buildUnion()
 	case sd.t.IsArray(): // arary type
 		sd.buildArray()
-	case sd.t.IsMap(): // map
+	case sd.t.IsMap(): //map
 		sd.buildMap()
 	case strings.ToLower(strType) == "object": // plain type
 		return
@@ -187,7 +188,8 @@ func (sd *structDef) buildMap() {
 			p = raml.ToProperty(k, v)
 			break
 		}
-		return p.Type
+
+		return convertToGoType(p.Type)
 	}
 	switch {
 	case sd.t.AdditionalProperties != "":
