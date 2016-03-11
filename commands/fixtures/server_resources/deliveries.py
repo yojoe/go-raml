@@ -22,7 +22,7 @@ def deliveries_post():
 
 
 @deliveries_api.route('/deliveries/<deliveryId>', methods=['GET'])
-def deliveries_byDeliveryId_get(deliveryId):
+def getDeliveriesByDeliveryID(deliveryId):
     '''
     Get information on a specific delivery
     It is handler for GET /deliveries/<deliveryId>

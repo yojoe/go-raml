@@ -82,9 +82,17 @@ func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 
 	name := normalizeURI(im.Endpoint)
 	if lang == "go" {
-		im.MethodName = name[len(rd.Name):] + methodName
+		if len(m.DisplayName) > 0 {
+			im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+		} else {
+			im.MethodName = name[len(rd.Name):] + methodName
+		}
 	} else {
-		im.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(im.Verb)
+		if len(m.DisplayName) > 0 {
+			im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+		} else {
+			im.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(im.Verb)
+		}
 		im.Params = strings.Join(getResourceParams(r), ", ")
 		im.Endpoint = strings.Replace(im.Endpoint, "{", "<", -1)
 		im.Endpoint = strings.Replace(im.Endpoint, "}", ">", -1)
@@ -123,7 +131,12 @@ func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 	im.ResourcePath = paramizingURI(im.Endpoint)
 
 	name := normalizeURITitle(im.Endpoint)
-	im.MethodName = strings.Title(name + methodName)
+
+	if len(m.DisplayName) > 0 {
+		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+	} else {
+		im.MethodName = strings.Title(name + methodName)
+	}
 
 	im.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
 

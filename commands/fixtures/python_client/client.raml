@@ -14,6 +14,7 @@ types:
         type: string
 /users:
   get:
+    displayName: get_users
     description: Get a list of test, this comment is very long, to test our comment generator. Is it good?
     body:
       application/json:
@@ -23,6 +24,7 @@ types:
           ID:
             type: string
   post:
+    displayName: create_users
     description: create users
     body:
       type: City
@@ -32,6 +34,7 @@ types:
           type: City
   /{userId}:
     get:
+      displayName: get user id
       description: get id
       responses:
         200:

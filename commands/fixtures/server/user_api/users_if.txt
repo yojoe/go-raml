@@ -26,7 +26,7 @@ type UsersInterface interface {
 
 	// get address id
 	// It is handler for GET /users/{userId}/address/{addressId}
-	userIdaddressaddressIdGet(http.ResponseWriter, *http.Request)
+	getUserAddressByID(http.ResponseWriter, *http.Request)
 }
 
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
@@ -34,5 +34,5 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.HandleFunc("/users", i.Post).Methods("POST")
 	r.HandleFunc("/users/{userId}", i.userIdGet).Methods("GET")
 	r.HandleFunc("/users/{userId}", i.userIdDelete).Methods("DELETE")
-	r.HandleFunc("/users/{userId}/address/{addressId}", i.userIdaddressaddressIdGet).Methods("GET")
+	r.HandleFunc("/users/{userId}/address/{addressId}", i.getUserAddressByID).Methods("GET")
 }

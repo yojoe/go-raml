@@ -23,7 +23,7 @@ func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
 
 // Get information on a specific delivery
 // It is handler for GET /deliveries/{deliveryId}
-func (api DeliveriesAPI) deliveryIdGet(w http.ResponseWriter, r *http.Request) {
+func (api DeliveriesAPI) getDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
