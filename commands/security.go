@@ -77,6 +77,23 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 	return nil
 }
 
+// return security scheme name that could be used in code
 func securitySchemeName(name string) string {
 	return strings.Replace(name, " ", "", -1)
+}
+
+// validate security scheme:
+// - not empty
+// - not 'null'
+// - oauth2 -> we only support oauth2 now
+func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
+	if name == "" || name == "null" {
+		return false
+	}
+	for _, v := range apiDef.SecuritySchemes {
+		if ss, ok := v[name]; ok {
+			return ss.Type == Oauth2
+		}
+	}
+	return false
 }

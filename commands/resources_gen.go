@@ -116,7 +116,7 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	// generate middlewares from securityScheme
 	middlewares := []string{}
 	for _, v := range im.SecuredBy {
-		if v == "null" || v == "" { // ignore null and empty string
+		if !validateSecurityScheme(v, apiDef) {
 			continue
 		}
 		middlewares = append(middlewares, securitySchemeName(v)+"Mwr")
