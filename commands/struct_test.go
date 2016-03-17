@@ -146,6 +146,16 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
+
+			// Enum type
+			s, err = testLoadFile(filepath.Join(targetdir, "EnumString.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/enumstring.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

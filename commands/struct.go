@@ -35,14 +35,9 @@ func newStructDef(name, packageName, description string, properties map[string]i
 	fields := make(map[string]fieldDef)
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
-		goType := convertToGoType(prop.Type)
-		if prop.Enum != nil {
-			goType = "[]" + goType
-		}
-
 		fd := fieldDef{
 			Name: strings.Title(prop.Name),
-			Type: goType, // convert to internal field type
+			Type: convertToGoType(prop.Type),
 		}
 		fields[prop.Name] = fd
 	}
@@ -175,8 +170,7 @@ func (sd *structDef) buildEnum() {
 		return
 	}
 
-	sd.IsOneLineDef = true
-	sd.OneLineDef = "type " + sd.Name + "[]" + convertToGoType(sd.t.Type.(string))
+	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
 }
 
 // build map type based on http://docs.raml.org/specs/1.0/#raml-10-spec-map-types
