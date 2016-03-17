@@ -548,7 +548,7 @@ type Method struct {
 	// the method is protected using a specific security scheme, the method
 	// MUST be defined by using the securedBy attribute
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+	SecuredBy []string `yaml:"securedBy"`
 	// TODO: To indicate that the method may be called without applying any
 	// securityScheme, the method may be annotated with the null securityScheme.
 
@@ -788,7 +788,7 @@ type APIDefinition struct {
 	// API MAY be defined using the securedBy attribute. This specifies that
 	// all methods in the API are protected using that security scheme.
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+	SecuredBy []string `yaml:"securedBy"`
 
 	// The API definition can include a variety of documents that serve as a
 	// user guides and reference documentation for the API. Such documents can

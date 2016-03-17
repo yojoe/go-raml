@@ -1,6 +1,7 @@
 #%RAML 1.0
 title: Dropbox API
 version: 1
+securedBy: [oauth_2_0_header]
 baseUri: https://api.dropbox.com/{version}
 securitySchemes:
     - oauth_2_0_header:
@@ -62,3 +63,33 @@ securitySchemes:
           requestTokenUri: https://api.dropbox.com/1/oauth/request_token
           authorizationUri: https://www.dropbox.com/1/oauth/authorize
           tokenCredentialsUri: https://api.dropbox.com/1/oauth/access_token
+
+
+types:
+  User:
+    properties:
+        firstName:
+          type: string
+        lastName:
+        age:
+          type: integer
+        height:
+          type: number
+        iscrazy:
+          type: boolean
+        dob:
+          type: date
+/deliveries:
+  get:
+    description: Get a list of deliveries
+    securedBy: [oauth_2_0_query]
+  post:
+    description: Create/request a new delivery
+  /{deliveryId}:
+    get:
+      description: Get information on a specific delivery
+      securedBy: [null]
+    patch:
+      description: Update the information on a specific delivery
+    delete:
+      description: Cancel a specific delivery

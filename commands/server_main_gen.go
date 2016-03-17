@@ -56,7 +56,7 @@ func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, g
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(apiDef.Resources, dir, packageName, lang)
+	rds, err := generateServerResources(apiDef, dir, packageName, lang)
 	if err != nil {
 		return err
 	}

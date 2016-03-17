@@ -28,7 +28,7 @@ func newSecurityDef(ss *raml.SecurityScheme, name, packageName string) securityD
 	sd := securityDef{
 		SecurityScheme: ss,
 	}
-	sd.Name = strings.Replace(name, " ", "", -1)
+	sd.Name = securitySchemeName(name)
 	sd.PackageName = packageName
 
 	// assign header, if any
@@ -75,4 +75,8 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 		}
 	}
 	return nil
+}
+
+func securitySchemeName(name string) string {
+	return strings.Replace(name, " ", "", -1)
 }
