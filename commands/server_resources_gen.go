@@ -48,8 +48,10 @@ func (rd *resourceDef) generate(r *raml.Resource, URI, dir, lang string) error {
 }
 
 // generate Server's Go representation of RAML resources
-func generateServerResources(rs map[string]raml.Resource, directory, packageName, lang string) ([]resourceDef, error) {
+func generateServerResources(apiDef *raml.APIDefinition, directory, packageName, lang string) ([]resourceDef, error) {
 	var rds []resourceDef
+
+	rs := apiDef.Resources
 
 	if err := checkCreateDir(directory); err != nil {
 		return rds, err
@@ -66,7 +68,7 @@ func generateServerResources(rs map[string]raml.Resource, directory, packageName
 	// create resource def
 	for _, k := range keys {
 		r := rs[k]
-		rd := newResourceDef(k, packageName)
+		rd := newResourceDef(apiDef, k, packageName)
 		rd.IsServer = true
 		if err := rd.generate(&r, k, directory, lang); err != nil {
 			return rds, err

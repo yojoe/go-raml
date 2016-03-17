@@ -13,18 +13,21 @@ const (
 
 // resourceDef is Go code representation of a resource
 type resourceDef struct {
-	Name        string            // resource name
-	Endpoint    string            // root endpoint
-	Methods     []interfaceMethod // all methods of this resource
-	IsServer    bool              // true if it is resource definition for server
-	NeedJSON    bool              // if true, the API implementation to import encoding/json package
-	PackageName string            // Name of the package this resource resides in
+	Name           string            // resource name
+	Endpoint       string            // root endpoint
+	Methods        []interfaceMethod // all methods of this resource
+	IsServer       bool              // true if it is resource definition for server
+	NeedJSON       bool              // if true, the API implementation to import encoding/json package
+	PackageName    string            // Name of the package this resource resides in
+	APIDef         *raml.APIDefinition
+	WithMiddleware bool
 }
 
 // create a resource definition
-func newResourceDef(endpoint, packageName string) resourceDef {
+func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) resourceDef {
 	rd := resourceDef{
 		Endpoint: endpoint,
+		APIDef:   apiDef,
 	}
 	rd.Name = strings.Title(normalizeURI(endpoint))
 	rd.PackageName = packageName
@@ -43,6 +46,8 @@ type interfaceMethod struct {
 	Resource     *raml.Resource // resource object of this method
 	Params       string         // methods params
 	FuncComments []string
+	SecuredBy    []string
+	Middlewares  string
 }
 
 // create an interfaceMethod object
@@ -77,7 +82,8 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 	return im
 }
 
-func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
+func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
+	methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
 	name := normalizeURI(im.Endpoint)
@@ -98,6 +104,25 @@ func newServerInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method,
 		im.Endpoint = strings.Replace(im.Endpoint, "}", ">", -1)
 	}
 
+	// security scheme
+	// if a method has securedBy attribute, we use it.
+	// Otherwise we use securedBy from root document
+	if len(m.SecuredBy) > 0 {
+		im.SecuredBy = m.SecuredBy
+	} else {
+		im.SecuredBy = apiDef.SecuredBy
+	}
+
+	// generate middlewares from securityScheme
+	middlewares := []string{}
+	for _, v := range im.SecuredBy {
+		if !validateSecurityScheme(v, apiDef) {
+			continue
+		}
+		middlewares = append(middlewares, securitySchemeName(v)+"Mwr")
+		rd.WithMiddleware = true
+	}
+	im.Middlewares = strings.Join(middlewares, ", ")
 	return im
 }
 
@@ -179,7 +204,7 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 	var im interfaceMethod
 	var err error
 	if rd.IsServer {
-		im = newServerInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
+		im = newServerInterfaceMethod(rd.APIDef, r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
 	} else {
 		im, err = newClientInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 		if err != nil {

@@ -2,6 +2,8 @@ package commands
 
 import (
 	"github.com/Jumpscale/go-raml/raml"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -47,8 +49,14 @@ func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, g
 		}
 	}
 
+	// security scheme
+	if err := generateSecurity(apiDef, dir, packageName); err != nil {
+		log.Errorf("failed to generate security scheme:%v", err)
+		return err
+	}
+
 	// genereate resources
-	rds, err := generateServerResources(apiDef.Resources, dir, packageName, lang)
+	rds, err := generateServerResources(apiDef, dir, packageName, lang)
 	if err != nil {
 		return err
 	}

@@ -67,7 +67,7 @@ type NamedParameter struct {
 	DisplayName string `yaml:"displayName"` // TODO: Auto-fill this
 
 	// The intended use or meaning of the parameter
-	Description string
+	Description string `yaml:"description"`
 
 	// The primitive type of the parameter's resolved value. Can be:
 	//
@@ -488,10 +488,10 @@ type ResourceType struct {
 // the mechanism, such as specifying response codes, HTTP headers or custom
 // documentation.
 type SecuritySchemeMethod struct {
-	Bodies          Bodies                    `yaml:"body"`
+	//Bodies          Bodies                    `yaml:"body"`
 	Headers         map[HTTPHeader]Header     `yaml:"headers"`
-	Responses       map[HTTPCode]Response     `yaml:"responses"`
 	QueryParameters map[string]NamedParameter `yaml:"queryParameters"`
+	Responses       map[HTTPCode]Response     `yaml:"responses"`
 }
 
 // Most REST APIs have one or more mechanisms to secure data access, identify
@@ -501,12 +501,12 @@ type SecurityScheme struct {
 	// TODO: Fill this during the post-processing phase
 
 	// Briefly describes the security scheme
-	Description string
+	Description string `yaml:"description"`
 
 	// The type attribute MAY be used to convey information about
 	// authentication flows and mechanisms to processing applications
 	// such as Documentation Generators and Client generators.
-	Type string
+	Type string `yaml:"type"`
 	// TODO: Verify that it is of the values accepted: "OAuth 1.0",
 	// "OAuth 2.0", "Basic Authentication", "Digest Authentication",
 	// "x-{other}"
@@ -519,12 +519,12 @@ type SecurityScheme struct {
 	// SHOULD describe the security schemes' required artifacts, such as
 	// headers, URI parameters, and so on.
 	// Including the security schemes' description completes an API's documentation.
-	DescribedBy SecuritySchemeMethod
+	DescribedBy SecuritySchemeMethod `yaml:"describedBy"`
 
 	// The settings attribute MAY be used to provide security schema-specific
 	// information. Depending on the value of the type parameter, its attributes
 	// can vary.
-	Settings map[string]Any
+	Settings map[string]Any `yaml:"settings"`
 	// TODO: Verify OAuth 1.0, 2.0 settings
 	// TODO: Add to documentaiotn
 
@@ -548,7 +548,7 @@ type Method struct {
 	// the method is protected using a specific security scheme, the method
 	// MUST be defined by using the securedBy attribute
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+	SecuredBy []string `yaml:"securedBy"`
 	// TODO: To indicate that the method may be called without applying any
 	// securityScheme, the method may be annotated with the null securityScheme.
 
@@ -788,7 +788,7 @@ type APIDefinition struct {
 	// API MAY be defined using the securedBy attribute. This specifies that
 	// all methods in the API are protected using that security scheme.
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+	SecuredBy []string `yaml:"securedBy"`
 
 	// The API definition can include a variety of documents that serve as a
 	// user guides and reference documentation for the API. Such documents can

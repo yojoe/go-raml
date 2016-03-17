@@ -19,7 +19,7 @@ func TestPythonResource(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/server_resources/deliveries.raml")
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef.Resources, targetdir, "", "python")
+			_, err = generateServerResources(apiDef, targetdir, "", "python")
 			So(err, ShouldBeNil)
 
 			// check  api implementation
