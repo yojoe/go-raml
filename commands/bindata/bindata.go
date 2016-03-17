@@ -3,6 +3,7 @@
 // ../templates/client_helper_resource.tmpl
 // ../templates/client_resource.tmpl
 // ../templates/generic_main.tmpl
+// ../templates/oauth2_middleware.tmpl
 // ../templates/python_client.tmpl
 // ../templates/python_client_utils.tmpl
 // ../templates/python_server_resource.tmpl
@@ -93,7 +94,7 @@ func TemplatesClient_helper_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1456298543, 0)}
+	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -113,7 +114,7 @@ func TemplatesClient_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1456298543, 0)}
+	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -138,6 +139,26 @@ func TemplatesGeneric_mainTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _TemplatesOauth2_middlewareTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xbc\x92\xcf\x6e\xa3\x30\x10\xc6\xcf\xf6\x53\x8c\x7c\x32\xab\x0d\xfb\x47\x7b\x5a\x29\x87\xbd\x6c\x39\xb4\x15\x4d\x53\xf5\x58\x59\x61\x92\x58\x01\x43\x07\x53\x9a\x22\xde\xbd\x63\x4c\xaa\xa4\x0f\x50\x2e\xd8\x33\xfe\x3e\xff\x3e\x79\x86\x61\x01\x05\x6e\xad\x43\x50\xb5\xe9\xfc\xfe\xf7\x53\x65\x8b\xa2\xc4\xde\x10\x2a\x58\x8c\xa3\x6c\xcc\xe6\x60\x76\x08\xc3\x90\xe6\x71\x79\x6b\x2a\xe4\x86\xb4\x55\x53\x93\x07\x2d\x85\x2a\xeb\x9d\xe2\x9f\x43\xff\x63\xef\x7d\xa3\x64\x22\xe5\xb6\x73\x9b\xa0\x8a\xc7\x6f\x7a\xd2\x0e\x5f\x3d\x84\x7e\x9a\x19\xc7\x97\x50\x72\xb1\x83\x41\x0a\x42\xdf\x91\xbb\x28\xff\x67\x1f\x1d\xcc\x74\x1f\xeb\x2b\x6c\x9b\xda\xb5\xf8\x48\xd6\x23\x7d\x07\x82\x6f\x73\xfd\xb9\xc3\xd6\x27\xec\x03\xf3\x37\x0c\x60\xb7\x90\x66\x68\x0a\xf6\x67\xe8\x53\x23\x64\xcd\x0a\x82\xbf\x4b\xa0\xb9\x9d\x5e\xa1\xd7\x8a\x81\xe7\x6d\xe4\x56\x89\x14\x82\x3d\x4e\x82\xe5\x12\x94\x0a\xa4\x42\x70\xe8\x34\x27\xeb\x7c\xe9\xb4\xfa\xc7\xfd\x9a\xec\x9b\xf1\xb6\x66\xfe\x78\xa1\x6d\x01\xab\xc6\x1f\x27\x13\xd1\xa7\x13\x71\xb4\xd7\x7f\x7e\xfe\x9a\xaa\x31\x31\xaf\xc6\x73\x6a\x2c\x5b\x9c\xd0\xef\x3a\xa4\x63\x6e\xc8\x54\xed\x39\xbf\xaf\x0f\xe8\x22\xfd\xc3\xea\x3a\x9e\xd2\xc9\x47\x84\x33\xd5\xa7\x1c\x51\xf8\x55\x29\x5c\x11\xa0\x85\x08\x2f\x9f\xde\x23\xbd\x60\xb6\x5e\xe7\xba\xe7\x47\x63\xd9\x98\x48\x1e\xa3\x30\x83\xe1\x60\x18\xb6\xf7\x00\x00\x00\xff\xff\xad\x0c\xd8\xa2\x90\x02\x00\x00")
+
+func TemplatesOauth2_middlewareTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_TemplatesOauth2_middlewareTmpl,
+		"../templates/oauth2_middleware.tmpl",
+	)
+}
+
+func TemplatesOauth2_middlewareTmpl() (*asset, error) {
+	bytes, err := TemplatesOauth2_middlewareTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "../templates/oauth2_middleware.tmpl", size: 656, mode: os.FileMode(420), modTime: time.Unix(1458198889, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _TemplatesPython_clientTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x6c\x92\xcf\xce\xda\x30\x0c\xc0\xef\x79\x0a\xab\xe2\x00\xfa\xbe\xaf\x0f\x80\xc4\x01\x10\x93\x90\xb6\x09\xb1\x3f\xd7\x28\xb4\x2e\x44\x6b\x92\xce\x49\x98\x50\x96\x77\x5f\xd2\x40\xd5\xc3\x7c\x68\x6d\xcb\xfe\xf9\x5f\x42\xf8\x80\x16\x3b\xa9\x11\xaa\xe1\xe1\x6e\x46\xf3\xa6\x97\xa8\x1d\x77\xa8\x86\x5e\x38\xac\xe0\x23\x46\x26\xd5\x60\xc8\x01\xe1\x6f\x8f\xd6\x59\xd6\x91\x51\xf0\x8c\xf4\x4e\xf6\x16\x9e\x11\x17\x2f\xfb\x96\xa7\x28\x7a\x70\xeb\x48\xea\x2b\x63\xbb\xed\xb7\x03\xff\x71\x3e\xc2\x06\xaa\x10\xea\x9d\xb0\x98\xac\x18\x2b\xc6\x58\xd3\x0b\x6b\x61\x3f\x92\xd6\x0c\x92\xa4\x76\x80\x73\xa9\xa5\xe3\x7c\x69\xb1\xef\x56\xc5\x9f\x25\x9b\xb5\xa7\x3e\x91\x5e\x50\x16\x02\x90\xd0\x57\x84\xc5\xaf\x77\x58\xdc\x61\xbd\x81\xfa\x34\x8e\xf2\x05\xd3\xb7\xb5\x90\xfa\x7f\x81\x43\x58\xdc\xeb\xe2\xff\x2a\x14\xc6\xb8\x1c\x3d\x27\x41\x42\xd9\x18\x67\xa5\xaa\xaa\x9a\x91\xbb\x8c\xee\x32\x3b\x45\x7f\xf2\xba\xd9\x1b\xa5\x52\xcb\x13\x3c\x4b\x46\x75\x31\x86\x80\xba\x9d\xb9\x8f\x0e\xa4\x05\x35\x16\x85\xce\x50\x69\xe2\x27\xd2\x25\xc6\xa2\x1f\x74\x3b\x18\xa9\xdd\x2c\x29\x95\x9f\x74\x4f\x32\x0d\x3c\xcd\xfe\x56\x92\xce\x68\x8d\xa7\x06\x4f\xc2\xdd\x66\x89\x25\x38\x7f\xdf\xfe\x73\x8c\x65\x31\x86\x71\xde\xd5\x94\x44\xe8\x3c\xe9\xe9\xbc\xf5\xd4\x21\xfc\x85\xef\xe6\xb3\xf9\x83\x94\x56\x95\xa0\x65\x5b\xe7\x2d\x5d\xd3\xb6\xde\xe1\x86\xa2\x45\xb2\x9b\xe7\x7f\x95\x8f\x91\x86\xcf\x4b\xc9\x2f\x2b\xab\xf9\xf5\xfc\x0b\x00\x00\xff\xff\x09\x39\x05\x4e\x66\x02\x00\x00")
 
 func TemplatesPython_clientTmplBytes() ([]byte, error) {
@@ -153,7 +174,7 @@ func TemplatesPython_clientTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1456298543, 0)}
+	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -213,7 +234,7 @@ func TemplatesServer_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1177, mode: os.FileMode(420), modTime: time.Unix(1456298543, 0)}
+	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1177, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -253,7 +274,7 @@ func TemplatesServer_resources_apiTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 869, mode: os.FileMode(420), modTime: time.Unix(1456320369, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 869, mode: os.FileMode(420), modTime: time.Unix(1458198763, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -273,7 +294,7 @@ func TemplatesServer_resources_interfaceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 709, mode: os.FileMode(420), modTime: time.Unix(1456298543, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 709, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -293,7 +314,7 @@ func TemplatesStructTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 354, mode: os.FileMode(420), modTime: time.Unix(1456282699, 0)}
+	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 354, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -353,6 +374,7 @@ var _bindata = map[string]func() (*asset, error){
 	"../templates/client_helper_resource.tmpl": TemplatesClient_helper_resourceTmpl,
 	"../templates/client_resource.tmpl": TemplatesClient_resourceTmpl,
 	"../templates/generic_main.tmpl": TemplatesGeneric_mainTmpl,
+	"../templates/oauth2_middleware.tmpl": TemplatesOauth2_middlewareTmpl,
 	"../templates/python_client.tmpl": TemplatesPython_clientTmpl,
 	"../templates/python_client_utils.tmpl": TemplatesPython_client_utilsTmpl,
 	"../templates/python_server_resource.tmpl": TemplatesPython_server_resourceTmpl,
@@ -408,6 +430,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"client_helper_resource.tmpl": &bintree{TemplatesClient_helper_resourceTmpl, map[string]*bintree{}},
 			"client_resource.tmpl": &bintree{TemplatesClient_resourceTmpl, map[string]*bintree{}},
 			"generic_main.tmpl": &bintree{TemplatesGeneric_mainTmpl, map[string]*bintree{}},
+			"oauth2_middleware.tmpl": &bintree{TemplatesOauth2_middlewareTmpl, map[string]*bintree{}},
 			"python_client.tmpl": &bintree{TemplatesPython_clientTmpl, map[string]*bintree{}},
 			"python_client_utils.tmpl": &bintree{TemplatesPython_client_utilsTmpl, map[string]*bintree{}},
 			"python_server_resource.tmpl": &bintree{TemplatesPython_server_resourceTmpl, map[string]*bintree{}},

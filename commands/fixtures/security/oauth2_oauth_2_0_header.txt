@@ -1,0 +1,20 @@
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func oauth_2_0_headerMwr(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		authHdr := r.Header.Get("Authorization")
+		if authHdr == "" {
+			log.Println("Authorization header is empty")
+			w.WriteHeader(401)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

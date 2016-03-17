@@ -1,0 +1,30 @@
+{{- define "oauth2_middleware" -}}
+package {{.PackageName}}
+
+import (
+	"log"
+	"net/http"
+)
+
+func {{.Name}}Mwr(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        {{ if .Header }}
+        authHdr := r.Header.Get("{{.Header.Name}}")
+		if authHdr == "" {
+			log.Println("Authorization header is empty")
+			w.WriteHeader(401)
+			return
+		}
+        {{ else if .QueryParams }}
+        token := r.URL.Query().Get("{{.QueryParams.Name}}")
+		if token == "" {
+			log.Println("Authorization header is empty")
+			w.WriteHeader(401)
+			return
+		}
+        {{ end }}
+		next.ServeHTTP(w, r)
+	})
+}
+
+{{- end -}}
