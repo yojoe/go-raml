@@ -261,7 +261,7 @@ type Response struct {
 // ResourceType/Trait/SecurityScheme as well as the parameters used to create
 // an instance of it.
 // Parameters MUST be of type string.
-type DefinitionParameters map[string]string
+type DefinitionParameters map[string]interface{}
 type DefinitionChoice struct {
 	Name string
 
@@ -548,7 +548,7 @@ type Method struct {
 	// the method is protected using a specific security scheme, the method
 	// MUST be defined by using the securedBy attribute
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []string `yaml:"securedBy"`
+	SecuredBy []DefinitionChoice `yaml:"securedBy"`
 	// TODO: To indicate that the method may be called without applying any
 	// securityScheme, the method may be annotated with the null securityScheme.
 
@@ -788,7 +788,7 @@ type APIDefinition struct {
 	// API MAY be defined using the securedBy attribute. This specifies that
 	// all methods in the API are protected using that security scheme.
 	// Custom parameters can be provided to the security scheme.
-	SecuredBy []string `yaml:"securedBy"`
+	SecuredBy []DefinitionChoice `yaml:"securedBy"`
 
 	// The API definition can include a variety of documents that serve as a
 	// user guides and reference documentation for the API. Such documents can
