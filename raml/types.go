@@ -261,7 +261,7 @@ type Response struct {
 // ResourceType/Trait/SecurityScheme as well as the parameters used to create
 // an instance of it.
 // Parameters MUST be of type string.
-type DefinitionParameters map[string][]string
+type DefinitionParameters map[string]interface{}
 type DefinitionChoice struct {
 	Name string
 
