@@ -82,7 +82,7 @@ types:
 /deliveries:
   get:
     description: Get a list of deliveries
-    securedBy: [oauth_2_0_query]
+    securedBy: [oauth_2_0_query: { scopes: [ ADMINISTRATOR ] }]
   post:
     description: Create/request a new delivery
   /{deliveryId}:

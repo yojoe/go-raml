@@ -46,7 +46,7 @@ type interfaceMethod struct {
 	Resource     *raml.Resource // resource object of this method
 	Params       string         // methods params
 	FuncComments []string
-	SecuredBy    []string
+	SecuredBy    []raml.DefinitionChoice
 	Middlewares  string
 }
 
@@ -116,10 +116,10 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	// generate middlewares from securityScheme
 	middlewares := []string{}
 	for _, v := range im.SecuredBy {
-		if !validateSecurityScheme(v, apiDef) {
+		if !validateSecurityScheme(v.Name, apiDef) {
 			continue
 		}
-		middlewares = append(middlewares, securitySchemeName(v)+"Mwr")
+		middlewares = append(middlewares, securitySchemeName(v.Name)+"Mwr")
 		rd.WithMiddleware = true
 	}
 	im.Middlewares = strings.Join(middlewares, ", ")
