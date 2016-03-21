@@ -87,7 +87,7 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
 	if lang == "go" {
-		im.buildGoServer(apiDef, rd, m, methodName)
+		im.buildGoServer(apiDef, r, rd, m, methodName)
 	} else {
 		im.buildPythonServer(r, m)
 	}
@@ -95,20 +95,22 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	return im
 }
 
-func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, rd *resourceDef, m *raml.Method, methodName string) {
+func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) {
 	name := normalizeURI(im.Endpoint)
 	if len(m.DisplayName) > 0 {
 		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
 	} else {
 		im.MethodName = name[len(rd.Name):] + methodName
 	}
+
 	// security scheme
-	// if a method has securedBy attribute, we use it.
-	// Otherwise we use securedBy from root document
-	if len(m.SecuredBy) > 0 {
+	switch {
+	case len(m.SecuredBy) > 0: // use secured by from this method
 		im.SecuredBy = m.SecuredBy
-	} else {
-		im.SecuredBy = apiDef.SecuredBy
+	case len(r.SecuredBy) > 0: // use securedby from resource
+		im.SecuredBy = r.SecuredBy
+	default:
+		im.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
 	// generate middlewares from securityScheme
