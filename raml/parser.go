@@ -39,7 +39,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/buddhamagnet/yaml"
+	"github.com/kr/pretty"
 )
 
 // Parse a RAML file. Returns a raml.APIDefinition value or an error if
@@ -90,7 +93,9 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 			fmt.Errorf("Error preprocessing RAML file (Error: %s)", err.Error())
 	}
 
-	//pretty.Println(string(preprocessedContentsBytes))
+	if log.GetLevel() == log.DebugLevel {
+		pretty.Println(string(preprocessedContentsBytes))
+	}
 
 	// Unmarshal into an APIDefinition value
 	apiDefinition := new(APIDefinition)
