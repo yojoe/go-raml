@@ -82,6 +82,7 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 	return im
 }
 
+// create interface method of a server
 func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
 	methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
@@ -95,6 +96,7 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	return im
 }
 
+// build interface method of  Go server
 func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) {
 	name := normalizeURI(im.Endpoint)
 	if len(m.DisplayName) > 0 {
@@ -126,6 +128,7 @@ func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Res
 
 }
 
+// build interface method of Python server
 func (im *interfaceMethod) buildPythonServer(r *raml.Resource, m *raml.Method) {
 	if len(m.DisplayName) > 0 {
 		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
