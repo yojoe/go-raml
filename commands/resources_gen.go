@@ -86,24 +86,22 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
-	name := normalizeURI(im.Endpoint)
 	if lang == "go" {
-		if len(m.DisplayName) > 0 {
-			im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
-		} else {
-			im.MethodName = name[len(rd.Name):] + methodName
-		}
+		im.buildGoServer(apiDef, rd, m, methodName)
 	} else {
-		if len(m.DisplayName) > 0 {
-			im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
-		} else {
-			im.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(im.Verb)
-		}
-		im.Params = strings.Join(getResourceParams(r), ", ")
-		im.Endpoint = strings.Replace(im.Endpoint, "{", "<", -1)
-		im.Endpoint = strings.Replace(im.Endpoint, "}", ">", -1)
+		im.buildPythonServer(r, m)
 	}
 
+	return im
+}
+
+func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, rd *resourceDef, m *raml.Method, methodName string) {
+	name := normalizeURI(im.Endpoint)
+	if len(m.DisplayName) > 0 {
+		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+	} else {
+		im.MethodName = name[len(rd.Name):] + methodName
+	}
 	// security scheme
 	// if a method has securedBy attribute, we use it.
 	// Otherwise we use securedBy from root document
@@ -123,7 +121,18 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		rd.WithMiddleware = true
 	}
 	im.Middlewares = strings.Join(middlewares, ", ")
-	return im
+
+}
+
+func (im *interfaceMethod) buildPythonServer(r *raml.Resource, m *raml.Method) {
+	if len(m.DisplayName) > 0 {
+		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+	} else {
+		im.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(im.Verb)
+	}
+	im.Params = strings.Join(getResourceParams(r), ", ")
+	im.Endpoint = strings.Replace(im.Endpoint, "{", "<", -1)
+	im.Endpoint = strings.Replace(im.Endpoint, "}", ">", -1)
 }
 
 func newClientInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) (interfaceMethod, error) {
