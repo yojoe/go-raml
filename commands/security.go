@@ -122,7 +122,7 @@ func newScopeMatcher(oauth2Name, packageName string, scopes []string) scopeMatch
 
 // generate scope matcher middleware name from oauth2 security scheme name and scopes
 func scopeMatcherName(oauth2Name string, scopes []string) string {
-	return securitySchemeName(oauth2Name) + "_" + normalizeScope(strings.Join(scopes, "")) + "Mwr"
+	return securitySchemeName(oauth2Name) + "_" + replaceNonAlphanumerics(strings.Join(scopes, "")) + "Mwr"
 }
 
 // generate scope matching midleware needed by a resource
@@ -224,11 +224,4 @@ func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
 		}
 	}
 	return false
-}
-
-// TODO : make it only alphanumeric
-func normalizeScope(s string) string {
-	ret := strings.Replace(s, " ", "", -1)
-	ret = strings.Replace(ret, ":", "", -1)
-	return ret
 }
