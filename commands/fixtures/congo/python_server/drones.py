@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 
+
 drones_api = Blueprint('drones_api', __name__)
 
 

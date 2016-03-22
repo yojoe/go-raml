@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 
+
 deliveries_api = Blueprint('deliveries_api', __name__)
 
 

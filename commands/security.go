@@ -111,17 +111,15 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 		}
 	}
 	// generate oauth2 scope matching middleware of root document
-	if err := securedByScopeMatching(apiDef, apiDef.SecuredBy, packageName, dir); err != nil {
+	if err := securedByScopeMatching(apiDef, apiDef.SecuredBy, packageName, lang, dir); err != nil {
 		return err
 	}
 
 	// generate oauth2 scope matching middleware for all resource
-	if lang == langGo {
-		log.Infof("generate oauth2_scope_match middleware")
-		for _, r := range apiDef.Resources {
-			if err := generateScopeMatching(apiDef, &r, packageName, dir); err != nil {
-				return err
-			}
+	log.Infof("generate oauth2_scope_match middleware")
+	for _, r := range apiDef.Resources {
+		if err := generateScopeMatching(apiDef, &r, packageName, lang, dir); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -153,24 +151,24 @@ func scopeMatcherName(oauth2Name string, scopes []string) string {
 }
 
 // generate scope matching midleware needed by a resource
-func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packageName, dir string) error {
-	if err := methodScopeMatching(apiDef, res.Get, packageName, dir); err != nil {
+func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packageName, lang, dir string) error {
+	if err := methodScopeMatching(apiDef, res.Get, packageName, lang, dir); err != nil {
 		return err
 	}
-	if err := methodScopeMatching(apiDef, res.Post, packageName, dir); err != nil {
+	if err := methodScopeMatching(apiDef, res.Post, packageName, lang, dir); err != nil {
 		return err
 	}
-	if err := methodScopeMatching(apiDef, res.Put, packageName, dir); err != nil {
+	if err := methodScopeMatching(apiDef, res.Put, packageName, lang, dir); err != nil {
 		return err
 	}
-	if err := methodScopeMatching(apiDef, res.Patch, packageName, dir); err != nil {
+	if err := methodScopeMatching(apiDef, res.Patch, packageName, lang, dir); err != nil {
 		return err
 	}
-	if err := methodScopeMatching(apiDef, res.Delete, packageName, dir); err != nil {
+	if err := methodScopeMatching(apiDef, res.Delete, packageName, lang, dir); err != nil {
 		return err
 	}
 	for _, v := range res.Nested {
-		if err := generateScopeMatching(apiDef, v, packageName, dir); err != nil {
+		if err := generateScopeMatching(apiDef, v, packageName, lang, dir); err != nil {
 			return err
 		}
 	}
@@ -178,15 +176,23 @@ func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packa
 }
 
 // generate scope matching middleware needed by a method
-func methodScopeMatching(apiDef *raml.APIDefinition, m *raml.Method, packageName, dir string) error {
+func methodScopeMatching(apiDef *raml.APIDefinition, m *raml.Method, packageName, lang, dir string) error {
 	if m == nil {
 		return nil
 	}
-	return securedByScopeMatching(apiDef, m.SecuredBy, packageName, dir)
+	return securedByScopeMatching(apiDef, m.SecuredBy, packageName, lang, dir)
 }
 
 // generate secure matcher of a SecuredBy field
-func securedByScopeMatching(apiDef *raml.APIDefinition, sbs []raml.DefinitionChoice, packageName, dir string) error {
+func securedByScopeMatching(apiDef *raml.APIDefinition, sbs []raml.DefinitionChoice, packageName, lang, dir string) error {
+	generateGo := func(sm scopeMatcher) error {
+		fileName := path.Join(dir, sm.Name+".go")
+		return generateFile(sm, "./templates/oauth2_scopes_match.tmpl", "oauth2_scopes_match", fileName, false)
+	}
+	generatePython := func(sm scopeMatcher) error {
+		fileName := path.Join(dir, sm.Name+".py")
+		return generateFile(sm, "./templates/oauth2_scopes_match_python.tmpl", "oauth2_scopes_match_python", fileName, false)
+	}
 	for _, sb := range sbs {
 		if !validateSecurityScheme(sb.Name, apiDef) { // check if it is valid to generate
 			continue
@@ -201,9 +207,14 @@ func securedByScopeMatching(apiDef *raml.APIDefinition, sbs []raml.DefinitionCho
 		}
 
 		sm := newScopeMatcher(sb.Name, packageName, scopes)
-		fileName := path.Join(dir, sm.Name+".go")
-		if err := generateFile(sm, "./templates/oauth2_scopes_match.tmpl", "oauth2_scopes_match", fileName, false); err != nil {
-			return err
+		if lang == langGo {
+			if err := generateGo(sm); err != nil {
+				return err
+			}
+		} else if lang == langPython {
+			if err := generatePython(sm); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

@@ -1,11 +1,17 @@
 {{- define "resource_python_template" -}}
 {{- $apiName := .Name -}}
 from flask import Blueprint, jsonify, request
+{{ range $k, $v := .MiddlewaresArr -}}
+from {{$v}} import *
+{{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}
 
 @{{$apiName | ToLower}}_api.route('{{$v.Endpoint}}', methods=['{{$v.Verb}}'])
+{{range $km, $vm := $v.MiddlewaresArr -}}
+@{{$vm}}
+{{end -}}
 def {{$v.MethodName}}({{$v.Params}}):
     '''
     {{range $kf, $vf := $v.FuncComments -}}

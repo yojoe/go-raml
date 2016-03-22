@@ -21,6 +21,7 @@ type resourceDef struct {
 	PackageName    string            // Name of the package this resource resides in
 	APIDef         *raml.APIDefinition
 	WithMiddleware bool
+	MiddlewaresArr []string
 }
 
 // create a resource definition
@@ -32,6 +33,16 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 	rd.Name = strings.Title(normalizeURI(endpoint))
 	rd.PackageName = packageName
 	return rd
+}
+
+func (rd *resourceDef) addMiddleware(mwr string) {
+	// check if already exist
+	for _, v := range rd.MiddlewaresArr {
+		if v == mwr {
+			return
+		}
+	}
+	rd.MiddlewaresArr = append(rd.MiddlewaresArr, mwr)
 }
 
 // method of resource's interface
@@ -123,9 +134,12 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		}
 	}
 	if len(middlewares) > 0 {
-		rd.WithMiddleware = true
 		im.Middlewares = strings.Join(middlewares, ", ")
 		im.MiddlewaresArr = middlewares
+		rd.WithMiddleware = true
+		for _, v := range middlewares {
+			rd.addMiddleware(v)
+		}
 	}
 
 	return im
