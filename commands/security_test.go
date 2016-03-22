@@ -12,13 +12,14 @@ import (
 
 func TestOauth2Middleware(t *testing.T) {
 	Convey("oauth2 middleware", t, func() {
-		apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
-		So(err, ShouldBeNil)
 
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("middleware generation test", func() {
+			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			So(err, ShouldBeNil)
+
 			err = generateSecurity(apiDef, targetdir, "main")
 			So(err, ShouldBeNil)
 
@@ -52,6 +53,9 @@ func TestOauth2Middleware(t *testing.T) {
 		})
 
 		Convey("Go routes generation", func() {
+			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			So(err, ShouldBeNil)
+
 			_, err = generateServerResources(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
@@ -63,6 +67,24 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
+		})
+
+		Convey("With included .raml file", func() {
+			apiDef, err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml")
+			So(err, ShouldBeNil)
+
+			err = generateSecurity(apiDef, targetdir, "main")
+			So(err, ShouldBeNil)
+
+			// oauth 2 middleware
+			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0Mwr.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_oauth_2_0Mwr.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

@@ -1,0 +1,14 @@
+description: |
+  Dropbox supports OAuth 2.0 for authenticating all API requests.
+type: OAuth 2.0
+describedBy:
+  headers:
+    Authorization:
+      description: |
+        Used to send a valid OAuth 2 access token. Do not use
+      type: string
+  responses:
+    403:
+      description: |
+        Bad OAuth request (wrong consumer key, bad nonce, expired
+        timestamp...). Unfortunately, re-authenticating the user won't help here.

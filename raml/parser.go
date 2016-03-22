@@ -230,6 +230,9 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 						includedFile, err.Error())
 			}
 
+			// add newline to included content
+			includedContents = append([]byte("\n"), includedContents...)
+
 			// TODO: Check that you only insert .yaml, .raml, .txt and .md files
 			// In case of .raml or .yaml, remove the comments
 			// In case of other files, Base64 them first.
