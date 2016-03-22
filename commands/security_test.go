@@ -39,6 +39,16 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
+
+			// scope matching
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_query_ADMINISTRATOR.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_query_ADMINISTRATOR.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Convey("Go routes generation", func() {

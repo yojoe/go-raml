@@ -63,12 +63,6 @@ func (sd *securityDef) generate(dir string) error {
 		return err
 	}
 
-	// generate oauth2 scope matching middleware
-	for _, r := range sd.apiDef.Resources {
-		if err := sd.scopeMatching(&r); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -78,6 +72,7 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 		return err
 	}
 
+	// generate oauth2 middleware
 	for _, v := range apiDef.SecuritySchemes {
 		for k, ss := range v {
 			if ss.Type != Oauth2 {
@@ -90,65 +85,102 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 			}
 		}
 	}
+	// generate oauth2 scope matching middleware
+	log.Infof("generate oauth2_scope_match middleware")
+	for _, r := range apiDef.Resources {
+		if err := generateScopeMatching(apiDef, &r, packageName, dir); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 type scopeMatcher struct {
 	PackageName string
-	Scopes      []string
+	Scopes      string
+	Name        string
 }
 
-func (sd *securityDef) scopeMatching(res *raml.Resource) error {
-	if err := sd.methodScopeMatching(res.Get); err != nil {
+func newScopeMatcher(oauth2Name, packageName string, scopes []string) scopeMatcher {
+	quoted := make([]string, 0, len(scopes))
+	for _, s := range scopes {
+		quoted = append(quoted, fmt.Sprintf(`"%v"`, s))
+	}
+	return scopeMatcher{
+		Name:        oauth2Name + "_" + normalizeScope(strings.Join(scopes, "")),
+		PackageName: packageName,
+		Scopes:      strings.Join(quoted, ", "),
+	}
+}
+
+func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packageName, dir string) error {
+	if err := methodScopeMatching(apiDef, res.Get, packageName, dir); err != nil {
 		return err
 	}
-	if err := sd.methodScopeMatching(res.Post); err != nil {
+	if err := methodScopeMatching(apiDef, res.Post, packageName, dir); err != nil {
 		return err
 	}
-	if err := sd.methodScopeMatching(res.Put); err != nil {
+	if err := methodScopeMatching(apiDef, res.Put, packageName, dir); err != nil {
 		return err
 	}
-	if err := sd.methodScopeMatching(res.Patch); err != nil {
+	if err := methodScopeMatching(apiDef, res.Patch, packageName, dir); err != nil {
 		return err
 	}
-	if err := sd.methodScopeMatching(res.Delete); err != nil {
+	if err := methodScopeMatching(apiDef, res.Delete, packageName, dir); err != nil {
 		return err
 	}
 	for _, v := range res.Nested {
-		if err := sd.scopeMatching(v); err != nil {
+		if err := generateScopeMatching(apiDef, v, packageName, dir); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (sd *securityDef) methodScopeMatching(m *raml.Method) error {
+func methodScopeMatching(apiDef *raml.APIDefinition, m *raml.Method, packageName, dir string) error {
+	if m == nil {
+		return nil
+	}
 	for _, sb := range m.SecuredBy {
-		if !validateSecurityScheme(sb.Name, sd.apiDef) { // check if it is valid to generate
+		if !validateSecurityScheme(sb.Name, apiDef) { // check if it is valid to generate
 			continue
 		}
 
-		scopes, ok := sb.Parameters["scopes"] // check if it has scope
-		if !ok {
+		scopes, err := getSecurityScopes(sb)
+		if err != nil {
+			return err
+		}
+		if len(scopes) == 0 {
 			continue
 		}
 
-		// make sure the scopes is an array
-		scopesArr, ok := scopes.([]string)
-		if !ok {
-			return fmt.Errorf("invalid scopes `%v`, it must be array of string", scopes)
-		}
-
-		sm := scopeMatcher{
-			PackageName: sd.PackageName,
-			Scopes:      scopesArr,
-		}
-		fileName := "oauth2_" + sd.Name + "_" + normalizeScope(strings.Join(scopesArr, "")) + "_middleware.go"
-		if err := generateFile(sm, "./templates/oauth2_scope_match.tmpl", "oauth2_scope_match", fileName, false); err != nil {
+		sm := newScopeMatcher(sb.Name, packageName, scopes)
+		fileName := "oauth2_" + sb.Name + "_" + normalizeScope(strings.Join(scopes, "")) + ".go"
+		fileName = path.Join(dir, fileName)
+		if err := generateFile(sm, "./templates/oauth2_scopes_match.tmpl", "oauth2_scopes_match", fileName, false); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+// get scopes of a security scheme as []string
+func getSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
+	scopes := []string{}
+
+	// check if there is scopes
+	v, ok := ss.Parameters["scopes"]
+	if !ok {
+		return scopes, nil
+	}
+	scopesArr, ok := v.([]interface{})
+	if !ok {
+		return scopes, fmt.Errorf("scopes must be array")
+	}
+	for _, s := range scopesArr {
+		scopes = append(scopes, s.(string))
+	}
+	return scopes, nil
 }
 
 // return security scheme name that could be used in code

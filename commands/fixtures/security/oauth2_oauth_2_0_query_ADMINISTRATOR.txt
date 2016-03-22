@@ -1,0 +1,23 @@
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func oauth_2_0_query_ADMINISTRATOR(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var scopes []string
+
+		allowedScopes := []string{"ADMINISTRATOR"}
+		for _, as := range allowedScopes {
+			for _, s := range scopes {
+				if s == as {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+		}
+		w.WriteHeader(401)
+	})
+}

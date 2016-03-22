@@ -1,0 +1,26 @@
+{{- define "oauth2_scopes_match" -}}
+package {{.PackageName}}
+
+import (
+	"log"
+	"net/http"
+)
+
+func {{.Name}}(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        var scopes []string
+
+        allowedScopes := []string{ {{.Scopes}} }
+        for _, as := range allowedScopes {
+            for _, s := range scopes {
+                if s == as {
+		            next.ServeHTTP(w, r)
+                    return
+                }
+            }
+		}
+		w.WriteHeader(401)
+	})
+}
+
+{{- end -}}
