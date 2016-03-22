@@ -20,7 +20,7 @@ func TestOauth2Middleware(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main")
+			err = generateSecurity(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in header
@@ -73,7 +73,7 @@ func TestOauth2Middleware(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml")
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main")
+			err = generateSecurity(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware

@@ -51,7 +51,7 @@ func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, p
 	return sd
 }
 
-func (sd *securityDef) generate(dir string) error {
+func (sd *securityDef) generateGo(dir string) error {
 	// we only support oauth2
 	if sd.Type != Oauth2 {
 		return nil
@@ -66,8 +66,33 @@ func (sd *securityDef) generate(dir string) error {
 	return nil
 }
 
+func (sd *securityDef) generatePython(dir string) error {
+	// we only support oauth2
+	if sd.Type != Oauth2 {
+		return nil
+	}
+
+	// generate oauth token checking middleware
+	fileName := path.Join(dir, sd.Name+".py")
+	if err := generateFile(sd, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (sd *securityDef) generate(lang, dir string) error {
+	switch lang {
+	case langGo:
+		return sd.generateGo(dir)
+	case langPython:
+		return sd.generatePython(dir)
+	default:
+		return fmt.Errorf("invalid language :%v", lang)
+	}
+}
+
 // generate security related code
-func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error {
+func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
@@ -79,7 +104,7 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 				continue
 			}
 			sd := newSecurityDef(apiDef, &ss, k, packageName)
-			if err := sd.generate(dir); err != nil {
+			if err := sd.generate(lang, dir); err != nil {
 				log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
 				return err
 			}
@@ -91,10 +116,12 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 	}
 
 	// generate oauth2 scope matching middleware for all resource
-	log.Infof("generate oauth2_scope_match middleware")
-	for _, r := range apiDef.Resources {
-		if err := generateScopeMatching(apiDef, &r, packageName, dir); err != nil {
-			return err
+	if lang == langGo {
+		log.Infof("generate oauth2_scope_match middleware")
+		for _, r := range apiDef.Resources {
+			if err := generateScopeMatching(apiDef, &r, packageName, dir); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
