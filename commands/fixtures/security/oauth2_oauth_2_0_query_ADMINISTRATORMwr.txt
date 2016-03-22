@@ -1,11 +1,10 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
-func oauth_2_0_query_ADMINISTRATOR(next http.Handler) http.Handler {
+func oauth2_oauth_2_0_query_ADMINISTRATORMwr(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var scopes []string
 

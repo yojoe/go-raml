@@ -115,16 +115,28 @@ func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Res
 		im.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
-	// generate middlewares from securityScheme
+	// generate middlewares from securityScheme & scopes
 	middlewares := []string{}
 	for _, v := range im.SecuredBy {
 		if !validateSecurityScheme(v.Name, apiDef) {
 			continue
 		}
+		// oauth2 middleware
 		middlewares = append(middlewares, securitySchemeName(v.Name)+"Mwr")
-		rd.WithMiddleware = true
+
+		// scope matcher middleware
+		scopes, err := getSecurityScopes(v)
+		if err != nil {
+			log.Errorf("failed to get security scopes:%v", err)
+		}
+		if len(scopes) > 0 {
+			middlewares = append(middlewares, scopeMatcherName(v.Name, scopes))
+		}
 	}
-	im.Middlewares = strings.Join(middlewares, ", ")
+	if len(middlewares) > 0 {
+		rd.WithMiddleware = true
+		im.Middlewares = strings.Join(middlewares, ", ")
+	}
 
 }
 

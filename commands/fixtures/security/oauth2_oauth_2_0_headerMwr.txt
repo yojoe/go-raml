@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func oauth_2_0_queryMwr(next http.Handler) http.Handler {
+func oauth2_oauth_2_0_headerMwr(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		token := r.URL.Query().Get("access_token")
-		if token == "" {
+		authHdr := r.Header.Get("Authorization")
+		if authHdr == "" {
 			log.Println("Authorization header is empty")
 			w.WriteHeader(401)
 			return

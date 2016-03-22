@@ -31,7 +31,7 @@ func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, p
 		SecurityScheme: ss,
 		apiDef:         apiDef,
 	}
-	sd.Name = securitySchemeName(name)
+	sd.Name = securitySchemeName(name) + "Mwr"
 	sd.PackageName = packageName
 
 	// assign header, if any
@@ -58,7 +58,7 @@ func (sd *securityDef) generate(dir string) error {
 	}
 
 	// generate oauth token checking middleware
-	fileName := path.Join(dir, "oauth2_"+sd.Name+".go")
+	fileName := path.Join(dir, sd.Name+".go")
 	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, true); err != nil {
 		return err
 	}
@@ -85,7 +85,12 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 			}
 		}
 	}
-	// generate oauth2 scope matching middleware
+	// generate oauth2 scope matching middleware of root document
+	if err := securedByScopeMatching(apiDef, apiDef.SecuredBy, packageName, dir); err != nil {
+		return err
+	}
+
+	// generate oauth2 scope matching middleware for all resource
 	log.Infof("generate oauth2_scope_match middleware")
 	for _, r := range apiDef.Resources {
 		if err := generateScopeMatching(apiDef, &r, packageName, dir); err != nil {
@@ -95,24 +100,32 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName string) error
 	return nil
 }
 
+// scope matcher middleware definition
 type scopeMatcher struct {
 	PackageName string
 	Scopes      string
 	Name        string
 }
 
+// create scopeMatcher
 func newScopeMatcher(oauth2Name, packageName string, scopes []string) scopeMatcher {
 	quoted := make([]string, 0, len(scopes))
 	for _, s := range scopes {
 		quoted = append(quoted, fmt.Sprintf(`"%v"`, s))
 	}
 	return scopeMatcher{
-		Name:        oauth2Name + "_" + normalizeScope(strings.Join(scopes, "")),
+		Name:        scopeMatcherName(oauth2Name, scopes),
 		PackageName: packageName,
 		Scopes:      strings.Join(quoted, ", "),
 	}
 }
 
+// generate scope matcher middleware name from oauth2 security scheme name and scopes
+func scopeMatcherName(oauth2Name string, scopes []string) string {
+	return securitySchemeName(oauth2Name) + "_" + normalizeScope(strings.Join(scopes, "")) + "Mwr"
+}
+
+// generate scope matching midleware needed by a resource
 func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packageName, dir string) error {
 	if err := methodScopeMatching(apiDef, res.Get, packageName, dir); err != nil {
 		return err
@@ -137,11 +150,17 @@ func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packa
 	return nil
 }
 
+// generate scope matching middleware needed by a method
 func methodScopeMatching(apiDef *raml.APIDefinition, m *raml.Method, packageName, dir string) error {
 	if m == nil {
 		return nil
 	}
-	for _, sb := range m.SecuredBy {
+	return securedByScopeMatching(apiDef, m.SecuredBy, packageName, dir)
+}
+
+// generate secure matcher of a SecuredBy field
+func securedByScopeMatching(apiDef *raml.APIDefinition, sbs []raml.DefinitionChoice, packageName, dir string) error {
+	for _, sb := range sbs {
 		if !validateSecurityScheme(sb.Name, apiDef) { // check if it is valid to generate
 			continue
 		}
@@ -155,8 +174,7 @@ func methodScopeMatching(apiDef *raml.APIDefinition, m *raml.Method, packageName
 		}
 
 		sm := newScopeMatcher(sb.Name, packageName, scopes)
-		fileName := "oauth2_" + sb.Name + "_" + normalizeScope(strings.Join(scopes, "")) + ".go"
-		fileName = path.Join(dir, fileName)
+		fileName := path.Join(dir, sm.Name+".go")
 		if err := generateFile(sm, "./templates/oauth2_scopes_match.tmpl", "oauth2_scopes_match", fileName, false); err != nil {
 			return err
 		}
@@ -173,10 +191,14 @@ func getSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
 	if !ok {
 		return scopes, nil
 	}
+
+	// cast it to []string, return error if failed
 	scopesArr, ok := v.([]interface{})
 	if !ok {
 		return scopes, fmt.Errorf("scopes must be array")
 	}
+
+	// build []string
 	for _, s := range scopesArr {
 		scopes = append(scopes, s.(string))
 	}
@@ -185,7 +207,7 @@ func getSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
 
 // return security scheme name that could be used in code
 func securitySchemeName(name string) string {
-	return strings.Replace(name, " ", "", -1)
+	return "oauth2_" + strings.Replace(name, " ", "", -1)
 }
 
 // validate security scheme:
