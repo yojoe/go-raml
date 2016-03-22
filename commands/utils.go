@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	regex = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
+	regex          = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
+	regNonAlphanum = regexp.MustCompile("[^A-Za-z0-9]+")
 )
 
 func doNormalizeURI(URI string) string {
@@ -203,4 +204,9 @@ func commentBuilder(desc string) []string {
 	}
 
 	return results
+}
+
+// replace non alphanumerics with "_"
+func replaceNonAlphanumerics(s string) string {
+	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
 }

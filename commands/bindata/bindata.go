@@ -4,6 +4,7 @@
 // ../templates/client_resource.tmpl
 // ../templates/generic_main.tmpl
 // ../templates/oauth2_middleware.tmpl
+// ../templates/oauth2_scopes_match.tmpl
 // ../templates/python_client.tmpl
 // ../templates/python_client_utils.tmpl
 // ../templates/python_server_resource.tmpl
@@ -94,7 +95,7 @@ func TemplatesClient_helper_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
+	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -114,7 +115,7 @@ func TemplatesClient_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
+	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -134,12 +135,12 @@ func TemplatesGeneric_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/generic_main.tmpl", size: 73, mode: os.FileMode(420), modTime: time.Unix(1455614346, 0)}
+	info := bindataFileInfo{name: "../templates/generic_main.tmpl", size: 73, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _TemplatesOauth2_middlewareTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xbc\x92\xcf\x6e\xa3\x30\x10\xc6\xcf\xf6\x53\x8c\x7c\x32\xab\x0d\xfb\x47\x7b\x5a\x29\x87\xbd\x6c\x39\xb4\x15\x4d\x53\xf5\x58\x59\x61\x92\x58\x01\x43\x07\x53\x9a\x22\xde\xbd\x63\x4c\xaa\xa4\x0f\x50\x2e\xd8\x33\xfe\x3e\xff\x3e\x79\x86\x61\x01\x05\x6e\xad\x43\x50\xb5\xe9\xfc\xfe\xf7\x53\x65\x8b\xa2\xc4\xde\x10\x2a\x58\x8c\xa3\x6c\xcc\xe6\x60\x76\x08\xc3\x90\xe6\x71\x79\x6b\x2a\xe4\x86\xb4\x55\x53\x93\x07\x2d\x85\x2a\xeb\x9d\xe2\x9f\x43\xff\x63\xef\x7d\xa3\x64\x22\xe5\xb6\x73\x9b\xa0\x8a\xc7\x6f\x7a\xd2\x0e\x5f\x3d\x84\x7e\x9a\x19\xc7\x97\x50\x72\xb1\x83\x41\x0a\x42\xdf\x91\xbb\x28\xff\x67\x1f\x1d\xcc\x74\x1f\xeb\x2b\x6c\x9b\xda\xb5\xf8\x48\xd6\x23\x7d\x07\x82\x6f\x73\xfd\xb9\xc3\xd6\x27\xec\x03\xf3\x37\x0c\x60\xb7\x90\x66\x68\x0a\xf6\x67\xe8\x53\x23\x64\xcd\x0a\x82\xbf\x4b\xa0\xb9\x9d\x5e\xa1\xd7\x8a\x81\xe7\x6d\xe4\x56\x89\x14\x82\x3d\x4e\x82\xe5\x12\x94\x0a\xa4\x42\x70\xe8\x34\x27\xeb\x7c\xe9\xb4\xfa\xc7\xfd\x9a\xec\x9b\xf1\xb6\x66\xfe\x78\xa1\x6d\x01\xab\xc6\x1f\x27\x13\xd1\xa7\x13\x71\xb4\xd7\x7f\x7e\xfe\x9a\xaa\x31\x31\xaf\xc6\x73\x6a\x2c\x5b\x9c\xd0\xef\x3a\xa4\x63\x6e\xc8\x54\xed\x39\xbf\xaf\x0f\xe8\x22\xfd\xc3\xea\x3a\x9e\xd2\xc9\x47\x84\x33\xd5\xa7\x1c\x51\xf8\x55\x29\x5c\x11\xa0\x85\x08\x2f\x9f\xde\x23\xbd\x60\xb6\x5e\xe7\xba\xe7\x47\x63\xd9\x98\x48\x1e\xa3\x30\x83\xe1\x60\x18\xb6\xf7\x00\x00\x00\xff\xff\xad\x0c\xd8\xa2\x90\x02\x00\x00")
+var _TemplatesOauth2_middlewareTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xc4\x93\xbf\x8e\xd4\x30\x10\xc6\xeb\xf8\x29\x46\xae\x1c\x74\xe7\x00\xa2\x42\xda\x82\x06\xb6\x40\x68\x39\x0e\x51\x9e\x4c\x32\x9b\xb5\x2e\xb1\x83\x3d\xb9\x70\x44\x79\x77\xc6\x71\x6e\xb5\x5b\x50\xe3\x66\xed\xf9\xf3\xed\xef\xb3\x27\xf3\x7c\x0b\x0d\x1e\xad\x43\x90\xde\x8c\x74\x7a\xfb\xd0\xdb\xa6\xe9\x70\x32\x01\x25\xdc\x2e\x8b\x18\x4c\xfd\x68\x5a\x84\x79\xd6\x87\xbc\xfd\x62\x7a\xe4\x84\xb0\xfd\xe0\x03\x81\x12\x85\xec\x7c\x2b\xf9\xc7\x21\x55\x27\xa2\x41\x0a\x01\xbc\x64\x6b\xe9\x34\xfe\xd4\xb5\xef\xab\xd6\x07\xdb\x75\xa6\xaa\xbd\x23\xfc\x4d\x52\x94\x42\x1c\x47\x57\x27\xdd\x2c\xa8\x1c\xc7\x21\xb5\xeb\xbd\x71\xcc\x10\xca\xab\x13\xcc\xa2\x08\x48\x63\x70\x57\xe1\x8f\x2c\xa2\x92\x92\x9a\x72\xfc\x0e\xe3\xe0\x5d\xc4\x1f\xc1\x12\x86\x1b\x08\xf0\x6a\x8b\xff\x1a\x31\x52\xc9\x3a\xb0\xad\x79\x06\x7b\x04\xbd\x47\xd3\xb0\x3e\x7b\x7a\x49\x90\x7f\x44\x07\xef\x77\x10\xb6\xa4\xfe\x84\xa4\x24\xb3\x6e\xc7\x8c\x2c\x4b\x51\x14\xac\x90\xcb\x77\x3b\x90\x32\x51\x16\x05\xdf\x87\x3e\x04\xeb\xa8\x73\x4a\x7e\xe0\x7b\x65\xf7\x7f\x0c\x59\xcf\xec\xf9\xcf\x6c\x04\xec\x07\x7a\x5e\x25\x8a\x49\xaf\xb4\x59\x5c\xbd\x7b\xfd\x66\x8d\x66\xb7\xbc\x5b\x2e\x89\xb1\x8b\xb8\x62\x7f\x1d\x31\x3c\x1f\x4c\x30\x7d\xfc\x07\xfb\xf7\xbb\xcf\xb9\x4a\x95\x67\x03\x17\x5d\xff\xd5\x85\x6b\x2e\xa1\xab\x0a\xa2\x79\x42\x30\x75\x8d\x31\x6e\x28\xd6\x41\xc8\x8f\x06\xdb\xd8\x9c\xeb\xb7\xb3\xfe\xc6\xae\xf8\x8d\x5f\x86\x37\xb7\x3f\xac\xed\xf2\x26\xcb\x24\x88\x73\x9f\xcb\x4d\xe1\x09\xf7\xf7\xf7\x07\x35\xf1\x78\x70\x7e\x29\x05\xcf\x73\xfa\x18\x12\x56\x9a\xfa\xbf\x01\x00\x00\xff\xff\x3b\xee\x12\xa4\x19\x03\x00\x00")
 
 func TemplatesOauth2_middlewareTmplBytes() ([]byte, error) {
 	return bindataRead(
@@ -154,7 +155,27 @@ func TemplatesOauth2_middlewareTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/oauth2_middleware.tmpl", size: 656, mode: os.FileMode(420), modTime: time.Unix(1458198889, 0)}
+	info := bindataFileInfo{name: "../templates/oauth2_middleware.tmpl", size: 793, mode: os.FileMode(420), modTime: time.Unix(1458619294, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _TemplatesOauth2_scopes_matchTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x6c\x92\xc1\x8a\xdb\x30\x10\x86\xcf\xd6\x53\x0c\x3e\x49\x65\xd7\x6e\x4b\x4f\x85\x5c\xdb\x9c\xca\xd2\x0d\xf4\x50\x4a\xd0\xca\x63\x5b\xc4\x96\x5c\x69\x1c\x17\x8c\xdf\xbd\x52\x94\x64\x6d\x76\x07\x12\xac\x99\x5f\x1f\xa3\xf9\x67\x9e\x1f\xa1\xc2\x5a\x1b\x84\xdc\xca\x91\xda\xcf\x47\xaf\xec\x80\xfe\xd8\x4b\x52\x6d\x0e\x8f\xcb\xc2\x06\xa9\x4e\xb2\x41\x98\xe7\xe2\x29\x7d\xfe\x90\x3d\x86\x02\xd3\xfd\x60\x1d\x01\x67\x59\x6e\x90\xca\x96\x68\xc8\x19\x83\x10\x65\x09\x79\xa3\xa9\x1d\x5f\x0a\x65\xfb\xb2\xb1\x4e\x77\x9d\x2c\x95\x35\x84\xff\x28\x67\x82\xb1\x7a\x34\x2a\x32\x13\x8c\x9b\x90\x87\x48\x28\xf6\xd2\x54\x1d\x3a\xb1\x39\xc1\xcc\x32\x87\x34\x3a\xb3\x49\x7f\x0b\x10\x1e\x49\x7c\x4a\xf9\x9f\xe8\x07\x6b\x3c\xfe\x72\x9a\xd0\x3d\x80\x83\x0f\xd7\xfc\xdf\x11\x3d\x89\xc0\x81\x6b\x9c\xa5\x83\xf4\x5a\xf8\xfd\xc7\x93\xd3\xa6\x61\xf7\x62\x78\x80\x54\x0a\xbd\x3f\xd8\x13\x1a\xf8\xba\x83\x6b\xef\xc5\x77\x24\x1e\xc0\xb7\x79\x25\xd5\x91\xa2\x2c\x17\x05\x4f\x20\x71\x07\xad\x89\x83\xb3\x67\x5d\x61\x40\x85\x3f\xb2\xa0\x5a\x54\xa7\x5b\x0f\x2f\xd2\x63\x05\xd6\xc0\x9a\xf8\xda\x90\xec\x3a\x3b\x61\xf5\x9c\xc4\xa1\x9f\x5b\xcf\x73\x1c\x62\x4a\x2f\x0b\x2c\xf7\x0b\xb5\x75\x70\x7c\x00\x79\x11\x3b\x69\x82\x83\x5b\xc6\xeb\x24\x56\xf2\x95\xda\xbf\x27\x8b\xa1\xeb\x20\xdb\xed\x22\x3a\xb8\x92\xad\x4b\xd1\xc5\xe2\x19\xdd\x19\xf7\x87\xc3\x13\x9f\x82\x01\xe2\xcd\xfd\x18\xc9\xcb\x37\xa5\x85\x6d\x4f\x59\x16\x7f\x53\x71\xb1\x73\x8f\xb2\x42\xc7\xbf\x7c\xfc\x24\x58\xb6\x08\x16\x36\x30\x2e\x30\x9a\xea\xb2\xa7\xff\x03\x00\x00\xff\xff\x23\x13\x96\x01\xcd\x02\x00\x00")
+
+func TemplatesOauth2_scopes_matchTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_TemplatesOauth2_scopes_matchTmpl,
+		"../templates/oauth2_scopes_match.tmpl",
+	)
+}
+
+func TemplatesOauth2_scopes_matchTmpl() (*asset, error) {
+	bytes, err := TemplatesOauth2_scopes_matchTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "../templates/oauth2_scopes_match.tmpl", size: 717, mode: os.FileMode(420), modTime: time.Unix(1458619191, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -174,7 +195,7 @@ func TemplatesPython_clientTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
+	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -194,7 +215,7 @@ func TemplatesPython_client_utilsTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_client_utils.tmpl", size: 2584, mode: os.FileMode(420), modTime: time.Unix(1456236369, 0)}
+	info := bindataFileInfo{name: "../templates/python_client_utils.tmpl", size: 2584, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -214,7 +235,7 @@ func TemplatesPython_server_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_server_resource.tmpl", size: 516, mode: os.FileMode(420), modTime: time.Unix(1456236369, 0)}
+	info := bindataFileInfo{name: "../templates/python_server_resource.tmpl", size: 516, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -234,7 +255,7 @@ func TemplatesServer_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1177, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
+	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1177, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -254,7 +275,7 @@ func TemplatesServer_python_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_python_main.tmpl", size: 351, mode: os.FileMode(420), modTime: time.Unix(1456236369, 0)}
+	info := bindataFileInfo{name: "../templates/server_python_main.tmpl", size: 351, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -274,7 +295,7 @@ func TemplatesServer_resources_apiTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 869, mode: os.FileMode(420), modTime: time.Unix(1458198763, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 869, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -294,7 +315,7 @@ func TemplatesServer_resources_interfaceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 981, mode: os.FileMode(420), modTime: time.Unix(1458203057, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 981, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -314,7 +335,7 @@ func TemplatesStructTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 354, mode: os.FileMode(420), modTime: time.Unix(1456412567, 0)}
+	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 354, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -375,6 +396,7 @@ var _bindata = map[string]func() (*asset, error){
 	"../templates/client_resource.tmpl": TemplatesClient_resourceTmpl,
 	"../templates/generic_main.tmpl": TemplatesGeneric_mainTmpl,
 	"../templates/oauth2_middleware.tmpl": TemplatesOauth2_middlewareTmpl,
+	"../templates/oauth2_scopes_match.tmpl": TemplatesOauth2_scopes_matchTmpl,
 	"../templates/python_client.tmpl": TemplatesPython_clientTmpl,
 	"../templates/python_client_utils.tmpl": TemplatesPython_client_utilsTmpl,
 	"../templates/python_server_resource.tmpl": TemplatesPython_server_resourceTmpl,
@@ -431,6 +453,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"client_resource.tmpl": &bintree{TemplatesClient_resourceTmpl, map[string]*bintree{}},
 			"generic_main.tmpl": &bintree{TemplatesGeneric_mainTmpl, map[string]*bintree{}},
 			"oauth2_middleware.tmpl": &bintree{TemplatesOauth2_middlewareTmpl, map[string]*bintree{}},
+			"oauth2_scopes_match.tmpl": &bintree{TemplatesOauth2_scopes_matchTmpl, map[string]*bintree{}},
 			"python_client.tmpl": &bintree{TemplatesPython_clientTmpl, map[string]*bintree{}},
 			"python_client_utils.tmpl": &bintree{TemplatesPython_client_utilsTmpl, map[string]*bintree{}},
 			"python_server_resource.tmpl": &bintree{TemplatesPython_server_resourceTmpl, map[string]*bintree{}},

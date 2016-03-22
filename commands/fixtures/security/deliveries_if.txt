@@ -32,9 +32,9 @@ type DeliveriesInterface interface {
 }
 
 func DeliveriesInterfaceRoutes(r *mux.Router, i DeliveriesInterface) {
-	r.Handle("/deliveries", alice.New(oauth_2_0_queryMwr).Then(http.HandlerFunc(i.Get))).Methods("GET")
-	r.Handle("/deliveries", alice.New(oauth_2_0_headerMwr).Then(http.HandlerFunc(i.Post))).Methods("POST")
+	r.Handle("/deliveries", alice.New(oauth2_oauth_2_0_queryMwr, oauth2_oauth_2_0_query_ADMINISTRATORMwr).Then(http.HandlerFunc(i.Get))).Methods("GET")
+	r.Handle("/deliveries", alice.New(oauth2_oauth_2_0_headerMwr).Then(http.HandlerFunc(i.Post))).Methods("POST")
 	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdGet).Methods("GET")
-	r.Handle("/deliveries/{deliveryId}", alice.New(oauth_2_0_headerMwr).Then(http.HandlerFunc(i.deliveryIdPatch))).Methods("PATCH")
-	r.Handle("/deliveries/{deliveryId}", alice.New(oauth_2_0_headerMwr).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
+	r.Handle("/deliveries/{deliveryId}", alice.New(oauth2_oauth_2_0_headerMwr).Then(http.HandlerFunc(i.deliveryIdPatch))).Methods("PATCH")
+	r.Handle("/deliveries/{deliveryId}", alice.New(oauth2_oauth_2_0_headerMwr).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
 }

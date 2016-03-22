@@ -4,13 +4,15 @@ package {{.PackageName}}
 import (
 	"log"
 	"net/http"
+
+    "github.com/gorilla/context"
 )
 
-func {{.Name}}Mwr(next http.Handler) http.Handler {
+func {{.Name}}(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         {{ if .Header }}
-        authHdr := r.Header.Get("{{.Header.Name}}")
-		if authHdr == "" {
+        token := r.Header.Get("{{.Header.Name}}")
+		if token == "" {
 			log.Println("Authorization header is empty")
 			w.WriteHeader(401)
 			return
@@ -23,7 +25,10 @@ func {{.Name}}Mwr(next http.Handler) http.Handler {
 			return
 		}
         {{ end }}
-		next.ServeHTTP(w, r)
+        // save access token in request context
+        context.Set(r, "oauth2_access_token", token)
+		
+        next.ServeHTTP(w, r)
 	})
 }
 

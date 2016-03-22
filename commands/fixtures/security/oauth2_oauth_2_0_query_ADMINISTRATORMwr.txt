@@ -1,0 +1,27 @@
+package main
+
+import (
+	"net/http"
+	// "github.com/gorilla/context"
+)
+
+func oauth2_oauth_2_0_query_ADMINISTRATORMwr(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var scopes []string
+
+		// accessToken := context.Get(r, "oauth2_access_token").(string)
+
+		// provide code to check scopes based on access_token
+
+		allowedScopes := []string{"ADMINISTRATOR"}
+		for _, as := range allowedScopes {
+			for _, s := range scopes {
+				if s == as {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+		}
+		w.WriteHeader(401)
+	})
+}
