@@ -21,6 +21,7 @@ type resourceDef struct {
 	PackageName    string            // Name of the package this resource resides in
 	APIDef         *raml.APIDefinition
 	WithMiddleware bool
+	MiddlewaresArr []string
 }
 
 // create a resource definition
@@ -34,20 +35,31 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 	return rd
 }
 
+func (rd *resourceDef) addMiddleware(mwr string) {
+	// check if already exist
+	for _, v := range rd.MiddlewaresArr {
+		if v == mwr {
+			return
+		}
+	}
+	rd.MiddlewaresArr = append(rd.MiddlewaresArr, mwr)
+}
+
 // method of resource's interface
 type interfaceMethod struct {
 	*raml.Method
-	MethodName   string
-	Endpoint     string
-	Verb         string
-	ReqBody      string         // request body type
-	RespBody     string         // response body type
-	ResourcePath string         // normalized resource path
-	Resource     *raml.Resource // resource object of this method
-	Params       string         // methods params
-	FuncComments []string
-	SecuredBy    []raml.DefinitionChoice
-	Middlewares  string
+	MethodName     string
+	Endpoint       string
+	Verb           string
+	ReqBody        string         // request body type
+	RespBody       string         // response body type
+	ResourcePath   string         // normalized resource path
+	Resource       *raml.Resource // resource object of this method
+	Params         string         // methods params
+	FuncComments   []string
+	SecuredBy      []raml.DefinitionChoice
+	Middlewares    string
+	MiddlewaresArr []string
 }
 
 // create an interfaceMethod object
@@ -93,18 +105,6 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		im.buildPythonServer(r, m)
 	}
 
-	return im
-}
-
-// build interface method of  Go server
-func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) {
-	name := normalizeURI(im.Endpoint)
-	if len(m.DisplayName) > 0 {
-		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
-	} else {
-		im.MethodName = name[len(rd.Name):] + methodName
-	}
-
 	// security scheme
 	switch {
 	case len(m.SecuredBy) > 0: // use secured by from this method
@@ -134,8 +134,24 @@ func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Res
 		}
 	}
 	if len(middlewares) > 0 {
-		rd.WithMiddleware = true
 		im.Middlewares = strings.Join(middlewares, ", ")
+		im.MiddlewaresArr = middlewares
+		rd.WithMiddleware = true
+		for _, v := range middlewares {
+			rd.addMiddleware(v)
+		}
+	}
+
+	return im
+}
+
+// build interface method of  Go server
+func (im *interfaceMethod) buildGoServer(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) {
+	name := normalizeURI(im.Endpoint)
+	if len(m.DisplayName) > 0 {
+		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+	} else {
+		im.MethodName = name[len(rd.Name):] + methodName
 	}
 
 }

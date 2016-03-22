@@ -20,7 +20,7 @@ func TestOauth2Middleware(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main")
+			err = generateSecurity(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in header
@@ -73,7 +73,7 @@ func TestOauth2Middleware(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml")
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main")
+			err = generateSecurity(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
@@ -85,6 +85,59 @@ func TestOauth2Middleware(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+		})
+
+		Convey("python middleware generation test", func() {
+			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			So(err, ShouldBeNil)
+
+			err = generateSecurity(apiDef, targetdir, "main", langPython)
+			So(err, ShouldBeNil)
+
+			// oauth 2 in header
+			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_headerMwr.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_oauth_2_0_headerMwr.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// oauth 2 in query params
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_queryMwr.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_queryMwr.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// scope matching
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_query_ADMINISTRATORMwr.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_query_ADMINISTRATORMwr.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+		})
+
+		Convey("Python routes generation", func() {
+			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			So(err, ShouldBeNil)
+
+			_, err = generateServerResources(apiDef, targetdir, "main", langPython)
+			So(err, ShouldBeNil)
+
+			// check route
+			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile("./fixtures/security/deliveries.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
 		})
 
 		Reset(func() {

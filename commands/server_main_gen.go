@@ -50,7 +50,7 @@ func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, g
 	}
 
 	// security scheme
-	if err := generateSecurity(apiDef, dir, packageName); err != nil {
+	if err := generateSecurity(apiDef, dir, packageName, lang); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}

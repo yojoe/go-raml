@@ -1,0 +1,20 @@
+{{- define "oauth2_middleware_python" -}}
+from functools import wraps
+from flask import g, request, jsonify
+
+def {{.Name}}(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        {{ if .Header -}}
+        token = request.headers.get("{{.Header.Name}}", "")
+        {{ else if .QueryParams -}}
+        token = request.args.get("{{.QueryParams.Name}}", "")
+        {{ end }}
+        if token == "":
+            return jsonify(), 401
+
+        g.access_token = token
+
+        return f(*args, **kwargs)
+    return decorated_function
+{{end -}}
