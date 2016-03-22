@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/context"
 )
 
 func oauth2_oauth_2_0_queryMwr(next http.Handler) http.Handler {
@@ -14,6 +16,9 @@ func oauth2_oauth_2_0_queryMwr(next http.Handler) http.Handler {
 			w.WriteHeader(401)
 			return
 		}
+
+		// save access token in request context
+		context.Set(r, "oauth2_access_token", token)
 
 		next.ServeHTTP(w, r)
 	})

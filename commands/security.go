@@ -59,7 +59,7 @@ func (sd *securityDef) generate(dir string) error {
 
 	// generate oauth token checking middleware
 	fileName := path.Join(dir, sd.Name+".go")
-	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, true); err != nil {
+	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, false); err != nil {
 		return err
 	}
 
