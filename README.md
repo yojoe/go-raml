@@ -69,7 +69,6 @@ To generate the go code for implementing the server in first design approach, ex
 The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
 Generated codestructure:
-TODO:
 * Interfaces types, always regenerated
 * Implementing types, only generated when the file is not present
 
@@ -116,8 +115,8 @@ struct name = types name.
     Union       | interface{}
 
 ## Bodies
-[Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body is mapped into struct
-and following same rule as types above.
+[Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body are mapped into structs
+and following the same rules as types.
 
 struct name = [Resource name][Method name][ReqBody|RespBody].
 
@@ -126,7 +125,7 @@ RequestBody generated from body node below method.
 ResponseBody generated from body node below responses.
 
 ## Resource
-[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) in server is mapped into:
+[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) in the server is mapped to:
 - interface:
 
 	- file name = [resource]_if.go
@@ -138,16 +137,16 @@ ResponseBody generated from body node below responses.
 	- only generated when the file is not present
 	- struct name = [resource]API
 
-- routes generator to generate all necessary routes:
+- routes for all necessary routes:
 	- func name = [Resource]InterfaceRoutes
 
 
 ## Header
 
-Code related to request [headers](http://docs.raml.org/specs/1.0/#raml-10-spec-headers) only generated in Client lib. All functions has arguments to send any request headers, current client lib will not check the headers against RAML specifications.
+Code related to requests [headers](http://docs.raml.org/specs/1.0/#raml-10-spec-headers) are only generated in the Client lib. All functions have arguments to send any request header, the current client lib will not check the headers against the RAML specifications.
 
 
-Response headers related code only generated in server in the form of commented code, example:
+Response headers related code is only generated in the server in the form of commented code, example:
 ```
 // uncomment below line to add header
 // w.Header.Set("key","value")
@@ -155,9 +154,9 @@ Response headers related code only generated in server in the form of commented 
 
 ## Query Strings and Query Parameters
 
-All client library functions has argument to send [Query Strings and Query Parameters](http://docs.raml.org/specs/1.0/#raml-10-spec-query-strings-and-query-parameters), current client lib will not check it against RAML specifications.
+All client library functions have arguments to send [Query Strings and Query Parameters](http://docs.raml.org/specs/1.0/#raml-10-spec-query-strings-and-query-parameters), the current client lib will not check it against the RAML specifications.
 
-Generated code in server is in the form of commented code, example:
+The generated code in the server is in the form of commented code:
 
 ```
 // name := req.FormValue("name")
@@ -174,7 +173,7 @@ Supported input validation:
 - maximum
 - multipleOf
 
-## Specification file
+## Specification file 
 
 Besides generation of a new RAML specification file, updating an existing raml file is also supported. This way the raml filestructure that can be included in the main raml file is honored.
 
@@ -191,6 +190,7 @@ Besides generation of a new RAML specification file, updating an existing raml f
 **v0.2**
 
 * OAuth 2.0 support
+* Input validation according to the RAML type definitions
 
 **v0.3**
 
@@ -198,12 +198,8 @@ Besides generation of a new RAML specification file, updating an existing raml f
 
 **v0.4**
 
-* Input validation according to the RAML type definitions
-
-**v0.5**
-
 * Generation of a new RAML specification file
 
-**v0.6**
+**v0.5**
 
 * Update of a RAML specification file
