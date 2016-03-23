@@ -8,27 +8,24 @@ import (
 	"net/http"
 )
 
-type UsersInterface interface {
+// UsersInterface is interface for /users root endpoint
+type UsersInterface interface { // Get is handler for GET /users
 	// Get a list of test
-	// It is handler for GET /users
 	Get(http.ResponseWriter, *http.Request)
-
+	// Post is handler for POST /users
 	// create users
-	// It is handler for POST /users
 	Post(http.ResponseWriter, *http.Request)
-
+	// userIdGet is handler for GET /users/{userId}
 	// get id
-	// It is handler for GET /users/{userId}
 	userIdGet(http.ResponseWriter, *http.Request)
-
-	// It is handler for DELETE /users/{userId}
+	// userIdDelete is handler for DELETE /users/{userId}
 	userIdDelete(http.ResponseWriter, *http.Request)
-
+	// getUserAddressByID is handler for GET /users/{userId}/address/{addressId}
 	// get address id
-	// It is handler for GET /users/{userId}/address/{addressId}
 	getUserAddressByID(http.ResponseWriter, *http.Request)
 }
 
+// UsersInterfaceRoutes is routing for /users root endpoint
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.HandleFunc("/users", i.Get).Methods("GET")
 	r.HandleFunc("/users", i.Post).Methods("POST")

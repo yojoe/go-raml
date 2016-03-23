@@ -7,18 +7,19 @@ import (
 	"gopkg.in/validator.v2"
 )
 
+// UsersAPI is API implementation of /users root endpoint
 type UsersAPI struct {
 }
 
+// Get is handler for GET /users
 // Get a list of test
-// It is handler for GET /users
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// Post is handler for POST /users
 // create users
-// It is handler for POST /users
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	var reqBody User
 
@@ -40,8 +41,8 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("key","value")
 }
 
+// userIdGet is handler for GET /users/{userId}
 // get id
-// It is handler for GET /users/{userId}
 func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 	var respBody User
 	json.NewEncoder(w).Encode(&respBody)
@@ -49,14 +50,14 @@ func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("key","value")
 }
 
-// It is handler for DELETE /users/{userId}
+// userIdDelete is handler for DELETE /users/{userId}
 func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// getUserAddressByID is handler for GET /users/{userId}/address/{addressId}
 // get address id
-// It is handler for GET /users/{userId}/address/{addressId}
 func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
 	var respBody Address
 	json.NewEncoder(w).Encode(&respBody)
