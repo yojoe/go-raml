@@ -839,7 +839,7 @@ type Property struct {
 	Required bool        `yaml:"required"`
 	Enum     interface{} `yaml:"enum"`
 
-	//Pattern   *string
+	Pattern   *string
 	MinLength *int
 	MaxLength *int
 
@@ -880,6 +880,9 @@ func ToProperty(name string, p interface{}) Property {
 			case "maxLength":
 				p.MaxLength = new(int)
 				*p.MaxLength = v.(int)
+			case "pattern":
+				p.Pattern = new(string)
+				*p.Pattern = v.(string)
 			case "minimum":
 				p.Minimum = new(float64)
 				*p.Minimum = toFloat64(v)

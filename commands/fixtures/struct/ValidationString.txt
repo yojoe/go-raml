@@ -1,0 +1,5 @@
+package main
+
+type ValidationString struct {
+	Name string `json:"name" validate:"min=8,max=40"`
+}

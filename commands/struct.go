@@ -12,6 +12,7 @@ const (
 	structTemplateLocation         = "./templates/struct.tmpl"
 	inputValidatorTemplateLocation = "./templates/struct_input_validator.tmpl"
 	inputValidatorFileResult       = "struct_input_validator.go"
+	maxStringLen                   = 2147483647
 )
 
 // FieldDef defines a field of a struct
@@ -32,8 +33,9 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	if p.MaxLength != nil {
 		validators += fmt.Sprintf(",max=%v", *p.MaxLength)
 	}
-	//if p.Regex != nil {
-	//}
+	if p.Pattern != nil {
+		validators += fmt.Sprintf(",regexp=%v", *p.Pattern)
+	}
 
 	// Number
 	if p.Minimum != nil {

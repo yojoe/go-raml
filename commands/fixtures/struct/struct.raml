@@ -96,6 +96,9 @@ types:
             type: string
             minLength: 4
             maxLength: 8
+          item:
+            minLength: 2
+            pattern: ^[a-zA-Z]$
   /{id}:
     get:
       description: |
