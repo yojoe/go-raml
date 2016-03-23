@@ -14,7 +14,7 @@ type {{.Name}}API struct {
 
 
 {{ range $k, $v := .Methods }}
-// {{$v.MethodName}} is handler for {{$v.Verb}} {{$v.Endpoint}}
+// {{$v.MethodName}} is the handler for {{$v.Verb}} {{$v.Endpoint}}
 {{- range $kf, $vf := $v.FuncComments}}
 // {{$vf}}{{end}}
 func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Request) {

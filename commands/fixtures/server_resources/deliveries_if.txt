@@ -9,19 +9,19 @@ import (
 )
 
 // DeliveriesInterface is interface for /deliveries root endpoint
-type DeliveriesInterface interface { // Get is handler for GET /deliveries
+type DeliveriesInterface interface { // Get is the handler for GET /deliveries
 	// Get a list of deliveries
 	Get(http.ResponseWriter, *http.Request)
-	// Post is handler for POST /deliveries
+	// Post is the handler for POST /deliveries
 	// Create/request a new delivery
 	Post(http.ResponseWriter, *http.Request)
-	// getDeliveriesByDeliveryID is handler for GET /deliveries/{deliveryId}
+	// getDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
 	// Get information on a specific delivery
 	getDeliveriesByDeliveryID(http.ResponseWriter, *http.Request)
-	// deliveryIdPatch is handler for PATCH /deliveries/{deliveryId}
+	// deliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
 	// Update the information on a specific delivery
 	deliveryIdPatch(http.ResponseWriter, *http.Request)
-	// deliveryIdDelete is handler for DELETE /deliveries/{deliveryId}
+	// deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
 	// Cancel a specific delivery
 	deliveryIdDelete(http.ResponseWriter, *http.Request)
 }

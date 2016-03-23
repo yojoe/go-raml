@@ -9,7 +9,7 @@ import (
 )
 
 // UsersInterface is interface for /users root endpoint
-type UsersInterface interface { // createUsers is handler for POST /users
+type UsersInterface interface { // createUsers is the handler for POST /users
 	createUsers(http.ResponseWriter, *http.Request)
 }
 

@@ -12,8 +12,8 @@ import (
 
 // {{.Name}}Interface is interface for {{.Endpoint}} root endpoint
 type {{.Name}}Interface interface{
-	{{- range $k, $v := .Methods -}}
-        // {{ $v.MethodName}} is handler for {{$v.Verb}} {{$v.Endpoint}}
+        {{- range $k, $v := .Methods -}}
+        // {{ $v.MethodName}} is the handler for {{$v.Verb}} {{$v.Endpoint}}
 	  	{{- range $kf, $vf := $v.FuncComments}}
 	  	// {{$vf}}{{end}}
 		{{$v.MethodName}}(http.ResponseWriter, *http.Request)

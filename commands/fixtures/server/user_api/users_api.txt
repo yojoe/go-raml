@@ -11,14 +11,14 @@ import (
 type UsersAPI struct {
 }
 
-// Get is handler for GET /users
+// Get is the handler for GET /users
 // Get a list of test
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
-// Post is handler for POST /users
+// Post is the handler for POST /users
 // create users
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	var reqBody User
@@ -41,7 +41,7 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("key","value")
 }
 
-// userIdGet is handler for GET /users/{userId}
+// userIdGet is the handler for GET /users/{userId}
 // get id
 func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 	var respBody User
@@ -50,13 +50,13 @@ func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("key","value")
 }
 
-// userIdDelete is handler for DELETE /users/{userId}
+// userIdDelete is the handler for DELETE /users/{userId}
 func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
-// getUserAddressByID is handler for GET /users/{userId}/address/{addressId}
+// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
 // get address id
 func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
 	var respBody Address

@@ -11,7 +11,7 @@ import (
 type UsersAPI struct {
 }
 
-// createUsers is handler for POST /users
+// createUsers is the handler for POST /users
 func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
 	var reqBody User
 

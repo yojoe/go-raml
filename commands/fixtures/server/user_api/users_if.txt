@@ -9,18 +9,18 @@ import (
 )
 
 // UsersInterface is interface for /users root endpoint
-type UsersInterface interface { // Get is handler for GET /users
+type UsersInterface interface { // Get is the handler for GET /users
 	// Get a list of test
 	Get(http.ResponseWriter, *http.Request)
-	// Post is handler for POST /users
+	// Post is the handler for POST /users
 	// create users
 	Post(http.ResponseWriter, *http.Request)
-	// userIdGet is handler for GET /users/{userId}
+	// userIdGet is the handler for GET /users/{userId}
 	// get id
 	userIdGet(http.ResponseWriter, *http.Request)
-	// userIdDelete is handler for DELETE /users/{userId}
+	// userIdDelete is the handler for DELETE /users/{userId}
 	userIdDelete(http.ResponseWriter, *http.Request)
-	// getUserAddressByID is handler for GET /users/{userId}/address/{addressId}
+	// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
 	// get address id
 	getUserAddressByID(http.ResponseWriter, *http.Request)
 }
