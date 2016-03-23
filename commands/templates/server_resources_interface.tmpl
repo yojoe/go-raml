@@ -10,15 +10,17 @@ import (
     {{ if .WithMiddleware }} "github.com/justinas/alice" {{ end}}
 )
 
+// {{.Name}}Interface is interface for {{.Endpoint}} root endpoint
 type {{.Name}}Interface interface{
-	{{- range $k, $v := .Methods -}}
-	  	{{ range $kf, $vf := $v.FuncComments}}
+        {{- range $k, $v := .Methods -}}
+        // {{ $v.MethodName}} is the handler for {{$v.Verb}} {{$v.Endpoint}}
+	  	{{- range $kf, $vf := $v.FuncComments}}
 	  	// {{$vf}}{{end}}
-	    // It is handler for {{$v.Verb}} {{$v.Endpoint}}
 		{{$v.MethodName}}(http.ResponseWriter, *http.Request)
 	{{ end }}
 }
 
+// {{.Name}}InterfaceRoutes is routing for {{.Endpoint}} root endpoint
 func {{.Name}}InterfaceRoutes(r *mux.Router, i {{.Name}}Interface)  {
 	{{- range $k, $v := .Methods }}
         {{- if $v.Middlewares }}

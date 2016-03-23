@@ -4,39 +4,40 @@ import (
 	"net/http"
 )
 
+// DeliveriesAPI is API implementation of /deliveries root endpoint
 type DeliveriesAPI struct {
 }
 
+// Get is the handler for GET /deliveries
 // Get a list of deliveries
-// It is handler for GET /deliveries
 func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// Post is the handler for POST /deliveries
 // Create/request a new delivery
-// It is handler for POST /deliveries
 func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// getDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
 // Get information on a specific delivery
-// It is handler for GET /deliveries/{deliveryId}
 func (api DeliveriesAPI) getDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// deliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
 // Update the information on a specific delivery
-// It is handler for PATCH /deliveries/{deliveryId}
 func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }
 
+// deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
 // Cancel a specific delivery
-// It is handler for DELETE /deliveries/{deliveryId}
 func (api DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
 	// uncomment below line to add header
 	// w.Header().Set("key","value")

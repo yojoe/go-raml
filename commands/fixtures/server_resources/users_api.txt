@@ -7,10 +7,11 @@ import (
 	"gopkg.in/validator.v2"
 )
 
+// UsersAPI is API implementation of /users root endpoint
 type UsersAPI struct {
 }
 
-// It is handler for POST /users
+// createUsers is the handler for POST /users
 func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
 	var reqBody User
 

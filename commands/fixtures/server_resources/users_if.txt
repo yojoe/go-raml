@@ -8,11 +8,12 @@ import (
 	"net/http"
 )
 
-type UsersInterface interface {
-	// It is handler for POST /users
+// UsersInterface is interface for /users root endpoint
+type UsersInterface interface { // createUsers is the handler for POST /users
 	createUsers(http.ResponseWriter, *http.Request)
 }
 
+// UsersInterfaceRoutes is routing for /users root endpoint
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.HandleFunc("/users", i.createUsers).Methods("POST")
 }
