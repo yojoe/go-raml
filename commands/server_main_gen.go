@@ -38,6 +38,11 @@ func (sd serverDef) generate(dir, lang string) error {
 // generate API server files
 func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, generateMain bool) error {
 	if lang == "go" {
+		// generate struct validator
+		if err := generateInputValidator(packageName, dir); err != nil {
+			return err
+		}
+
 		// generate all Type structs
 		if err := generateStructs(apiDef, dir, packageName); err != nil {
 			return err

@@ -2,13 +2,16 @@ package commands
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-var (
-	structTemplateLocation = "./templates/struct.tmpl"
+const (
+	structTemplateLocation         = "./templates/struct.tmpl"
+	inputValidatorTemplateLocation = "./templates/struct_input_validator.tmpl"
+	inputValidatorFileResult       = "struct_input_validator.go"
 )
 
 // FieldDef defines a field of a struct
@@ -17,23 +20,36 @@ type fieldDef struct {
 	Type          string // field type
 	IsComposition bool   // composition type
 
-	// validations
-	Required   bool
-	MinLength  *int
-	MaxLength  *int
 	Validators string
 }
 
 func (fd *fieldDef) buildValidators(p raml.Property) {
 	validators := ""
+	// string
 	if p.MinLength != nil {
-		fd.MinLength = p.MinLength
-		validators += fmt.Sprintf(",min=%v", *fd.MinLength)
+		validators += fmt.Sprintf(",min=%v", *p.MinLength)
 	}
 	if p.MaxLength != nil {
-		fd.MaxLength = p.MaxLength
-		validators += fmt.Sprintf(",max=%v", *fd.MaxLength)
+		validators += fmt.Sprintf(",max=%v", *p.MaxLength)
 	}
+	//if p.Regex != nil {
+	//}
+
+	// Number
+	if p.Minimum != nil {
+		validators += fmt.Sprintf(",min=%v", *p.Minimum)
+	}
+
+	if p.Maximum != nil {
+		validators += fmt.Sprintf(",max=%v", *p.Maximum)
+	}
+
+	if p.MultipleOf != nil {
+		validators += fmt.Sprintf(",multipleOf=%v", *p.MultipleOf)
+	}
+
+	//if p.Format != nil {
+	//}
 
 	if validators != "" {
 		fd.Validators = validators[1:]
@@ -97,7 +113,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 
 // generate Go struct
 func (sd structDef) generate(dir string) error {
-	fileName := dir + "/" + sd.Name + ".go"
+	fileName := filepath.Join(dir, sd.Name+".go")
 	if err := generateFile(sd, structTemplateLocation, "struct_template", fileName, false); err != nil {
 		return err
 	}
@@ -237,4 +253,18 @@ func (sd *structDef) buildSpecialization() {
 func (sd *structDef) buildOneLine(tipe string) {
 	sd.IsOneLineDef = true
 	sd.OneLineDef = "type " + sd.Name + " " + tipe
+}
+
+// generate input validator helper file
+func generateInputValidator(packageName, dir string) error {
+	var ctx = struct {
+		PackageName string
+	}{
+		PackageName: packageName,
+	}
+	fileName := filepath.Join(dir, inputValidatorFileResult)
+	if err := generateFile(ctx, inputValidatorTemplateLocation, "struct_input_validator_template", fileName, true); err != nil {
+		return err
+	}
+	return runGoFmt(fileName)
 }

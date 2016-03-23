@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+    "gopkg.in/validator.v2"
 )
 
 //Date represent RFC3399 date
@@ -49,6 +50,9 @@ func (t *Date) String() string {
 }
 
 func main() {
+    // input validator
+    validator.SetValidationFunc("multipleOf", multipleOf)
+
 	r := mux.NewRouter()
 
 	{{ range $k, $v := .ResourcesDef }}
