@@ -13,15 +13,18 @@ const (
 
 // resourceDef is Go code representation of a resource
 type resourceDef struct {
-	Name           string            // resource name
-	Endpoint       string            // root endpoint
-	Methods        []interfaceMethod // all methods of this resource
-	IsServer       bool              // true if it is resource definition for server
-	NeedJSON       bool              // if true, the API implementation to import encoding/json package
-	PackageName    string            // Name of the package this resource resides in
-	APIDef         *raml.APIDefinition
-	WithMiddleware bool
+	APIDef      *raml.APIDefinition
+	Name        string            // resource name
+	Endpoint    string            // root endpoint
+	Methods     []interfaceMethod // all methods of this resource
+	IsServer    bool              // true if it is resource definition for server
+	PackageName string            // Name of the package this resource resides in
+
 	MiddlewaresArr []string
+
+	WithMiddleware bool // this resource need middleware
+	NeedJSON       bool // if true, the API implementation to import encoding/json package
+	NeedValidator  bool // this resource need validator
 }
 
 // create a resource definition
@@ -73,6 +76,9 @@ func newInterfaceMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, metho
 
 	// set request body
 	im.ReqBody = assignBodyName(m.Bodies, normalizeURITitle(im.Endpoint)+methodName, "ReqBody")
+	if im.ReqBody != "" {
+		rd.NeedValidator = true
+	}
 
 	//set response body
 	for k, v := range m.Responses {

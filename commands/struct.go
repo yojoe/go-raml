@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -12,10 +13,31 @@ var (
 
 // FieldDef defines a field of a struct
 type fieldDef struct {
-	Name          string
-	Type          string
-	Required      bool
-	IsComposition bool
+	Name          string // field name
+	Type          string // field type
+	IsComposition bool   // composition type
+
+	// validations
+	Required   bool
+	MinLength  *int
+	MaxLength  *int
+	Validators string
+}
+
+func (fd *fieldDef) buildValidators(p raml.Property) {
+	validators := ""
+	if p.MinLength != nil {
+		fd.MinLength = p.MinLength
+		validators += fmt.Sprintf(",min=%v", *fd.MinLength)
+	}
+	if p.MaxLength != nil {
+		fd.MaxLength = p.MaxLength
+		validators += fmt.Sprintf(",max=%v", *fd.MaxLength)
+	}
+
+	if validators != "" {
+		fd.Validators = validators[1:]
+	}
 }
 
 // StructDef defines a struct
@@ -39,6 +61,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 			Name: strings.Title(prop.Name),
 			Type: convertToGoType(prop.Type),
 		}
+		fd.buildValidators(prop)
 		fields[prop.Name] = fd
 	}
 	return structDef{

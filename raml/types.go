@@ -838,6 +838,9 @@ type Property struct {
 	Type     string      `yaml:"type"`
 	Required bool        `yaml:"required"`
 	Enum     interface{} `yaml:"enum"`
+
+	MinLength *int
+	MaxLength *int
 }
 
 // ToProperty creates a property from an interface
@@ -854,6 +857,12 @@ func ToProperty(name string, p interface{}) Property {
 				p.Required = v.(bool)
 			case "enum":
 				p.Enum = v
+			case "minLength":
+				p.MinLength = new(int)
+				*p.MinLength = v.(int)
+			case "maxLength":
+				p.MaxLength = new(int)
+				*p.MaxLength = v.(int)
 			}
 		}
 		return p
