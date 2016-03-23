@@ -839,14 +839,20 @@ type Property struct {
 	Required bool        `yaml:"required"`
 	Enum     interface{} `yaml:"enum"`
 
+	// string
 	Pattern   *string
 	MinLength *int
 	MaxLength *int
 
+	// number
 	Minimum    *float64
 	Maximum    *float64
 	MultipleOf *float64
 	//Format *string
+
+	// array
+	MinItems *int
+	MaxItems *int
 }
 
 // ToProperty creates a property from an interface
@@ -892,6 +898,12 @@ func ToProperty(name string, p interface{}) Property {
 			case "multipleOf":
 				p.MultipleOf = new(float64)
 				*p.MultipleOf = toFloat64(v)
+			case "minItems":
+				p.MinItems = new(int)
+				*p.MinItems = v.(int)
+			case "maxItems":
+				p.MaxItems = new(int)
+				*p.MaxItems = v.(int)
 			}
 		}
 		return p
