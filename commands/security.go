@@ -118,7 +118,7 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 	// generate oauth2 scope matching middleware for all resource
 	log.Infof("generate oauth2_scope_match middleware")
 	for _, r := range apiDef.Resources {
-		if err := generateScopeMatching(apiDef, &r, packageName, lang, dir); err != nil {
+		if err := generateResourceScopeMatcher(apiDef, &r, packageName, lang, dir); err != nil {
 			return err
 		}
 	}
@@ -151,7 +151,11 @@ func scopeMatcherName(oauth2Name string, scopes []string) string {
 }
 
 // generate scope matching midleware needed by a resource
-func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packageName, lang, dir string) error {
+func generateResourceScopeMatcher(apiDef *raml.APIDefinition, res *raml.Resource, packageName, lang, dir string) error {
+	if err := securedByScopeMatching(apiDef, res.SecuredBy, packageName, lang, dir); err != nil {
+		return err
+	}
+
 	if err := methodScopeMatching(apiDef, res.Get, packageName, lang, dir); err != nil {
 		return err
 	}
@@ -168,7 +172,7 @@ func generateScopeMatching(apiDef *raml.APIDefinition, res *raml.Resource, packa
 		return err
 	}
 	for _, v := range res.Nested {
-		if err := generateScopeMatching(apiDef, v, packageName, lang, dir); err != nil {
+		if err := generateResourceScopeMatcher(apiDef, v, packageName, lang, dir); err != nil {
 			return err
 		}
 	}
