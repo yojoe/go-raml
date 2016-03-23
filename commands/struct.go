@@ -53,6 +53,14 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	//if p.Format != nil {
 	//}
 
+	// Array & Map
+	if p.MinItems != nil {
+		validators += fmt.Sprintf(",min=%v", *p.MinItems)
+	}
+	if p.MaxItems != nil {
+		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
+	}
+
 	if validators != "" {
 		fd.Validators = validators[1:]
 	}

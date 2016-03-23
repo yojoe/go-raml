@@ -22,7 +22,10 @@ types:
       name?: string
       colours:
         type: string[]
-      cities: EnumCity[]
+      cities: 
+        type: EnumCity[]
+        minItems: 1
+        maxItems: 10
   SingleInheritance:
     type: animal
     properties:
