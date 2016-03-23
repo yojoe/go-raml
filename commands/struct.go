@@ -132,9 +132,6 @@ func (sd structDef) generate(dir string) error {
 
 // generate all structs from an RAML api definition
 func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName string) error {
-	if err := checkCreateDir(dir); err != nil {
-		return err
-	}
 	for k, v := range apiDefinition.Types {
 		sd := newStructDefFromType(v, k, packageName, v.Description)
 		if err := sd.generate(dir); err != nil {

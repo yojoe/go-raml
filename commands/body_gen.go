@@ -9,11 +9,6 @@ const (
 
 // generate Go struct from RAML definition
 func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName string) error {
-	// check create dir
-	if err := checkCreateDir(dir); err != nil {
-		return err
-	}
-
 	// generate
 	for _, v := range apiDef.Resources {
 		if err := generateStructsFromResourceBody("", dir, packageName, &v); err != nil {
