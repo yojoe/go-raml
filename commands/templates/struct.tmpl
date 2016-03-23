@@ -7,8 +7,9 @@ package {{.PackageName}}
 {{ .OneLineDef }}
 {{- else -}}
 type {{ .Name }} struct {
-    {{ range $key, $value := .Fields }}{{$value.Name}}  {{if eq $value.IsComposition false}} {{$value.Type}} `json:"{{$key}}"` {{end}}
-    {{end}}
+    {{ range $key, $value := .Fields }}
+        {{$value.Name}}  {{if eq $value.IsComposition false}} {{$value.Type}} `json:"{{$key}}"{{if $value.Validators}} validate:"{{$value.Validators}}"{{end}}` {{end}}
+    {{- end}}
 }
 {{- end -}}
 {{end}}

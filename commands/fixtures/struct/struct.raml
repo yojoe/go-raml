@@ -75,15 +75,30 @@ types:
     properties:
       "[]":
         type: number
+  ValidationString:
+    properties:
+      name:
+        type: string
+        minLength: 8
+        maxLength: 40
 /users:
-  get:
-    description: Get a list of test
+  post:
+    description: create a user
     body:
       application/json:
         properties:
           age:
             type: integer
+            minimum: 16
+            maximum: 100
+            multipleOf: 4
           ID:
+            type: string
+            minLength: 4
+            maxLength: 8
+          item:
+            minLength: 2
+            pattern: ^[a-zA-Z]$
   /{id}:
     get:
       description: |

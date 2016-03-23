@@ -1,6 +1,0 @@
-package main
-
-type UsersGetReqBody struct {
-	ID  string `json:"ID"`
-	Age int    `json:"age"`
-}

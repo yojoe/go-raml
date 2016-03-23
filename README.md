@@ -163,6 +163,16 @@ Generated code in server is in the form of commented code, example:
 // name := req.FormValue("name")
 ```
 
+## Input Validation
+
+Supported input validation:
+
+- minLength
+- maxLength
+- pattern
+- minimum
+- maximum
+- multipleOf
 
 ## Specification file
 

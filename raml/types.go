@@ -838,11 +838,31 @@ type Property struct {
 	Type     string      `yaml:"type"`
 	Required bool        `yaml:"required"`
 	Enum     interface{} `yaml:"enum"`
+
+	Pattern   *string
+	MinLength *int
+	MaxLength *int
+
+	Minimum    *float64
+	Maximum    *float64
+	MultipleOf *float64
+	//Format *string
 }
 
 // ToProperty creates a property from an interface
 // we use `interface{}` as property type to support syntactic sugar & shortcut
 func ToProperty(name string, p interface{}) Property {
+	// convert number(int/float) to float
+	toFloat64 := func(number interface{}) float64 {
+		switch v := number.(type) {
+		case int:
+			return float64(v)
+		case float64:
+			return v
+		default:
+			return v.(float64)
+		}
+	}
 	// convert from map of interface to property
 	mapToProperty := func(val map[interface{}]interface{}) Property {
 		var p Property
@@ -854,6 +874,24 @@ func ToProperty(name string, p interface{}) Property {
 				p.Required = v.(bool)
 			case "enum":
 				p.Enum = v
+			case "minLength":
+				p.MinLength = new(int)
+				*p.MinLength = v.(int)
+			case "maxLength":
+				p.MaxLength = new(int)
+				*p.MaxLength = v.(int)
+			case "pattern":
+				p.Pattern = new(string)
+				*p.Pattern = v.(string)
+			case "minimum":
+				p.Minimum = new(float64)
+				*p.Minimum = toFloat64(v)
+			case "maximum":
+				p.Maximum = new(float64)
+				*p.Maximum = toFloat64(v)
+			case "multipleOf":
+				p.MultipleOf = new(float64)
+				*p.MultipleOf = toFloat64(v)
 			}
 		}
 		return p

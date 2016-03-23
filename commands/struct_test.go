@@ -156,6 +156,15 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// With validation
+			s, err = testLoadFile(filepath.Join(targetdir, "ValidationString.go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/ValidationString.txt")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 		})
 
 		Reset(func() {

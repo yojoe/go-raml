@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+
+	"gopkg.in/validator.v2"
 )
 
 type UsersAPI struct {
@@ -12,8 +14,16 @@ type UsersAPI struct {
 func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
 	var reqBody User
 
+	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		w.WriteHeader(400)
+		return
+	}
+
+	// validate request
+	if err := validator.Validate(reqBody); err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
 	}
 	// uncomment below line to add header
