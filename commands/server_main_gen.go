@@ -29,7 +29,7 @@ func (sd serverDef) generatePython(dir string) error {
 }
 
 func (sd serverDef) generate(dir, lang string) error {
-	if lang == "go" {
+	if lang == langGo {
 		return sd.generateGo(dir)
 	}
 	return sd.generatePython(dir)
@@ -42,7 +42,7 @@ func generateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, g
 		return err
 	}
 
-	if lang == "go" {
+	if lang == langGo {
 		// generate struct validator
 		if err := generateInputValidator(packageName, dir); err != nil {
 			return err

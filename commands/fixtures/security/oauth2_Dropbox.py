@@ -1,10 +1,10 @@
 from functools import wraps
 from flask import g, request, jsonify
 
-def oauth2_oauth_2_0_headerMwr(f):
+def Dropbox(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        token = request.headers.get("Authorization", "")
+        token = request.args.get("access_token", "")
         
         if token == "":
             return jsonify(), 401

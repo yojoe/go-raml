@@ -2,7 +2,7 @@
 {{- $apiName := .Name -}}
 from flask import Blueprint, jsonify, request
 {{ range $k, $v := .MiddlewaresArr -}}
-from {{$v}} import *
+from oauth2_{{$v}} import *
 {{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)

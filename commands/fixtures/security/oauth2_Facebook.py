@@ -1,10 +1,10 @@
 from functools import wraps
 from flask import g, request, jsonify
 
-def oauth2_oauth_2_0_queryMwr(f):
+def Facebook(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        token = request.args.get("access_token", "")
+        token = request.headers.get("Authorization", "")
         
         if token == "":
             return jsonify(), 401

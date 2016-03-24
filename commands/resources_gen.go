@@ -22,7 +22,7 @@ type resourceDef struct {
 
 	MiddlewaresArr []string
 
-	WithMiddleware bool // this resource need middleware
+	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
 	NeedJSON       bool // if true, the API implementation to import encoding/json package
 	NeedValidator  bool // this resource need validator
 }
@@ -105,7 +105,7 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	methodName, parentEndpoint, curEndpoint, lang string) interfaceMethod {
 	im := newInterfaceMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
-	if lang == "go" {
+	if lang == langGo {
 		im.buildGoServer(apiDef, r, rd, m, methodName)
 	} else {
 		im.buildPythonServer(r, m)
@@ -121,14 +121,23 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		im.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
-	// generate middlewares from securityScheme & scopes
+	if lang == langGo {
+		im.setGoMiddlewares(apiDef, rd)
+	} else {
+		im.setPythonMiddlewares(apiDef, rd)
+	}
+	return im
+}
+
+// set all middlewares needed by this method
+func (im *interfaceMethod) setPythonMiddlewares(apiDef *raml.APIDefinition, rd *resourceDef) error {
 	middlewares := []string{}
 	for _, v := range im.SecuredBy {
 		if !validateSecurityScheme(v.Name, apiDef) {
 			continue
 		}
 		// oauth2 middleware
-		middlewares = append(middlewares, securitySchemeName(v.Name)+"Mwr")
+		middlewares = append(middlewares, securitySchemeName(v.Name))
 
 		// scope matcher middleware
 		scopes, err := getSecurityScopes(v)
@@ -142,13 +151,36 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	if len(middlewares) > 0 {
 		im.Middlewares = strings.Join(middlewares, ", ")
 		im.MiddlewaresArr = middlewares
-		rd.WithMiddleware = true
 		for _, v := range middlewares {
 			rd.addMiddleware(v)
 		}
 	}
+	return nil
+}
 
-	return im
+// set all middlewares needed by this method
+func (im *interfaceMethod) setGoMiddlewares(apiDef *raml.APIDefinition, rd *resourceDef) error {
+	middlewares := []string{}
+
+	// security middlewares
+	for _, v := range im.SecuredBy {
+		if !validateSecurityScheme(v.Name, apiDef) {
+			continue
+		}
+		// oauth2 middleware
+		m, err := getOauth2MwrHandler(v)
+		if err != nil {
+			return err
+		}
+		middlewares = append(middlewares, m)
+	}
+
+	im.Middlewares = strings.Join(middlewares, ", ")
+
+	if len(im.Middlewares) > 0 {
+		rd.WithMiddleware = true
+	}
+	return nil
 }
 
 // build interface method of  Go server

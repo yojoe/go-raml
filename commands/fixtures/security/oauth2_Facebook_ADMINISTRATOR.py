@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import g, request, jsonify
 
-def oauth2_oauth_2_0_query_ADMINISTRATORMwr(f):
+def Facebook_ADMINISTRATOR(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         allowed_scopes = ["ADMINISTRATOR"]

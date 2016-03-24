@@ -4,7 +4,7 @@ version: 1
 securedBy: [oauth_2_0_header]
 baseUri: https://api.dropbox.com/{version}
 securitySchemes:
-    - oauth_2_0_header:
+    - Facebook:
         description: |
             Dropbox supports OAuth 2.0 for authenticating all API requests.
         type: OAuth 2.0
@@ -29,7 +29,7 @@ securitySchemes:
           authorizationUri: https://www.dropbox.com/1/oauth2/authorize
           accessTokenUri: https://api.dropbox.com/1/oauth2/token
           authorizationGrants: [ authorization_code, refresh_token ]
-    - oauth_2_0_query:
+    - Dropbox:
         description: |
             Dropbox supports OAuth 2.0 for authenticating all API requests.
         type: OAuth 2.0
@@ -82,7 +82,7 @@ types:
 /deliveries:
   get:
     description: Get a list of deliveries
-    securedBy: [oauth_2_0_query: { scopes: [ ADMINISTRATOR ] }]
+    securedBy: [Facebook: { scopes: [ ADMINISTRATOR ] }]
   post:
     description: Create/request a new delivery
   /{deliveryId}:
