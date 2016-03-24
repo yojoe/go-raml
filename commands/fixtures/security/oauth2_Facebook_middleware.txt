@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// Oauth2FacebookMiddleware is oauth2 middleware for Facebook
 type Oauth2FacebookMiddleware struct {
 	describedBy string
 	field       string

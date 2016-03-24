@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// Oauth2DropboxIncludedMiddleware is oauth2 middleware for DropboxIncluded
 type Oauth2DropboxIncludedMiddleware struct {
 	describedBy string
 	field       string
