@@ -41,7 +41,7 @@ func (rd *resourceDef) generateGo(r *raml.Resource, URI, dir string) error {
 }
 
 func (rd *resourceDef) generate(r *raml.Resource, URI, dir, lang string) error {
-	if lang == "go" {
+	if lang == langGo {
 		return rd.generateGo(r, URI, dir)
 	}
 	return rd.generatePython(r, URI, dir)

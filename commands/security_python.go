@@ -8,20 +8,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-func generatePythonSecurity(apiDef *raml.APIDefinition, packageName, dir string) error {
-	// generate oauth2 scope matching middleware of root document
-	if err := securedByScopeMatching(apiDef, apiDef.SecuredBy, packageName, dir); err != nil {
-		return err
-	}
-
-	// generate oauth2 scope matching middleware for all resource
-	for _, r := range apiDef.Resources {
-		if err := generateResourceScopeMatcher(apiDef, &r, packageName, dir); err != nil {
-			return err
-		}
-	}
-	return nil
-}
 func (sd *securityDef) generatePython(dir string) error {
 	// we only support oauth2
 	if sd.Type != Oauth2 {
@@ -32,6 +18,22 @@ func (sd *securityDef) generatePython(dir string) error {
 	fileName := path.Join(dir, "oauth2_"+sd.Name+".py")
 	if err := generateFile(sd, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false); err != nil {
 		return err
+	}
+	return nil
+}
+
+// generate python scope matcher
+func generatePythonScopeMatcher(apiDef *raml.APIDefinition, packageName, dir string) error {
+	// generate oauth2 scope matching middleware of root document
+	if err := securedByScopeMatching(apiDef, apiDef.SecuredBy, packageName, dir); err != nil {
+		return err
+	}
+
+	// generate oauth2 scope matching middleware for all resource
+	for _, r := range apiDef.Resources {
+		if err := generateResourceScopeMatcher(apiDef, &r, packageName, dir); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -55,7 +55,7 @@ func (om *Oauth2DropboxMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		// WRITE codes to check user's scopes
-		var scopes []string = []string{"user"}
+		var scopes []string
 
 		// check scopes
 		if !om.CheckScopes(scopes) {

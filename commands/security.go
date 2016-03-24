@@ -52,7 +52,6 @@ func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, p
 }
 
 func (sd *securityDef) generateGo(dir string) error {
-	// generate oauth token checking middleware
 	fileName := path.Join(dir, "oauth2_"+sd.Name+"_middleware.go")
 	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, false); err != nil {
 		return err
@@ -95,11 +94,10 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 	if lang != langPython {
 		return nil
 	}
-	log.Info("generate python security")
-	return generatePythonSecurity(apiDef, packageName, dir)
+	return generatePythonScopeMatcher(apiDef, packageName, dir)
 }
 
-// newOauthMiddleware(header, field, scopes).Handler
+// get oauth2 middleware handler from a security scheme
 func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 	quotedScopes, err := getQuotedSecurityScopes(ss)
 	if err != nil {
@@ -109,6 +107,7 @@ func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 	return fmt.Sprintf(`newOauth2%vMiddleware([]string{%v}).Handler`, securitySchemeName(ss.Name), scopesArgs), nil
 }
 
+// get array of security scopes in the form of quoted string
 func getQuotedSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
 	var quoted []string
 	scopes, err := getSecurityScopes(ss)
