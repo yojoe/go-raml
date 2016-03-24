@@ -1,14 +1,13 @@
 from flask import Blueprint, jsonify, request
 from oauth2_Facebook import *
-from oauth2_Facebook_ADMINISTRATOR import *
+from oauth2_Dropbox import *
 
 
 deliveries_api = Blueprint('deliveries_api', __name__)
 
 
 @deliveries_api.route('/deliveries', methods=['GET'])
-@Facebook
-@Facebook_ADMINISTRATOR
+@oauth2_Facebook(["ADMINISTRATOR"])
 def deliveries_get():
     '''
     Get a list of deliveries
@@ -18,6 +17,7 @@ def deliveries_get():
 
 
 @deliveries_api.route('/deliveries', methods=['POST'])
+@oauth2_Dropbox([])
 def deliveries_post():
     '''
     Create/request a new delivery

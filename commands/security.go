@@ -51,6 +51,8 @@ func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, p
 	return sd
 }
 
+// generate Go representation of a security scheme
+// it implemented as struct based middleware
 func (sd *securityDef) generateGo(dir string) error {
 	fileName := path.Join(dir, "oauth2_"+sd.Name+"_middleware.go")
 	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, false); err != nil {
@@ -90,11 +92,7 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 			}
 		}
 	}
-
-	if lang != langPython {
-		return nil
-	}
-	return generatePythonScopeMatcher(apiDef, packageName, dir)
+	return nil
 }
 
 // get oauth2 middleware handler from a security scheme

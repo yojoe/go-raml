@@ -2,7 +2,7 @@
 {{- $apiName := .Name -}}
 from flask import Blueprint, jsonify, request
 {{ range $k, $v := .MiddlewaresArr -}}
-from oauth2_{{$v}} import *
+from {{$v.Name}} import *
 {{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
@@ -10,7 +10,7 @@ from oauth2_{{$v}} import *
 
 @{{$apiName | ToLower}}_api.route('{{$v.Endpoint}}', methods=['{{$v.Verb}}'])
 {{range $km, $vm := $v.MiddlewaresArr -}}
-@{{$vm}}
+@{{$vm.Name}}([{{$vm.Args}}])
 {{end -}}
 def {{$v.MethodName}}({{$v.Params}}):
     '''
