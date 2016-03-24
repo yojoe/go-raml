@@ -20,7 +20,7 @@ type resourceDef struct {
 	IsServer    bool              // true if it is resource definition for server
 	PackageName string            // Name of the package this resource resides in
 
-	MiddlewaresArr []string
+	MiddlewaresArr []pythonMiddleware // TODO : split resourceDef to python & Go version
 
 	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
 	NeedJSON       bool // if true, the API implementation to import encoding/json package
@@ -38,10 +38,10 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 	return rd
 }
 
-func (rd *resourceDef) addMiddleware(mwr string) {
+func (rd *resourceDef) addPythonMiddleware(mwr pythonMiddleware) {
 	// check if already exist
 	for _, v := range rd.MiddlewaresArr {
-		if v == mwr {
+		if v.Name == mwr.Name {
 			return
 		}
 	}
@@ -62,7 +62,7 @@ type interfaceMethod struct {
 	FuncComments   []string
 	SecuredBy      []raml.DefinitionChoice
 	Middlewares    string
-	MiddlewaresArr []string
+	MiddlewaresArr []pythonMiddleware // TODO split interfaceMethod to pyton & Go version
 }
 
 // create an interfaceMethod object
@@ -131,29 +131,20 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 
 // set all middlewares needed by this method
 func (im *interfaceMethod) setPythonMiddlewares(apiDef *raml.APIDefinition, rd *resourceDef) error {
-	middlewares := []string{}
 	for _, v := range im.SecuredBy {
 		if !validateSecurityScheme(v.Name, apiDef) {
 			continue
 		}
 		// oauth2 middleware
-		middlewares = append(middlewares, securitySchemeName(v.Name))
-
-		// scope matcher middleware
-		scopes, err := getSecurityScopes(v)
+		m, err := newPythonOauth2Middleware(v)
 		if err != nil {
-			log.Errorf("failed to get security scopes:%v", err)
+			log.Errorf("error creating middleware for method.err = %v", err)
+			return err
 		}
-		if len(scopes) > 0 {
-			middlewares = append(middlewares, scopeMatcherName(v.Name, scopes))
-		}
+		im.MiddlewaresArr = append(im.MiddlewaresArr, m)
 	}
-	if len(middlewares) > 0 {
-		im.Middlewares = strings.Join(middlewares, ", ")
-		im.MiddlewaresArr = middlewares
-		for _, v := range middlewares {
-			rd.addMiddleware(v)
-		}
+	for _, v := range im.MiddlewaresArr {
+		rd.addPythonMiddleware(v)
 	}
 	return nil
 }

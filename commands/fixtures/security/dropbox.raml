@@ -80,6 +80,7 @@ types:
         dob:
           type: date
 /deliveries:
+  securedBy: [Dropbox]
   get:
     description: Get a list of deliveries
     securedBy: [Facebook: { scopes: [ ADMINISTRATOR ] }]
