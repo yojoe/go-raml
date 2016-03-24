@@ -23,29 +23,20 @@ func TestOauth2Middleware(t *testing.T) {
 			err = generateSecurity(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
-			// oauth 2 in header
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_headerMwr.go"))
+			// oauth 2 facebook
+			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_Facebook_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/security/oauth2_oauth_2_0_headerMwr.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// oauth 2 in query params
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_queryMwr.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_queryMwr.txt")
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_Facebook_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
 
-			// scope matching
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_query_ADMINISTRATORMwr.go"))
+			// oauth 2 dropbox
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Dropbox_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_query_ADMINISTRATORMwr.txt")
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_Dropbox_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -77,10 +68,10 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0Mwr.go"))
+			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_DropboxIncluded_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/security/oauth2_oauth_2_0Mwr.txt")
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_DropboxIncluded_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -94,29 +85,29 @@ func TestOauth2Middleware(t *testing.T) {
 			err = generateSecurity(apiDef, targetdir, "main", langPython)
 			So(err, ShouldBeNil)
 
-			// oauth 2 in header
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_headerMwr.py"))
+			// oauth 2 in dropbox
+			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_Dropbox.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/security/oauth2_oauth_2_0_headerMwr.py")
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_Dropbox.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
 
-			// oauth 2 in query params
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_queryMwr.py"))
+			// oauth 2 facebook
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Facebook.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_queryMwr.py")
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_Facebook.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
 
 			// scope matching
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_oauth_2_0_query_ADMINISTRATORMwr.py"))
+			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Facebook_ADMINISTRATOR.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/security/oauth2_oauth_2_0_query_ADMINISTRATORMwr.py")
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_Facebook_ADMINISTRATOR.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

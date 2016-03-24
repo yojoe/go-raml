@@ -1,33 +1,29 @@
-{{- define "oauth2_middleware" -}}
-package {{.PackageName}}
+package main
 
 import (
 	"net/http"
 )
 
-type Oauth2{{.Name}}Middleware struct {
+type Oauth2FacebookMiddleware struct {
 	describedBy string
 	field       string
 	scopes      []string
 }
 
-// newOauth2{{.Name}}Middlewarecreate new Oauth2{{.Name}}Middleware struct
-func newOauth2{{.Name}}Middleware(scopes []string) *Oauth2{{.Name}}Middleware {
-    om := Oauth2{{.Name}}Middleware{
-		scopes:      scopes,
+// newOauth2FacebookMiddlewarecreate new Oauth2FacebookMiddleware struct
+func newOauth2FacebookMiddleware(scopes []string) *Oauth2FacebookMiddleware {
+	om := Oauth2FacebookMiddleware{
+		scopes: scopes,
 	}
-    {{ if .Header}}
-    om.describedBy = "headers"
-    om.field = "{{.Header.Name}}"
-    {{ else if .QueryParams }}
-    om.describedBy = "queryParameters"
-    om.field = "{{.QueryParams.Name}}"
-    {{ end }}
-    return &om
+
+	om.describedBy = "headers"
+	om.field = "Authorization"
+
+	return &om
 }
 
 // CheckScopes checks whether user has needed scopes
-func (om *Oauth2{{.Name}}Middleware) CheckScopes(scopes []string) bool {
+func (om *Oauth2FacebookMiddleware) CheckScopes(scopes []string) bool {
 	if len(om.scopes) == 0 {
 		return true
 	}
@@ -43,7 +39,7 @@ func (om *Oauth2{{.Name}}Middleware) CheckScopes(scopes []string) bool {
 }
 
 // Handler return HTTP handler representation of this middleware
-func (om *Oauth2{{.Name}}Middleware) Handler(next http.Handler) http.Handler {
+func (om *Oauth2FacebookMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var accessToken string
 
@@ -70,4 +66,3 @@ func (om *Oauth2{{.Name}}Middleware) Handler(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-{{- end -}}

@@ -128,7 +128,7 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 			continue
 		}
 		// oauth2 middleware
-		middlewares = append(middlewares, securitySchemeName(v.Name)+"Mwr")
+		middlewares = append(middlewares, securitySchemeName(v.Name))
 
 		// scope matcher middleware
 		scopes, err := getSecurityScopes(v)
@@ -148,7 +148,30 @@ func newServerInterfaceMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		}
 	}
 
+	if lang == langGo {
+		im.setGoMiddlewares(apiDef)
+	}
 	return im
+}
+
+func (im *interfaceMethod) setGoMiddlewares(apiDef *raml.APIDefinition) error {
+	middlewares := []string{}
+
+	// security middlewares
+	for _, v := range im.SecuredBy {
+		if !validateSecurityScheme(v.Name, apiDef) {
+			continue
+		}
+		// oauth2 middleware
+		m, err := getOauth2MwrHandler(v)
+		if err != nil {
+			return err
+		}
+		middlewares = append(middlewares, m)
+	}
+
+	im.Middlewares = strings.Join(middlewares, ", ")
+	return nil
 }
 
 // build interface method of  Go server
