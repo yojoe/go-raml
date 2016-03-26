@@ -92,8 +92,6 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		// Required = false
 		if prop.Required == false {
 			fd.IsOmitted = true
-		} else {
-			fd.IsOmitted = false
 		}
 
 		fd.buildValidators(prop)
