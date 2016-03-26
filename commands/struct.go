@@ -20,6 +20,7 @@ type fieldDef struct {
 	Name          string // field name
 	Type          string // field type
 	IsComposition bool   // composition type
+	IsOmitted     bool   // omitted empty
 
 	Validators string
 }
@@ -87,6 +88,14 @@ func newStructDef(name, packageName, description string, properties map[string]i
 			Name: strings.Title(prop.Name),
 			Type: convertToGoType(prop.Type),
 		}
+
+		// Required = false
+		if prop.Required == false {
+			fd.IsOmitted = true
+		} else {
+			fd.IsOmitted = false
+		}
+
 		fd.buildValidators(prop)
 		fields[prop.Name] = fd
 	}

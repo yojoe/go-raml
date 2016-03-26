@@ -96,7 +96,7 @@ func TemplatesClient_helper_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/client_helper_resource.tmpl", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -116,7 +116,7 @@ func TemplatesClient_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/client_resource.tmpl", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -136,7 +136,7 @@ func TemplatesGeneric_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/generic_main.tmpl", size: 73, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/generic_main.tmpl", size: 73, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -156,7 +156,7 @@ func TemplatesOauth2_middlewareTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/oauth2_middleware.tmpl", size: 1703, mode: os.FileMode(420), modTime: time.Unix(1458815390, 0)}
+	info := bindataFileInfo{name: "../templates/oauth2_middleware.tmpl", size: 1703, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -176,7 +176,7 @@ func TemplatesOauth2_middleware_pythonTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/oauth2_middleware_python.tmpl", size: 1445, mode: os.FileMode(420), modTime: time.Unix(1458816627, 0)}
+	info := bindataFileInfo{name: "../templates/oauth2_middleware_python.tmpl", size: 1445, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -196,7 +196,7 @@ func TemplatesPython_clientTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/python_client.tmpl", size: 614, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -216,7 +216,7 @@ func TemplatesPython_client_utilsTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_client_utils.tmpl", size: 2584, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/python_client_utils.tmpl", size: 2584, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -236,7 +236,7 @@ func TemplatesPython_server_resourceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/python_server_resource.tmpl", size: 673, mode: os.FileMode(420), modTime: time.Unix(1458816580, 0)}
+	info := bindataFileInfo{name: "../templates/python_server_resource.tmpl", size: 673, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -256,7 +256,7 @@ func TemplatesServer_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1287, mode: os.FileMode(420), modTime: time.Unix(1458723739, 0)}
+	info := bindataFileInfo{name: "../templates/server_main.tmpl", size: 1287, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -276,7 +276,7 @@ func TemplatesServer_python_mainTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_python_main.tmpl", size: 351, mode: os.FileMode(420), modTime: time.Unix(1458530859, 0)}
+	info := bindataFileInfo{name: "../templates/server_python_main.tmpl", size: 351, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -296,7 +296,7 @@ func TemplatesServer_resources_apiTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 1222, mode: os.FileMode(420), modTime: time.Unix(1458784967, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_api.tmpl", size: 1222, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -316,12 +316,12 @@ func TemplatesServer_resources_interfaceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 1150, mode: os.FileMode(420), modTime: time.Unix(1458784967, 0)}
+	info := bindataFileInfo{name: "../templates/server_resources_interface.tmpl", size: 1150, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _TemplatesStructTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x64\x90\x4f\x4b\x03\x31\x10\xc5\xef\xfd\x14\xc3\xd2\xa3\x4d\xef\x05\x4f\x16\x41\x10\xf5\x20\x5e\x6d\xd8\xcc\x4a\x6c\x36\x89\x9b\x74\xa1\x84\x7c\x77\x5f\xfe\xa0\x82\xb9\xec\xce\x7b\xf3\xe7\x37\x93\x92\xe2\x49\x5b\xa6\x21\xc4\xe5\x32\xc6\xf7\xc8\xb3\x37\x32\xf2\x90\xf3\xc6\xcb\xf1\x2c\x3f\x98\x52\x12\x2f\xed\xf7\x49\xce\x0c\x63\x93\x12\x2d\xd2\xc2\xda\xae\x74\xb8\x25\x71\xe4\x30\x2e\xda\x47\xed\x2c\xc1\xdf\xef\x51\xb3\x5d\x73\xc6\x87\xad\x82\x82\x02\x3d\x91\x78\x08\xcf\x96\x1f\x31\xef\xc8\x13\xed\x9a\x2e\xfe\x48\x55\xd9\x11\x9b\xc0\xd5\x8e\x57\x5f\xc6\x93\x28\x83\xe1\x52\xa3\xa4\xb4\x21\xbc\x5f\x8a\x33\x5f\x6f\xc0\x22\xcd\x85\x2b\xcf\xbd\x66\xa3\x42\x69\x47\xfd\x15\x9e\x62\x8b\xb6\x42\x11\x00\xc4\x5f\xbd\x0a\x64\x77\x6e\xf6\x2e\xe8\xba\xc3\x24\x41\x50\xf1\xbb\xfd\x0a\x10\xc4\xa7\xcf\xe0\xec\x61\x80\x8c\x89\x39\x0f\xb5\x49\x4f\x79\x93\x46\x2b\x19\xdd\x12\x90\xb8\xb6\x80\x6b\xee\x7f\x7f\xe8\x77\x39\xfd\x1c\xa8\x31\x62\xf5\x1a\xf5\x33\x58\xd5\x8f\xd4\xd4\xef\x00\x00\x00\xff\xff\x2c\x5d\x33\xb0\xad\x01\x00\x00")
+var _TemplatesStructTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x64\x90\xcd\x6a\xc3\x30\x10\x84\xef\x7e\x8a\xc5\xe4\x98\x28\xf7\x40\x4f\x0d\x85\x42\x69\x7a\x28\xbd\x36\xc2\x5a\x17\x35\xb6\xe4\x5a\x8a\xc1\x08\xbd\x7b\x47\x3f\xb4\x81\xe8\x62\xef\x8c\x76\xf7\xd3\x84\xa0\xb8\xd7\x86\xa9\x75\x7e\xbe\x76\xfe\xd3\xf3\x38\x0d\xd2\x73\x1b\x63\x33\xc9\xee\x22\xbf\x98\x42\x10\x6f\xe5\xf7\x55\x8e\x0c\xa3\x09\x81\x66\x69\x60\x6d\x16\x3a\x3c\x90\x38\xb2\xeb\x66\x3d\x79\x6d\x0d\xc1\xdf\xef\xd1\xb3\x59\x62\xc4\x87\x8d\x82\x82\x06\xdd\x93\x78\x76\x27\xc3\x2f\xd8\x77\xe4\x9e\x76\x45\x17\x37\x52\x56\x76\xc4\x83\xe3\x6c\xfb\x75\x4a\xeb\x49\xa4\xc5\x70\xa9\x50\x52\x68\x08\xe7\x9f\xe2\xc2\xeb\x16\x2c\x72\xb8\x72\xe6\x79\xd2\x3c\x28\x97\xc6\x51\x3d\x89\x27\xd9\xa2\x3c\x21\x09\x00\xe2\x9f\xda\x05\xb2\x47\x3b\x4e\xd6\xe9\xfc\x86\x5e\x82\x20\xe3\x57\xfb\x1d\x20\xa8\xcf\xdf\xce\x9a\x43\x0b\x19\x1b\x63\xbc\x9b\x71\x1a\xb5\xf7\xac\x08\x94\xb8\xbe\xb5\x28\x91\xa7\x5f\x6b\x0c\x6d\x6e\xa8\xb7\x3f\xe4\xa0\x95\xf4\x76\x76\x18\xbc\x94\x82\xf3\xec\x7b\xbf\xad\x03\xce\x7f\x81\x96\x37\x21\xaa\x5c\xd5\xd8\x8c\xaa\xa1\x16\xf5\x37\x00\x00\xff\xff\xe2\x84\x33\x7f\xdd\x01\x00\x00")
 
 func TemplatesStructTmplBytes() ([]byte, error) {
 	return bindataRead(
@@ -336,7 +336,7 @@ func TemplatesStructTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 429, mode: os.FileMode(420), modTime: time.Unix(1458723739, 0)}
+	info := bindataFileInfo{name: "../templates/struct.tmpl", size: 477, mode: os.FileMode(420), modTime: time.Unix(1458974768, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -356,7 +356,7 @@ func TemplatesStruct_input_validatorTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "../templates/struct_input_validator.tmpl", size: 581, mode: os.FileMode(420), modTime: time.Unix(1458723739, 0)}
+	info := bindataFileInfo{name: "../templates/struct_input_validator.tmpl", size: 581, mode: os.FileMode(420), modTime: time.Unix(1458970117, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

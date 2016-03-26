@@ -32,9 +32,7 @@ package raml
 
 // This file contains all of the RAML types.
 
-import (
-	"strings"
-)
+import "strings"
 
 // TODO: We don't support !include of non-text files. RAML supports including
 //       of many file types.
@@ -872,6 +870,8 @@ func ToProperty(name string, p interface{}) Property {
 	// convert from map of interface to property
 	mapToProperty := func(val map[interface{}]interface{}) Property {
 		var p Property
+		// fix `required` default value is `false` problem.
+		p.Required = true
 		for k, v := range val {
 			switch k {
 			case "type":
@@ -913,6 +913,8 @@ func ToProperty(name string, p interface{}) Property {
 	switch p.(type) {
 	case string:
 		prop = Property{Type: p.(string)}
+		// when struct is `field: type`, set required default true
+		prop.Required = true
 	case map[interface{}]interface{}:
 		prop = mapToProperty(p.(map[interface{}]interface{}))
 	case Property:
