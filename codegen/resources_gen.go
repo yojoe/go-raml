@@ -75,25 +75,3 @@ func (rd *resourceDef) generateMethods(r *raml.Resource, parentEndpoint, curEndp
 		rd.generateMethods(v, parentEndpoint+curEndpoint, k, lang)
 	}
 }
-
-// assignBodyName assign bodies by bodies.Type or bodies.ApplicationJson
-// if bodiesType generated from bodies.Type we dont need append prefix and suffix
-// 		example : bodies.Type = City, so bodiesType = City
-// if bodiesType generated from bodies.ApplicationJson, we get that value from prefix and suffix
-//		suffix = [ReqBody | RespBody] and prefix should be uri + method name.
-//		example prefix could be UsersUserIdDelete
-func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
-	var bodiesType string
-
-	if len(bodies.Type) > 0 {
-		bodiesType = convertToGoType(bodies.Type)
-	} else if bodies.ApplicationJson != nil {
-		if bodies.ApplicationJson.Type != "" {
-			bodiesType = convertToGoType(bodies.ApplicationJson.Type)
-		} else {
-			bodiesType = prefix + suffix
-		}
-	}
-
-	return bodiesType
-}

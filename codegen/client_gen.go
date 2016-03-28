@@ -30,32 +30,6 @@ func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	return cd
 }
 
-// generate client files
-func (cd clientDef) generate(apiDef *raml.APIDefinition, dir, lang string) error {
-	if lang == "python" {
-		return cd.generatePython(dir)
-	}
-	return cd.generateGo(apiDef, dir)
-}
-
-// generate Go client files
-func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
-	// generate struct
-	if err := generateStructs(apiDef, dir, "client"); err != nil {
-		return err
-	}
-
-	// generate strucs from bodies
-	if err := generateBodyStructs(apiDef, dir, "client"); err != nil {
-		return err
-	}
-
-	if err := cd.generateHelperFile(dir); err != nil {
-		return err
-	}
-	return cd.generateClientFile(dir)
-}
-
 // GenerateClient generates client library
 func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	//check create dir
@@ -63,6 +37,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 		return err
 	}
 
+	// creates base client struct
 	cd := newClientDef(apiDef)
 
 	for k, v := range apiDef.Resources {
@@ -71,26 +46,13 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 		cd.Methods = append(cd.Methods, rd.Methods...)
 	}
 
-	if err := cd.generate(apiDef, dir, lang); err != nil {
-		return err
+	switch lang {
+	case langGo:
+		gc := goClient{clientDef: cd}
+		return gc.generate(apiDef, dir)
+	case langPython:
+		pc := pythonClient{clientDef: cd}
+		return pc.generate(dir)
 	}
-	return nil
-}
-
-// generate client helper
-func (cd *clientDef) generateHelperFile(dir string) error {
-	return generateFile(cd, clientHelperResourceTemplate, "client_helper_resources", cd.clientHelperName(dir), false)
-}
-
-// generate main client lib file
-func (cd *clientDef) generateClientFile(dir string) error {
-	return generateFile(cd, clientResourceTemplate, "client_resource", cd.clientFileName(dir), false)
-}
-
-func (cd *clientDef) clientFileName(dir string) string {
-	return dir + "/client_" + strings.ToLower(cd.Name) + ".go"
-}
-
-func (cd *clientDef) clientHelperName(dir string) string {
-	return dir + "/client_utils.go"
+	return errInvalidLang
 }

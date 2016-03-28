@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+// python server method
 type pythonServerMethod struct {
 	*Method
 	MiddlewaresArr []pythonMiddleware
@@ -65,4 +66,33 @@ func (pcm *pythonClientMethod) setup() {
 	} else {
 		pcm.MethodName = snakeCaseResourceURI(pcm.Resource()) + "_" + strings.ToLower(pcm.Verb())
 	}
+}
+
+// create snake case function name from a resource URI
+func snakeCaseResourceURI(r *raml.Resource) string {
+	return _snakeCaseResourceURI(r, "")
+}
+
+func _snakeCaseResourceURI(r *raml.Resource, completeURI string) string {
+	if r == nil {
+		return completeURI
+	}
+	var snake string
+	if len(r.URI) > 0 {
+		uri := normalizeURI(r.URI)
+		if r.Parent != nil { // not root resource, need to add "_"
+			snake = "_"
+		}
+
+		if strings.HasPrefix(r.URI, "/{") {
+			snake += "by" + strings.ToUpper(uri[:1])
+		} else {
+			snake += strings.ToLower(uri[:1])
+		}
+
+		if len(uri) > 1 { // append with the rest of uri
+			snake += uri[1:]
+		}
+	}
+	return _snakeCaseResourceURI(r.Parent, snake+completeURI)
 }
