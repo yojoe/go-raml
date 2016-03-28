@@ -3,7 +3,7 @@ package {{.PackageName}}
 
 {{ range $v := .Description }}
 // {{$v}} {{end}}
-{{ if .IsOneLineDef -}}
+{{ if .OneLineDef -}}
 {{ .OneLineDef }}
 {{- else -}}
 type {{ .Name }} struct {

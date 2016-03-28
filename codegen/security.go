@@ -1,8 +1,7 @@
-package commands
+package codegen
 
 import (
 	"fmt"
-	"path"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -14,20 +13,20 @@ const (
 	Oauth2 = "OAuth 2.0"
 )
 
-// securityDef define a security scheme, we only support oauth2 now.
+// security define a security scheme, we only support oauth2 now.
 // we generate middleware that checking for oauth2 credential
-type securityDef struct {
-	Name string
+type security struct {
 	*raml.SecurityScheme
+	Name        string
 	PackageName string
 	Header      *raml.Header
 	QueryParams *raml.NamedParameter
 	apiDef      *raml.APIDefinition
 }
 
-// create securityDef object
-func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, packageName string) securityDef {
-	sd := securityDef{
+// create security struct
+func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, packageName string) security {
+	sd := security{
 		SecurityScheme: ss,
 		apiDef:         apiDef,
 	}
@@ -51,33 +50,9 @@ func newSecurityDef(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, p
 	return sd
 }
 
-// generate Go representation of a security scheme
-// it implemented as struct based middleware
-func (sd *securityDef) generateGo(dir string) error {
-	fileName := path.Join(dir, "oauth2_"+sd.Name+"_middleware.go")
-	if err := generateFile(sd, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (sd *securityDef) generate(lang, dir string) error {
-	switch lang {
-	case langGo:
-		return sd.generateGo(dir)
-	case langPython:
-		return sd.generatePython(dir)
-	default:
-		return fmt.Errorf("invalid language :%v", lang)
-	}
-}
-
 // generate security related code
 func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
-	if err := checkCreateDir(dir); err != nil {
-		return err
-	}
+	var err error
 
 	// generate oauth2 middleware
 	for _, v := range apiDef.SecuritySchemes {
@@ -85,8 +60,19 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 			if ss.Type != Oauth2 {
 				continue
 			}
-			sd := newSecurityDef(apiDef, &ss, k, packageName)
-			if err := sd.generate(lang, dir); err != nil {
+
+			sd := newSecurity(apiDef, &ss, k, packageName)
+
+			switch lang {
+			case langGo:
+				gss := goSecurity{security: &sd}
+				err = gss.generate(dir)
+
+			case langPython:
+				pss := pythonSecurity{security: &sd}
+				err = pss.generate(dir)
+			}
+			if err != nil {
 				log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
 				return err
 			}

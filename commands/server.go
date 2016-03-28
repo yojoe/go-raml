@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"github.com/Jumpscale/go-raml/codegen"
 	"github.com/Jumpscale/go-raml/raml"
+
 	log "github.com/Sirupsen/logrus"
 )
 
@@ -21,5 +23,5 @@ func (command *ServerCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return generateServer(apiDef, command.Dir, command.PackageName, command.Language, !command.NoMainGeneration)
+	return codegen.GenerateServer(apiDef, command.Dir, command.PackageName, command.Language, !command.NoMainGeneration)
 }

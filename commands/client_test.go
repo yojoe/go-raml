@@ -18,7 +18,7 @@ func TestClientGeneration(t *testing.T) {
 			cmd := ClientCommand{
 				Language: "go",
 				Dir:      targetdir,
-				RamlFile: "./fixtures/client_resources/client.raml",
+				RamlFile: "../codegen/fixtures/client_resources/client.raml",
 			}
 			err := cmd.Execute()
 			So(err, ShouldBeNil)
@@ -26,7 +26,7 @@ func TestClientGeneration(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/client_resources/client_structapitest.txt")
+			tmpl, err := testLoadFile("../codegen/fixtures/client_resources/client_structapitest.txt")
 			So(err, ShouldBeNil)
 
 			So(tmpl, ShouldEqual, s)

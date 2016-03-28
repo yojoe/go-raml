@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import (
 	"io/ioutil"
@@ -19,7 +19,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple client", func() {
-			err = generateClient(apiDef, targetdir, "python")
+			err = GenerateClient(apiDef, targetdir, "python")
 			So(err, ShouldBeNil)
 
 			// cek with generated with fixtures

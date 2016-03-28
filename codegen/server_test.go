@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import (
 	"io/ioutil"
@@ -18,7 +18,7 @@ func TestServer(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/server/user_api/api.raml")
 			So(err, ShouldBeNil)
 
-			err = generateServer(apiDef, targetdir, "main", "go", true)
+			err = GenerateServer(apiDef, targetdir, "main", "go", true)
 			So(err, ShouldBeNil)
 
 			// check users api implementation
@@ -51,7 +51,7 @@ func TestServer(t *testing.T) {
 			apiDef, err := raml.ParseFile("./fixtures/congo/api.raml")
 			So(err, ShouldBeNil)
 
-			err = generateServer(apiDef, targetdir, "main", "python", true)
+			err = GenerateServer(apiDef, targetdir, "main", "python", true)
 			So(err, ShouldBeNil)
 
 			// check drones API implementation

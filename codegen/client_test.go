@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import (
 	"io/ioutil"
@@ -19,7 +19,7 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple client from raml", func() {
-			err = generateClient(apiDef, targetdir, "go")
+			err = GenerateClient(apiDef, targetdir, "go")
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))

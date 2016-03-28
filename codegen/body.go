@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import "github.com/Jumpscale/go-raml/raml"
 

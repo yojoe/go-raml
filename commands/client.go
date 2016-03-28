@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"github.com/Jumpscale/go-raml/codegen"
 	"github.com/Jumpscale/go-raml/raml"
+
 	log "github.com/Sirupsen/logrus"
 )
 
@@ -19,5 +21,5 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return generateClient(apiDef, command.Dir, command.Language)
+	return codegen.GenerateClient(apiDef, command.Dir, command.Language)
 }

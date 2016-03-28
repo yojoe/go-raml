@@ -1,0 +1,45 @@
+package codegen
+
+import (
+	"strings"
+
+	"github.com/Jumpscale/go-raml/raml"
+)
+
+const (
+	resourcePyTemplate = "./templates/python_server_resource.tmpl"
+)
+
+type pythonResource struct {
+	*resourceDef
+	MiddlewaresArr []pythonMiddleware
+}
+
+func (pr *pythonResource) addMiddleware(mwr pythonMiddleware) {
+	// check if already exist
+	for _, v := range pr.MiddlewaresArr {
+		if v.Name == mwr.Name {
+			return
+		}
+	}
+	pr.MiddlewaresArr = append(pr.MiddlewaresArr, mwr)
+}
+
+// set middlewares to import
+func (pr *pythonResource) setMiddlewares() {
+	for _, v := range pr.Methods {
+		pm := v.(pythonServerMethod)
+		for _, m := range pm.MiddlewaresArr {
+			pr.addMiddleware(m)
+		}
+	}
+}
+
+// generate flask representation of an RAML resource
+// It has one file : an API route and implementation
+func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
+	pr.generateMethods(r, "", URI, "python")
+	pr.setMiddlewares()
+	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
+	return generateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
+}
