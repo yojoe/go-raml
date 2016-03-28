@@ -1,10 +1,21 @@
 package codegen
 
 import (
+	"path"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
 )
+
+// go representation of a security scheme
+type pythonSecurity struct {
+	*security
+}
+
+func (ps *pythonSecurity) generate(dir string) error {
+	fileName := path.Join(dir, "oauth2_"+ps.Name+".py")
+	return generateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
+}
 
 type pythonMiddleware struct {
 	Name string

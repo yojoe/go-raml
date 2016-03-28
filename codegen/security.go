@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"fmt"
-	"path"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -49,27 +48,6 @@ func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, pack
 	}
 
 	return sd
-}
-
-// go representation of a security scheme
-type goSecurity struct {
-	*security
-}
-
-// generate Go representation of a security scheme
-// it implemented as struct based middleware
-func (gs *goSecurity) generate(dir string) error {
-	fileName := path.Join(dir, "oauth2_"+gs.Name+"_middleware.go")
-	return generateFile(gs, "./templates/oauth2_middleware.tmpl", "oauth2_middleware", fileName, false)
-}
-
-type pythonSecurity struct {
-	*security
-}
-
-func (ps *pythonSecurity) generate(dir string) error {
-	fileName := path.Join(dir, "oauth2_"+ps.Name+".py")
-	return generateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
 }
 
 // generate security related code

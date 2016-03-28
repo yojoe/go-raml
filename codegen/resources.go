@@ -35,13 +35,6 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 	return rd
 }
 
-type goResource struct {
-	*resourceDef
-	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
-	NeedJSON       bool // if true, the API implementation to import encoding/json package
-	NeedValidator  bool // this resource need validator
-}
-
 // add a method to resource definition
 func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) {
 	var im methodInterface
