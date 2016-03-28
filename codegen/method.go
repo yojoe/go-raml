@@ -12,7 +12,7 @@ type methodInterface interface {
 }
 
 // Method defines base Method struct
-type Method struct {
+type method struct {
 	*raml.Method
 	MethodName   string
 	Endpoint     string
@@ -26,16 +26,16 @@ type Method struct {
 	SecuredBy    []raml.DefinitionChoice
 }
 
-func (m Method) Verb() string {
+func (m method) Verb() string {
 	return m.verb
 }
 
-func (m Method) Resource() *raml.Resource {
+func (m method) Resource() *raml.Resource {
 	return m.resource
 }
 
-func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) Method {
-	method := Method{
+func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) method {
+	method := method{
 		Method:   m,
 		Endpoint: parentEndpoint + curEndpoint,
 		verb:     strings.ToUpper(methodName),
@@ -78,13 +78,13 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceD
 	switch lang {
 	case langGo:
 		gm := goServerMethod{
-			Method: &method,
+			method: &method,
 		}
 		gm.setup(apiDef, r, rd, methodName)
 		return gm
 	case langPython:
 		pm := pythonServerMethod{
-			Method: &method,
+			method: &method,
 		}
 		pm.setup(apiDef, r, rd)
 		return pm
@@ -104,11 +104,11 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 
 	switch lang {
 	case langGo:
-		gcm := goClientMethod{Method: &method}
+		gcm := goClientMethod{method: &method}
 		err := gcm.setup(methodName)
 		return gcm, err
 	case langPython:
-		pcm := pythonClientMethod{Method: method}
+		pcm := pythonClientMethod{method: method}
 		pcm.setup()
 		return pcm, nil
 	default:

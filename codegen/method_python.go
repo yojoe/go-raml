@@ -9,7 +9,7 @@ import (
 
 // python server method
 type pythonServerMethod struct {
-	*Method
+	*method
 	MiddlewaresArr []pythonMiddleware
 }
 
@@ -43,7 +43,7 @@ func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource
 
 // defines a python client lib method
 type pythonClientMethod struct {
-	Method
+	method
 	PRArgs string // python requests's args
 }
 

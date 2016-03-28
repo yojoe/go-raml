@@ -7,7 +7,7 @@ import (
 )
 
 type goServerMethod struct {
-	*Method
+	*method
 	Middlewares string
 }
 
@@ -43,7 +43,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 }
 
 type goClientMethod struct {
-	*Method
+	*method
 }
 
 func (gcm *goClientMethod) setup(methodName string) error {
