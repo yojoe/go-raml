@@ -69,13 +69,12 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 
 // StructDef defines a struct
 type structDef struct {
-	Name         string              // struct's name
-	Description  []string            // structs description
-	PackageName  string              // package name
-	Fields       map[string]fieldDef // all struct's fields
-	OneLineDef   string              // not empty if this struct can defined in one line
-	IsOneLineDef bool
-	t            raml.Type // raml.Type of this struct
+	t           raml.Type           // raml.Type of this struct
+	Name        string              // struct's name
+	Description []string            // structs description
+	PackageName string              // package name
+	Fields      map[string]fieldDef // all struct's fields
+	OneLineDef  string              // not empty if this struct can be defined in one line
 }
 
 // create new struct def
@@ -103,7 +102,6 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		Fields:      fields,
 		Description: commentBuilder(description),
 	}
-
 }
 
 // create struct definition from RAML Type node
@@ -265,7 +263,6 @@ func (sd *structDef) buildSpecialization() {
 }
 
 func (sd *structDef) buildOneLine(tipe string) {
-	sd.IsOneLineDef = true
 	sd.OneLineDef = "type " + sd.Name + " " + tipe
 }
 
