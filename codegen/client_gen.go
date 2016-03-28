@@ -15,7 +15,7 @@ const (
 type clientDef struct {
 	Name    string
 	BaseURI string
-	Methods []interfaceMethod
+	Methods []methodInterface
 }
 
 // create client definition from RAML API definition

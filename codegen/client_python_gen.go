@@ -15,7 +15,7 @@ const (
 
 // defines a python client lib method
 type pythonMethod struct {
-	interfaceMethod
+	Method
 	PRArgs string // python requests's args
 }
 
@@ -42,23 +42,23 @@ func (cd clientDef) generatePython(dir string) error {
 	for _, m := range cd.Methods {
 		params := baseParams
 		prArgs := ""
-		if m.Verb == "PUT" || m.Verb == "POST" || m.Verb == "PATCH" {
+		if m.Verb() == "PUT" || m.Verb() == "POST" || m.Verb() == "PATCH" {
 			params = append(params, "data")
 			prArgs = ", data"
 		}
 
-		params = append(params, getResourceParams(m.Resource)...)
+		params = append(params, getResourceParams(m.Resource())...)
 
 		pm := pythonMethod{
-			interfaceMethod: m,
-			PRArgs:          prArgs,
+			Method: m.(Method),
+			PRArgs: prArgs,
 		}
 		pm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
 
 		if len(pm.DisplayName) > 0 {
 			pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
 		} else {
-			pm.MethodName = snakeCaseResourceURI(m.Resource) + "_" + strings.ToLower(m.Verb)
+			pm.MethodName = snakeCaseResourceURI(m.Resource()) + "_" + strings.ToLower(m.Verb())
 		}
 
 		pms = append(pms, pm)
