@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/Jumpscale/go-raml/commands/bindata"
+	"github.com/Jumpscale/go-raml/codegen/bindata"
 	"github.com/Jumpscale/go-raml/raml"
 )
 

@@ -1,4 +1,4 @@
-package commands
+package codegen
 
 import (
 	"strings"
@@ -57,7 +57,7 @@ func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
 }
 
 // generate client library
-func generateClient(apiDef *raml.APIDefinition, dir, lang string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
