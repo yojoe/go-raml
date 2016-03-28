@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
-	log "github.com/Sirupsen/logrus"
+	//	log "github.com/Sirupsen/logrus"
 )
 
 type methodInterface interface {
@@ -61,6 +61,63 @@ func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, pa
 	return method
 }
 
+func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
+	methodName, parentEndpoint, curEndpoint, lang string) methodInterface {
+
+	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+
+	// security scheme
+	switch {
+	case len(m.SecuredBy) > 0: // use secured by from this method
+		method.SecuredBy = m.SecuredBy
+	case len(r.SecuredBy) > 0: // use securedby from resource
+		method.SecuredBy = r.SecuredBy
+	default:
+		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
+	}
+
+	switch lang {
+	case langGo:
+		gm := goServerMethod{
+			Method: &method,
+		}
+		gm.setup(apiDef, r, rd, methodName)
+		return gm
+	case langPython:
+		pm := pythonServerMethod{
+			Method: &method,
+		}
+		pm.setup(apiDef, r, rd)
+		return pm
+	default:
+		panic("invalid language:" + lang)
+	}
+}
+
+func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) (methodInterface, error) {
+	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+
+	method.ResourcePath = paramizingURI(method.Endpoint)
+
+	name := normalizeURITitle(method.Endpoint)
+
+	method.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
+
+	switch lang {
+	case langGo:
+		gcm := goClientMethod{Method: &method}
+		err := gcm.setup(methodName)
+		return gcm, err
+	case langPython:
+		pcm := pythonClientMethod{Method: method}
+		pcm.setup()
+		return pcm, nil
+	default:
+		panic("invalid language:" + lang)
+
+	}
+}
+
 type goServerMethod struct {
 	*Method
 	Middlewares string
@@ -110,77 +167,13 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 	return nil
 }
 
-type pythonServerMethod struct {
+type goClientMethod struct {
 	*Method
-	MiddlewaresArr []pythonMiddleware // TODO split interfaceMethod to pyton & Go version
 }
 
-// setup sets all needed variables
-func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef) error {
-	// method name
-	if len(pm.DisplayName) > 0 {
-		pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
-	} else {
-		pm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(pm.Verb())
-	}
-	pm.Params = strings.Join(getResourceParams(r), ", ")
-	pm.Endpoint = strings.Replace(pm.Endpoint, "{", "<", -1)
-	pm.Endpoint = strings.Replace(pm.Endpoint, "}", ">", -1)
-
-	// security middlewares
-	for _, v := range pm.SecuredBy {
-		if !validateSecurityScheme(v.Name, apiDef) {
-			continue
-		}
-		// oauth2 middleware
-		m, err := newPythonOauth2Middleware(v)
-		if err != nil {
-			log.Errorf("error creating middleware for method.err = %v", err)
-			return err
-		}
-		pm.MiddlewaresArr = append(pm.MiddlewaresArr, m)
-	}
-	for _, v := range pm.MiddlewaresArr {
-		rd.addPythonMiddleware(v)
-	}
-	return nil
-}
-
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
-	methodName, parentEndpoint, curEndpoint, lang string) methodInterface {
-
-	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
-
-	// security scheme
-	switch {
-	case len(m.SecuredBy) > 0: // use secured by from this method
-		method.SecuredBy = m.SecuredBy
-	case len(r.SecuredBy) > 0: // use securedby from resource
-		method.SecuredBy = r.SecuredBy
-	default:
-		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
-	}
-
-	if lang == langGo {
-		gm := goServerMethod{
-			Method: &method,
-		}
-		gm.setup(apiDef, r, rd, methodName)
-		return gm
-	} else {
-		pm := pythonServerMethod{
-			Method: &method,
-		}
-		pm.setup(apiDef, r, rd)
-		return pm
-	}
-}
-
-func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) (methodInterface, error) {
-	im := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
-
+func (gcm *goClientMethod) setup(methodName string) error {
 	// build func/method params
-	postBuildParams := func(r *raml.Resource, bodyType string) (string, error) {
+	buildParams := func(r *raml.Resource, bodyType string) (string, error) {
 		paramsStr := strings.Join(getResourceParams(r), ",")
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
@@ -203,23 +196,21 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 		return paramsStr, nil
 	}
 
-	im.ResourcePath = paramizingURI(im.Endpoint)
+	// method name
+	name := normalizeURITitle(gcm.Endpoint)
 
-	name := normalizeURITitle(im.Endpoint)
-
-	if len(m.DisplayName) > 0 {
-		im.MethodName = strings.Replace(m.DisplayName, " ", "", -1)
+	if len(gcm.DisplayName) > 0 {
+		gcm.MethodName = strings.Replace(gcm.DisplayName, " ", "", -1)
 	} else {
-		im.MethodName = strings.Title(name + methodName)
+		gcm.MethodName = strings.Title(name + methodName)
 	}
 
-	im.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
-
-	methodParam, err := postBuildParams(r, im.ReqBody)
+	// method param
+	methodParam, err := buildParams(gcm.resource, gcm.ReqBody)
 	if err != nil {
-		return im, err
+		return err
 	}
-	im.Params = methodParam
+	gcm.Params = methodParam
 
-	return im, nil
+	return nil
 }

@@ -60,7 +60,7 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 	if rd.IsServer {
 		im = newServerMethod(rd.APIDef, r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
 	} else {
-		im, err = newClientMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+		im, err = newClientMethod(r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
 		if err != nil {
 			log.Errorf("client interface method error, err = %v", err)
 			return

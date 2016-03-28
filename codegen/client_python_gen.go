@@ -13,16 +13,9 @@ const (
 	pythonClientUtilTmplName = "python_client_utils"
 )
 
-// defines a python client lib method
-type pythonMethod struct {
-	Method
-	PRArgs string // python requests's args
-}
-
 // python client definition
 type pythonClientDef struct {
 	clientDef
-	PythonMethods []pythonMethod
 }
 
 // generate python lib files
@@ -37,36 +30,8 @@ func (pcd pythonClientDef) generate(dir string) error {
 
 // generate python client lib
 func (cd clientDef) generatePython(dir string) error {
-	var pms []pythonMethod
-	baseParams := []string{"self"}
-	for _, m := range cd.Methods {
-		params := baseParams
-		prArgs := ""
-		if m.Verb() == "PUT" || m.Verb() == "POST" || m.Verb() == "PATCH" {
-			params = append(params, "data")
-			prArgs = ", data"
-		}
-
-		params = append(params, getResourceParams(m.Resource())...)
-
-		pm := pythonMethod{
-			Method: m.(Method),
-			PRArgs: prArgs,
-		}
-		pm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
-
-		if len(pm.DisplayName) > 0 {
-			pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
-		} else {
-			pm.MethodName = snakeCaseResourceURI(m.Resource()) + "_" + strings.ToLower(m.Verb())
-		}
-
-		pms = append(pms, pm)
-	}
-
 	pcd := pythonClientDef{
-		clientDef:     cd,
-		PythonMethods: pms,
+		clientDef: cd,
 	}
 	return pcd.generate(dir)
 }

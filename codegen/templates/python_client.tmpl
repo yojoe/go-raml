@@ -8,7 +8,7 @@ BASE_URI = "{{.BaseURI}}"
 class Client:
     def __init__(self):
         self.url = BASE_URI
-{{ range $k, $v := .PythonMethods }}
+{{ range $k, $v := .Methods }}
     def {{$v.MethodName}}({{$v.Params}}):
         """{{ range $kf, $vf := $v.FuncComments }}
         {{$vf}}{{end}}
