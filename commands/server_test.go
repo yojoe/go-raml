@@ -10,6 +10,11 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func testLoadFile(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	return string(b), err
+}
+
 func TestServerGeneration(t *testing.T) {
 	Convey("test command server generation", t, func() {
 		targetdir, err := ioutil.TempDir("", "test_server_command")
@@ -19,7 +24,7 @@ func TestServerGeneration(t *testing.T) {
 			cmd := ServerCommand{
 				Language:    "go",
 				Dir:         targetdir,
-				RamlFile:    "./fixtures/server/user_api/api.raml",
+				RamlFile:    "../codegen/fixtures/server/user_api/api.raml",
 				PackageName: "main",
 			}
 			err := cmd.Execute()
@@ -29,7 +34,7 @@ func TestServerGeneration(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server/user_api/users_api.txt")
+			tmpl, err := testLoadFile("../codegen/fixtures/server/user_api/users_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -37,7 +42,7 @@ func TestServerGeneration(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/server/user_api/users_if.txt")
+			tmpl, err = testLoadFile("../codegen/fixtures/server/user_api/users_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -45,7 +50,7 @@ func TestServerGeneration(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "main.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/server/user_api/main.txt")
+			tmpl, err = testLoadFile("../codegen/fixtures/server/user_api/main.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})
@@ -65,8 +70,9 @@ func TestServerNoMainGeneration(t *testing.T) {
 
 			cmd := ServerCommand{
 				Dir:              targetdir,
-				RamlFile:         "./fixtures/server/user_api/api.raml",
+				RamlFile:         "../codegen/fixtures/server/user_api/api.raml",
 				PackageName:      "main",
+				Language:         "go",
 				NoMainGeneration: true,
 			}
 			err := cmd.Execute()

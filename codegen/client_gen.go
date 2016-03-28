@@ -56,7 +56,7 @@ func (cd clientDef) generateGo(apiDef *raml.APIDefinition, dir string) error {
 	return cd.generateClientFile(dir)
 }
 
-// generate client library
+// GenerateClient generates client library
 func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
