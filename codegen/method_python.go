@@ -37,9 +37,6 @@ func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource
 		}
 		pm.MiddlewaresArr = append(pm.MiddlewaresArr, m)
 	}
-	for _, v := range pm.MiddlewaresArr {
-		rd.addPythonMiddleware(v)
-	}
 	return nil
 }
 

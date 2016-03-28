@@ -22,7 +22,7 @@ const (
 // base server definition
 type server struct {
 	apiDef       *raml.APIDefinition
-	ResourcesDef []resourceDef
+	ResourcesDef []resourceInterface
 	PackageName  string // Name of the package this server resides in
 	withMain     bool
 }

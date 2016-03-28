@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
-	//	log "github.com/Sirupsen/logrus"
 )
 
 type methodInterface interface {
@@ -133,16 +132,6 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 		gm.MethodName = name[len(rd.Name):] + methodName
 	}
 
-	/// if there is request body, we need to import validator
-	if gm.ReqBody != "" {
-		rd.NeedValidator = true
-	}
-
-	// if there is request/response body, then it needs to import encoding/json
-	if gm.RespBody != "" || gm.ReqBody != "" {
-		rd.NeedJSON = true
-	}
-
 	// setting middlewares
 	middlewares := []string{}
 
@@ -161,9 +150,6 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 
 	gm.Middlewares = strings.Join(middlewares, ", ")
 
-	if len(gm.Middlewares) > 0 {
-		rd.WithMiddleware = true
-	}
 	return nil
 }
 

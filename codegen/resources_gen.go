@@ -11,6 +11,8 @@ const (
 	maxCommentPerLine = 80
 )
 
+type resourceInterface interface{}
+
 // resourceDef is Go code representation of a resource
 type resourceDef struct {
 	APIDef      *raml.APIDefinition
@@ -20,11 +22,6 @@ type resourceDef struct {
 	IsServer    bool              // true if it is resource definition for server
 	PackageName string            // Name of the package this resource resides in
 
-	MiddlewaresArr []pythonMiddleware // TODO : split resourceDef to python & Go version
-
-	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
-	NeedJSON       bool // if true, the API implementation to import encoding/json package
-	NeedValidator  bool // this resource need validator
 }
 
 // create a resource definition
@@ -38,14 +35,11 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 	return rd
 }
 
-func (rd *resourceDef) addPythonMiddleware(mwr pythonMiddleware) {
-	// check if already exist
-	for _, v := range rd.MiddlewaresArr {
-		if v.Name == mwr.Name {
-			return
-		}
-	}
-	rd.MiddlewaresArr = append(rd.MiddlewaresArr, mwr)
+type goResource struct {
+	*resourceDef
+	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
+	NeedJSON       bool // if true, the API implementation to import encoding/json package
+	NeedValidator  bool // this resource need validator
 }
 
 // add a method to resource definition
