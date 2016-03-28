@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"path"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -21,18 +20,4 @@ func newPythonOauth2Middleware(ss raml.DefinitionChoice) (pythonMiddleware, erro
 		Name: "oauth2_" + securitySchemeName(ss.Name),
 		Args: strings.Join(quotedScopes, ", "),
 	}, nil
-}
-
-func (sd *securityDef) generatePython(dir string) error {
-	// we only support oauth2
-	if sd.Type != Oauth2 {
-		return nil
-	}
-
-	// generate oauth token checking middleware
-	fileName := path.Join(dir, "oauth2_"+sd.Name+".py")
-	if err := generateFile(sd, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false); err != nil {
-		return err
-	}
-	return nil
 }
