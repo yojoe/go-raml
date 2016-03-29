@@ -1,6 +1,6 @@
 package main
 
 type UsersIdGetRespBody struct {
-	ID  string `json:"ID,omitempty"`
+	ID  string `json:"ID,omitempty" validate:"nonzero"`
 	Age int    `json:"age"`
 }
