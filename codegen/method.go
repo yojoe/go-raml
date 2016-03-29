@@ -60,18 +60,18 @@ func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, pa
 	return method
 }
 
+// create server resource's method
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
 	methodName, parentEndpoint, curEndpoint, lang string) methodInterface {
 
 	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
 	// security scheme
-	switch {
-	case len(m.SecuredBy) > 0: // use secured by from this method
+	if len(m.SecuredBy) > 0 {
 		method.SecuredBy = m.SecuredBy
-	case len(r.SecuredBy) > 0: // use securedby from resource
-		method.SecuredBy = r.SecuredBy
-	default:
+	} else if sb := findResourceSecuredBy(r); len(sb) > 0 {
+		method.SecuredBy = sb
+	} else {
 		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
@@ -93,6 +93,7 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceD
 	}
 }
 
+// create client resource's method
 func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) (methodInterface, error) {
 	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
 
@@ -137,4 +138,15 @@ func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	}
 
 	return bodiesType
+}
+
+// find resource's securedBy recursively
+func findResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
+	if len(r.SecuredBy) > 0 {
+		return r.SecuredBy
+	}
+	if r.Parent == nil {
+		return []raml.DefinitionChoice{}
+	}
+	return findResourceSecuredBy(r.Parent)
 }

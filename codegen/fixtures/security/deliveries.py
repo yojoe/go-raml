@@ -36,6 +36,7 @@ def deliveries_byDeliveryId_get(deliveryId):
 
 
 @deliveries_api.route('/deliveries/<deliveryId>', methods=['PATCH'])
+@oauth2_Dropbox([])
 def deliveries_byDeliveryId_patch(deliveryId):
     '''
     Update the information on a specific delivery
@@ -45,6 +46,7 @@ def deliveries_byDeliveryId_patch(deliveryId):
 
 
 @deliveries_api.route('/deliveries/<deliveryId>', methods=['DELETE'])
+@oauth2_Dropbox([])
 def deliveries_byDeliveryId_delete(deliveryId):
     '''
     Cancel a specific delivery
