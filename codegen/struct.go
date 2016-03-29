@@ -62,6 +62,11 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
 	}
 
+	// Required
+	if fd.IsOmitted {
+		validators += ",nonzero"
+	}
+
 	if validators != "" {
 		fd.Validators = validators[1:]
 	}
