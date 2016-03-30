@@ -31,7 +31,16 @@ func (s {{.Name}}) Validate() error {
         return fmt.Errorf("len should be <= {{.T.MaxItems}}")
     }
     {{- end}}
-
+    {{ if .T.UniqueItems }}
+	// check for uniqueness
+    m := map[interface{}]struct{}{}
+	for _, v := range s {
+		m[v] = struct{}{}
+	}
+	if len(m) != len(s) {
+		return fmt.Errorf("collection is not unique")
+	}
+    {{- end }}
     {{if .OneLineDef -}}
     return nil
     {{ else -}}
