@@ -1,12 +1,10 @@
 package main
 
-import (
-	"gopkg.in/validator.v2"
-)
+import ()
 
 type EnumString string
 
 func (s EnumString) Validate() error {
 
-	return validator.Validate(s)
+	return nil
 }

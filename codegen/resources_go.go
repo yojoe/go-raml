@@ -15,6 +15,7 @@ type goResource struct {
 	*resourceDef
 	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
 	NeedJSON       bool // if true, the API implementation to import encoding/json package
+	NeedValidator  bool // this resource need validator
 }
 
 // generate interface file of a resource
@@ -53,6 +54,11 @@ func (gr *goResource) setImport() {
 		// if there is request/response body, then it needs to import encoding/json
 		if gm.RespBody != "" || gm.ReqBody != "" {
 			gr.NeedJSON = true
+		}
+
+		/// if there is request body, we need to import validator
+		if gm.ReqBody != "" {
+			gr.NeedValidator = true
 		}
 
 		// if has middleware, we need to import middleware lib

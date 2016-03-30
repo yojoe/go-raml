@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	"gopkg.in/validator.v2"
 )
 
 type ArrayOfCats []Cat
@@ -16,5 +14,5 @@ func (s ArrayOfCats) Validate() error {
 		return fmt.Errorf("len should be <= 4")
 	}
 
-	return validator.Validate(s)
+	return nil
 }

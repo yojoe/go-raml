@@ -1,12 +1,10 @@
 package main
 
-import (
-	"gopkg.in/validator.v2"
-)
+import ()
 
 type mapOfString map[string]string
 
 func (s mapOfString) Validate() error {
 
-	return validator.Validate(s)
+	return nil
 }
