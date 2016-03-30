@@ -1,3 +1,10 @@
 package main
 
+import ()
+
 type mapOfCat map[string]Cat
+
+func (s mapOfCat) Validate() error {
+
+	return nil
+}

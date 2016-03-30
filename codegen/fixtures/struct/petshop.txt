@@ -1,6 +1,15 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type petshop struct {
 	Cats mapOfCats `json:"cats"`
 	Name string    `json:"name"`
+}
+
+func (s petshop) Validate() error {
+
+	return validator.Validate(s)
 }

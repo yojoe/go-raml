@@ -1,3 +1,10 @@
 package main
 
+import ()
+
 type ArrayOfPets []interface{}
+
+func (s ArrayOfPets) Validate() error {
+
+	return nil
+}

@@ -974,6 +974,11 @@ type Type struct {
 
 	// Type property name to be used as a discriminator or boolean
 	Discriminator string `yaml:"discriminator"`
+
+	// Validators
+	MinItems    int  `yaml:"minItems"`
+	MaxItems    int  `yaml:"maxItems"`
+	UniqueItems bool `yaml:"uniqueItems"`
 }
 
 // IsMap checks if a type is a Map type as defined in http://docs.raml.org/specs/1.0/#raml-10-spec-types

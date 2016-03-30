@@ -1,3 +1,10 @@
 package main
 
+import ()
+
 type BidimensionalArrayOfCats [][]Cat
+
+func (s BidimensionalArrayOfCats) Validate() error {
+
+	return nil
+}

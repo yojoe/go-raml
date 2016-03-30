@@ -1,3 +1,10 @@
 package main
 
+import ()
+
 type EnumString string
+
+func (s EnumString) Validate() error {
+
+	return nil
+}

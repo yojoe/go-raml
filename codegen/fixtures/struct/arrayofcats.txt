@@ -1,3 +1,26 @@
 package main
 
+import (
+	"fmt"
+)
+
 type ArrayOfCats []Cat
+
+func (s ArrayOfCats) Validate() error {
+	if len(s) < 1 {
+		return fmt.Errorf("len should be >=  1")
+	}
+	if len(s) > 4 {
+		return fmt.Errorf("len should be <= 4")
+	}
+
+	// check for uniqueness
+	m := map[interface{}]struct{}{}
+	for _, v := range s {
+		m[v] = struct{}{}
+	}
+	if len(m) != len(s) {
+		return fmt.Errorf("collection is not unique")
+	}
+	return nil
+}

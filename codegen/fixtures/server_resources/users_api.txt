@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-
-	"gopkg.in/validator.v2"
 )
 
 // UsersAPI is API implementation of /users root endpoint
@@ -22,7 +20,7 @@ func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate request
-	if err := validator.Validate(reqBody); err != nil {
+	if err := reqBody.Validate(); err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return

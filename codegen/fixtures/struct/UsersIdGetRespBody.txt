@@ -1,6 +1,15 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type UsersIdGetRespBody struct {
 	ID  string `json:"ID,omitempty" validate:"nonzero"`
 	Age int    `json:"age"`
+}
+
+func (s UsersIdGetRespBody) Validate() error {
+
+	return validator.Validate(s)
 }

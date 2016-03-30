@@ -74,12 +74,24 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 
 // StructDef defines a struct
 type structDef struct {
-	t           raml.Type           // raml.Type of this struct
+	T           raml.Type           // raml.Type of this struct
 	Name        string              // struct's name
 	Description []string            // structs description
 	PackageName string              // package name
 	Fields      map[string]fieldDef // all struct's fields
 	OneLineDef  string              // not empty if this struct can be defined in one line
+
+	Validators []string
+}
+
+// true if this struct need to import 'fmt' package
+func (sd structDef) NeedFmt() bool {
+	return sd.T.MinItems > 0 || sd.T.MaxItems > 0
+}
+
+// true if this struct is not an alias of `interface{}`
+func (sd structDef) NotBareInterface() bool {
+	return !strings.HasSuffix(sd.OneLineDef, " interface{}")
 }
 
 // create new struct def
@@ -112,7 +124,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 // create struct definition from RAML Type node
 func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
 	sd := newStructDef(sName, packageName, description, t.Properties)
-	sd.t = t
+	sd.T = t
 
 	// handle advanced type on raml1.0
 	sd.handleAdvancedType()
@@ -160,26 +172,26 @@ func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName 
 //         type: string
 // the additional fieldDef would be Animal composition
 func (sd *structDef) handleAdvancedType() {
-	if sd.t.Type == nil {
-		sd.t.Type = "object"
+	if sd.T.Type == nil {
+		sd.T.Type = "object"
 	}
 
-	strType := interfaceToString(sd.t.Type)
+	strType := interfaceToString(sd.T.Type)
 
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
 		sd.addMultipleInheritance(strType)
-	case sd.t.IsUnion():
+	case sd.T.IsUnion():
 		sd.buildUnion()
-	case sd.t.IsArray(): // arary type
+	case sd.T.IsArray(): // arary type
 		sd.buildArray()
-	case sd.t.IsMap(): //map
+	case sd.T.IsMap(): //map
 		sd.buildMap()
 	case strings.ToLower(strType) == "object": // plain type
 		return
-	case sd.t.IsEnum(): // enum
+	case sd.T.IsEnum(): // enum
 		sd.buildEnum()
-	case len(sd.t.Properties) == 0: // specialization
+	case len(sd.T.Properties) == 0: // specialization
 		sd.buildSpecialization()
 	default: // single inheritance
 		sd.addSingleInheritance(strType)
@@ -222,11 +234,11 @@ func (sd *structDef) addMultipleInheritance(strType string) {
 // buildEnum based on http://docs.raml.org/specs/1.0/#raml-10-spec-enums
 // example result  `type TypeName []data_type`
 func (sd *structDef) buildEnum() {
-	if _, ok := sd.t.Type.(string); !ok {
+	if _, ok := sd.T.Type.(string); !ok {
 		return
 	}
 
-	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 
 // build map type based on http://docs.raml.org/specs/1.0/#raml-10-spec-map-types
@@ -234,7 +246,7 @@ func (sd *structDef) buildEnum() {
 func (sd *structDef) buildMap() {
 	typeFromSquareBracketProp := func() string {
 		var p raml.Property
-		for k, v := range sd.t.Properties {
+		for k, v := range sd.T.Properties {
 			p = raml.ToProperty(k, v)
 			break
 		}
@@ -242,9 +254,9 @@ func (sd *structDef) buildMap() {
 		return convertToGoType(p.Type)
 	}
 	switch {
-	case sd.t.AdditionalProperties != "":
-		sd.buildOneLine(" map[string]" + convertToGoType(sd.t.AdditionalProperties))
-	case len(sd.t.Properties) == 1:
+	case sd.T.AdditionalProperties != "":
+		sd.buildOneLine(" map[string]" + convertToGoType(sd.T.AdditionalProperties))
+	case len(sd.T.Properties) == 1:
 		sd.buildOneLine(" map[string]" + typeFromSquareBracketProp())
 	}
 }
@@ -253,18 +265,18 @@ func (sd *structDef) buildMap() {
 // spec http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 // example result  `type TypeName []something`
 func (sd *structDef) buildArray() {
-	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 
 // build union type
 // union type is implemented as `interface{}`
 // example result `type sometype interface{}`
 func (sd *structDef) buildUnion() {
-	sd.buildOneLine(convertUnion(sd.t.Type.(string)))
+	sd.buildOneLine(convertUnion(sd.T.Type.(string)))
 }
 
 func (sd *structDef) buildSpecialization() {
-	sd.buildOneLine(convertToGoType(sd.t.Type.(string)))
+	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 
 func (sd *structDef) buildOneLine(tipe string) {

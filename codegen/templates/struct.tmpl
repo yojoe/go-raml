@@ -1,6 +1,12 @@
 {{define "struct_template"}}
 package {{.PackageName}}
 
+import (
+    {{if .NeedFmt}}"fmt"{{end}}
+
+    {{if .OneLineDef}} {{else}}"gopkg.in/validator.v2" {{end}}
+)
+
 {{ range $v := .Description }}
 // {{$v}} {{end}}
 {{ if .OneLineDef -}}
@@ -11,5 +17,35 @@ type {{ .Name }} struct {
         {{$value.Name}}  {{if eq $value.IsComposition false}} {{$value.Type}} `json:"{{$key}}{{if eq $value.IsOmitted true}},omitempty{{end}}"{{if $value.Validators}} validate:"{{$value.Validators}}"{{end}}` {{end}}
     {{- end}}
 }
-{{- end -}}
+{{- end}}
+
+{{ if .NotBareInterface}}
+func (s {{.Name}}) Validate() error {
+    {{if .T.MinItems -}}
+    if len(s) < {{.T.MinItems}} {
+        return fmt.Errorf("len should be >=  {{.T.MinItems}}")
+    }
+    {{- end}}
+    {{if .T.MaxItems -}}
+    if len(s) > {{.T.MaxItems}} {
+        return fmt.Errorf("len should be <= {{.T.MaxItems}}")
+    }
+    {{- end}}
+    {{ if .T.UniqueItems }}
+	// check for uniqueness
+    m := map[interface{}]struct{}{}
+	for _, v := range s {
+		m[v] = struct{}{}
+	}
+	if len(m) != len(s) {
+		return fmt.Errorf("collection is not unique")
+	}
+    {{- end }}
+    {{if .OneLineDef -}}
+    return nil
+    {{ else -}}
+    return validator.Validate(s)
+    {{ end -}}
+}
+{{ end }}
 {{end}}

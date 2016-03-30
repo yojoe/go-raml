@@ -1,5 +1,9 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 // city of angel city of angel city of angel city of angel city of angel city of angel
 // city of angel city of angel city of angelcity of angelcity of angelcity of angelcity
 // of angel city of angel
@@ -7,4 +11,9 @@ type EnumCity struct {
 	Enum_homeNum int    `json:"enum_homeNum"`
 	Enum_parks   string `json:"enum_parks"`
 	Name         string `json:"name"`
+}
+
+func (s EnumCity) Validate() error {
+
+	return validator.Validate(s)
 }

@@ -1,7 +1,16 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type UsersPostReqBody struct {
 	ID   string `json:"ID" validate:"min=4,max=8"`
 	Age  int    `json:"age" validate:"min=16,max=100,multipleOf=4"`
-	Item string `json:"item" validate:"min=2,regexp=^[a-zA-Z]$"`
+	Item string `json:"item" validate:"min=2,regexp=^[a-zA-Z]+$"`
+}
+
+func (s UsersPostReqBody) Validate() error {
+
+	return validator.Validate(s)
 }
