@@ -1,5 +1,9 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 // Animal represent animal object.
 // It contains field that construct animal
 // such as : name, colours, and cities.
@@ -7,4 +11,9 @@ type animal struct {
 	Cities  []EnumCity `json:"cities" validate:"min=1,max=10"`
 	Colours []string   `json:"colours"`
 	Name    string     `json:"name,omitempty" validate:"nonzero"`
+}
+
+func (s animal) Validate() error {
+
+	return validator.Validate(s)
 }

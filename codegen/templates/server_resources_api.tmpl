@@ -4,8 +4,6 @@ package {{.PackageName}}
 import (
 	{{ if .NeedJSON }}"encoding/json"{{ end }}
 	"net/http"
-
-    {{ if .NeedValidator}}"gopkg.in/validator.v2"{{end}}
 )
 {{$apiName := .Name}}
 // {{.Name}}API is API implementation of {{.Endpoint}} root endpoint
@@ -31,7 +29,7 @@ func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Reque
 	}
 
     // validate request
-    if err := validator.Validate(reqBody); err != nil {
+    if err := reqBody.Validate(); err != nil {
         w.WriteHeader(400)
         w.Write([]byte(`{"error":"`+err.Error()+`"}`))
         return

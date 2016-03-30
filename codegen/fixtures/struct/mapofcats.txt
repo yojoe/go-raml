@@ -1,3 +1,12 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type mapOfCats map[string]Cat
+
+func (s mapOfCats) Validate() error {
+
+	return validator.Validate(s)
+}

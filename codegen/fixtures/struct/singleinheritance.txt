@@ -1,6 +1,15 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type SingleInheritance struct {
 	animal
 	Name string `json:"name"`
+}
+
+func (s SingleInheritance) Validate() error {
+
+	return validator.Validate(s)
 }

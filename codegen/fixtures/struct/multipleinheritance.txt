@@ -1,7 +1,16 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type MultipleInheritance struct {
 	Cat
 	animal
 	Color string `json:"color"`
+}
+
+func (s MultipleInheritance) Validate() error {
+
+	return validator.Validate(s)
 }

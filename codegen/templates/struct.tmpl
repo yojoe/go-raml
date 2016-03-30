@@ -4,7 +4,7 @@ package {{.PackageName}}
 import (
     {{if .NeedFmt}}"fmt"{{end}}
 
-    {{if .OneLineDef}} {{else}}"gopkg.in/validator.v2" {{end}}
+    {{if .NotBareInterface}}"gopkg.in/validator.v2" {{end}}
 )
 
 {{ range $v := .Description }}
@@ -32,11 +32,7 @@ func (s {{.Name}}) Validate() error {
     }
     {{- end}}
 
-    {{if .OneLineDef -}}
-    return nil
-    {{ else -}}
     return validator.Validate(s)
-    {{ end -}}
 }
 {{ end }}
 {{end}}

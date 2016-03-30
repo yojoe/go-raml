@@ -1,5 +1,14 @@
 package main
 
+import (
+	"gopkg.in/validator.v2"
+)
+
 type Cat struct {
 	Kind string `json:"kind"`
+}
+
+func (s Cat) Validate() error {
+
+	return validator.Validate(s)
 }
