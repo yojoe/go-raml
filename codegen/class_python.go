@@ -90,6 +90,9 @@ func (pf *pythonField) buildValidators(p raml.Property) {
 	if p.Maximum != nil {
 		pf.addValidator("NumberRange", "max", *p.Maximum)
 	}
+	if p.MultipleOf != nil {
+		pf.addValidator("multiple_of", "mult", *p.MultipleOf)
+	}
 
 	// required
 	if p.Required {

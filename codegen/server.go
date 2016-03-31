@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/raml"
 
@@ -74,6 +75,10 @@ func (gs goServer) generate(dir string) error {
 }
 
 func (ps pythonServer) generate(dir string) error {
+	// generate input validators helper
+	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python", filepath.Join(dir, "input_validators.py"), false); err != nil {
+		return err
+	}
 	// generate request body
 	if err := generateBodyStructs(ps.apiDef, dir, "", langPython); err != nil {
 		log.Errorf("failed to generate python classes from request body:%v", err)

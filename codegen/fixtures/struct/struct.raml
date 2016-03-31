@@ -26,6 +26,16 @@ types:
         type: EnumCity[]
         minItems: 1
         maxItems: 10
+  Cage:
+    description: |
+      Animal's cage
+    type: object
+    properties:
+      owner:
+        type: animal
+      colours:
+        type: string
+
   SingleInheritance:
     type: animal
     properties:
