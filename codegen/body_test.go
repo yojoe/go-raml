@@ -15,15 +15,15 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		apiDef, err := raml.ParseFile("./fixtures/struct/struct.raml")
 		So(err, ShouldBeNil)
 
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, targetdir, "main", langGo)
+			err := generateBodyStructs(apiDef, targetDir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			//load and compare UsersIdGetRespBody
-			s, err := testLoadFile(filepath.Join(targetdir, "UsersIdGetRespBody.go"))
+			s, err := testLoadFile(filepath.Join(targetDir, "UsersIdGetRespBody.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/struct/UsersIdGetRespBody.txt")
@@ -32,7 +32,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 			//load and compare usersgetreqbody
-			s, err = testLoadFile(filepath.Join(targetdir, "UsersPostReqBody.go"))
+			s, err = testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err = testLoadFile("./fixtures/struct/UsersPostReqBody.txt")
@@ -41,8 +41,23 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 		})
 
+		Convey("python class from request/response bodies", func() {
+			err = generateBodyStructs(apiDef, targetDir, "", langPython)
+			So(err, ShouldBeNil)
+
+			// req body
+			s, err := testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile("./fixtures/struct/UsersPostReqBody.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+		})
+
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
 }

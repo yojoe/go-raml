@@ -4,6 +4,9 @@ from flask import Blueprint, jsonify, request
 {{ range $k, $v := .MiddlewaresArr -}}
 from {{$v.Name}} import *
 {{ end }}
+{{ range $k, $v := .ReqBodies }}
+from {{$v}} import {{$v}}
+{{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}
@@ -19,6 +22,11 @@ def {{$v.MethodName}}({{$v.Params}}):
     {{end -}}
     It is handler for {{$v.Verb}} {{$v.Endpoint}}
     '''
+    {{ if .ReqBody }}
+    inputs = {{.ReqBody}}.from_json(request.get_json())
+    if not inputs.validate():
+        return jsonify(errors=inputs.errors), 400
+    {{ end }}
     return jsonify()
 {{ end -}}
 

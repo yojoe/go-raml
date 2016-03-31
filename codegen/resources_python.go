@@ -43,3 +43,15 @@ func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
 	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
 	return generateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
 }
+
+// return array of request body in this resource
+func (pr pythonResource) ReqBodies() []string {
+	var reqs []string
+	for _, m := range pr.Methods {
+		pm := m.(pythonServerMethod)
+		if pm.ReqBody != "" {
+			reqs = append(reqs, pm.ReqBody)
+		}
+	}
+	return reqs
+}

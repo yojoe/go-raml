@@ -14,15 +14,15 @@ func TestGeneratePythonClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef, err := raml.ParseFile("./fixtures/struct/struct.raml")
 		So(err, ShouldBeNil)
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("python class from raml Types", func() {
-			err = generatePythonClasses(apiDef, targetdir)
+			err = generatePythonClasses(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			// strings validator
-			s, err := testLoadFile(filepath.Join(targetdir, "ValidationString.py"))
+			s, err := testLoadFile(filepath.Join(targetDir, "ValidationString.py"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := testLoadFile("./fixtures/struct/ValidationString.py")
@@ -31,8 +31,9 @@ func TestGeneratePythonClass(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 
 		})
+
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 
 	})

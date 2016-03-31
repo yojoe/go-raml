@@ -21,7 +21,7 @@ func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName, lang stri
 	return nil
 }
 
-// generate all structs from resource's method request & response body
+// generate all structs from resource's method's request & response body
 func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string, r *raml.Resource) error {
 	if r == nil {
 		return nil

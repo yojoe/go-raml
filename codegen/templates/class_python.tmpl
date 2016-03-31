@@ -1,7 +1,9 @@
 {{define "class_python"}}
-from wtforms import TextField, FormField, IntegerField
+from flask_wtf import Form
+from wtforms.validators import DataRequired, Length, Regexp, NumberRange
+from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField
 
-class {{.Name}}():
+class {{.Name}}(Form):
     {{ range $key, $val := .Fields }}
     {{$val.Name}} = {{$val.Type}}(validators=[{{$val.ValidatorsString}}])
     {{ end }}
