@@ -18,7 +18,7 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	}
 
 	// generate strucs from bodies
-	if err := generateBodyStructs(apiDef, dir, "client"); err != nil {
+	if err := generateBodyStructs(apiDef, dir, "client", langGo); err != nil {
 		return err
 	}
 

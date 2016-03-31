@@ -44,15 +44,14 @@ type pythonClass struct {
 	Fields      []pythonField
 }
 
-func newPythonClass(T raml.Type, name string) pythonClass {
+func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
 	pc := pythonClass{
-		T:           T,
 		Name:        name,
-		Description: T.Description,
+		Description: description,
 	}
 
 	// generate fields
-	for k, v := range T.Properties {
+	for k, v := range properties {
 		p := raml.ToProperty(k, v)
 		field := pythonField{
 			Name: p.Name,
@@ -66,6 +65,12 @@ func newPythonClass(T raml.Type, name string) pythonClass {
 		field.buildValidators(p)
 		pc.Fields = append(pc.Fields, field)
 	}
+	return pc
+}
+
+func newPythonClassFromType(T raml.Type, name string) pythonClass {
+	pc := newPythonClass(name, T.Description, T.Properties)
+	pc.T = T
 	return pc
 }
 
@@ -97,7 +102,7 @@ func toWtformsType(t string) string {
 // generate all python classes from an RAML document
 func generatePythonClasses(apiDef *raml.APIDefinition, dir string) error {
 	for k, t := range apiDef.Types {
-		pc := newPythonClass(t, k)
+		pc := newPythonClassFromType(t, k)
 		if err := pc.generate(dir); err != nil {
 			return err
 		}

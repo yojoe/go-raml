@@ -19,7 +19,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, targetdir, "main")
+			err := generateBodyStructs(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			//load and compare UsersIdGetRespBody

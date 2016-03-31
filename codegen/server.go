@@ -48,7 +48,7 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// generate all request & response body
-	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
@@ -74,6 +74,11 @@ func (gs goServer) generate(dir string) error {
 }
 
 func (ps pythonServer) generate(dir string) error {
+	// generate request body
+	if err := generateBodyStructs(ps.apiDef, dir, "", langPython); err != nil {
+		log.Errorf("failed to generate python classes from request body:%v", err)
+		return err
+	}
 	// python classes
 	if err := generatePythonClasses(ps.apiDef, dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
