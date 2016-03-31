@@ -43,7 +43,7 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// generate all Type structs
-	if err := generateStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
@@ -74,6 +74,11 @@ func (gs goServer) generate(dir string) error {
 }
 
 func (ps pythonServer) generate(dir string) error {
+	// python classes
+	if err := generatePythonClasses(ps.apiDef, dir); err != nil {
+		log.Errorf("failed to generate python clased:%v", err)
+		return err
+	}
 	// security scheme
 	if err := generateSecurity(ps.apiDef, dir, ps.PackageName, langPython); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)

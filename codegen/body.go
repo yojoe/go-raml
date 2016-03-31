@@ -29,28 +29,21 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName string, r *r
 	structName := normalizeURITitle(resourcePath + r.URI)
 
 	//build
-	if err := buildBodyFromMethod(structName, "Get", dir, packageName, r.Get); err != nil {
-		return err
+	var methods = []struct {
+		Name   string
+		Method *raml.Method
+	}{
+		{Name: "Get", Method: r.Get},
+		{"Post", r.Post},
+		{"Head", r.Head},
+		{"Put", r.Put},
+		{"Delete", r.Delete},
+		{"Patch", r.Patch},
 	}
-
-	if err := buildBodyFromMethod(structName, "Post", dir, packageName, r.Post); err != nil {
-		return err
-	}
-
-	if err := buildBodyFromMethod(structName, "Head", dir, packageName, r.Head); err != nil {
-		return err
-	}
-
-	if err := buildBodyFromMethod(structName, "Put", dir, packageName, r.Put); err != nil {
-		return err
-	}
-
-	if err := buildBodyFromMethod(structName, "Delete", dir, packageName, r.Delete); err != nil {
-		return err
-	}
-
-	if err := buildBodyFromMethod(structName, "Patch", dir, packageName, r.Patch); err != nil {
-		return err
+	for _, v := range methods {
+		if err := buildBodyFromMethod(structName, v.Name, dir, packageName, v.Method); err != nil {
+			return err
+		}
 	}
 
 	//build child

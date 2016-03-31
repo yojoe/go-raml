@@ -122,8 +122,8 @@ func newStructDef(name, packageName, description string, properties map[string]i
 }
 
 // create struct definition from RAML Type node
-func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
-	sd := newStructDef(sName, packageName, description, t.Properties)
+func newStructDefFromType(t raml.Type, sName, packageName, lang string) structDef {
+	sd := newStructDef(sName, packageName, t.Description, t.Properties)
 	sd.T = t
 
 	// handle advanced type on raml1.0
@@ -153,9 +153,9 @@ func (sd structDef) generate(dir string) error {
 }
 
 // generate all structs from an RAML api definition
-func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName string) error {
-	for k, v := range apiDefinition.Types {
-		sd := newStructDefFromType(v, k, packageName, v.Description)
+func generateStructs(apiDefinition *raml.APIDefinition, dir, packageName, lang string) error {
+	for name, t := range apiDefinition.Types {
+		sd := newStructDefFromType(t, name, packageName, lang)
 		if err := sd.generate(dir); err != nil {
 			return err
 		}
