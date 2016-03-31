@@ -39,6 +39,15 @@ func TestGeneratePythonClass(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// FieldList of FormField
+			s, err = testLoadFile(filepath.Join(targetDir, "animal.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/animal.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
 			// another test could be seen at body_test.go
 		})
 

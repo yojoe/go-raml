@@ -12,13 +12,13 @@ import (
 
 // pythons class's field
 type pythonField struct {
-	Name       string
-	Type       string
-	Required   bool
-	Validators string
-	FormField  bool
-	IsList     bool                // it is a list field
-	validators map[string][]string // array of validators, only used to build `Validators` field
+	Name        string
+	Type        string
+	Required    bool
+	Validators  string
+	isFormField bool
+	isList      bool                // it is a list field
+	validators  map[string][]string // array of validators, only used to build `Validators` field
 }
 
 type pythonClass struct {
@@ -133,7 +133,7 @@ func (pc pythonClass) Imports() []string {
 	var imports []string
 
 	for _, v := range pc.Fields {
-		if v.FormField {
+		if v.isFormField {
 			imports = append(imports, "from "+v.Type+" import "+v.Type)
 		}
 	}
@@ -166,17 +166,15 @@ func (pf *pythonField) setType(t string) {
 	case strings.HasSuffix(t, "[][]"): // bidimensional array
 		log.Info("validator has no support for bidimensional array, ignore it")
 	case strings.HasSuffix(t, "[]"): // array
-		pf.IsList = true
+		pf.isList = true
 		pf.setType(t[:len(t)-2])
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
 	case strings.Index(t, "|") > 0:
 		log.Info("validator has no support for union, ignore it")
 	default:
-		if !pf.IsList {
-			pf.FormField = true
-			pf.Type = t
-		}
+		pf.isFormField = true
+		pf.Type = t
 	}
 
 }
@@ -184,9 +182,11 @@ func (pf *pythonField) setType(t string) {
 // WTFType return wtforms type of a field
 func (pf pythonField) WTFType() string {
 	switch {
-	case pf.IsList:
+	case pf.isList && pf.isFormField:
+		return fmt.Sprintf("FieldList(FormField(%v))", pf.Type)
+	case pf.isList:
 		return fmt.Sprintf("FieldList(%v('%v', [required()]), %v)", pf.Type, pf.Name, pf.Validators)
-	case pf.FormField:
+	case pf.isFormField:
 		return fmt.Sprintf("FormField(%v)", pf.Type)
 	default:
 		return fmt.Sprintf("%v(validators=[%v])", pf.Type, pf.Validators)
