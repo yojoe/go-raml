@@ -6,10 +6,8 @@ from input_validators import multiple_of
 
 from animal import animal
 
+
 class Cage(Form):
     
     colours = TextField(validators=[DataRequired(message="")])
-    
-    
     owner = FormField(animal)
-    

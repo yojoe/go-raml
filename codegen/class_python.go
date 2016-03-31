@@ -181,6 +181,18 @@ func (pf *pythonField) setType(t string) {
 
 }
 
+// WTFType return wtforms type of a field
+func (pf pythonField) WTFType() string {
+	switch {
+	case pf.IsList:
+		return fmt.Sprintf("FieldList(%v('%v', [required()]), %v)", pf.Type, pf.Name, pf.Validators)
+	case pf.FormField:
+		return fmt.Sprintf("FormField(%v)", pf.Type)
+	default:
+		return fmt.Sprintf("%v(validators=[%v])", pf.Type, pf.Validators)
+	}
+}
+
 // generate all python classes from an RAML document
 func generatePythonClasses(apiDef *raml.APIDefinition, dir string) error {
 	for k, t := range apiDef.Types {

@@ -8,13 +8,7 @@ from input_validators import multiple_of
 {{ end}}
 
 class {{.Name}}(Form):
-    {{ range $key, $val := .Fields }}
-    {{ if $val.IsList }}
-    {{$val.Name}} = FieldList({{$val.Type}}('{{$val.Name}}', [required()]), {{$val.Validators}})
-    {{- else if $val.FormField -}}
-    {{$val.Name}} = FormField({{$val.Type}})
-    {{- else -}}
-    {{$val.Name}} = {{$val.Type}}(validators=[{{$val.Validators}}])
-    {{ end }}
-    {{ end }}
+    {{ range $key, $val := .Fields}}
+    {{$val.Name}} = {{$val.WTFType}}
+    {{- end }}
 {{end}}
