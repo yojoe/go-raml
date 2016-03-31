@@ -16,6 +16,7 @@ type pythonField struct {
 	Type       string
 	Required   bool
 	Validators string
+	FormField  bool
 	IsList     bool                // it is a list field
 	validators map[string][]string // array of validators, only used to build `Validators` field
 }
@@ -127,6 +128,18 @@ func (pf *pythonField) buildValidatorsString() {
 	pf.Validators = strings.Join(v, ", ")
 }
 
+// return list of import statements
+func (pc pythonClass) Imports() []string {
+	var imports []string
+
+	for _, v := range pc.Fields {
+		if v.FormField {
+			imports = append(imports, "from "+v.Type+" import "+v.Type)
+		}
+	}
+	return imports
+}
+
 // convert from raml Type to python wtforms type
 func (pf *pythonField) setType(t string) {
 	switch t {
@@ -159,6 +172,11 @@ func (pf *pythonField) setType(t string) {
 		log.Info("validator has no support for map, ignore it")
 	case strings.Index(t, "|") > 0:
 		log.Info("validator has no support for union, ignore it")
+	default:
+		if !pf.IsList {
+			pf.FormField = true
+			pf.Type = t
+		}
 	}
 
 }

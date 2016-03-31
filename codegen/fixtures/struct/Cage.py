@@ -4,9 +4,12 @@ from wtforms.validators import DataRequired, Length, Regexp, NumberRange, requir
 from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField, FieldList
 from input_validators import multiple_of
 
+from animal import animal
 
-class ValidationString(Form):
+class Cage(Form):
     
-    name = TextField(validators=[DataRequired(message=""), Length(min=8, max=40)])
+    colours = TextField(validators=[DataRequired(message="")])
     
+    
+    owner = FormField(animal)
     

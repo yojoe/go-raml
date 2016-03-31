@@ -30,6 +30,16 @@ func TestGeneratePythonClass(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
+			// with form field
+			s, err = testLoadFile(filepath.Join(targetDir, "Cage.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err = testLoadFile("./fixtures/struct/Cage.py")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+			// another test could be seen at body_test.go
 		})
 
 		Reset(func() {
