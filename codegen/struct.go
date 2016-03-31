@@ -63,7 +63,7 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	}
 
 	// Required
-	if fd.IsOmitted {
+	if !fd.IsOmitted {
 		validators += ",nonzero"
 	}
 

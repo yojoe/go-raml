@@ -5,9 +5,9 @@ from wtforms import TextField, FormField, IntegerField, FloatField, FileField, B
 
 class UsersPostReqBody(Form):
     
-    age = IntegerField(validators=[])
+    ID = TextField(validators=[DataRequired(message=""), Length(min=4, max=8)])
     
-    ID = TextField(validators=[Length(min=4, max=8)])
+    age = IntegerField(validators=[DataRequired(message=""), NumberRange(min=16, max=100)])
     
-    item = TextField(validators=[Length(min=2)])
+    item = TextField(validators=[DataRequired(message=""), Length(min=2), Regexp(regex="^[a-zA-Z]+$")])
     

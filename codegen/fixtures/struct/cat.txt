@@ -5,7 +5,7 @@ import (
 )
 
 type Cat struct {
-	Kind string `json:"kind"`
+	Kind string `json:"kind" validate:"nonzero"`
 }
 
 func (s Cat) Validate() error {

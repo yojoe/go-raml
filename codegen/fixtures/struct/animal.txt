@@ -8,9 +8,9 @@ import (
 // It contains field that construct animal
 // such as : name, colours, and cities.
 type animal struct {
-	Cities  []EnumCity `json:"cities" validate:"min=1,max=10"`
-	Colours []string   `json:"colours"`
-	Name    string     `json:"name,omitempty" validate:"nonzero"`
+	Cities  []EnumCity `json:"cities" validate:"min=1,max=10,nonzero"`
+	Colours []string   `json:"colours" validate:"nonzero"`
+	Name    string     `json:"name,omitempty"`
 }
 
 func (s animal) Validate() error {

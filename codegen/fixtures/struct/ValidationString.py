@@ -5,5 +5,5 @@ from wtforms import TextField, FormField, IntegerField, FloatField, FileField, B
 
 class ValidationString(Form):
     
-    name = TextField(validators=[Length(min=8, max=40)])
+    name = TextField(validators=[DataRequired(message=""), Length(min=8, max=40)])
     

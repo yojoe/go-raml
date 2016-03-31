@@ -3,6 +3,7 @@ package codegen
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -11,15 +12,17 @@ import (
 type pythonField struct {
 	Name       string
 	Type       string
-	Validators map[string][]string
+	Required   bool
+	Validators string
+	validators map[string][]string
 }
 
 func (pf *pythonField) addValidator(name, arg string, val interface{}) {
-	pf.Validators[name] = append(pf.Validators[name], fmt.Sprintf("%v=%v", arg, val))
+	pf.validators[name] = append(pf.validators[name], fmt.Sprintf("%v=%v", arg, val))
 }
 
 func (pf *pythonField) buildValidators(p raml.Property) {
-	pf.Validators = map[string][]string{}
+	pf.validators = map[string][]string{}
 	// string
 	if p.MinLength != nil {
 		pf.addValidator("Length", "min", *p.MinLength)
@@ -27,35 +30,58 @@ func (pf *pythonField) buildValidators(p raml.Property) {
 	if p.MaxLength != nil {
 		pf.addValidator("Length", "max", *p.MaxLength)
 	}
+	if p.Pattern != nil {
+		pf.addValidator("Regexp", "regex", `"`+*p.Pattern+`"`)
+	}
+
+	// number
+	if p.Minimum != nil {
+		pf.addValidator("NumberRange", "min", *p.Minimum)
+	}
+	if p.Maximum != nil {
+		pf.addValidator("NumberRange", "max", *p.Maximum)
+	}
+
+	// required
+	if p.Required {
+		pf.addValidator("DataRequired", "message", `""`)
+	}
+	pf.buildValidatorsString()
 }
 
-func (pf pythonField) ValidatorsString() string {
-	var v string
-	for name, args := range pf.Validators {
-		v += fmt.Sprintf("%v(%v)", name, strings.Join(args, ", "))
+func (pf *pythonField) buildValidatorsString() {
+	var v []string
+	for name, args := range pf.validators {
+		v = append(v, fmt.Sprintf("%v(%v)", name, strings.Join(args, ", ")))
 	}
-	return v
+
+	// we actually don't need to sort it to generate correct validators
+	// we need to sort it to generate predictable order which needed during the test
+	sort.Strings(v)
+	pf.Validators = strings.Join(v, ", ")
 }
 
 type pythonClass struct {
 	T           raml.Type
 	Name        string
-	Description string
-	Fields      []pythonField
+	Description []string
+	Fields      map[string]pythonField
 }
 
 func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
 	pc := pythonClass{
 		Name:        name,
-		Description: description,
+		Description: commentBuilder(description),
+		Fields:      map[string]pythonField{},
 	}
 
 	// generate fields
 	for k, v := range properties {
 		p := raml.ToProperty(k, v)
 		field := pythonField{
-			Name: p.Name,
-			Type: toWtformsType(p.Type),
+			Name:     p.Name,
+			Type:     toWtformsType(p.Type),
+			Required: p.Required,
 		}
 
 		if field.Type == "" { // type is not supported, no need to generate the field
@@ -63,7 +89,8 @@ func newPythonClass(name, description string, properties map[string]interface{})
 		}
 
 		field.buildValidators(p)
-		pc.Fields = append(pc.Fields, field)
+		pc.Fields[p.Name] = field
+
 	}
 	return pc
 }
