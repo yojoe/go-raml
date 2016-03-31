@@ -1,10 +1,14 @@
 {{define "class_python"}}
 from flask_wtf import Form
-from wtforms.validators import DataRequired, Length, Regexp, NumberRange
-from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField
+from wtforms.validators import DataRequired, Length, Regexp, NumberRange, required
+from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField, FieldList
 
 class {{.Name}}(Form):
     {{ range $key, $val := .Fields }}
+    {{ if $val.IsList }}
+    {{$val.Name}} = FieldList({{$val.Type}}('{{$val.Name}}', [required()]), {{$val.Validators}})
+    {{- else -}}
     {{$val.Name}} = {{$val.Type}}(validators=[{{$val.Validators}}])
+    {{ end }}
     {{ end }}
 {{end}}

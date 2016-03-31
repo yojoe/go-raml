@@ -105,6 +105,10 @@ types:
           item:
             minLength: 2
             pattern: ^[a-zA-Z]+$
+          grades:
+            type: integer[]
+            minItems: 2
+            maxItems: 5
   /{id}:
     get:
       description: |

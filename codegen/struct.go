@@ -101,13 +101,9 @@ func newStructDef(name, packageName, description string, properties map[string]i
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
 		fd := fieldDef{
-			Name: strings.Title(prop.Name),
-			Type: convertToGoType(prop.Type),
-		}
-
-		// Required = false
-		if prop.Required == false {
-			fd.IsOmitted = true
+			Name:      strings.Title(prop.Name),
+			Type:      convertToGoType(prop.Type),
+			IsOmitted: !prop.Required,
 		}
 
 		fd.buildValidators(prop)
