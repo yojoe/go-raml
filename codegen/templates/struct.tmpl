@@ -21,6 +21,19 @@ type {{ .Name }} struct {
 
 {{ if .NotBareInterface}}
 func (s {{.Name}}) Validate() error {
+    {{/* field level validation */}}
+    {{ range $k, $v := .Fields }}
+    {{ if $v.UniqueItems }}
+    m{{$v.Name}} := map[interface{}]struct{}{}
+    for _, v := range s.{{$v.Name}} {
+        m{{$v.Name}}[v] = struct{}{}
+    }
+    if len(m{{$v.Name}}) != len(s.{{$v.Name}}) {
+        return fmt.Errorf("{{$v.Name}} must be unique")
+    }
+    {{ end}}
+    {{ end }}
+    {{/* ************ type level validation ******* */}}
     {{if .T.MinItems -}}
     if len(s) < {{.T.MinItems}} {
         return fmt.Errorf("len should be >=  {{.T.MinItems}}")
@@ -32,7 +45,7 @@ func (s {{.Name}}) Validate() error {
     }
     {{- end}}
     {{ if .T.UniqueItems }}
-	// check for uniqueness
+	// make sure it is unique
     m := map[interface{}]struct{}{}
 	for _, v := range s {
 		m[v] = struct{}{}
@@ -41,6 +54,7 @@ func (s {{.Name}}) Validate() error {
 		return fmt.Errorf("collection is not unique")
 	}
     {{- end }}
+    {{/* call go-validator.Validate if not OneLineDef */}}
     {{if .OneLineDef -}}
     return nil
     {{ else -}}

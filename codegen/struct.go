@@ -21,6 +21,7 @@ type fieldDef struct {
 	Type          string // field type
 	IsComposition bool   // composition type
 	IsOmitted     bool   // omitted empty
+	UniqueItems   bool
 
 	Validators string
 }
@@ -61,6 +62,9 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	if p.MaxItems != nil {
 		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
 	}
+	if p.UniqueItems {
+		fd.UniqueItems = true
+	}
 
 	// Required
 	if !fd.IsOmitted {
@@ -86,7 +90,16 @@ type structDef struct {
 
 // true if this struct need to import 'fmt' package
 func (sd structDef) NeedFmt() bool {
-	return sd.T.MinItems > 0 || sd.T.MaxItems > 0
+	// array type min items and max items
+	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
+		return true
+	}
+	for _, f := range sd.Fields {
+		if f.UniqueItems {
+			return true
+		}
+	}
+	return false
 }
 
 // true if this struct is not an alias of `interface{}`
