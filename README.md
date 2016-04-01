@@ -174,12 +174,12 @@ The generated code in the server is in the form of commented code:
  maximum			|	v	|	v
  format				|       x	| 	x
  multipleOf			|	v	|	v
- array/map field minItems	|	v	|	v
- array/map field maxItems	|	v	|	v
- array/map field uniqueItems	|	v	|	x
- array/map Type minItems	|	v	|	x
- array/map Type maxItems	|	v	|	x
- array/map Type uniqueItems	|	v	|	x
+ array field minItems		|	v	|	v
+ array field maxItems		|	v	|	v
+ array field uniqueItems	|	v	|	x
+ array Type minItems		|	v	|	x
+ array Type maxItems		|	v	|	x
+ array Type uniqueItems		|	v	|	x
 
 ## Specification file 
 
