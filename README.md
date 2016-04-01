@@ -164,14 +164,22 @@ The generated code in the server is in the form of commented code:
 
 ## Input Validation
 
-Supported input validation:
 
-- minLength
-- maxLength
-- pattern
-- minimum
-- maximum
-- multipleOf
+	Validation		|    Go		| Python
+------------------------------- | ------------- | -----------
+ minLength                  	|	v	|	v
+ maxLength			|	v	|	v
+ pattern			|	v	|	v
+ minimum			|	v	|	v
+ maximum			|	v	|	v
+ format				|       x	| 	x
+ multipleOf			|	v	|	v
+ array/map field minItems	|	v	|	v
+ array/map field maxItems	|	v	|	v
+ array/map field uniqueItems	|	v	|	x
+ array/map Type minItems	|	v	|	x
+ array/map Type maxItems	|	v	|	x
+ array/map Type uniqueItems	|	v	|	x
 
 ## Specification file 
 
