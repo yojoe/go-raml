@@ -22,6 +22,8 @@ Currently there are still some [limitations](docs/limitations.md) on the RAML 1.
 
 ## Install
 
+
+
 Install `godep` as package manager
 
 `$go get -u github.com/tools/godep`
@@ -30,21 +32,17 @@ Install go-bindata, we need it to compile the template files to .go file
 
 `go get -u github.com/jteeuwen/go-bindata/...`
 
+Install go-raml
+
+`go get -u github.com/Jumpscale/go-raml`
+
 ### Build
 First, we need to compile the templates
 
 ```
-$cd commands
-$go-bindata ./templates/...
-$sed -i -- 's/package\ main/package\ commands/g' bindata.go
+cd $GOPATH/src/github.com/Jumpscale/go-raml/commands
+sh build.sh
 ```
-
-Then, go back to go-raml directory and then install it like usual
-
-`$go install -v ./...`
-
-There is `build.sh` script to automate this build
-
 
 ## Usage
 
