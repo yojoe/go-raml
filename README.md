@@ -22,7 +22,7 @@ Currently there are still some [limitations](docs/limitations.md) on the RAML 1.
 
 ## Install
 
-
+make sure you have at least go 1.6 installed !
 
 Install `godep` as package manager
 
