@@ -40,19 +40,18 @@ Install go-raml
 First, we need to compile the templates
 
 ```
-cd $GOPATH/src/github.com/Jumpscale/go-raml/commands
+cd $GOPATH/src/github.com/Jumpscale/go-raml
 sh build.sh
 ```
 
 ## Usage
 
-go-raml is a commandline tool. To invoke the codegeneration using `go generate`, specify the generation in 1 of your go source files:
+To use it on the commandline, just execute `go-raml` without any arguments, it will output the help on the stdout.
+
+To invoke the codegeneration using `go generate`, specify the generation in 1 of your go source files:
 `//go:generate go-raml ...`
 
 go-raml needs to be on the path for this to work off course.
-
-To use it on the commandline yourself, just execute `go-raml` without any arguments, it will output the help on the stdout.
-
 
 ## Code generation
 
