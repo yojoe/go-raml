@@ -5,8 +5,8 @@ import (
 )
 
 type UsersIdGetRespBody struct {
-	ID  string `json:"ID,omitempty" validate:"nonzero"`
-	Age int    `json:"age"`
+	ID  string `json:"ID,omitempty"`
+	Age int    `json:"age" validate:"nonzero"`
 }
 
 func (s UsersIdGetRespBody) Validate() error {

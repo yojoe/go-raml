@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/raml"
 
@@ -43,12 +44,12 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// generate all Type structs
-	if err := generateStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
 	// generate all request & response body
-	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
@@ -74,6 +75,20 @@ func (gs goServer) generate(dir string) error {
 }
 
 func (ps pythonServer) generate(dir string) error {
+	// generate input validators helper
+	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python", filepath.Join(dir, "input_validators.py"), false); err != nil {
+		return err
+	}
+	// generate request body
+	if err := generateBodyStructs(ps.apiDef, dir, "", langPython); err != nil {
+		log.Errorf("failed to generate python classes from request body:%v", err)
+		return err
+	}
+	// python classes
+	if err := generatePythonClasses(ps.apiDef, dir); err != nil {
+		log.Errorf("failed to generate python clased:%v", err)
+		return err
+	}
 	// security scheme
 	if err := generateSecurity(ps.apiDef, dir, ps.PackageName, langPython); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)

@@ -849,8 +849,9 @@ type Property struct {
 	//Format *string
 
 	// array
-	MinItems *int
-	MaxItems *int
+	MinItems    *int
+	MaxItems    *int
+	UniqueItems bool
 }
 
 // ToProperty creates a property from an interface
@@ -904,6 +905,8 @@ func ToProperty(name string, p interface{}) Property {
 			case "maxItems":
 				p.MaxItems = new(int)
 				*p.MaxItems = v.(int)
+			case "uniqueItems":
+				p.UniqueItems = v.(bool)
 			}
 		}
 		return p

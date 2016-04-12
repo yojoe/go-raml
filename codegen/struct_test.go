@@ -18,7 +18,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			err = generateStructs(apiDef, targetdir, "main")
+			err = generateStructs(apiDef, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			//first test

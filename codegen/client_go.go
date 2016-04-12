@@ -13,12 +13,12 @@ type goClient struct {
 // generate Go client files
 func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	// generate struct
-	if err := generateStructs(apiDef, dir, "client"); err != nil {
+	if err := generateStructs(apiDef, dir, "client", langGo); err != nil {
 		return err
 	}
 
 	// generate strucs from bodies
-	if err := generateBodyStructs(apiDef, dir, "client"); err != nil {
+	if err := generateBodyStructs(apiDef, dir, "client", langGo); err != nil {
 		return err
 	}
 

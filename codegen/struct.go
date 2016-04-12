@@ -21,6 +21,7 @@ type fieldDef struct {
 	Type          string // field type
 	IsComposition bool   // composition type
 	IsOmitted     bool   // omitted empty
+	UniqueItems   bool
 
 	Validators string
 }
@@ -61,9 +62,12 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	if p.MaxItems != nil {
 		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
 	}
+	if p.UniqueItems {
+		fd.UniqueItems = true
+	}
 
 	// Required
-	if fd.IsOmitted {
+	if !fd.IsOmitted {
 		validators += ",nonzero"
 	}
 
@@ -86,7 +90,16 @@ type structDef struct {
 
 // true if this struct need to import 'fmt' package
 func (sd structDef) NeedFmt() bool {
-	return sd.T.MinItems > 0 || sd.T.MaxItems > 0
+	// array type min items and max items
+	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
+		return true
+	}
+	for _, f := range sd.Fields {
+		if f.UniqueItems {
+			return true
+		}
+	}
+	return false
 }
 
 // true if this struct is not an alias of `interface{}`
@@ -101,13 +114,9 @@ func newStructDef(name, packageName, description string, properties map[string]i
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
 		fd := fieldDef{
-			Name: strings.Title(prop.Name),
-			Type: convertToGoType(prop.Type),
-		}
-
-		// Required = false
-		if prop.Required == false {
-			fd.IsOmitted = true
+			Name:      strings.Title(prop.Name),
+			Type:      convertToGoType(prop.Type),
+			IsOmitted: !prop.Required,
 		}
 
 		fd.buildValidators(prop)
@@ -122,8 +131,8 @@ func newStructDef(name, packageName, description string, properties map[string]i
 }
 
 // create struct definition from RAML Type node
-func newStructDefFromType(t raml.Type, sName, packageName, description string) structDef {
-	sd := newStructDef(sName, packageName, description, t.Properties)
+func newStructDefFromType(t raml.Type, sName, packageName, lang string) structDef {
+	sd := newStructDef(sName, packageName, t.Description, t.Properties)
 	sd.T = t
 
 	// handle advanced type on raml1.0
@@ -153,9 +162,9 @@ func (sd structDef) generate(dir string) error {
 }
 
 // generate all structs from an RAML api definition
-func generateStructs(apiDefinition *raml.APIDefinition, dir string, packageName string) error {
-	for k, v := range apiDefinition.Types {
-		sd := newStructDefFromType(v, k, packageName, v.Description)
+func generateStructs(apiDefinition *raml.APIDefinition, dir, packageName, lang string) error {
+	for name, t := range apiDefinition.Types {
+		sd := newStructDefFromType(t, name, packageName, lang)
 		if err := sd.generate(dir); err != nil {
 			return err
 		}

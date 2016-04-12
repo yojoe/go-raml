@@ -5,7 +5,7 @@ import (
 )
 
 type ValidationString struct {
-	Name string `json:"name" validate:"min=8,max=40"`
+	Name string `json:"name" validate:"min=8,max=40,nonzero"`
 }
 
 func (s ValidationString) Validate() error {
