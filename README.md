@@ -178,11 +178,15 @@ The generated code in the server is in the form of commented code:
  array Type maxItems		|	v	|	x
  array Type uniqueItems		|	v	|	x
 
-## Specification file 
+## Specification file
 
 Besides generation of a new RAML specification file, updating an existing raml file is also supported. This way the raml filestructure that can be included in the main raml file is honored.
 
 `go-raml spec ...`
+
+## Contribute
+
+When you want to contribute to the development, follow the [contribution guidelines](contributing.md).
 
 ## roadmap
 **v0.1**
