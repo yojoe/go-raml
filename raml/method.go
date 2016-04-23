@@ -40,7 +40,7 @@ func (resp *Response) inherit(r *Resource, parent Response, rt *ResourceType) {
 	params := re.FindAllString(parent.Bodies.Type, -1)
 	fmt.Printf("found params=%v\n", params)
 	for _, p := range params {
-		pVal := r.setResourceTypeParam(removeParamBracket(p), rt)
+		pVal := r.getResourceTypeParamValue(removeParamBracket(p), rt)
 		resp.Bodies.Type = strings.Replace(parent.Bodies.Type, p, pVal, -1)
 	}
 }
