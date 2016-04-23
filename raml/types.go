@@ -637,6 +637,7 @@ type Resource struct {
 	// the root-level resourceTypes property.
 	// NOTE: inline not currently supported.
 	Type *DefinitionChoice `yaml:"type"`
+
 	// TODO: Add support for inline ResourceTypes
 
 	// A resource may use the is property to apply the list of traits to all
@@ -660,30 +661,9 @@ type Resource struct {
 	// nested resource, and its property's key is its URI relative to its
 	// parent resource's URI.
 	Nested map[string]*Resource `yaml:",regexp:/.*"`
-}
 
-func (r *Resource) Methods() []*Method {
-	methods := make([]*Method, 0, 6)
-	if r.Get != nil {
-		methods = append(methods, r.Get)
-	}
-	if r.Post != nil {
-		methods = append(methods, r.Post)
-	}
-	if r.Put != nil {
-		methods = append(methods, r.Put)
-	}
-	if r.Patch != nil {
-		methods = append(methods, r.Patch)
-	}
-	if r.Head != nil {
-		methods = append(methods, r.Head)
-	}
-	if r.Delete != nil {
-		methods = append(methods, r.Delete)
-	}
-
-	return methods
+	// all methods of this resource
+	Methods []*Method `yaml:"-"`
 }
 
 // TODO: Resource.GetBaseURIParameter --> includeds APIDefinition BURIParams..

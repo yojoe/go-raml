@@ -141,44 +141,10 @@ func (apiDef *APIDefinition) postProcess() {
 	// resources
 	for k := range apiDef.Resources {
 		r := apiDef.Resources[k]
-		r.postProcess(k, nil)
+		r.postProcess(k, nil, apiDef.ResourceTypes)
 		apiDef.Resources[k] = r
 	}
 
-}
-
-// postProcess assign all properties that can't be obtained from RAML document
-func (r *Resource) postProcess(uri string, parent *Resource) {
-	r.URI = uri
-	r.Parent = parent
-
-	if r.Get != nil {
-		r.Get.Name = "GET"
-	}
-	if r.Post != nil {
-		r.Post.Name = "POST"
-	}
-	if r.Put != nil {
-		r.Put.Name = "PUT"
-	}
-	if r.Patch != nil {
-		r.Patch.Name = "PATCH"
-	}
-	if r.Head != nil {
-		r.Head.Name = "HEAD"
-	}
-	if r.Delete != nil {
-		r.Delete.Name = "DELETE"
-	}
-
-	for k := range r.Nested {
-		n := r.Nested[k]
-		if n == nil {
-			continue
-		}
-		n.postProcess(k, r)
-		r.Nested[k] = n
-	}
 }
 
 // postProcess assign all properties that can't be obtained from RAML document.
