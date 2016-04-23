@@ -41,7 +41,7 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 
 // inherit methods inherits all methods based on it's resource type
 func (r *Resource) inheritMethods(rt *ResourceType) {
-	// only inherit methods that also defined in the resource => TODO make sure it is true
+	// only inherit methods that also defined in the resource => TODO make sure this assumption is true
 	for _, m := range r.Methods {
 		switch m.Name {
 		case "GET":
@@ -100,14 +100,33 @@ func (r *Resource) setMethods() {
 
 // get value of a resource type param
 func (r *Resource) getResourceTypeParamValue(param string, rt *ResourceType) string {
-	// inflect if needed
+	// split between inflector and real param
+	// real param and inflector is seperated by `|`
+	cleanParam, inflector := func() (string, string) {
+		arr := strings.Split(param, "|")
+		if len(arr) != 2 {
+			return param, ""
+		}
+		return strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1])
+	}()
 
-	// check reserved params
-	switch param {
-	case "resourcePathName":
-		return r.CleanURI()
+	// get the value
+	val := func() string {
+		// check reserved params
+		switch cleanParam {
+		case "resourcePathName":
+			return r.CleanURI()
+		}
+		return ""
+	}()
+	if inflector != "" {
+		var ok bool
+		val, ok = doInflect(val, inflector)
+		if !ok {
+			panic("invalid inflector " + inflector)
+		}
 	}
-	return ""
+	return val
 }
 
 // CleanURI returns URI without `/`, `\`', `{`, and `}`

@@ -7,6 +7,27 @@ import (
 	chuck_inflect "github.com/chuckpreslar/inflect"
 )
 
+var inflectFunc = map[string]func(string) string{
+	"!singularize":         singularize,
+	"!pluralize":           pluralize,
+	"!uppercase":           upperCase,
+	"!lowercase":           lowerCase,
+	"!lowercamelcase":      lowerCamelCase,
+	"!uppercamelcase":      upperCamelCase,
+	"!lowerunderscorecase": lowerUnderScoreCase,
+	"!upperunderscorecase": upperUnderScoreCase,
+	"!lowerhyphencase":     lowerHyphenCase,
+	"!upperhyphencase":     upperHyphenCase,
+}
+
+func doInflect(s, op string) (string, bool) {
+	f, ok := inflectFunc[op]
+	if !ok {
+		return s, false
+	}
+	return f(s), true
+}
+
 // singularize returns singular version of a word
 func singularize(s string) string {
 	return inflect.Singularize(s)

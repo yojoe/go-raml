@@ -1,7 +1,6 @@
 package raml
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -21,7 +20,6 @@ func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType)
 		if !ok {
 			resp = Response{}
 		}
-		fmt.Printf("inheriting response code=%v \n", code)
 		resp.inherit(r, rParent, rt)
 		m.Responses[code] = resp
 	}
@@ -38,7 +36,6 @@ func (resp *Response) inherit(r *Resource, parent Response, rt *ResourceType) {
 		panic(err)
 	}
 	params := re.FindAllString(parent.Bodies.Type, -1)
-	fmt.Printf("found params=%v\n", params)
 	for _, p := range params {
 		pVal := r.getResourceTypeParamValue(removeParamBracket(p), rt)
 		resp.Bodies.Type = strings.Replace(parent.Bodies.Type, p, pVal, -1)

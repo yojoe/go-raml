@@ -22,6 +22,8 @@ func TestResourceTypeInheritance(t *testing.T) {
 
 			So(r.Get, ShouldNotBeNil)
 			So(r.Get.Responses[200].Bodies.Type, ShouldEqual, "Users")
+			So(r.Post, ShouldNotBeNil)
+			So(r.Post.Responses[200].Bodies.Type, ShouldEqual, "User")
 		})
 
 		Reset(func() {
