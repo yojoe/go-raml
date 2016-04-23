@@ -129,10 +129,13 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 
 func (apiDef *APIDefinition) postProcess() {
 	// resource types
-	for k := range apiDef.ResourceTypes {
-		rt := apiDef.ResourceTypes[k]
-		rt.postProcess(k)
-		apiDef.ResourceTypes[k] = rt
+	for i, rts := range apiDef.ResourceTypes {
+		for k := range rts {
+			rt := rts[k]
+			rt.postProcess(k)
+			rts[k] = rt
+		}
+		apiDef.ResourceTypes[i] = rts
 	}
 
 	// resources

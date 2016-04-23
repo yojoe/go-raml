@@ -424,8 +424,12 @@ type ResourceType struct {
 	// Name of the resource type
 	Name string
 
-	// The usage property of a resource type or trait is used to describe how
-	// the resource type or trait should be used
+	// The OPTIONAL usage property of a resource type provides instructions
+	// on how and when the resource type or trait should be used.
+	// Documentation generators MUST convey this property
+	// as characteristics of the resource and method, respectively.
+	// However, the resources and methods MUST NOT inherit the usage property:
+	// neither resources nor methods allow a property named usage.
 	Usage string
 
 	// Briefly describes what the resource type
@@ -796,7 +800,7 @@ type APIDefinition struct {
 	// respectively. The value of each of these properties is an array of maps;
 	// in each map, the keys are resourceType or trait names, and the values
 	// are resourceType or trait definitions, respectively.
-	ResourceTypes map[string]ResourceType `yaml:"resourceTypes"`
+	ResourceTypes []map[string]ResourceType `yaml:"resourceTypes"`
 
 	// Resources are identified by their relative URI, which MUST begin with a
 	// slash (/). A resource defined as a root-level property is called a

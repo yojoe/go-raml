@@ -54,11 +54,11 @@ traits:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
 resourceTypes:
-  rttest:
+  - rttest:
       description: test
-  one:
+  - one:
       description: hi
-  auditableResource:
+  - auditableResource:
       post?:
         body:
           application/x-www-form-urlencoded:
@@ -75,7 +75,7 @@ resourceTypes:
                 description: |
                   If the resource has a delete method defined, expect a deleteAuthority
                   property in its body
-  searchableCollection:
+  - searchableCollection:
       get:
         queryParameters:
           <<queryParamName>>:
