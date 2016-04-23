@@ -408,21 +408,9 @@ type ResourceTypeMethod struct {
 // a resource type inherit its properties, such as its methods.
 type ResourceType struct {
 
-	// TODO: Auto-fill the resourcePath and resourcePathName parameters
-	// Remove mediaTypeExtension.
-
 	// TODO: Parameters MUST be indicated in resource type and trait definitions
 	// by double angle brackets (double chevrons) enclosing the parameter name;
 	// for example, "<<tokenName>>".
-
-	// TODO: In resource type definitions, there are two reserved parameter
-	// names: resourcePath and resourcePathName. The processing application
-	// MUST set the values of these reserved parameters to the inheriting
-	// resource's path (for example, "/users") and the part of the path
-	// following the rightmost "/" (for example, "users"), respectively.
-	// Processing applications MUST also omit the value of any
-	// mediaTypeExtension found in the resource's URI when setting
-	// resourcePath and resourcePathName.
 
 	// TODO: Parameter values MAY further be transformed by applying one of
 	// the following functions:
@@ -435,7 +423,6 @@ type ResourceType struct {
 
 	// Name of the resource type
 	Name string
-	// TODO: Fill this during the post-processing phase
 
 	// The usage property of a resource type or trait is used to describe how
 	// the resource type or trait should be used
@@ -809,9 +796,7 @@ type APIDefinition struct {
 	// respectively. The value of each of these properties is an array of maps;
 	// in each map, the keys are resourceType or trait names, and the values
 	// are resourceType or trait definitions, respectively.
-	// []map[ResourceTypeName]ResourceType
-	ResourceTypes []map[string]ResourceType `yaml:"resourceTypes"`
-	// TODO: Flatten the arrays of maps here.
+	ResourceTypes map[string]ResourceType `yaml:"resourceTypes"`
 
 	// Resources are identified by their relative URI, which MUST begin with a
 	// slash (/). A resource defined as a root-level property is called a
