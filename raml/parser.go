@@ -121,26 +121,34 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 		return nil, ramlError
 	}
 
-	PostProcess(apiDefinition)
+	apiDefinition.postProcess()
 
 	// Good.
 	return apiDefinition, nil
 }
 
-func PostProcess(d *APIDefinition) {
-	for k := range d.Resources {
-		r := d.Resources[k]
-		r.URI = k
-		r.Parent = nil
-		addMethodNames(k, nil, &r)
-		d.Resources[k] = r
+func (apiDef *APIDefinition) postProcess() {
+	// resource types
+	for k := range apiDef.ResourceTypes {
+		rt := apiDef.ResourceTypes[k]
+		rt.postProcess(k)
+		apiDef.ResourceTypes[k] = rt
 	}
+
+	// resources
+	for k := range apiDef.Resources {
+		r := apiDef.Resources[k]
+		r.postProcess(k, nil)
+		apiDef.Resources[k] = r
+	}
+
 }
 
-func addMethodNames(uri string, parentResource, r *Resource) {
-	if r == nil {
-		return
-	}
+// postProcess assign all properties that can't be obtained from RAML document
+func (r *Resource) postProcess(uri string, parent *Resource) {
+	r.URI = uri
+	r.Parent = parent
+
 	if r.Get != nil {
 		r.Get.Name = "GET"
 	}
@@ -162,11 +170,17 @@ func addMethodNames(uri string, parentResource, r *Resource) {
 
 	for k := range r.Nested {
 		n := r.Nested[k]
-		n.URI = k
-		n.Parent = r
-		addMethodNames(k, r, n)
+		if n == nil {
+			continue
+		}
+		n.postProcess(k, r)
 		r.Nested[k] = n
 	}
+}
+
+// postProcess assign all properties that can't be obtained from RAML document.
+func (rt *ResourceType) postProcess(name string) {
+	rt.Name = name
 }
 
 // Reads the contents of a file, returns a bytes buffer
