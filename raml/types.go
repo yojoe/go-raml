@@ -44,89 +44,6 @@ type Any interface{}
 type HTTPCode int      // e.g. 200
 type HTTPHeader string // e.g. Content-Length
 
-// The RAML Specification uses collections of named parameters for the
-// following properties: URI parameters, query string parameters, form
-// parameters, request bodies (depending on the media type), and request
-// and response headers.
-//
-// Some fields are pointers to distinguish Zero values and no values
-type NamedParameter struct {
-
-	// NOTE: We currently do not support Named Parameters With Multiple Types.
-	// TODO: Add support for Named Parameters With Multiple Types. Should be
-	// done sort of like the DefinitionChoice type.
-
-	// The name of the Parameter, as defined by the type containing it.
-	Name string
-	// TODO: Fill this during the post-processing phase
-
-	// A friendly name used only for display or documentation purposes.
-	// If displayName is not specified, it defaults to the property's key
-	DisplayName string `yaml:"displayName"` // TODO: Auto-fill this
-
-	// The intended use or meaning of the parameter
-	Description string `yaml:"description"`
-
-	// The primitive type of the parameter's resolved value. Can be:
-	//
-	// Type	Description
-	// string	- Value MUST be a string.
-	// number	- Value MUST be a number. Indicate floating point numbers as defined by YAML.
-	// integer	- Value MUST be an integer. Floating point numbers are not allowed. The integer type is a subset of the number type.
-	// date		- Value MUST be a string representation of a date as defined in RFC2616 Section 3.3 [RFC2616]. See Date Representations.
-	// boolean	- Value MUST be either the string "true" or "false" (without the quotes).
-	// file		- (Applicable only to Form properties) Value is a file. Client generators SHOULD use this type to handle file uploads correctly.
-	Type string
-	// TODO: Verify the enum options
-
-	// If the enum attribute is defined, API clients and servers MUST verify
-	// that a parameter's value matches a value in the enum array
-	Enum []Any `yaml:",flow"`
-
-	// The pattern attribute is a regular expression that a parameter of type
-	// string MUST match. Regular expressions MUST follow the regular
-	// expression specification from ECMA 262/Perl 5. (string only)
-	Pattern *string
-
-	// The minLength attribute specifies the parameter value's minimum number
-	// of characters (string only)
-	MinLength *int `yaml:"minLength"`
-	// TODO: go-yaml doesn't raise an error when the minLength isn't an integer!
-	// find out why and fix it.
-
-	// The maxLength attribute specifies the parameter value's maximum number
-	// of characters (string only)
-	MaxLength *int `yaml:"maxLength"`
-
-	// The minimum attribute specifies the parameter's minimum value. (numbers
-	// only)
-	Minimum *float64
-
-	// The maximum attribute specifies the parameter's maximum value. (numbers
-	// only)
-	Maximum *float64
-
-	// An example value for the property. This can be used, e.g., by
-	// documentation generators to generate sample values for the property.
-	Example interface{}
-
-	// The repeat attribute specifies that the parameter can be repeated,
-	// i.e. the parameter can be used multiple times
-	Repeat *bool // TODO: What does this mean?
-
-	// Whether the parameter and its value MUST be present when a call is made.
-	// In general, parameters are optional unless the required attribute is
-	// included and its value set to 'true'.
-	// For a URI parameter, its default value is 'true'.
-	Required bool
-
-	// The default value to use for the property if the property is omitted or
-	// its value is not specified
-	Default Any
-
-	format Any `ramlFormat:"Named parameters must be mappings. Example: userId: {displayName: 'User ID', description: 'Used to identify the user.', type: 'integer', minimum: 1, example: 5}"`
-}
-
 // Headers used in Methods and other types
 type Header NamedParameter
 
@@ -367,121 +284,6 @@ type Trait struct {
 	OptionalQueryParameters map[string]NamedParameter `yaml:"queryParameters?"`
 }
 
-// Method that is part of a ResourceType. DIfferentiated from Traits since it
-// doesn't contain Usage, optional fields etc.
-type ResourceTypeMethod struct {
-	Name string
-
-	// Briefly describes what the method does to the resource
-	Description string
-
-	// As in Method.
-	Bodies Bodies `yaml:"body"`
-	// TODO: Check - how does the mediaType play play here? What it do?
-
-	// As in Method.
-	Headers map[HTTPHeader]Header `yaml:"headers"`
-
-	// As in Method.
-	Responses map[HTTPCode]Response `yaml:"responses"`
-
-	// As in Method.
-	QueryParameters map[string]NamedParameter `yaml:"queryParameters"`
-
-	// As in Method.
-	Protocols []string `yaml:"protocols"`
-}
-
-// Resource and method declarations are frequently repetitive. For example, if
-// an API requires OAuth authentication, the API definition must include the
-// access_token query string parameter (which is defined by the queryParameters
-// property) in all the API's resource method declarations.
-//
-// Moreover, there are many advantages to reusing patterns across multiple
-// resources and methods. For example, after defining a collection-type
-// resource's characteristics, that definition can be applied to multiple
-// resources. This use of patterns encouraging consistency and reduces
-// complexity for both servers and clients.
-//
-// A resource type is a partial resource definition that, like a resource, can
-// specify a description and methods and their properties. Resources that use
-// a resource type inherit its properties, such as its methods.
-type ResourceType struct {
-
-	// TODO: Auto-fill the resourcePath and resourcePathName parameters
-	// Remove mediaTypeExtension.
-
-	// TODO: Parameters MUST be indicated in resource type and trait definitions
-	// by double angle brackets (double chevrons) enclosing the parameter name;
-	// for example, "<<tokenName>>".
-
-	// TODO: In resource type definitions, there are two reserved parameter
-	// names: resourcePath and resourcePathName. The processing application
-	// MUST set the values of these reserved parameters to the inheriting
-	// resource's path (for example, "/users") and the part of the path
-	// following the rightmost "/" (for example, "users"), respectively.
-	// Processing applications MUST also omit the value of any
-	// mediaTypeExtension found in the resource's URI when setting
-	// resourcePath and resourcePathName.
-
-	// TODO: Parameter values MAY further be transformed by applying one of
-	// the following functions:
-	// * The !singularize function MUST act on the value of the parameter
-	// by a locale-specific singularization of its original value. The only
-	// locale supported by this version of RAML is United States English.
-	// * The !pluralize function MUST act on the value of the parameter by a
-	// locale-specific pluralization of its original value. The only locale
-	// supported by this version of RAML is United States English.
-
-	// Name of the resource type
-	Name string
-	// TODO: Fill this during the post-processing phase
-
-	// The usage property of a resource type or trait is used to describe how
-	// the resource type or trait should be used
-	Usage string
-
-	// Briefly describes what the resource type
-	Description string
-
-	// As in Resource.
-	UriParameters map[string]NamedParameter `yaml:"uriParameters"`
-
-	// As in Resource.
-	BaseUriParameters map[string]NamedParameter `yaml:"baseUriParameters"`
-
-	// In a RESTful API, methods are operations that are performed on a
-	// resource. A method MUST be one of the HTTP methods defined in the
-	// HTTP version 1.1 specification [RFC2616] and its extension,
-	// RFC5789 [RFC5789].
-	Get    *ResourceTypeMethod `yaml:"get"`
-	Head   *ResourceTypeMethod `yaml:"head"`
-	Post   *ResourceTypeMethod `yaml:"post"`
-	Put    *ResourceTypeMethod `yaml:"put"`
-	Delete *ResourceTypeMethod `yaml:"delete"`
-	Patch  *ResourceTypeMethod `yaml:"patch"`
-
-	// When defining resource types and traits, it can be useful to capture
-	// patterns that manifest several levels below the inheriting resource or
-	// method, without requiring the creation of the intermediate levels.
-	// For example, a resource type definition may describe a body parameter
-	// that will be used if the API defines a post method for that resource,
-	// but the processing application should not create the post method itself.
-	//
-	// This optional structure key indicates that the value of the property
-	// should be applied if the property name itself (without the question
-	// mark) is already defined (whether explicitly or implicitly) at the
-	// corresponding level in that resource or method.
-	OptionalUriParameters     map[string]NamedParameter `yaml:"uriParameters?"`
-	OptionalBaseUriParameters map[string]NamedParameter `yaml:"baseUriParameters?"`
-	OptionalGet               *ResourceTypeMethod       `yaml:"get?"`
-	OptionalHead              *ResourceTypeMethod       `yaml:"head?"`
-	OptionalPost              *ResourceTypeMethod       `yaml:"post?"`
-	OptionalPut               *ResourceTypeMethod       `yaml:"put?"`
-	OptionalDelete            *ResourceTypeMethod       `yaml:"delete?"`
-	OptionalPatch             *ResourceTypeMethod       `yaml:"patch?"`
-}
-
 // A trait-like structure to a security scheme mechanism so as to extend
 // the mechanism, such as specifying response codes, HTTP headers or custom
 // documentation.
@@ -621,7 +423,7 @@ type Resource struct {
 	// Template URIs containing URI parameters can be used to define a
 	// resource's relative URI when it contains variable elements.
 	// The values matched by URI parameters cannot contain slash (/) characters
-	UriParameters map[string]NamedParameter `yaml:"uriParameters"`
+	URIParameters map[string]NamedParameter `yaml:"uriParameters"`
 
 	// TODO: If a URI parameter in a resource's relative URI is not explicitly
 	// described in a uriParameters property for that resource, it MUST still
@@ -646,6 +448,7 @@ type Resource struct {
 	// the root-level resourceTypes property.
 	// NOTE: inline not currently supported.
 	Type *DefinitionChoice `yaml:"type"`
+
 	// TODO: Add support for inline ResourceTypes
 
 	// A resource may use the is property to apply the list of traits to all
@@ -669,30 +472,9 @@ type Resource struct {
 	// nested resource, and its property's key is its URI relative to its
 	// parent resource's URI.
 	Nested map[string]*Resource `yaml:",regexp:/.*"`
-}
 
-func (r *Resource) Methods() []*Method {
-	methods := make([]*Method, 0, 6)
-	if r.Get != nil {
-		methods = append(methods, r.Get)
-	}
-	if r.Post != nil {
-		methods = append(methods, r.Post)
-	}
-	if r.Put != nil {
-		methods = append(methods, r.Put)
-	}
-	if r.Patch != nil {
-		methods = append(methods, r.Patch)
-	}
-	if r.Head != nil {
-		methods = append(methods, r.Head)
-	}
-	if r.Delete != nil {
-		methods = append(methods, r.Delete)
-	}
-
-	return methods
+	// all methods of this resource
+	Methods []*Method `yaml:"-"`
 }
 
 // TODO: Resource.GetBaseURIParameter --> includeds APIDefinition BURIParams..
@@ -809,9 +591,7 @@ type APIDefinition struct {
 	// respectively. The value of each of these properties is an array of maps;
 	// in each map, the keys are resourceType or trait names, and the values
 	// are resourceType or trait definitions, respectively.
-	// []map[ResourceTypeName]ResourceType
 	ResourceTypes []map[string]ResourceType `yaml:"resourceTypes"`
-	// TODO: Flatten the arrays of maps here.
 
 	// Resources are identified by their relative URI, which MUST begin with a
 	// slash (/). A resource defined as a root-level property is called a

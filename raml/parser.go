@@ -121,52 +121,30 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 		return nil, ramlError
 	}
 
-	PostProcess(apiDefinition)
+	apiDefinition.postProcess()
 
 	// Good.
 	return apiDefinition, nil
 }
 
-func PostProcess(d *APIDefinition) {
-	for k := range d.Resources {
-		r := d.Resources[k]
-		r.URI = k
-		r.Parent = nil
-		addMethodNames(k, nil, &r)
-		d.Resources[k] = r
-	}
-}
-
-func addMethodNames(uri string, parentResource, r *Resource) {
-	if r == nil {
-		return
-	}
-	if r.Get != nil {
-		r.Get.Name = "GET"
-	}
-	if r.Post != nil {
-		r.Post.Name = "POST"
-	}
-	if r.Put != nil {
-		r.Put.Name = "PUT"
-	}
-	if r.Patch != nil {
-		r.Patch.Name = "PATCH"
-	}
-	if r.Head != nil {
-		r.Head.Name = "HEAD"
-	}
-	if r.Delete != nil {
-		r.Delete.Name = "DELETE"
+func (apiDef *APIDefinition) postProcess() {
+	// resource types
+	for i, rts := range apiDef.ResourceTypes {
+		for k := range rts {
+			rt := rts[k]
+			rt.postProcess(k)
+			rts[k] = rt
+		}
+		apiDef.ResourceTypes[i] = rts
 	}
 
-	for k := range r.Nested {
-		n := r.Nested[k]
-		n.URI = k
-		n.Parent = r
-		addMethodNames(k, r, n)
-		r.Nested[k] = n
+	// resources
+	for k := range apiDef.Resources {
+		r := apiDef.Resources[k]
+		r.postProcess(k, nil, apiDef.ResourceTypes)
+		apiDef.Resources[k] = r
 	}
+
 }
 
 // Reads the contents of a file, returns a bytes buffer
