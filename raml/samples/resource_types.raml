@@ -33,6 +33,13 @@ resourceTypes:
             required: true
       get?:
         description: Get all <<resourcePathName>>
+  - searchableCollection:
+     get:
+       queryParameters:
+         <<queryParamName>>:
+           description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
+         <<fallbackParamName>>:
+           description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
 #traits:
 #  - secured:
 #      description: Some requests require authentication
@@ -53,3 +60,9 @@ resourceTypes:
   get:
     description: get petok
   # will not have a post method defined
+
+/books:
+  type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
+  get:
+    description : get all books
+    # is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]

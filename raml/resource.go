@@ -23,9 +23,6 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 	// process nested/child resources
 	for k := range r.Nested {
 		n := r.Nested[k]
-		if n == nil {
-			continue
-		}
 		if err := n.postProcess(k, r, resourceTypes); err != nil {
 			return err
 		}
@@ -40,7 +37,7 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 	if err != nil || rt == nil {
 		return err
 	}
-	r.Description = r.substituteParams(rt.Description)
+	r.Description = r.substituteParams(rt.Description, rt)
 	r.inheritMethods(rt)
 	return nil
 }
@@ -153,8 +150,9 @@ func (r *Resource) assignMethod(m *Method, name string) {
 }
 
 // substituteParams substitute all params inside double chevron to the correct value
-func (r *Resource) substituteParams(words string) string {
+func (r *Resource) substituteParams(words string, rt *ResourceType) string {
 	removeParamBracket := func(param string) string {
+		param = strings.TrimSpace(param)
 		return param[2 : len(param)-2]
 	}
 
@@ -191,9 +189,19 @@ func (r *Resource) getResourceTypeParamValue(param string) string {
 		switch cleanParam {
 		case "resourcePathName":
 			return r.CleanURI()
+		case "resourcePath":
+			log.Fatal("getResourceTypeParamValue unimplemented param name: resourcePath")
 		}
-		return ""
+
+		// get from type parameters
+		val, ok := r.Type.Parameters[cleanParam]
+		if !ok {
+			log.Fatalf("getResourceTypeParamValue unknown param:%v", cleanParam)
+		}
+		return val.(string)
 	}()
+
+	// inflect the value if needed
 	if inflector != "" {
 		var ok bool
 		val, ok = doInflect(val, inflector)

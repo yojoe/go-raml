@@ -41,6 +41,16 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(r.Post, ShouldBeNil)
 		})
 
+		Convey("books - query parameters", func() {
+			r := apiDef.Resources["/books"]
+			So(r, ShouldNotBeNil)
+
+			qps := r.Get.QueryParameters
+			So(qps["title"].Description, ShouldEqual, "Return books that have their title matching the given value")
+			So(qps["digest_all_fields"].Description, ShouldEqual,
+				"If no values match the value given for title, use digest_all_fields instead")
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
