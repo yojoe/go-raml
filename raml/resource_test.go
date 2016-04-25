@@ -18,11 +18,16 @@ func TestResourceTypeInheritance(t *testing.T) {
 
 		Convey("checking users", func() {
 			r := apiDef.Resources["/Users"]
+
 			So(r.URI, ShouldEqual, "/Users")
+			So(r.Description, ShouldEqual, "The collection of Users")
 
 			So(r.Get, ShouldNotBeNil)
+			So(r.Get.Description, ShouldEqual, "Get all Users, optionally filtered")
 			So(r.Get.Responses[200].Bodies.Type, ShouldEqual, "Users")
+
 			So(r.Post, ShouldNotBeNil)
+			So(r.Post.Description, ShouldEqual, "Create a new User")
 			So(r.Post.Responses[200].Bodies.Type, ShouldEqual, "User")
 		})
 

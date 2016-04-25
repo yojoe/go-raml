@@ -7,12 +7,15 @@ types:
   User:
 resourceTypes:
   - collection:
+      description: The collection of <<resourcePathName>>
       get:
+        description: Get all <<resourcePathName>>, optionally filtered
         responses:
           200:
             body:
               type: <<resourcePathName>> # e.g. Users
       post:
+        description: Create a new <<resourcePathName | !singularize>>
         responses:
           200:
             body:

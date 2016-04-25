@@ -4,7 +4,11 @@ import (
 	"strings"
 )
 
-// postProcess assign all properties that can't be obtained from RAML document
+// postProcess doing post processing of a resource after being constructed by the parser.
+// some of the workds:
+// - assign all properties that can't be obtained from RAML document
+// - inherit from resource type
+// - inherit from traits
 func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map[string]ResourceType) error {
 	r.URI = uri
 	r.Parent = parent
@@ -35,6 +39,7 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 	if err != nil || rt == nil {
 		return err
 	}
+	r.Description = r.substituteParams(rt.Description)
 	r.inheritMethods(rt)
 	return nil
 }
@@ -98,8 +103,29 @@ func (r *Resource) setMethods() {
 	}
 }
 
+// substituteParams substitute all params inside double chevron to the correct value
+func (r *Resource) substituteParams(words string) string {
+	removeParamBracket := func(param string) string {
+		return param[2 : len(param)-2]
+	}
+
+	if words == "" {
+		return words
+	}
+
+	// search params
+	params := dcRe.FindAllString(words, -1)
+
+	// substitute the params
+	for _, p := range params {
+		pVal := r.getResourceTypeParamValue(removeParamBracket(p))
+		words = strings.Replace(words, p, pVal, -1)
+	}
+	return words
+}
+
 // get value of a resource type param
-func (r *Resource) getResourceTypeParamValue(param string, rt *ResourceType) string {
+func (r *Resource) getResourceTypeParamValue(param string) string {
 	// split between inflector and real param
 	// real param and inflector is seperated by `|`
 	cleanParam, inflector := func() (string, string) {

@@ -1,15 +1,16 @@
 package raml
 
-import (
-	"regexp"
-	"strings"
-)
-
 // inherit from resource type
+// fields need to be inherited:
+// - description
+// - response
 func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
 	if rtm == nil {
 		return
 	}
+
+	// inherit description
+	m.Description = r.substituteParams(rtm.Description)
 
 	// inherit response
 	if len(m.Responses) == 0 {
@@ -27,17 +28,5 @@ func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType)
 
 // inherit from resource type
 func (resp *Response) inherit(r *Resource, parent Response, rt *ResourceType) {
-	removeParamBracket := func(param string) string {
-		return param[2 : len(param)-2]
-	}
-	// inherit type
-	re, err := regexp.Compile(`\<<([^]]+)\>>`)
-	if err != nil {
-		panic(err)
-	}
-	params := re.FindAllString(parent.Bodies.Type, -1)
-	for _, p := range params {
-		pVal := r.getResourceTypeParamValue(removeParamBracket(p), rt)
-		resp.Bodies.Type = strings.Replace(parent.Bodies.Type, p, pVal, -1)
-	}
+	resp.Bodies.Type = r.substituteParams(parent.Bodies.Type)
 }

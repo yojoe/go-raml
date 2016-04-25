@@ -147,11 +147,6 @@ func (apiDef *APIDefinition) postProcess() {
 
 }
 
-// postProcess assign all properties that can't be obtained from RAML document.
-func (rt *ResourceType) postProcess(name string) {
-	rt.Name = name
-}
-
 // Reads the contents of a file, returns a bytes buffer
 func readFileContents(workingDirectory string, fileName string) ([]byte, error) {
 

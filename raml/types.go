@@ -612,7 +612,7 @@ type Resource struct {
 	// Template URIs containing URI parameters can be used to define a
 	// resource's relative URI when it contains variable elements.
 	// The values matched by URI parameters cannot contain slash (/) characters
-	UriParameters map[string]NamedParameter `yaml:"uriParameters"`
+	URIParameters map[string]NamedParameter `yaml:"uriParameters"`
 
 	// TODO: If a URI parameter in a resource's relative URI is not explicitly
 	// described in a uriParameters property for that resource, it MUST still
