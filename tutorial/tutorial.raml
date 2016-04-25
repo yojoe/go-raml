@@ -1,0 +1,21 @@
+#%RAML 1.0
+title: Notes Example API
+mediaType: application/json
+/resources:
+  displayName: Resources
+  type:
+    searchableCollection:
+      queryParamName: title
+      fallbackParamName: digest_all_fields
+  get:
+    description: Get a resource
+    is:
+      - secured:
+            tokenName: access_token
+        paged:
+            maxPages: 10
+  post:
+    description: Post a resource
+protocols: [HTTP, HTTPS]
+
+
