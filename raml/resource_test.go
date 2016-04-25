@@ -31,6 +31,16 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(r.Post.Responses[200].Bodies.Type, ShouldEqual, "User")
 		})
 
+		Convey("checking queues - optional method", func() {
+			r := apiDef.Resources["/queues"]
+			So(r, ShouldNotBeNil)
+
+			So(r.Get, ShouldNotBeNil)
+			So(r.Get.Description, ShouldEqual, "Get all queues")
+
+			So(r.Post, ShouldBeNil)
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})

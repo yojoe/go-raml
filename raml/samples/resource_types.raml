@@ -26,6 +26,13 @@ resourceTypes:
           200:
             body:
               type: <<resourcePathName>> # e.g. User
+  - corpResource:
+      post?:
+        headers:
+          X-Chargeback:
+            required: true
+      get?:
+        description: Get all <<resourcePathName>>
 #traits:
 #  - secured:
 #      description: Some requests require authentication
@@ -40,5 +47,9 @@ resourceTypes:
   #is: [ secured ]
   get:
     is: [ paged, rateLimited ] # this method is also secured
-  post:                        # this method is also secured
-    description: create users
+
+/queues:
+  type: corpResource
+  get:
+    description: get petok
+  # will not have a post method defined

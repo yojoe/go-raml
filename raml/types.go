@@ -471,6 +471,9 @@ type ResourceType struct {
 	OptionalPut               *ResourceTypeMethod       `yaml:"put?"`
 	OptionalDelete            *ResourceTypeMethod       `yaml:"delete?"`
 	OptionalPatch             *ResourceTypeMethod       `yaml:"patch?"`
+
+	methods         []*ResourceTypeMethod // all non-nil methods
+	optionalMethods []*ResourceTypeMethod // all non-nil optional methods
 }
 
 // A trait-like structure to a security scheme mechanism so as to extend

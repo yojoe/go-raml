@@ -1,5 +1,11 @@
 package raml
 
+func newMethod(name string) *Method {
+	return &Method{
+		Name: name,
+	}
+}
+
 // inherit from resource type
 // fields need to be inherited:
 // - description

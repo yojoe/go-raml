@@ -1,6 +1,7 @@
 package raml
 
 import (
+	"log"
 	"strings"
 )
 
@@ -46,17 +47,26 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 
 // inherit methods inherits all methods based on it's resource type
 func (r *Resource) inheritMethods(rt *ResourceType) {
-	// only inherit methods that also defined in the resource => TODO make sure this assumption is true
-	for _, m := range r.Methods {
-		switch m.Name {
-		case "GET":
-			m.inherit(r, rt.Get, rt)
-		case "POST":
-			m.inherit(r, rt.Post, rt)
-		case "PUT":
-			m.inherit(r, rt.Put, rt)
+	// inherit all methods from resource type
+	// if it doesn't have the methods, we create it
+	for _, rtm := range rt.methods {
+		m := r.MethodByName(rtm.Name)
+		if m == nil {
+			m = newMethod(rtm.Name)
+			r.assignMethod(m, m.Name)
 		}
+		m.inherit(r, rtm, rt)
 	}
+
+	// inherit optional methods if only the resource also has the method
+	for _, rtm := range rt.optionalMethods {
+		m := r.MethodByName(rtm.Name)
+		if m == nil {
+			continue
+		}
+		m.inherit(r, rtm, rt)
+	}
+
 }
 
 // get resource type from which this resource will inherit
@@ -100,6 +110,45 @@ func (r *Resource) setMethods() {
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
 		r.Methods = append(r.Methods, r.Delete)
+	}
+}
+
+// MethodByName return resource's method by it's name
+func (r *Resource) MethodByName(name string) *Method {
+	switch name {
+	case "GET":
+		return r.Get
+	case "POST":
+		return r.Post
+	case "PUT":
+		return r.Put
+	case "PATCH":
+		return r.Patch
+	case "HEAD":
+		return r.Head
+	case "DELETE":
+		return r.Delete
+	default:
+		return nil
+	}
+}
+
+func (r *Resource) assignMethod(m *Method, name string) {
+	switch name {
+	case "GET":
+		r.Get = m
+	case "POST":
+		r.Post = m
+	case "PUT":
+		r.Put = m
+	case "PATCH":
+		r.Patch = m
+	case "HEAD":
+		r.Head = m
+	case "DELETE":
+		r.Delete = m
+	default:
+		log.Fatalf("assignMethod fatal error, invalid method name:%v", name)
 	}
 }
 
