@@ -28,6 +28,7 @@ func TestResourceTypeInheritance(t *testing.T) {
 
 			So(r.Post, ShouldNotBeNil)
 			So(r.Post.Description, ShouldEqual, "Create a new User")
+			So(r.Post.Bodies.ApplicationJson.Type, ShouldEqual, "User")
 			So(r.Post.Responses[200].Bodies.Type, ShouldEqual, "User")
 		})
 
@@ -39,6 +40,22 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(r.Get.Description, ShouldEqual, "Get all queues")
 
 			So(r.Post, ShouldBeNil)
+		})
+
+		Convey("checking corps - header - resourcePath - request body", func() {
+			r := apiDef.Resources["/corps"]
+			So(r, ShouldNotBeNil)
+
+			So(r.Post, ShouldNotBeNil)
+
+			props := r.Post.Bodies.ApplicationJson.Properties
+			So(ToProperty("name", props["name"]).Type, ShouldEqual, "string")
+			So(ToProperty("age", props["age"]).Type, ShouldEqual, "int")
+			So(r.Post.Headers["X-Chargeback"].Required, ShouldBeTrue)
+
+			mem := r.Nested["/{id}"]
+			So(mem, ShouldNotBeNil)
+			So(mem.Get.Description, ShouldEqual, "get /corps/{id}")
 		})
 
 		Convey("books - query parameters", func() {

@@ -16,18 +16,27 @@ resourceTypes:
               type: <<resourcePathName>> # e.g. Users
       post:
         description: Create a new <<resourcePathName | !singularize>>
+        body:
+          application/json:
+            type: <<resourcePathName | !singularize>>
         responses:
           200:
             body:
               type: <<resourcePathName | !singularize>>  # e.g. User
   - member:
       get:
+        description : get <<resourcePath>>
         responses:
           200:
             body:
               type: <<resourcePathName>> # e.g. User
   - corpResource:
       post?:
+        body:
+          application/json:
+            properties:
+              name: string
+              age: int
         headers:
           X-Chargeback:
             required: true
@@ -60,6 +69,13 @@ resourceTypes:
   get:
     description: get petok
   # will not have a post method defined
+
+/corps:
+  type: corpResource
+  post:
+    description: create corp
+  /{id}:
+    type: member
 
 /books:
   type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }

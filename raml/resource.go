@@ -2,6 +2,7 @@ package raml
 
 import (
 	"log"
+	"path/filepath"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ import (
 // - inherit from resource type
 // - inherit from traits
 func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map[string]ResourceType) error {
-	r.URI = uri
+	r.URI = strings.TrimSpace(uri)
 	r.Parent = parent
 
 	r.setMethods()
@@ -37,8 +38,24 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 	if err != nil || rt == nil {
 		return err
 	}
-	r.Description = r.substituteParams(rt.Description, rt)
+	r.Description = r.substituteParams(r.Description, rt.Description)
+
+	// uri parameters
+	if len(r.URIParameters) == 0 {
+		r.URIParameters = map[string]NamedParameter{}
+	}
+	for name, up := range rt.URIParameters {
+		p, ok := r.URIParameters[name]
+		if !ok {
+			p = NamedParameter{}
+		}
+		p.inherit(up, r)
+		r.URIParameters[name] = p
+	}
+
+	// methods
 	r.inheritMethods(rt)
+
 	return nil
 }
 
@@ -150,14 +167,14 @@ func (r *Resource) assignMethod(m *Method, name string) {
 }
 
 // substituteParams substitute all params inside double chevron to the correct value
-func (r *Resource) substituteParams(words string, rt *ResourceType) string {
+func (r *Resource) substituteParams(toReplace, words string) string {
+	if words == "" {
+		return toReplace
+	}
+
 	removeParamBracket := func(param string) string {
 		param = strings.TrimSpace(param)
 		return param[2 : len(param)-2]
-	}
-
-	if words == "" {
-		return words
 	}
 
 	// search params
@@ -190,7 +207,7 @@ func (r *Resource) getResourceTypeParamValue(param string) string {
 		case "resourcePathName":
 			return r.CleanURI()
 		case "resourcePath":
-			log.Fatal("getResourceTypeParamValue unimplemented param name: resourcePath")
+			return r.FullURI()
 		}
 
 		// get from type parameters
@@ -219,4 +236,17 @@ func (r *Resource) CleanURI() string {
 	s = strings.Replace(s, "{", "", -1)
 	s = strings.Replace(s, "}", "", -1)
 	return strings.TrimSpace(s)
+}
+
+// FullURI returns full/absolute URI of this resource
+func (r *Resource) FullURI() string {
+	return doFullURI(r, "")
+}
+
+func doFullURI(r *Resource, completeURI string) string {
+	completeURI = filepath.Join(r.URI, completeURI)
+	if r.Parent == nil {
+		return completeURI
+	}
+	return doFullURI(r.Parent, completeURI)
 }

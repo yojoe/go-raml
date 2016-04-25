@@ -16,7 +16,24 @@ func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType)
 	}
 
 	// inherit description
-	m.Description = r.substituteParams(rtm.Description, rt)
+	m.Description = r.substituteParams(m.Description, rtm.Description)
+
+	// inherit bodies
+	m.Bodies.inherit(rtm.Bodies, r, rt)
+
+	// inherit headers
+	if len(m.Headers) == 0 {
+		m.Headers = map[HTTPHeader]Header{}
+	}
+	for name, ph := range rtm.Headers {
+		h, ok := m.Headers[name]
+		if !ok {
+			h = Header{}
+		}
+		np := NamedParameter(h)
+		np.inherit(NamedParameter(ph), r)
+		m.Headers[name] = Header(np)
+	}
 
 	// inherit query params
 	if len(m.QueryParameters) == 0 {
@@ -39,20 +56,25 @@ func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType)
 		resp.inherit(r, rParent, rt)
 		m.Responses[code] = resp
 	}
+
+	// inherit protocols
+	for _, p := range rtm.Protocols {
+		m.Protocols = appendStrNotExist(p, m.Protocols)
+	}
 }
 
 // inherit from resource type
 func (resp *Response) inherit(r *Resource, parent Response, rt *ResourceType) {
-	resp.Bodies.Type = r.substituteParams(parent.Bodies.Type, rt)
+	resp.Bodies.Type = r.substituteParams(resp.Bodies.Type, parent.Bodies.Type)
 }
 
 // create new query params from another query params owned by resource type
 func newQueryParam(r *Resource, rt *ResourceType, rtm *ResourceTypeMethod, name string, params NamedParameter) NamedParameter {
 	return NamedParameter{
-		Name:        r.substituteParams(name, rt),
-		DisplayName: r.substituteParams(params.DisplayName, rt),
-		Description: r.substituteParams(params.Description, rt),
-		Type:        r.substituteParams(params.Type, rt),
+		Name:        r.substituteParams("", name),
+		DisplayName: r.substituteParams("", params.DisplayName),
+		Description: r.substituteParams("", params.Description),
+		Type:        r.substituteParams("", params.Type),
 		Enum:        params.Enum,
 		Pattern:     params.Pattern,
 		MinLength:   params.MinLength,
@@ -64,5 +86,23 @@ func newQueryParam(r *Resource, rt *ResourceType, rtm *ResourceTypeMethod, name 
 		Required:    params.Required,
 		Default:     params.Default,
 		format:      params.format,
+	}
+}
+
+func (b *Bodies) inherit(parent Bodies, r *Resource, rt *ResourceType) {
+	b.DefaultSchema = r.substituteParams(b.DefaultSchema, parent.DefaultSchema)
+	b.DefaultDescription = r.substituteParams(b.DefaultDescription, parent.DefaultDescription)
+	b.DefaultExample = r.substituteParams(b.DefaultExample, parent.DefaultExample)
+
+	b.Type = r.substituteParams(b.Type, parent.Type)
+
+	if parent.ApplicationJson != nil {
+		if b.ApplicationJson == nil {
+			b.ApplicationJson = &BodiesProperty{Properties: map[string]interface{}{}}
+		}
+		b.ApplicationJson.Type = r.substituteParams(b.ApplicationJson.Type, parent.ApplicationJson.Type)
+		for k, p := range parent.ApplicationJson.Properties {
+			b.ApplicationJson.Properties[k] = p
+		}
 	}
 }
