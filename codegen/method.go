@@ -34,10 +34,10 @@ func (m method) Resource() *raml.Resource {
 	return m.resource
 }
 
-func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint string) method {
+func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) method {
 	method := method{
 		Method:   m,
-		Endpoint: parentEndpoint + curEndpoint,
+		Endpoint: r.FullURI(),
 		verb:     strings.ToUpper(methodName),
 		resource: r,
 	}
@@ -62,9 +62,9 @@ func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, pa
 
 // create server resource's method
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
-	methodName, parentEndpoint, curEndpoint, lang string) methodInterface {
+	methodName, lang string) methodInterface {
 
-	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+	method := newMethod(r, rd, m, methodName)
 
 	// security scheme
 	if len(m.SecuredBy) > 0 {
@@ -94,8 +94,8 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceD
 }
 
 // create client resource's method
-func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) (methodInterface, error) {
-	method := newMethod(r, rd, m, methodName, parentEndpoint, curEndpoint)
+func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, lang string) (methodInterface, error) {
+	method := newMethod(r, rd, m, methodName)
 
 	method.ResourcePath = paramizingURI(method.Endpoint)
 

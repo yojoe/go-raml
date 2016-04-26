@@ -40,9 +40,9 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 	// creates base client struct
 	cd := newClientDef(apiDef)
 
-	for k, v := range apiDef.Resources {
+	for _, v := range apiDef.Resources {
 		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), "main")
-		rd.generateMethods(&v, "", k, lang)
+		rd.generateMethods(&v, lang)
 		cd.Methods = append(cd.Methods, rd.Methods...)
 	}
 
