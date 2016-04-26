@@ -36,7 +36,7 @@ func newResourceDef(apiDef *raml.APIDefinition, endpoint, packageName string) re
 }
 
 // add a method to resource definition
-func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, parentEndpoint, curEndpoint, lang string) {
+func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, lang string) {
 	var im methodInterface
 	var err error
 
@@ -45,9 +45,9 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 	}
 
 	if rd.IsServer {
-		im = newServerMethod(rd.APIDef, r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
+		im = newServerMethod(rd.APIDef, r, rd, m, methodName, lang)
 	} else {
-		im, err = newClientMethod(r, rd, m, methodName, parentEndpoint, curEndpoint, lang)
+		im, err = newClientMethod(r, rd, m, methodName, lang)
 		if err != nil {
 			log.Errorf("client interface method error, err = %v", err)
 			return
@@ -57,14 +57,14 @@ func (rd *resourceDef) addMethod(r *raml.Resource, m *raml.Method, methodName, p
 }
 
 // generate all methods of a resource recursively
-func (rd *resourceDef) generateMethods(r *raml.Resource, parentEndpoint, curEndpoint, lang string) {
-	rd.addMethod(r, r.Get, "Get", parentEndpoint, curEndpoint, lang)
-	rd.addMethod(r, r.Post, "Post", parentEndpoint, curEndpoint, lang)
-	rd.addMethod(r, r.Put, "Put", parentEndpoint, curEndpoint, lang)
-	rd.addMethod(r, r.Patch, "Patch", parentEndpoint, curEndpoint, lang)
-	rd.addMethod(r, r.Delete, "Delete", parentEndpoint, curEndpoint, lang)
+func (rd *resourceDef) generateMethods(r *raml.Resource, lang string) {
+	rd.addMethod(r, r.Get, "Get", lang)
+	rd.addMethod(r, r.Post, "Post", lang)
+	rd.addMethod(r, r.Put, "Put", lang)
+	rd.addMethod(r, r.Patch, "Patch", lang)
+	rd.addMethod(r, r.Delete, "Delete", lang)
 
-	for k, v := range r.Nested {
-		rd.generateMethods(v, parentEndpoint+curEndpoint, k, lang)
+	for _, v := range r.Nested {
+		rd.generateMethods(v, lang)
 	}
 }

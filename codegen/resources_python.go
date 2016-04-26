@@ -38,7 +38,7 @@ func (pr *pythonResource) setMiddlewares() {
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
-	pr.generateMethods(r, "", URI, "python")
+	pr.generateMethods(r, "python")
 	pr.setMiddlewares()
 	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
 	return generateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
