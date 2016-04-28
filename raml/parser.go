@@ -45,7 +45,8 @@ import (
 	"github.com/kr/pretty"
 )
 
-// Parse a RAML file. Returns a raml.APIDefinition value or an error if
+// ParseFile parses an RAML file.
+// Returns a raml.APIDefinition value or an error if
 // everything is something went wrong.
 // This is the main entry point to the RAML parser.
 func ParseFile(filePath string) (*APIDefinition, error) {
@@ -65,23 +66,23 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 
 	// Verify the YAML version
 	var ramlVersion string
-	if firstLine, err := mainFileBuffer.ReadString('\n'); err != nil {
+	firstLine, err := mainFileBuffer.ReadString('\n')
+	if err != nil {
 		return nil, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
-	} else {
+	}
 
-		// We read some data...
-		if len(firstLine) >= 10 {
-			ramlVersion = firstLine[:10]
-		}
+	// We read some data...
+	if len(firstLine) >= 10 {
+		ramlVersion = firstLine[:10]
+	}
 
-		// TODO: Make this smart. We probably won't support multiple RAML
-		// versions in the same package - we'll have different branches
-		// for different versions. This one is hard-coded to 0.8.
-		// Still, would be good to think about this.
-		if ramlVersion != "#%RAML 1.0" {
-			return nil, errors.New("Input file is not a RAML 1.0 file. Make " +
-				"sure the file starts with #%RAML 1.0")
-		}
+	// TODO: Make this smart. We probably won't support multiple RAML
+	// versions in the same package - we'll have different branches
+	// for different versions. This one is hard-coded to 0.8.
+	// Still, would be good to think about this.
+	if ramlVersion != "#%RAML 1.0" {
+		return nil, errors.New("Input file is not a RAML 1.0 file. Make " +
+			"sure the file starts with #%RAML 1.0")
 	}
 
 	// Pre-process the original file, following !include directive
