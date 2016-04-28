@@ -170,7 +170,14 @@ func (r *Resource) assignMethod(m *Method, name string) {
 }
 
 // substituteParams substitute all params inside double chevron to the correct value
+// param value will be obtained resource's resource type parameters
 func (r *Resource) substituteParams(toReplace, words string) string {
+	return substituteParams(r, toReplace, words, r.Type.Parameters)
+}
+
+// substituteParams substitute all params inside double chevron to the correct value
+// param value will be obtained from dicts map
+func substituteParams(r *Resource, toReplace, words string, dicts map[string]interface{}) string {
 	if words == "" {
 		return toReplace
 	}
@@ -185,14 +192,14 @@ func (r *Resource) substituteParams(toReplace, words string) string {
 
 	// substitute the params
 	for _, p := range params {
-		pVal := r.getResourceTypeParamValue(removeParamBracket(p))
+		pVal := getParamValue(r, removeParamBracket(p), dicts)
 		words = strings.Replace(words, p, pVal, -1)
 	}
 	return words
 }
 
 // get value of a resource type param
-func (r *Resource) getResourceTypeParamValue(param string) string {
+func getParamValue(res *Resource, param string, dicts map[string]interface{}) string {
 	// split between inflector and real param
 	// real param and inflector is seperated by `|`
 	cleanParam, inflector := func() (string, string) {
@@ -208,13 +215,13 @@ func (r *Resource) getResourceTypeParamValue(param string) string {
 		// check reserved params
 		switch cleanParam {
 		case "resourcePathName":
-			return r.CleanURI()
+			return res.CleanURI()
 		case "resourcePath":
-			return r.FullURI()
+			return res.FullURI()
 		}
 
 		// get from type parameters
-		val, ok := r.Type.Parameters[cleanParam]
+		val, ok := dicts[cleanParam]
 		if !ok {
 			log.Fatalf("getResourceTypeParamValue unknown param:%v", cleanParam)
 		}
