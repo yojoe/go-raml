@@ -128,14 +128,25 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 }
 
 func (apiDef *APIDefinition) postProcess() {
-	// resource types
-	for i, rts := range apiDef.ResourceTypes {
-		for k := range rts {
-			rt := rts[k]
-			rt.postProcess(k)
-			rts[k] = rt
+	// traits
+	for i, tMap := range apiDef.Traits {
+		for name := range tMap {
+			t := tMap[name]
+			t.postProcess(name)
+			tMap[name] = t
+			traitsMap[name] = t // add to global traits map
 		}
-		apiDef.ResourceTypes[i] = rts
+		apiDef.Traits[i] = tMap
+	}
+
+	// resource types
+	for i, rtMap := range apiDef.ResourceTypes {
+		for name := range rtMap {
+			rt := rtMap[name]
+			rt.postProcess(name)
+			rtMap[name] = rt
+		}
+		apiDef.ResourceTypes[i] = rtMap
 	}
 
 	// resources

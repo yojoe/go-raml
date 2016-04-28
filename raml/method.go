@@ -1,5 +1,9 @@
 package raml
 
+import (
+	"fmt"
+)
+
 func newMethod(name string) *Method {
 	return &Method{
 		Name: name,
@@ -10,7 +14,7 @@ func newMethod(name string) *Method {
 // fields need to be inherited:
 // - description
 // - response
-func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
+func (m *Method) inheritResourceType(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
 	if rtm == nil {
 		return
 	}
@@ -61,6 +65,27 @@ func (m *Method) inherit(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType)
 	for _, p := range rtm.Protocols {
 		m.Protocols = appendStrNotExist(p, m.Protocols)
 	}
+}
+
+// inherit from all traits
+func (m *Method) inheritAllTraits() error {
+	for _, tDef := range m.Is {
+		// acquire traits object
+		t, ok := traitsMap[tDef.Name]
+		if !ok {
+			return fmt.Errorf("invalid traits name:%v", tDef.Name)
+		}
+
+		if err := m.inheritTraits(&t, tDef.Parameters); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// inherit from a trait
+func (m *Method) inheritTraits(t *Trait, params map[string]interface{}) error {
+	return nil
 }
 
 // inherit from resource type

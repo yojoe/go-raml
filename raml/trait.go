@@ -1,12 +1,20 @@
 package raml
 
+var (
+	// global map of traits for easy access
+	traitsMap map[string]Trait
+)
+
+func init() {
+	traitsMap = map[string]Trait{}
+}
+
 // A Trait is a partial method definition that, like a method, can provide
 // method-level properties such as description, headers, query string
 // parameters, and responses. Methods that use one or more traits inherit
 // those traits' properties.
 type Trait struct {
 	Name string
-	// TODO: Fill this during the post-processing phase
 
 	// The usage property of a resource type or trait is used to describe how
 	// the resource type or trait should be used
@@ -45,4 +53,8 @@ type Trait struct {
 	OptionalHeaders         map[HTTPHeader]Header     `yaml:"headers?"`
 	OptionalResponses       map[HTTPCode]Response     `yaml:"responses?"`
 	OptionalQueryParameters map[string]NamedParameter `yaml:"queryParameters?"`
+}
+
+func (t *Trait) postProcess(name string) {
+	t.Name = name
 }

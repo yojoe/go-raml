@@ -34,9 +34,9 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 
 // inherit from a resource type
 func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) error {
-	rt, err := r.getResourceType(resourceTypes)
-	if err != nil || rt == nil {
-		return err
+	rt := r.getResourceType(resourceTypes)
+	if rt == nil {
+		return nil
 	}
 	r.Description = r.substituteParams(r.Description, rt.Description)
 
@@ -69,7 +69,7 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 			m = newMethod(rtm.Name)
 			r.assignMethod(m, m.Name)
 		}
-		m.inherit(r, rtm, rt)
+		m.inheritResourceType(r, rtm, rt)
 	}
 
 	// inherit optional methods if only the resource also has the method
@@ -78,24 +78,27 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 		if m == nil {
 			continue
 		}
-		m.inherit(r, rtm, rt)
+		m.inheritResourceType(r, rtm, rt)
 	}
 
 }
 
 // get resource type from which this resource will inherit
-func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) (*ResourceType, error) {
+func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) *ResourceType {
+	// check if it's specify a resource type to inherit
 	if r.Type == nil || r.Type.Name == "" {
-		return nil, nil
+		return nil
 	}
+
+	// get resource type from array of resource type map
 	for _, rts := range resourceTypes {
 		for k, rt := range rts {
 			if k == r.Type.Name {
-				return &rt, nil
+				return &rt
 			}
 		}
 	}
-	return nil, nil
+	return nil
 }
 
 // set methods set all methods name
