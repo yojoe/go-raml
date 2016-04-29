@@ -49,25 +49,38 @@ resourceTypes:
            description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
          <<fallbackParamName>>:
            description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
-#traits:
-#  - secured:
-#      description: Some requests require authentication
-#      queryParameters:
-#        <<methodName>>: # e.g. get:
-#          description: A <<methodName>>-token pair is required  # e.g. A get-token pair...
-#          example: <<methodName>>=h8duh3uhhu38   # e.g. get=h8duh3uhhu38
-
+         platform:
+           enum:
+             - win
+             - mac
+traits:
+  - secured:
+     description: requests to <<methodName>> require authentication
+     queryParameters:
+       <<tokenName>>:
+         description: A valid <<tokenName>> is required
+  - paged:
+      queryParameters:
+        numPages:
+          description: The number of pages to return, not to exceed <<maxPages>>
+  - hasPayload:
+      body:
+        application/json:
+          properties:
+            name:
+            address\?:
+            location?:
 
 /Users:
   type: collection
   #is: [ secured ]
   get:
-    is: [ paged, rateLimited ] # this method is also secured
+    is: [ paged : { maxPages: 10}, rateLimited ] # this method is also secured
 
 /queues:
   type: corpResource
   get:
-    description: get petok
+    displayName: get
   # will not have a post method defined
 
 /corps:
@@ -80,5 +93,16 @@ resourceTypes:
 /books:
   type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
   get:
-    description : get all books
-    # is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]
+    displayName : get all books
+    is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]
+    queryParameters:
+      platform: #the actual enum is [ mac, unix, win ]
+        enum:
+          - mac
+          - unix
+
+/servers:
+  post:
+    is: [ hasPayload ]
+    # will have application/json body with 'name' required property,
+    # 'address' optional property, but without 'location' property

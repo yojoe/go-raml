@@ -1,19 +1,14 @@
 package raml
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestResourceTypeInheritance(t *testing.T) {
-	Convey("resource type inheritance", t, func() {
+	Convey("resource type & traits inheritance", t, func() {
 		apiDef, err := ParseFile("./samples/resource_types.raml")
-		So(err, ShouldBeNil)
-
-		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("checking users", func() {
@@ -66,10 +61,34 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(qps["title"].Description, ShouldEqual, "Return books that have their title matching the given value")
 			So(qps["digest_all_fields"].Description, ShouldEqual,
 				"If no values match the value given for title, use digest_all_fields instead")
+
+			// collection merging
+			So(qps["platform"].Enum, ShouldContain, "mac")
+			So(qps["platform"].Enum, ShouldContain, "unix")
+			So(qps["platform"].Enum, ShouldContain, "win")
 		})
 
-		Reset(func() {
-			os.RemoveAll(targetDir)
+		Convey("query parameters traits", func() {
+			r := apiDef.Resources["/books"]
+			So(r, ShouldNotBeNil)
+
+			qps := r.Get.QueryParameters
+			So(qps["numPages"].Description, ShouldEqual, "The number of pages to return, not to exceed 10")
+
+			So(qps["access_token"].Description, ShouldEqual, "A valid access_token is required")
+
+		})
+
+		Convey("request body traits", func() {
+			r := apiDef.Resources["/servers"]
+			So(r, ShouldNotBeNil)
+
+			props := r.Post.Bodies.ApplicationJson.Properties
+
+			So(props, ShouldContainKey, "name")
+			So(props, ShouldContainKey, "address?")
+			So(props, ShouldNotContainKey, "location?")
+			So(props, ShouldNotContainKey, "location")
 		})
 
 	})

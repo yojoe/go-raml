@@ -1,6 +1,7 @@
 package raml
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -34,11 +35,16 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 
 // inherit from a resource type
 func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) error {
-	rt, err := r.getResourceType(resourceTypes)
-	if err != nil || rt == nil {
-		return err
+	// get resource type object to inherit
+	rt := r.getResourceType(resourceTypes)
+	if rt == nil {
+		return nil
 	}
-	r.Description = r.substituteParams(r.Description, rt.Description)
+
+	// initialize dicts
+	dicts := initResourceTypeDicts(r, r.Type.Parameters)
+
+	r.Description = substituteParams(r.Description, rt.Description, dicts)
 
 	// uri parameters
 	if len(r.URIParameters) == 0 {
@@ -49,7 +55,7 @@ func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) 
 		if !ok {
 			p = NamedParameter{}
 		}
-		p.inherit(up, r)
+		p.inherit(up, dicts)
 		r.URIParameters[name] = p
 	}
 
@@ -69,7 +75,7 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 			m = newMethod(rtm.Name)
 			r.assignMethod(m, m.Name)
 		}
-		m.inherit(r, rtm, rt)
+		m.inheritFromResourceType(r, rtm, rt)
 	}
 
 	// inherit optional methods if only the resource also has the method
@@ -78,24 +84,27 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 		if m == nil {
 			continue
 		}
-		m.inherit(r, rtm, rt)
+		m.inheritFromResourceType(r, rtm, rt)
 	}
 
 }
 
 // get resource type from which this resource will inherit
-func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) (*ResourceType, error) {
+func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) *ResourceType {
+	// check if it's specify a resource type to inherit
 	if r.Type == nil || r.Type.Name == "" {
-		return nil, nil
+		return nil
 	}
+
+	// get resource type from array of resource type map
 	for _, rts := range resourceTypes {
 		for k, rt := range rts {
 			if k == r.Type.Name {
-				return &rt, nil
+				return &rt
 			}
 		}
 	}
-	return nil, nil
+	return nil
 }
 
 // set methods set all methods name
@@ -103,26 +112,32 @@ func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) (*Re
 func (r *Resource) setMethods() {
 	if r.Get != nil {
 		r.Get.Name = "GET"
+		r.Get.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Get)
 	}
 	if r.Post != nil {
 		r.Post.Name = "POST"
+		r.Post.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Post)
 	}
 	if r.Put != nil {
 		r.Put.Name = "PUT"
+		r.Put.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Put)
 	}
 	if r.Patch != nil {
 		r.Patch.Name = "PATCH"
+		r.Patch.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Patch)
 	}
 	if r.Head != nil {
 		r.Head.Name = "HEAD"
+		r.Head.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Head)
 	}
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
+		r.Delete.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Delete)
 	}
 }
@@ -167,7 +182,13 @@ func (r *Resource) assignMethod(m *Method, name string) {
 }
 
 // substituteParams substitute all params inside double chevron to the correct value
-func (r *Resource) substituteParams(toReplace, words string) string {
+// param value will be obtained from dicts map
+func substituteParams(toReplace, words string, dicts map[string]interface{}) string {
+	// non empty scalar node remain unchanged
+	// except it has double chevron bracket
+	if toReplace != "" && (strings.Index(toReplace, "<<") < 0 && strings.Index(toReplace, ">>") < 0) {
+		return toReplace
+	}
 	if words == "" {
 		return toReplace
 	}
@@ -182,14 +203,14 @@ func (r *Resource) substituteParams(toReplace, words string) string {
 
 	// substitute the params
 	for _, p := range params {
-		pVal := r.getResourceTypeParamValue(removeParamBracket(p))
+		pVal := getParamValue(removeParamBracket(p), dicts)
 		words = strings.Replace(words, p, pVal, -1)
 	}
 	return words
 }
 
 // get value of a resource type param
-func (r *Resource) getResourceTypeParamValue(param string) string {
+func getParamValue(param string, dicts map[string]interface{}) string {
 	// split between inflector and real param
 	// real param and inflector is seperated by `|`
 	cleanParam, inflector := func() (string, string) {
@@ -202,20 +223,12 @@ func (r *Resource) getResourceTypeParamValue(param string) string {
 
 	// get the value
 	val := func() string {
-		// check reserved params
-		switch cleanParam {
-		case "resourcePathName":
-			return r.CleanURI()
-		case "resourcePath":
-			return r.FullURI()
-		}
-
 		// get from type parameters
-		val, ok := r.Type.Parameters[cleanParam]
+		val, ok := dicts[cleanParam]
 		if !ok {
-			log.Fatalf("getResourceTypeParamValue unknown param:%v", cleanParam)
+			log.Fatalf("getParamValue unknown param:%v, dicts=%v", cleanParam, dicts)
 		}
-		return val.(string)
+		return fmt.Sprintf("%v", val)
 	}()
 
 	// inflect the value if needed

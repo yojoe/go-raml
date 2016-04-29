@@ -214,76 +214,6 @@ func (dc *DefinitionChoice) UnmarshalYAML(unmarshaler func(interface{}) error) e
 	return err
 }
 
-// A trait is a partial method definition that, like a method, can provide
-// method-level properties such as description, headers, query string
-// parameters, and responses. Methods that use one or more traits inherit
-// those traits' properties.
-type Trait struct {
-
-	// TODO: Parameters MUST be indicated in resource type and trait definitions
-	// by double angle brackets (double chevrons) enclosing the parameter name;
-	// for example, "<<tokenName>>".
-
-	// TODO: Auto-fill the methodName parameter
-
-	// TODO: In trait definitions, there is one reserved parameter name,
-	// methodName, in addition to the resourcePath and resourcePathName. The
-	// processing application MUST set the value of the methodName parameter
-	// to the inheriting method's name. The processing application MUST set
-	// the values of the resourcePath and resourcePathName parameters the same
-	// as in resource type definitions.
-
-	// TODO: Parameter values MAY further be transformed by applying one of
-	// the following functions:
-	// * The !singularize function MUST act on the value of the parameter
-	// by a locale-specific singularization of its original value. The only
-	// locale supported by this version of RAML is United States English.
-	// * The !pluralize function MUST act on the value of the parameter by a
-	// locale-specific pluralization of its original value. The only locale
-	// supported by this version of RAML is United States English.
-
-	Name string
-	// TODO: Fill this during the post-processing phase
-
-	// The usage property of a resource type or trait is used to describe how
-	// the resource type or trait should be used
-	Usage string
-
-	// Briefly describes what the method does to the resource
-	Description string
-
-	// As in Method.
-	Bodies Bodies `yaml:"body"`
-
-	// As in Method.
-	Headers map[HTTPHeader]Header `yaml:"headers"`
-
-	// As in Method.
-	Responses map[HTTPCode]Response `yaml:"responses"`
-
-	// As in Method.
-	QueryParameters map[string]NamedParameter `yaml:"queryParameters"`
-
-	// As in Method.
-	Protocols []string `yaml:"protocols"`
-
-	// When defining resource types and traits, it can be useful to capture
-	// patterns that manifest several levels below the inheriting resource or
-	// method, without requiring the creation of the intermediate levels.
-	// For example, a resource type definition may describe a body parameter
-	// that will be used if the API defines a post method for that resource,
-	// but the processing application should not create the post method itself.
-	//
-	// This optional structure key indicates that the value of the property
-	// should be applied if the property name itself (without the question
-	// mark) is already defined (whether explicitly or implicitly) at the
-	// corresponding level in that resource or method.
-	OptionalBodies          Bodies                    `yaml:"body?"`
-	OptionalHeaders         map[HTTPHeader]Header     `yaml:"headers?"`
-	OptionalResponses       map[HTTPCode]Response     `yaml:"responses?"`
-	OptionalQueryParameters map[string]NamedParameter `yaml:"queryParameters?"`
-}
-
 // A trait-like structure to a security scheme mechanism so as to extend
 // the mechanism, such as specifying response codes, HTTP headers or custom
 // documentation.
@@ -582,9 +512,7 @@ type APIDefinition struct {
 	// of elements, each of which MUST be a) one or more trait keys (names)
 	// included in the traits declaration, or b) one or more trait definition
 	// maps.
-	// []map[TraitName]Trait
-	Traits map[string]Trait `yaml:"traits"`
-	// TODO: Flatten the arrays of maps here.
+	Traits []map[string]Trait `yaml:"traits"`
 
 	// The resourceTypes and traits properties are declared at the API
 	// definition's root level with the resourceTypes and traits property keys,
@@ -651,7 +579,6 @@ func ToProperty(name string, p interface{}) Property {
 	// convert from map of interface to property
 	mapToProperty := func(val map[interface{}]interface{}) Property {
 		var p Property
-		// fix `required` default value is `false` problem.
 		p.Required = true
 		for k, v := range val {
 			switch k {
@@ -692,12 +619,10 @@ func ToProperty(name string, p interface{}) Property {
 		return p
 	}
 
-	var prop Property
+	prop := Property{Required: true}
 	switch p.(type) {
 	case string:
-		prop = Property{Type: p.(string)}
-		// when struct is `field: type`, set required default true
-		prop.Required = true
+		prop.Type = p.(string)
 	case map[interface{}]interface{}:
 		prop = mapToProperty(p.(map[interface{}]interface{}))
 	case Property:
