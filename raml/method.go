@@ -85,12 +85,17 @@ func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]inter
 // inheritHeaders inherit method's headers from parent headers.
 // parent headers could be from resource type or a trait
 func (m *Method) inheritHeaders(parents map[HTTPHeader]Header, dicts map[string]interface{}) {
-	if len(m.Headers) == 0 {
-		m.Headers = map[HTTPHeader]Header{}
+	m.Headers = inheritHeaders(m.Headers, parents, dicts)
+}
+
+// inheritHeaders inherits headers from parents to childs
+func inheritHeaders(childs, parents map[HTTPHeader]Header, dicts map[string]interface{}) map[HTTPHeader]Header {
+	if len(childs) == 0 {
+		childs = map[HTTPHeader]Header{}
 	}
 
 	for name, parent := range parents {
-		h, ok := m.Headers[name]
+		h, ok := childs[name]
 		if !ok {
 			if optionalTraitProperty(string(name)) { // don't inherit optional property if not exist
 				continue
@@ -100,8 +105,9 @@ func (m *Method) inheritHeaders(parents map[HTTPHeader]Header, dicts map[string]
 		parent.Name = string(name)
 		np := NamedParameter(h)
 		np.inherit(NamedParameter(parent), dicts)
-		m.Headers[name] = Header(np)
+		childs[name] = Header(np)
 	}
+	return childs
 }
 
 // inheritQueryParams inherit method's query params from parent query params.
@@ -142,7 +148,10 @@ func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string
 	for code, rParent := range parent {
 		resp, ok := m.Responses[code]
 		if !ok {
-			resp = Response{}
+			if optionalTraitProperty(fmt.Sprintf("%v", code)) { // don't inherit optional property if not exist
+				continue
+			}
+			resp = Response{HTTPCode: code}
 		}
 		resp.inherit(rParent, dicts)
 		m.Responses[code] = resp
@@ -152,7 +161,9 @@ func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string
 
 // inherit from parent response
 func (resp *Response) inherit(parent Response, dicts map[string]interface{}) {
-	resp.Bodies.Type = substituteParams(resp.Bodies.Type, parent.Bodies.Type, dicts)
+	resp.Description = substituteParams(resp.Description, parent.Description, dicts)
+	resp.Bodies.inherit(parent.Bodies, dicts)
+	resp.Headers = inheritHeaders(resp.Headers, parent.Headers, dicts)
 }
 
 // inherit inherits bodies properties from a parent bodies
