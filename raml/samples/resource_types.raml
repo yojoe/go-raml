@@ -49,6 +49,10 @@ resourceTypes:
            description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
          <<fallbackParamName>>:
            description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
+         platform:
+           enum:
+             - win
+             - mac
 traits:
   - secured:
      description: requests to <<methodName>> require authentication
@@ -91,6 +95,11 @@ traits:
   get:
     displayName : get all books
     is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]
+    queryParameters:
+      platform: #the actual enum is [ mac, unix, win ]
+        enum:
+          - mac
+          - unix
 
 /servers:
   post:

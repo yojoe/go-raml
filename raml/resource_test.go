@@ -61,6 +61,11 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(qps["title"].Description, ShouldEqual, "Return books that have their title matching the given value")
 			So(qps["digest_all_fields"].Description, ShouldEqual,
 				"If no values match the value given for title, use digest_all_fields instead")
+
+			// collection merging
+			So(qps["platform"].Enum, ShouldContain, "mac")
+			So(qps["platform"].Enum, ShouldContain, "unix")
+			So(qps["platform"].Enum, ShouldContain, "win")
 		})
 
 		Convey("query parameters traits", func() {
