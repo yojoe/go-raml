@@ -5,7 +5,7 @@ import (
 )
 
 type UsersIdGetRespBody struct {
-	ID  string `json:"ID,omitempty"`
+	ID  string `json:"ID" validate:"nonzero"`
 	Age int    `json:"age" validate:"nonzero"`
 }
 

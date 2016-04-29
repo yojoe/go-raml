@@ -117,22 +117,27 @@ func (r *Resource) setMethods() {
 	}
 	if r.Post != nil {
 		r.Post.Name = "POST"
+		r.Post.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Post)
 	}
 	if r.Put != nil {
 		r.Put.Name = "PUT"
+		r.Put.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Put)
 	}
 	if r.Patch != nil {
 		r.Patch.Name = "PATCH"
+		r.Patch.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Patch)
 	}
 	if r.Head != nil {
 		r.Head.Name = "HEAD"
+		r.Head.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Head)
 	}
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
+		r.Delete.inheritFromAllTraits(r)
 		r.Methods = append(r.Methods, r.Delete)
 	}
 }

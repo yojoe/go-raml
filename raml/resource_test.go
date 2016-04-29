@@ -63,12 +63,28 @@ func TestResourceTypeInheritance(t *testing.T) {
 				"If no values match the value given for title, use digest_all_fields instead")
 		})
 
-		Convey("traits test", func() {
+		Convey("query parameters traits", func() {
 			r := apiDef.Resources["/books"]
 			So(r, ShouldNotBeNil)
 
 			qps := r.Get.QueryParameters
 			So(qps["numPages"].Description, ShouldEqual, "The number of pages to return, not to exceed 10")
+
+			So(qps["access_token"].Description, ShouldEqual, "A valid access_token is required")
+
 		})
+
+		Convey("request body traits", func() {
+			r := apiDef.Resources["/servers"]
+			So(r, ShouldNotBeNil)
+
+			props := r.Post.Bodies.ApplicationJson.Properties
+
+			So(props, ShouldContainKey, "name")
+			So(props, ShouldContainKey, "address?")
+			So(props, ShouldNotContainKey, "location?")
+			So(props, ShouldNotContainKey, "location")
+		})
+
 	})
 }

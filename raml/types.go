@@ -579,7 +579,6 @@ func ToProperty(name string, p interface{}) Property {
 	// convert from map of interface to property
 	mapToProperty := func(val map[interface{}]interface{}) Property {
 		var p Property
-		// fix `required` default value is `false` problem.
 		p.Required = true
 		for k, v := range val {
 			switch k {
@@ -620,12 +619,10 @@ func ToProperty(name string, p interface{}) Property {
 		return p
 	}
 
-	var prop Property
+	prop := Property{Required: true}
 	switch p.(type) {
 	case string:
-		prop = Property{Type: p.(string)}
-		// when struct is `field: type`, set required default true
-		prop.Required = true
+		prop.Type = p.(string)
 	case map[interface{}]interface{}:
 		prop = mapToProperty(p.(map[interface{}]interface{}))
 	case Property:

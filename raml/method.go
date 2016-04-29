@@ -2,6 +2,7 @@ package raml
 
 import (
 	"fmt"
+	"strings"
 )
 
 func newMethod(name string) *Method {
@@ -24,16 +25,16 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *ResourceTypeMethod, r
 	m.Description = substituteParams(m.Description, rtm.Description, dicts)
 
 	// inherit bodies
-	m.Bodies.inherit(rtm.Bodies, r, dicts)
+	m.Bodies.inherit(rtm.Bodies, dicts)
 
 	// inherit headers
-	m.inheritHeaders(r, rtm.Headers, dicts)
+	m.inheritHeaders(rtm.Headers, dicts)
 
 	// inherit query params
-	m.inheritQueryParams(r, rtm.QueryParameters, dicts)
+	m.inheritQueryParams(rtm.QueryParameters, dicts)
 
 	// inherit response
-	m.inheritResponses(r, rtm.Responses, dicts)
+	m.inheritResponses(rtm.Responses, dicts)
 
 	// inherit protocols
 	m.inheritProtocols(rtm.Protocols)
@@ -58,18 +59,17 @@ func (m *Method) inheritFromAllTraits(r *Resource) error {
 // inherit from a trait
 // dicts is map of trait parameters values
 func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]interface{}) error {
-	// initialize dicts if it still empty
 	dicts = initTraitDicts(r, m, dicts)
 
 	m.Description = substituteParams(m.Description, t.Description, dicts)
 
-	m.Bodies.inherit(t.Bodies, r, dicts)
+	m.Bodies.inherit(t.Bodies, dicts)
 
-	m.inheritHeaders(r, t.Headers, dicts)
+	m.inheritHeaders(t.Headers, dicts)
 
-	m.inheritResponses(r, t.Responses, dicts)
+	m.inheritResponses(t.Responses, dicts)
 
-	m.inheritQueryParams(r, t.QueryParameters, dicts)
+	m.inheritQueryParams(t.QueryParameters, dicts)
 
 	m.inheritProtocols(t.Protocols)
 
@@ -82,7 +82,7 @@ func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]inter
 
 // inheritHeaders inherit method's headers from parent headers.
 // parent headers could be from resource type or a trait
-func (m *Method) inheritHeaders(r *Resource, parent map[HTTPHeader]Header, dicts map[string]interface{}) {
+func (m *Method) inheritHeaders(parent map[HTTPHeader]Header, dicts map[string]interface{}) {
 	if len(m.Headers) == 0 {
 		m.Headers = map[HTTPHeader]Header{}
 	}
@@ -99,12 +99,12 @@ func (m *Method) inheritHeaders(r *Resource, parent map[HTTPHeader]Header, dicts
 
 // inheritQueryParams inherit method's query params from parent query params.
 // parent query params could be from resource type or a trait
-func (m *Method) inheritQueryParams(r *Resource, parent map[string]NamedParameter, dicts map[string]interface{}) {
+func (m *Method) inheritQueryParams(parent map[string]NamedParameter, dicts map[string]interface{}) {
 	if len(m.QueryParameters) == 0 {
 		m.QueryParameters = map[string]NamedParameter{}
 	}
 	for name, qp := range parent {
-		nQp := newQueryParam(r, name, qp, dicts)
+		nQp := newQueryParam(name, qp, dicts)
 		m.QueryParameters[nQp.Name] = nQp
 	}
 
@@ -120,7 +120,7 @@ func (m *Method) inheritProtocols(parent []string) {
 
 // inheritResponses inherit method's responses from parent responses
 // parent responses could be from resource type or a trait
-func (m *Method) inheritResponses(r *Resource, parent map[HTTPCode]Response, dicts map[string]interface{}) {
+func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string]interface{}) {
 	if len(m.Responses) == 0 { // allocate if needed
 		m.Responses = map[HTTPCode]Response{}
 	}
@@ -141,7 +141,7 @@ func (resp *Response) inherit(parent Response, dicts map[string]interface{}) {
 }
 
 // create new query params from another query params owned by resource type
-func newQueryParam(r *Resource, name string, params NamedParameter, dicts map[string]interface{}) NamedParameter {
+func newQueryParam(name string, params NamedParameter, dicts map[string]interface{}) NamedParameter {
 	return NamedParameter{
 		Name:        substituteParams("", name, dicts),
 		DisplayName: substituteParams("", params.DisplayName, dicts),
@@ -163,22 +163,32 @@ func newQueryParam(r *Resource, name string, params NamedParameter, dicts map[st
 
 // inherit inherits bodies properties from a parent bodies
 // parent object could be from trait or response type
-func (b *Bodies) inherit(parent Bodies, r *Resource, dicts map[string]interface{}) {
+func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
 	b.DefaultSchema = substituteParams(b.DefaultSchema, parent.DefaultSchema, dicts)
 	b.DefaultDescription = substituteParams(b.DefaultDescription, parent.DefaultDescription, dicts)
 	b.DefaultExample = substituteParams(b.DefaultExample, parent.DefaultExample, dicts)
 
 	b.Type = substituteParams(b.Type, parent.Type, dicts)
 
+	// request body
 	if parent.ApplicationJson != nil {
-		if b.ApplicationJson == nil {
+		if b.ApplicationJson == nil { // allocate if needed
 			b.ApplicationJson = &BodiesProperty{Properties: map[string]interface{}{}}
 		}
 
 		b.ApplicationJson.Type = substituteParams(b.ApplicationJson.Type, parent.ApplicationJson.Type, dicts)
 
 		for k, p := range parent.ApplicationJson.Properties {
-			if _, ok := b.ApplicationJson.Properties[k]; !ok { // only inherits property that not exist
+			if _, ok := b.ApplicationJson.Properties[k]; !ok {
+
+				// handle optional properties as described in
+				// https://github.com/raml-org/raml-spec/blob/raml-10/versions/raml-10/raml-10.md#optional-properties
+				switch {
+				case strings.HasSuffix(k, `\?`): // if ended with `\?` we make it optional property
+					k = k[:len(k)-2] + "?"
+				case strings.HasSuffix(k, "?"): // if only ended with `?`, we can ignore it
+					continue
+				}
 				b.ApplicationJson.Properties[k] = p
 			}
 		}
