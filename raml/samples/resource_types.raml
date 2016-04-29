@@ -76,7 +76,7 @@ traits:
 /queues:
   type: corpResource
   get:
-    description: get petok
+    displayName: get
   # will not have a post method defined
 
 /corps:
@@ -89,7 +89,7 @@ traits:
 /books:
   type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
   get:
-    description : get all books
+    displayName : get all books
     is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]
 
 /servers:

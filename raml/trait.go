@@ -70,3 +70,7 @@ func initTraitDicts(r *Resource, m *Method, dicts map[string]interface{}) map[st
 	dicts["methodName"] = strings.ToLower(m.Name)
 	return dicts
 }
+
+func optionalTraitProperty(name string) bool {
+	return strings.HasSuffix(name, "?")
+}

@@ -89,7 +89,7 @@ func (np *NamedParameter) inherit(parent NamedParameter, dicts map[string]interf
 	np.DisplayName = substituteParams(np.DisplayName, parent.DisplayName, dicts)
 	np.Description = substituteParams(np.Description, parent.Description, dicts)
 
-	// TODO : inherit Enum
+	// TODO : add enum
 
 	np.Pattern = inheritStringPointer(np.Pattern, parent.Pattern, dicts)
 	np.MinLength = inheritIntPointer(np.MinLength, parent.MinLength)

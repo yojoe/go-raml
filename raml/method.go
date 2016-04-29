@@ -40,9 +40,11 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *ResourceTypeMethod, r
 	m.inheritProtocols(rtm.Protocols)
 }
 
-// inherit from all traits
+// inherit from all traits, inherited traits are:
+// - resource level trait
+// - method trait
 func (m *Method) inheritFromAllTraits(r *Resource) error {
-	for _, tDef := range m.Is {
+	for _, tDef := range append(r.Is, m.Is...) {
 		// acquire traits object
 		t, ok := traitsMap[tDef.Name]
 		if !ok {
@@ -82,30 +84,43 @@ func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]inter
 
 // inheritHeaders inherit method's headers from parent headers.
 // parent headers could be from resource type or a trait
-func (m *Method) inheritHeaders(parent map[HTTPHeader]Header, dicts map[string]interface{}) {
+func (m *Method) inheritHeaders(parents map[HTTPHeader]Header, dicts map[string]interface{}) {
 	if len(m.Headers) == 0 {
 		m.Headers = map[HTTPHeader]Header{}
 	}
-	for name, ph := range parent {
+
+	for name, parent := range parents {
 		h, ok := m.Headers[name]
 		if !ok {
+			if optionalTraitProperty(string(name)) { // don't inherit optional property if not exist
+				continue
+			}
 			h = Header{}
 		}
+		parent.Name = string(name)
 		np := NamedParameter(h)
-		np.inherit(NamedParameter(ph), dicts)
+		np.inherit(NamedParameter(parent), dicts)
 		m.Headers[name] = Header(np)
 	}
 }
 
 // inheritQueryParams inherit method's query params from parent query params.
 // parent query params could be from resource type or a trait
-func (m *Method) inheritQueryParams(parent map[string]NamedParameter, dicts map[string]interface{}) {
+func (m *Method) inheritQueryParams(parents map[string]NamedParameter, dicts map[string]interface{}) {
 	if len(m.QueryParameters) == 0 {
 		m.QueryParameters = map[string]NamedParameter{}
 	}
-	for name, qp := range parent {
-		nQp := newQueryParam(name, qp, dicts)
-		m.QueryParameters[nQp.Name] = nQp
+	for name, parent := range parents {
+		qp, ok := m.QueryParameters[name]
+		if !ok {
+			if optionalTraitProperty(string(name)) { // don't inherit optional property if not exist
+				continue
+			}
+			qp = NamedParameter{Name: name}
+		}
+		parent.Name = name // parent name is not initialized by the parser
+		qp.inherit(parent, dicts)
+		m.QueryParameters[qp.Name] = qp
 	}
 
 }
@@ -138,27 +153,6 @@ func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string
 // inherit from parent response
 func (resp *Response) inherit(parent Response, dicts map[string]interface{}) {
 	resp.Bodies.Type = substituteParams(resp.Bodies.Type, parent.Bodies.Type, dicts)
-}
-
-// create new query params from another query params owned by resource type
-func newQueryParam(name string, params NamedParameter, dicts map[string]interface{}) NamedParameter {
-	return NamedParameter{
-		Name:        substituteParams("", name, dicts),
-		DisplayName: substituteParams("", params.DisplayName, dicts),
-		Description: substituteParams("", params.Description, dicts),
-		Type:        substituteParams("", params.Type, dicts),
-		Enum:        params.Enum,
-		Pattern:     params.Pattern,
-		MinLength:   params.MinLength,
-		MaxLength:   params.MaxLength,
-		Minimum:     params.Minimum,
-		Maximum:     params.Maximum,
-		Example:     params.Example,
-		Repeat:      params.Repeat,
-		Required:    params.Required,
-		Default:     params.Default,
-		format:      params.format,
-	}
 }
 
 // inherit inherits bodies properties from a parent bodies

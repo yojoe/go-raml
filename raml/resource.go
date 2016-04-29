@@ -184,6 +184,11 @@ func (r *Resource) assignMethod(m *Method, name string) {
 // substituteParams substitute all params inside double chevron to the correct value
 // param value will be obtained from dicts map
 func substituteParams(toReplace, words string, dicts map[string]interface{}) string {
+	// non empty scalar node remain unchanged
+	// except it has double chevron bracket
+	if toReplace != "" && (strings.Index(toReplace, "<<") < 0 && strings.Index(toReplace, ">>") < 0) {
+		return toReplace
+	}
 	if words == "" {
 		return toReplace
 	}
