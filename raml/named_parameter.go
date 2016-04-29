@@ -84,14 +84,14 @@ type NamedParameter struct {
 	format Any `ramlFormat:"Named parameters must be mappings. Example: userId: {displayName: 'User ID', description: 'Used to identify the user.', type: 'integer', minimum: 1, example: 5}"`
 }
 
-func (np *NamedParameter) inherit(parent NamedParameter, r *Resource) {
-	np.Name = r.substituteParams(np.Name, parent.Name)
-	np.DisplayName = r.substituteParams(np.DisplayName, parent.DisplayName)
-	np.Description = r.substituteParams(np.Description, parent.Description)
+func (np *NamedParameter) inherit(parent NamedParameter, dicts map[string]interface{}) {
+	np.Name = substituteParams(np.Name, parent.Name, dicts)
+	np.DisplayName = substituteParams(np.DisplayName, parent.DisplayName, dicts)
+	np.Description = substituteParams(np.Description, parent.Description, dicts)
 
 	// TODO : inherit Enum
 
-	np.Pattern = inheritStringPointer(np.Pattern, parent.Pattern, r)
+	np.Pattern = inheritStringPointer(np.Pattern, parent.Pattern, dicts)
 	np.MinLength = inheritIntPointer(np.MinLength, parent.MinLength)
 	np.MaxLength = inheritIntPointer(np.MaxLength, parent.MaxLength)
 	if parent.Maximum != nil {
@@ -108,14 +108,14 @@ func (np *NamedParameter) inherit(parent NamedParameter, r *Resource) {
 	}
 }
 
-func inheritStringPointer(val, parent *string, r *Resource) *string {
+func inheritStringPointer(val, parent *string, dicts map[string]interface{}) *string {
 	if parent == nil {
 		return val
 	}
 	if val == nil {
 		val = new(string)
 	}
-	*val = r.substituteParams(*val, *parent)
+	*val = substituteParams(*val, *parent, dicts)
 	return val
 }
 

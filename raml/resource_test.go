@@ -1,19 +1,14 @@
 package raml
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestResourceTypeInheritance(t *testing.T) {
-	Convey("resource type inheritance", t, func() {
+	Convey("resource type & traits inheritance", t, func() {
 		apiDef, err := ParseFile("./samples/resource_types.raml")
-		So(err, ShouldBeNil)
-
-		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("checking users", func() {
@@ -68,9 +63,12 @@ func TestResourceTypeInheritance(t *testing.T) {
 				"If no values match the value given for title, use digest_all_fields instead")
 		})
 
-		Reset(func() {
-			os.RemoveAll(targetDir)
-		})
+		Convey("traits test", func() {
+			r := apiDef.Resources["/books"]
+			So(r, ShouldNotBeNil)
 
+			qps := r.Get.QueryParameters
+			So(qps["numPages"].Description, ShouldEqual, "The number of pages to return, not to exceed 10")
+		})
 	})
 }

@@ -191,3 +191,12 @@ func (rt *ResourceType) setOptionalMethods() {
 		rt.optionalMethods = append(rt.optionalMethods, rt.OptionalDelete)
 	}
 }
+
+func initResourceTypeDicts(r *Resource, dicts map[string]interface{}) map[string]interface{} {
+	if len(dicts) == 0 {
+		dicts = map[string]interface{}{}
+	}
+	dicts["resourcePathName"] = r.CleanURI()
+	dicts["resourcePath"] = r.FullURI()
+	return dicts
+}

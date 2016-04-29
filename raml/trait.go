@@ -1,5 +1,9 @@
 package raml
 
+import (
+	"strings"
+)
+
 var (
 	// global map of traits for easy access
 	traitsMap map[string]Trait
@@ -57,4 +61,12 @@ type Trait struct {
 
 func (t *Trait) postProcess(name string) {
 	t.Name = name
+}
+
+// init trait dicts
+// trait dicts contain current trait parameters that is currently applied to a method
+func initTraitDicts(r *Resource, m *Method, dicts map[string]interface{}) map[string]interface{} {
+	dicts = initResourceTypeDicts(r, dicts)
+	dicts["methodName"] = strings.ToLower(m.Name)
+	return dicts
 }

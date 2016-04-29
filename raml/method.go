@@ -14,25 +14,26 @@ func newMethod(name string) *Method {
 // fields need to be inherited:
 // - description
 // - response
-func (m *Method) inheritResourceType(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
+func (m *Method) inheritFromResourceType(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
 	if rtm == nil {
 		return
 	}
+	dicts := initResourceTypeDicts(r, r.Type.Parameters)
 
 	// inherit description
-	m.Description = r.substituteParams(m.Description, rtm.Description)
+	m.Description = substituteParams(m.Description, rtm.Description, dicts)
 
 	// inherit bodies
-	m.Bodies.inherit(rtm.Bodies, r, r.Type.Parameters)
+	m.Bodies.inherit(rtm.Bodies, r, dicts)
 
 	// inherit headers
-	m.inheritHeaders(r, rtm.Headers)
+	m.inheritHeaders(r, rtm.Headers, dicts)
 
 	// inherit query params
-	m.inheritQueryParams(r, rtm.QueryParameters)
+	m.inheritQueryParams(r, rtm.QueryParameters, dicts)
 
 	// inherit response
-	m.inheritResponses(r, rtm.Responses, r.Type.Parameters)
+	m.inheritResponses(r, rtm.Responses, dicts)
 
 	// inherit protocols
 	m.inheritProtocols(rtm.Protocols)
@@ -55,17 +56,20 @@ func (m *Method) inheritFromAllTraits(r *Resource) error {
 }
 
 // inherit from a trait
+// dicts is map of trait parameters values
 func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]interface{}) error {
+	// initialize dicts if it still empty
+	dicts = initTraitDicts(r, m, dicts)
 
-	m.Description = substituteParams(r, m.Description, t.Description, dicts)
+	m.Description = substituteParams(m.Description, t.Description, dicts)
 
 	m.Bodies.inherit(t.Bodies, r, dicts)
 
-	m.inheritHeaders(r, t.Headers)
+	m.inheritHeaders(r, t.Headers, dicts)
 
 	m.inheritResponses(r, t.Responses, dicts)
 
-	m.inheritQueryParams(r, t.QueryParameters)
+	m.inheritQueryParams(r, t.QueryParameters, dicts)
 
 	m.inheritProtocols(t.Protocols)
 
@@ -78,7 +82,7 @@ func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]inter
 
 // inheritHeaders inherit method's headers from parent headers.
 // parent headers could be from resource type or a trait
-func (m *Method) inheritHeaders(r *Resource, parent map[HTTPHeader]Header) {
+func (m *Method) inheritHeaders(r *Resource, parent map[HTTPHeader]Header, dicts map[string]interface{}) {
 	if len(m.Headers) == 0 {
 		m.Headers = map[HTTPHeader]Header{}
 	}
@@ -88,19 +92,19 @@ func (m *Method) inheritHeaders(r *Resource, parent map[HTTPHeader]Header) {
 			h = Header{}
 		}
 		np := NamedParameter(h)
-		np.inherit(NamedParameter(ph), r)
+		np.inherit(NamedParameter(ph), dicts)
 		m.Headers[name] = Header(np)
 	}
 }
 
 // inheritQueryParams inherit method's query params from parent query params.
 // parent query params could be from resource type or a trait
-func (m *Method) inheritQueryParams(r *Resource, parent map[string]NamedParameter) {
+func (m *Method) inheritQueryParams(r *Resource, parent map[string]NamedParameter, dicts map[string]interface{}) {
 	if len(m.QueryParameters) == 0 {
 		m.QueryParameters = map[string]NamedParameter{}
 	}
 	for name, qp := range parent {
-		nQp := newQueryParam(r, name, qp)
+		nQp := newQueryParam(r, name, qp, dicts)
 		m.QueryParameters[nQp.Name] = nQp
 	}
 
@@ -125,24 +129,24 @@ func (m *Method) inheritResponses(r *Resource, parent map[HTTPCode]Response, dic
 		if !ok {
 			resp = Response{}
 		}
-		resp.inherit(r, rParent, dicts)
+		resp.inherit(rParent, dicts)
 		m.Responses[code] = resp
 	}
 
 }
 
 // inherit from parent response
-func (resp *Response) inherit(r *Resource, parent Response, dicts map[string]interface{}) {
-	resp.Bodies.Type = substituteParams(r, resp.Bodies.Type, parent.Bodies.Type, dicts)
+func (resp *Response) inherit(parent Response, dicts map[string]interface{}) {
+	resp.Bodies.Type = substituteParams(resp.Bodies.Type, parent.Bodies.Type, dicts)
 }
 
 // create new query params from another query params owned by resource type
-func newQueryParam(r *Resource, name string, params NamedParameter) NamedParameter {
+func newQueryParam(r *Resource, name string, params NamedParameter, dicts map[string]interface{}) NamedParameter {
 	return NamedParameter{
-		Name:        r.substituteParams("", name),
-		DisplayName: r.substituteParams("", params.DisplayName),
-		Description: r.substituteParams("", params.Description),
-		Type:        r.substituteParams("", params.Type),
+		Name:        substituteParams("", name, dicts),
+		DisplayName: substituteParams("", params.DisplayName, dicts),
+		Description: substituteParams("", params.Description, dicts),
+		Type:        substituteParams("", params.Type, dicts),
 		Enum:        params.Enum,
 		Pattern:     params.Pattern,
 		MinLength:   params.MinLength,
@@ -160,18 +164,18 @@ func newQueryParam(r *Resource, name string, params NamedParameter) NamedParamet
 // inherit inherits bodies properties from a parent bodies
 // parent object could be from trait or response type
 func (b *Bodies) inherit(parent Bodies, r *Resource, dicts map[string]interface{}) {
-	b.DefaultSchema = substituteParams(r, b.DefaultSchema, parent.DefaultSchema, dicts)
-	b.DefaultDescription = substituteParams(r, b.DefaultDescription, parent.DefaultDescription, dicts)
-	b.DefaultExample = substituteParams(r, b.DefaultExample, parent.DefaultExample, dicts)
+	b.DefaultSchema = substituteParams(b.DefaultSchema, parent.DefaultSchema, dicts)
+	b.DefaultDescription = substituteParams(b.DefaultDescription, parent.DefaultDescription, dicts)
+	b.DefaultExample = substituteParams(b.DefaultExample, parent.DefaultExample, dicts)
 
-	b.Type = substituteParams(r, b.Type, parent.Type, dicts)
+	b.Type = substituteParams(b.Type, parent.Type, dicts)
 
 	if parent.ApplicationJson != nil {
 		if b.ApplicationJson == nil {
 			b.ApplicationJson = &BodiesProperty{Properties: map[string]interface{}{}}
 		}
 
-		b.ApplicationJson.Type = substituteParams(r, b.ApplicationJson.Type, parent.ApplicationJson.Type, dicts)
+		b.ApplicationJson.Type = substituteParams(b.ApplicationJson.Type, parent.ApplicationJson.Type, dicts)
 
 		for k, p := range parent.ApplicationJson.Properties {
 			if _, ok := b.ApplicationJson.Properties[k]; !ok { // only inherits property that not exist

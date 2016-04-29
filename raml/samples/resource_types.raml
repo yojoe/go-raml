@@ -59,12 +59,19 @@ traits:
       queryParameters:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
+  - hasPayload:
+      body:
+        application/json:
+          properties:
+            name:
+            address\?:
+            location?:
 
 /Users:
   type: collection
   #is: [ secured ]
   get:
-    is: [ paged, rateLimited ] # this method is also secured
+    is: [ paged : { maxPages: 10}, rateLimited ] # this method is also secured
 
 /queues:
   type: corpResource
@@ -84,3 +91,9 @@ traits:
   get:
     description : get all books
     is: [ secured: { tokenName: access_token }, paged: { maxPages: 10 } ]
+
+/servers:
+  post:
+    is: [ hasPayload ]
+    # will have application/json body with 'name' required property,
+    # 'address' optional property, but without 'location' property
