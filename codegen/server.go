@@ -4,6 +4,7 @@ import (
 	"errors"
 	"path/filepath"
 
+	"github.com/Jumpscale/go-raml/codegen/apidocs"
 	"github.com/Jumpscale/go-raml/raml"
 
 	log "github.com/Sirupsen/logrus"
@@ -38,6 +39,8 @@ type pythonServer struct {
 
 // generate Go server files
 func (gs goServer) generate(dir string) error {
+	// generate docs if needed
+
 	// generate struct validator
 	if err := generateInputValidator(gs.PackageName, dir); err != nil {
 		return err
@@ -76,9 +79,11 @@ func (gs goServer) generate(dir string) error {
 
 func (ps pythonServer) generate(dir string) error {
 	// generate input validators helper
-	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python", filepath.Join(dir, "input_validators.py"), false); err != nil {
+	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
+		filepath.Join(dir, "input_validators.py"), false); err != nil {
 		return err
 	}
+
 	// generate request body
 	if err := generateBodyStructs(ps.apiDef, dir, "", langPython); err != nil {
 		log.Errorf("failed to generate python classes from request body:%v", err)
@@ -111,7 +116,12 @@ func (ps pythonServer) generate(dir string) error {
 }
 
 // GenerateServer generates API server files
-func GenerateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, generateMain bool) error {
+func GenerateServer(ramlFile, dir, packageName, lang string, generateMain bool) error {
+	ramlBytes, apiDef, err := raml.ParseReadFile(ramlFile)
+	if err != nil {
+		return err
+	}
+
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
@@ -124,11 +134,17 @@ func GenerateServer(apiDef *raml.APIDefinition, dir, packageName, lang string, g
 	switch lang {
 	case langGo:
 		gs := goServer{server: sd}
-		return gs.generate(dir)
+		err = gs.generate(dir)
 	case langPython:
 		ps := pythonServer{server: sd}
-		return ps.generate(dir)
+		err = ps.generate(dir)
 	default:
 		return errInvalidLang
 	}
+
+	if err != nil {
+		return err
+	}
+
+	return apidocs.Create(ramlBytes, filepath.Join(dir, "apidocs"))
 }
