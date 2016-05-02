@@ -18,5 +18,6 @@ type ServerCommand struct {
 // Execute generates a Go server from an RAML specification
 func (command *ServerCommand) Execute() error {
 	log.Infof("Generating a %v server", command.Language)
-	return codegen.GenerateServer(command.RamlFile, command.Dir, command.PackageName, command.Language, !command.NoMainGeneration)
+	return codegen.GenerateServer(command.RamlFile, command.Dir, command.PackageName,
+		command.Language, "apidocs", !command.NoMainGeneration)
 }

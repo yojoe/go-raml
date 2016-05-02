@@ -26,6 +26,7 @@ type server struct {
 	apiDef       *raml.APIDefinition
 	ResourcesDef []resourceInterface
 	PackageName  string // Name of the package this server resides in
+	APIDocsDir   string // apidocs directory. apidocs won't be generated if it is empty
 	withMain     bool
 }
 
@@ -116,7 +117,7 @@ func (ps pythonServer) generate(dir string) error {
 }
 
 // GenerateServer generates API server files
-func GenerateServer(ramlFile, dir, packageName, lang string, generateMain bool) error {
+func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
 	ramlBytes, apiDef, err := raml.ParseReadFile(ramlFile)
 	if err != nil {
 		return err
@@ -129,6 +130,7 @@ func GenerateServer(ramlFile, dir, packageName, lang string, generateMain bool) 
 	sd := server{
 		PackageName: packageName,
 		apiDef:      apiDef,
+		APIDocsDir:  apiDocsDir,
 		withMain:    generateMain,
 	}
 	switch lang {
@@ -146,5 +148,8 @@ func GenerateServer(ramlFile, dir, packageName, lang string, generateMain bool) 
 		return err
 	}
 
+	if apiDocsDir == "" {
+		return nil
+	}
 	return apidocs.Create(ramlBytes, filepath.Join(dir, "apidocs"))
 }
