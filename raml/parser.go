@@ -47,9 +47,13 @@ import (
 
 // ParseFile parses an RAML file.
 // Returns a raml.APIDefinition value or an error if
-// everything is something went wrong.
-// This is the main entry point to the RAML parser.
+// something went wrong.
 func ParseFile(filePath string) (*APIDefinition, error) {
+	_, apiDef, err := ParseReadFile(filePath)
+	return apiDef, err
+}
+
+func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 
 	// Get the working directory
 	workingDirectory, fileName := filepath.Split(filePath)
@@ -58,7 +62,7 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 	mainFileBytes, err := readFileContents(workingDirectory, fileName)
 
 	if err != nil {
-		return nil, err
+		return []byte{}, nil, err
 	}
 
 	// Get the contents of the main file
@@ -68,7 +72,7 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 	var ramlVersion string
 	firstLine, err := mainFileBuffer.ReadString('\n')
 	if err != nil {
-		return nil, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
+		return []byte{}, nil, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
 	}
 
 	// We read some data...
@@ -81,7 +85,7 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 	// for different versions. This one is hard-coded to 0.8.
 	// Still, would be good to think about this.
 	if ramlVersion != "#%RAML 1.0" {
-		return nil, errors.New("Input file is not a RAML 1.0 file. Make " +
+		return []byte{}, nil, errors.New("Input file is not a RAML 1.0 file. Make " +
 			"sure the file starts with #%RAML 1.0")
 	}
 
@@ -90,7 +94,7 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 		preProcess(mainFileBuffer, workingDirectory)
 
 	if err != nil {
-		return nil,
+		return []byte{}, nil,
 			fmt.Errorf("Error preprocessing RAML file (Error: %s)", err.Error())
 	}
 
@@ -119,13 +123,13 @@ func ParseFile(filePath string) (*APIDefinition, error) {
 			ramlError.Errors = append(ramlError.Errors, err.Error())
 		}
 
-		return nil, ramlError
+		return []byte{}, nil, ramlError
 	}
 
 	apiDefinition.postProcess()
 
 	// Good.
-	return apiDefinition, nil
+	return preprocessedContentsBytes, apiDefinition, nil
 }
 
 func (apiDef *APIDefinition) postProcess() {

@@ -93,17 +93,20 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		return nil
 	}
 
+	// pass Go function to template
 	funcMap := template.FuncMap{
 		"ToLower": strings.ToLower,
 	}
 
+	// all template files path is relative to current directory (./)
+	// while go-bindata files exist in ./bindata directory
 	tmplFile = strings.Replace(tmplFile, "./", "../", -1)
+
 	byteData, err := bindata.Asset(tmplFile)
 	if err != nil {
 		return err
 	}
 
-	//get string from byte
 	t, err := template.New(tmplName).Funcs(funcMap).Parse(string(byteData))
 	if err != nil {
 		return err

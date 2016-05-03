@@ -79,6 +79,11 @@ func main() {
 					Usage:       "Do not generate a main.go file",
 					Destination: &serverCommand.NoMainGeneration,
 				},
+				cli.BoolFlag{
+					Name:        "no-apidocs",
+					Usage:       "Do not generate API Docs in /apidocs/ endpoint",
+					Destination: &serverCommand.NoAPIDocs,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
