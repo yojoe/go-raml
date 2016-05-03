@@ -9,12 +9,14 @@ import (
 	"path/filepath"
 )
 
-func Create(ramlBytes []byte, dir string) error {
+// Generate generates API docs using api-console
+// https://github.com/mulesoft/api-console
+func Generate(ramlBytes []byte, dir string) error {
 	// extract zipped files
 	if err := extract(dir); err != nil {
 		return err
 	}
-
+	ramlBytes = append([]byte("#%RAML 1.0\n"), ramlBytes...)
 	// write the .raml file
 	return ioutil.WriteFile(filepath.Join(dir, "api.raml"), ramlBytes, 0777)
 }

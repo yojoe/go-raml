@@ -151,5 +151,5 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generat
 	if apiDocsDir == "" {
 		return nil
 	}
-	return apidocs.Create(ramlBytes, filepath.Join(dir, "apidocs"))
+	return apidocs.Generate(ramlBytes, filepath.Join(dir, "apidocs"))
 }
