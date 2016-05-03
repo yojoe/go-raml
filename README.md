@@ -37,7 +37,6 @@ Install go-raml
 `go get -u github.com/Jumpscale/go-raml`
 
 ### Build
-First, we need to compile the templates
 
 ```
 cd $GOPATH/src/github.com/Jumpscale/go-raml
@@ -59,20 +58,37 @@ Internally, go templates are used to generate the code, this provides a flexible
 
 ## Server
 
-To generate the go code for implementing the server in first design approach, execute
+`go-raml` able to generate Go & Python server. API Docs also generated in `/apidocs/` endpoint. API Docs generation can be disabled by specifying `no-apidocs` option.
+
+### Go Server
+
+To generate the Go code for implementing the server in first design approach, execute
 
 `go-raml server -l go --dir ./result_directory --ramlfile api.raml`
 
 The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
-Generated codestructure:
-* Interfaces types, always regenerated
-* Implementing types, only generated when the file is not present
+-Generated codestructure:
+-* Interfaces types, always regenerated
+-* Implementing types, only generated when the file is not present
 
 
-To generate the go code for implementing the server in first design approach, execute
+### Flask/Python Server
+
+To generate the Flask/Python code for implementing the server in first design approach, execute
 
 `go-raml server -l python --dir ./result_directory --ramlfile api.raml`
+
+### Code Generator Options
+
+```
+   --language, -l "go"  Language to construct a server for
+   --dir "."        target directory
+   --ramlfile "."   Source raml file
+   --package "main" package name
+   --no-main        Do not generate a main.go file
+   --no-apidocs     Do not generate API Docs in /apidocs/ endpoint
+```
 
 ## Client
 
@@ -125,17 +141,17 @@ ResponseBody generated from body node below responses.
 [Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) in the server is mapped to:
 - interface:
 
-	- file name = [resource]_if.go
-	- always be regenerated
-	- interface name = [resource]Interface
+    - file name = [resource]_if.go
+    - always be regenerated
+    - interface name = [resource]Interface
 
 - API implementation that implements the interface
-	- file name = [resource]_api.go
-	- only generated when the file is not present
-	- struct name = [resource]API
+    - file name = [resource]_api.go
+    - only generated when the file is not present
+    - struct name = [resource]API
 
 - routes for all necessary routes:
-	- func name = [Resource]InterfaceRoutes
+    - func name = [Resource]InterfaceRoutes
 
 
 ## Header
@@ -162,21 +178,21 @@ The generated code in the server is in the form of commented code:
 ## Input Validation
 
 
-	Validation		|    Go		| Python
+    Validation      |    Go     | Python
 ------------------------------- | ------------- | -----------
- minLength                  	|	v	|	v
- maxLength			|	v	|	v
- pattern			|	v	|	v
- minimum			|	v	|	v
- maximum			|	v	|	v
- format				|       x	| 	x
- multipleOf			|	v	|	v
- array field minItems		|	v	|	v
- array field maxItems		|	v	|	v
- array field uniqueItems	|	v	|	x
- array Type minItems		|	v	|	x
- array Type maxItems		|	v	|	x
- array Type uniqueItems		|	v	|	x
+ minLength                      |   v   |   v
+ maxLength          |   v   |   v
+ pattern            |   v   |   v
+ minimum            |   v   |   v
+ maximum            |   v   |   v
+ format             |       x   |   x
+ multipleOf         |   v   |   v
+ array field minItems       |   v   |   v
+ array field maxItems       |   v   |   v
+ array field uniqueItems    |   v   |   x
+ array Type minItems        |   v   |   x
+ array Type maxItems        |   v   |   x
+ array Type uniqueItems     |   v   |   x
 
 ## Specification file
 

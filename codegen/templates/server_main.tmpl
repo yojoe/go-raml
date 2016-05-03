@@ -55,8 +55,10 @@ func main() {
 
 	r := mux.NewRouter()
 
+    {{ if .APIDocsDir }}
     // apidocs
-    r.PathPrefix("/apidocs/").Handler(http.StripPrefix("/apidocs/", http.FileServer(http.Dir("./apidocs/"))))
+    r.PathPrefix("/{{.APIDocsDir}}/").Handler(http.StripPrefix("/{{.APIDocsDir}}/", http.FileServer(http.Dir("./apidocs/"))))
+    {{ end }}
 
 	{{ range $k, $v := .ResourcesDef }}
 	{{.Name}}InterfaceRoutes(r, {{.Name}}API{})

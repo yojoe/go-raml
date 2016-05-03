@@ -148,8 +148,11 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generat
 		return err
 	}
 
-	if apiDocsDir == "" {
+	if sd.APIDocsDir == "" {
 		return nil
 	}
-	return apidocs.Generate(ramlBytes, filepath.Join(dir, "apidocs"))
+
+	log.Infof("Generating API Docs to %v endpoint", sd.APIDocsDir)
+
+	return apidocs.Generate(ramlBytes, filepath.Join(dir, sd.APIDocsDir))
 }
