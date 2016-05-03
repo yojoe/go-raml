@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Jumpscale/go-raml/raml"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -15,10 +14,7 @@ func TestServer(t *testing.T) {
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 		Convey("simple Go server", func() {
-			apiDef, err := raml.ParseFile("./fixtures/server/user_api/api.raml")
-			So(err, ShouldBeNil)
-
-			err = GenerateServer(apiDef, targetdir, "main", "go", true)
+			err := GenerateServer("./fixtures/server/user_api/api.raml", targetdir, "main", "go", "apidocs", true)
 			So(err, ShouldBeNil)
 
 			// check users api implementation
@@ -48,10 +44,7 @@ func TestServer(t *testing.T) {
 		})
 
 		Convey("Congo python server", func() {
-			apiDef, err := raml.ParseFile("./fixtures/congo/api.raml")
-			So(err, ShouldBeNil)
-
-			err = GenerateServer(apiDef, targetdir, "main", "python", true)
+			err := GenerateServer("./fixtures/congo/api.raml", targetdir, "main", "python", "apidocs", true)
 			So(err, ShouldBeNil)
 
 			// check drones API implementation
