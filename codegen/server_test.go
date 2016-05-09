@@ -41,6 +41,28 @@ func TestServer(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
+			// check date files
+			rootFixture := "./fixtures/server/user_api/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"datetime.go", "datetime.txt"},
+				{"date_only.go", "date_only.txt"},
+				{"datetime_only.go", "datetime_only.txt"},
+				{"datetime_rfc2616.go", "datetime_rfc2616.txt"},
+				{"time_only.go", "time_only.txt"},
+			}
+			for _, check := range checks {
+				s, err = testLoadFile(filepath.Join(targetdir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err = testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
 		})
 
 		Convey("Congo python server", func() {
