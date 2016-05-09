@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
+	"github.com/Jumpscale/go-raml/codegen/date"
 	"github.com/Jumpscale/go-raml/raml"
 
 	log "github.com/Sirupsen/logrus"
@@ -38,9 +39,12 @@ type pythonServer struct {
 	server
 }
 
-// generate Go server files
+// generate all Go server files
 func (gs goServer) generate(dir string) error {
-	// generate docs if needed
+	if err := gs.generateDates(dir); err != nil {
+		log.Errorf("generate() failed to generate date files:%v", err)
+		return err
+	}
 
 	// generate struct validator
 	if err := generateInputValidator(gs.PackageName, dir); err != nil {
@@ -72,9 +76,40 @@ func (gs goServer) generate(dir string) error {
 
 	// generate main
 	if gs.withMain {
-		return generateFile(gs, serverMainTmplFile, serverMainTmplName, dir+"/main.go", true)
+		return generateFile(gs, serverMainTmplFile, serverMainTmplName, filepath.Join(dir, "main.go"), true)
 	}
 
+	return nil
+}
+
+// generate all dates files
+func (gs goServer) generateDates(dir string) error {
+	dates := []struct {
+		Type     string
+		Format   string
+		FileName string
+	}{
+		{"date-only", "", "date_only.go"},
+		{"time-only", "", "time_only.go"},
+		{"datetime-only", "", "datetime_only.go"},
+		{"datetime", "RFC3339", "datetime.go"},
+		{"datetime", "RFC2616", "datetime_rfc2616.go"},
+	}
+	for _, d := range dates {
+		b, err := date.Get(d.Type, d.Format)
+		if err != nil {
+			return err
+		}
+		ctx := map[string]interface{}{
+			"PackageName": gs.PackageName,
+			"Content":     string(b),
+		}
+
+		err = generateFile(ctx, "./templates/date.tmpl", "date", filepath.Join(dir, d.FileName), false)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -110,7 +145,7 @@ func (ps pythonServer) generate(dir string) error {
 
 	// generate main
 	if ps.withMain {
-		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, dir+"/app.py", true)
+		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, filepath.Join(dir, "app.py"), true)
 	}
 	return nil
 

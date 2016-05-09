@@ -15,16 +15,16 @@ types:
         iscrazy:
           type: boolean
         dob:
-          type: date
+          type: datetime
 /deliveries:
   get:
     description: Get a list of deliveries
     queryParameters:
       sinceDate:
-        type: date
+        type: datetime
         example: Mon, 14 Jul 2014 07:00:00 GMT
       throughDate:
-        type: date
+        type: datetime
         example: Mon, 18 Jul 2014 07:00:00 GMT
     responses:
       200:
