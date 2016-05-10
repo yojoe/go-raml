@@ -16,10 +16,6 @@
 			"Rev": "4b6ea7319e214d98c938f12692336f7ca9348d6b"
 		},
 		{
-			"ImportPath": "github.com/buddhamagnet/yaml",
-			"Rev": "8e72a68a3483a9d044e4c6f49cc695b5ee60c671"
-		},
-		{
 			"ImportPath": "github.com/chuckpreslar/inflect",
 			"Rev": "423e3ac59c611e2d549527ab8c15fb99335d30ba"
 		},
@@ -35,6 +31,10 @@
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-187-gc31a797",
 			"Rev": "c31a7975863e7810c92e2e288a9ab074f9a88f29"
+		},
+		{
+			"ImportPath": "github.com/gigforks/yaml",
+			"Rev": "3396035bfe07c24995d93599a57cf12f9d1c58e4"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",

@@ -41,7 +41,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/buddhamagnet/yaml"
+	"github.com/gigforks/yaml"
 	"github.com/kr/pretty"
 )
 
