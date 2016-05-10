@@ -33,7 +33,7 @@ import (
 	"fmt"
 	"strings"
 
-	yaml "github.com/buddhamagnet/yaml"
+	"github.com/gigforks/yaml"
 )
 
 // A RamlError is returned by the ParseFile function when RAML or YAML problems
