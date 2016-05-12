@@ -73,6 +73,9 @@ func TestResourceTypeInheritance(t *testing.T) {
 			r := apiDef.Resources["/books"]
 			So(r, ShouldNotBeNil)
 
+			So(apiDef.Traits, ShouldContainKey, "paged")
+			So(r.Get, ShouldNotBeNil)
+
 			qps := r.Get.QueryParameters
 			So(qps["numPages"].Description, ShouldEqual, "The number of pages to return, not to exceed 10")
 

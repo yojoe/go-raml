@@ -70,7 +70,7 @@ type Resource struct {
 // - assign all properties that can't be obtained from RAML document
 // - inherit from resource type
 // - inherit from traits
-func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map[string]ResourceType) error {
+func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType) error {
 	r.URI = strings.TrimSpace(uri)
 	r.Parent = parent
 
@@ -92,7 +92,7 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 }
 
 // inherit from a resource type
-func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) error {
+func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType) error {
 	// get resource type object to inherit
 	rt := r.getResourceType(resourceTypes)
 	if rt == nil {
@@ -148,18 +148,16 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 }
 
 // get resource type from which this resource will inherit
-func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) *ResourceType {
+func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) *ResourceType {
 	// check if it's specify a resource type to inherit
 	if r.Type == nil || r.Type.Name == "" {
 		return nil
 	}
 
 	// get resource type from array of resource type map
-	for _, rts := range resourceTypes {
-		for k, rt := range rts {
-			if k == r.Type.Name {
-				return &rt
-			}
+	for k, rt := range resourceTypes {
+		if k == r.Type.Name {
+			return &rt
 		}
 	}
 	return nil

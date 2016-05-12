@@ -4,7 +4,7 @@ version: 1
 securedBy: [oauth_2_0_header]
 baseUri: https://api.dropbox.com/{version}
 securitySchemes:
-  - DropboxIncluded: !include dropbox_included.raml
+  DropboxIncluded: !include dropbox_included.raml
 types:
   User:
     properties:

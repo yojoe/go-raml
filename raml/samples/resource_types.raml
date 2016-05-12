@@ -6,7 +6,7 @@ types:
   Users:
   User:
 resourceTypes:
-  - collection:
+  collection:
       description: The collection of <<resourcePathName>>
       get:
         description: Get all <<resourcePathName>>, optionally filtered
@@ -23,14 +23,14 @@ resourceTypes:
           200:
             body:
               type: <<resourcePathName | !singularize>>  # e.g. User
-  - member:
+  member:
       get:
         description : get <<resourcePath>>
         responses:
           200:
             body:
               type: <<resourcePathName>> # e.g. User
-  - corpResource:
+  corpResource:
       post?:
         body:
           application/json:
@@ -42,7 +42,7 @@ resourceTypes:
             required: true
       get?:
         description: Get all <<resourcePathName>>
-  - searchableCollection:
+  searchableCollection:
      get:
        queryParameters:
          <<queryParamName>>:
@@ -54,16 +54,16 @@ resourceTypes:
              - win
              - mac
 traits:
-  - secured:
+  secured:
      description: requests to <<methodName>> require authentication
      queryParameters:
        <<tokenName>>:
          description: A valid <<tokenName>> is required
-  - paged:
+  paged:
       queryParameters:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
-  - hasPayload:
+  hasPayload:
       body:
         application/json:
           properties:

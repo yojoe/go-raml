@@ -55,27 +55,25 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 	var err error
 
 	// generate oauth2 middleware
-	for _, v := range apiDef.SecuritySchemes {
-		for k, ss := range v {
-			if ss.Type != Oauth2 {
-				continue
-			}
+	for k, ss := range apiDef.SecuritySchemes {
+		if ss.Type != Oauth2 {
+			continue
+		}
 
-			sd := newSecurity(apiDef, &ss, k, packageName)
+		sd := newSecurity(apiDef, &ss, k, packageName)
 
-			switch lang {
-			case langGo:
-				gss := goSecurity{security: &sd}
-				err = gss.generate(dir)
+		switch lang {
+		case langGo:
+			gss := goSecurity{security: &sd}
+			err = gss.generate(dir)
 
-			case langPython:
-				pss := pythonSecurity{security: &sd}
-				err = pss.generate(dir)
-			}
-			if err != nil {
-				log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
-				return err
-			}
+		case langPython:
+			pss := pythonSecurity{security: &sd}
+			err = pss.generate(dir)
+		}
+		if err != nil {
+			log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
+			return err
 		}
 	}
 	return nil
@@ -140,10 +138,8 @@ func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
 	if name == "" || name == "null" {
 		return false
 	}
-	for _, v := range apiDef.SecuritySchemes {
-		if ss, ok := v[name]; ok {
-			return ss.Type == Oauth2
-		}
+	if ss, ok := apiDef.SecuritySchemes[name]; ok {
+		return ss.Type == Oauth2
 	}
 	return false
 }

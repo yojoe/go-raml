@@ -65,15 +65,15 @@ type APIDefinition struct {
 	Types map[string]Type `yaml:"types"`
 
 	// Declarations of traits for use within the API.
-	Traits []map[string]Trait `yaml:"traits"`
+	Traits map[string]Trait `yaml:"traits"`
 
 	// Declarations of resource types for use within the API.
-	ResourceTypes []map[string]ResourceType `yaml:"resourceTypes"`
+	ResourceTypes map[string]ResourceType `yaml:"resourceTypes"`
 
 	// TODO : annontation types
 
 	// Declarations of security schemes for use within the API.
-	SecuritySchemes []map[string]SecurityScheme `yaml:"securitySchemes"`
+	SecuritySchemes map[string]SecurityScheme `yaml:"securitySchemes"`
 
 	// The security schemes that apply to every resource and method in the API.
 	SecuredBy []DefinitionChoice `yaml:"securedBy"`
@@ -112,24 +112,16 @@ func (apiDef *APIDefinition) PostProcess(filename string) error {
 	}
 
 	// traits
-	for i, tMap := range apiDef.Traits {
-		for name := range tMap {
-			t := tMap[name]
-			t.postProcess(name)
-			tMap[name] = t
-			traitsMap[name] = t // add to global traits map
-		}
-		apiDef.Traits[i] = tMap
+	for name, t := range apiDef.Traits {
+		t.postProcess(name)
+		traitsMap[name] = t
+		apiDef.Traits[name] = t
 	}
 
 	// resource types
-	for i, rtMap := range apiDef.ResourceTypes {
-		for name := range rtMap {
-			rt := rtMap[name]
-			rt.postProcess(name)
-			rtMap[name] = rt
-		}
-		apiDef.ResourceTypes[i] = rtMap
+	for name, rt := range apiDef.ResourceTypes {
+		rt.postProcess(name)
+		apiDef.ResourceTypes[name] = rt
 	}
 
 	// resources

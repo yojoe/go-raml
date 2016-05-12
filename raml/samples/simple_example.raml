@@ -46,20 +46,20 @@ uriParameters:
 baseUri: /lala
 protocols: [HTTP, HTTPS]
 traits:
-  - secured:
+  secured:
       queryParameters:
         <<tokenName>>:
           description: A valid <<tokenName>> is required
-  - paged:
+  paged:
       queryParameters:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
 resourceTypes:
-  - rttest:
+  rttest:
       description: test
-  - one:
+  one:
       description: hi
-  - auditableResource:
+  auditableResource:
       post?:
         body:
           application/x-www-form-urlencoded:
@@ -76,7 +76,7 @@ resourceTypes:
                 description: |
                   If the resource has a delete method defined, expect a deleteAuthority
                   property in its body
-  - searchableCollection:
+  searchableCollection:
       get:
         queryParameters:
           <<queryParamName>>:
@@ -84,7 +84,7 @@ resourceTypes:
           <<fallbackParamName>>:
             description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
 securitySchemes:
-    - oauth_2_0:
+    oauth_2_0:
         description: |
             Dropbox supports OAuth 2.0 for authenticating all API requests.
         type: OAuth 2.0
@@ -115,7 +115,7 @@ securitySchemes:
           authorizationUri: https://www.dropbox.com/1/oauth2/authorize
           accessTokenUri: https://api.dropbox.com/1/oauth2/token
           authorizationGrants: [ code, token ]
-    - oauth_1_0:
+    oauth_1_0:
         description: |
             OAuth 1.0 continues to be supported for all API requests, but OAuth 2.0 is now preferred.
         type: OAuth 1.0
@@ -123,6 +123,6 @@ securitySchemes:
           requestTokenUri: https://api.dropbox.com/1/oauth/request_token
           authorizationUri: https://www.dropbox.com/1/oauth/authorize
           tokenCredentialsUri: https://api.dropbox.com/1/oauth/access_token
-    - customHeader:
+    customHeader:
         description: |
             A custom
