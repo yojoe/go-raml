@@ -53,6 +53,9 @@ resourceTypes:
            enum:
              - win
              - mac
+  file:
+      put:
+        is: [ drm ]
 traits:
   secured:
      description: requests to <<methodName>> require authentication
@@ -70,6 +73,10 @@ traits:
             name:
             address\?:
             location?:
+  drm:
+     headers:
+       drm-key:
+         required: true
 
 /Users:
   type: collection

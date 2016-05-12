@@ -28,6 +28,11 @@ func TestLibraries(t *testing.T) {
 			So(files.Uses, ShouldContainKey, "file-type")
 			So(files.ResourceTypes, ShouldContainKey, "file")
 
+			// check trait usage in a resource type
+			file := files.ResourceTypes["file"]
+			So(file.Get, ShouldNotBeNil)
+			So(file.Get.Headers, ShouldContainKey, HTTPHeader("drm-key"))
+
 			// second level
 			So(files.Libraries, ShouldContainKey, "file-type")
 			fileType := files.Libraries["file-type"]

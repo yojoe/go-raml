@@ -7,9 +7,9 @@ import (
 )
 
 func TestResourceTypeInheritance(t *testing.T) {
+	apiDef := new(APIDefinition)
+	err := ParseFile("./samples/resource_types.raml", apiDef)
 	Convey("resource type & traits inheritance", t, func() {
-		apiDef := new(APIDefinition)
-		err := ParseFile("./samples/resource_types.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		Convey("checking users", func() {
@@ -94,6 +94,13 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(props, ShouldNotContainKey, "location?")
 			So(props, ShouldNotContainKey, "location")
 		})
+		Convey("resource types can use traits", func() {
+			So(apiDef.ResourceTypes, ShouldContainKey, "file")
 
+			file := apiDef.ResourceTypes["file"]
+			So(file.Put, ShouldNotBeNil)
+			So(file.Put.Headers, ShouldContainKey, HTTPHeader("drm-key"))
+			So(file.Put.Headers["drm-key"].Required, ShouldBeTrue)
+		})
 	})
 }

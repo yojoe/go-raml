@@ -65,7 +65,7 @@ func newMethod(name string) *Method {
 // fields need to be inherited:
 // - description
 // - response
-func (m *Method) inheritFromResourceType(r *Resource, rtm *ResourceTypeMethod, rt *ResourceType) {
+func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceType) {
 	if rtm == nil {
 		return
 	}

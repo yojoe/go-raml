@@ -50,7 +50,7 @@ func (l *Library) PostProcess() error {
 
 	// resource types
 	for name, rt := range l.ResourceTypes {
-		rt.postProcess(name)
+		rt.postProcess(name, l.Traits)
 		l.ResourceTypes[name] = rt
 	}
 	return nil

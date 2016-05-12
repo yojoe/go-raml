@@ -115,7 +115,7 @@ func (apiDef *APIDefinition) PostProcess() error {
 
 	// resource types
 	for name, rt := range apiDef.ResourceTypes {
-		rt.postProcess(name)
+		rt.postProcess(name, apiDef.Traits)
 		apiDef.ResourceTypes[name] = rt
 	}
 
