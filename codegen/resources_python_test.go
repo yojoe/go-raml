@@ -16,7 +16,8 @@ func TestPythonResource(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("resource with request body", func() {
-			apiDef, err := raml.ParseFile("./fixtures/server_resources/deliveries.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "", "python")

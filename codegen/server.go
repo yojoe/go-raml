@@ -153,7 +153,8 @@ func (ps pythonServer) generate(dir string) error {
 
 // GenerateServer generates API server files
 func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
-	ramlBytes, apiDef, err := raml.ParseReadFile(ramlFile)
+	apiDef := new(raml.APIDefinition)
+	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
 	if err != nil {
 		return err
 	}

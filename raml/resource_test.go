@@ -8,7 +8,8 @@ import (
 
 func TestResourceTypeInheritance(t *testing.T) {
 	Convey("resource type & traits inheritance", t, func() {
-		apiDef, err := ParseFile("./samples/resource_types.raml")
+		apiDef := new(APIDefinition)
+		err := ParseFile("./samples/resource_types.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		Convey("checking users", func() {

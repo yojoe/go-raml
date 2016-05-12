@@ -12,7 +12,8 @@ import (
 
 func TestGeneratePythonClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
-		apiDef, err := raml.ParseFile("./fixtures/struct/struct.raml")
+		apiDef := new(raml.APIDefinition)
+		err := raml.ParseFile("./fixtures/struct/struct.raml", apiDef)
 		So(err, ShouldBeNil)
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)

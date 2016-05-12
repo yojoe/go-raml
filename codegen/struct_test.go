@@ -12,7 +12,8 @@ import (
 
 func TestGenerateStructFromRaml(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
-		apiDef, err := raml.ParseFile("./fixtures/struct/struct.raml")
+		apiDef := new(raml.APIDefinition)
+		err := raml.ParseFile("./fixtures/struct/struct.raml", apiDef)
 		So(err, ShouldBeNil)
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)

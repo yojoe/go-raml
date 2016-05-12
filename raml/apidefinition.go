@@ -1,5 +1,10 @@
 package raml
 
+import (
+	"fmt"
+	"path/filepath"
+)
+
 // APIDefinition describes the basic information of an API, such as its
 // title and base URI, and describes how to define common schema references.
 type APIDefinition struct {
@@ -74,15 +79,38 @@ type APIDefinition struct {
 	SecuredBy []DefinitionChoice `yaml:"securedBy"`
 
 	// Imported external libraries for use within the API.
-	Uses string `yaml:"uses"`
+	Uses map[string]string `yaml:"uses"`
 
 	// The resources of the API, identified as relative URIs that begin with a slash (/).
 	// A resource property is one that begins with the slash and is either
 	// at the root of the API definition or a child of a resource property. For example, /users and /{groupId}.
 	Resources map[string]Resource `yaml:",regexp:/.*"`
+
+	Libraries map[string]*Library `yaml:"-"`
+
+	ramlFile string
 }
 
-func (apiDef *APIDefinition) postProcess() {
+// PostProcess doing additional processing
+// that couldn't be done by yaml parser such as :
+// - inheritance
+// - setting some additional values not exist in the .raml
+// - allocate map fields
+func (apiDef *APIDefinition) PostProcess(filename string) error {
+	apiDef.ramlFile = filename
+
+	// libraries
+	apiDef.Libraries = map[string]*Library{}
+
+	for name, path := range apiDef.Uses {
+		lib := new(Library)
+		if err := ParseFile(filepath.Join(filepath.Dir(apiDef.ramlFile), path), lib); err != nil {
+			return fmt.Errorf("apiDef.PostProcess() failed to parse library	name=%v, path=%v, err=%v",
+				name, path, err)
+		}
+		apiDef.Libraries[name] = lib
+	}
+
 	// traits
 	for i, tMap := range apiDef.Traits {
 		for name := range tMap {
@@ -110,5 +138,5 @@ func (apiDef *APIDefinition) postProcess() {
 		r.postProcess(k, nil, apiDef.ResourceTypes)
 		apiDef.Resources[k] = r
 	}
-
+	return nil
 }

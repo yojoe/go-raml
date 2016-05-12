@@ -48,14 +48,14 @@ import (
 // ParseFile parses an RAML file.
 // Returns a raml.APIDefinition value or an error if
 // something went wrong.
-func ParseFile(filePath string) (*APIDefinition, error) {
-	_, apiDef, err := ParseReadFile(filePath)
-	return apiDef, err
+func ParseFile(filePath string, root Root) error {
+	_, err := ParseReadFile(filePath, root)
+	return err
 }
 
 // ParseReadFile parse an .raml file.
 // It returns API definition and the concatenated .raml file.
-func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
+func ParseReadFile(filePath string, root Root) ([]byte, error) {
 
 	// Get the working directory
 	workingDirectory, fileName := filepath.Split(filePath)
@@ -64,7 +64,7 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 	mainFileBytes, err := readFileContents(workingDirectory, fileName)
 
 	if err != nil {
-		return []byte{}, nil, err
+		return []byte{}, err
 	}
 
 	// Get the contents of the main file
@@ -74,20 +74,15 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 	var ramlVersion string
 	firstLine, err := mainFileBuffer.ReadString('\n')
 	if err != nil {
-		return []byte{}, nil, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
+		return []byte{}, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
 	}
 
 	// We read some data...
 	if len(firstLine) >= 10 {
 		ramlVersion = firstLine[:10]
 	}
-
-	// TODO: Make this smart. We probably won't support multiple RAML
-	// versions in the same package - we'll have different branches
-	// for different versions. This one is hard-coded to 0.8.
-	// Still, would be good to think about this.
 	if ramlVersion != "#%RAML 1.0" {
-		return []byte{}, nil, errors.New("Input file is not a RAML 1.0 file. Make " +
+		return []byte{}, errors.New("Input file is not a RAML 1.0 file. Make " +
 			"sure the file starts with #%RAML 1.0")
 	}
 
@@ -96,7 +91,7 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 		preProcess(mainFileBuffer, workingDirectory)
 
 	if err != nil {
-		return []byte{}, nil,
+		return []byte{},
 			fmt.Errorf("Error preprocessing RAML file (Error: %s)", err.Error())
 	}
 
@@ -105,11 +100,11 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 	}
 
 	// Unmarshal into an APIDefinition value
-	apiDefinition := new(APIDefinition)
-	apiDefinition.RAMLVersion = ramlVersion
+	//apiDefinition := new(APIDefinition)
+	//apiDefinition.RAMLVersion = ramlVersion
 
 	// Go!
-	err = yaml.Unmarshal(preprocessedContentsBytes, apiDefinition)
+	err = yaml.Unmarshal(preprocessedContentsBytes, root)
 
 	// Any errors?
 	if err != nil {
@@ -125,13 +120,13 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 			ramlError.Errors = append(ramlError.Errors, err.Error())
 		}
 
-		return []byte{}, nil, ramlError
+		return []byte{}, ramlError
 	}
 
-	apiDefinition.postProcess()
+	root.PostProcess(filePath)
 
 	// Good.
-	return preprocessedContentsBytes, apiDefinition, nil
+	return preprocessedContentsBytes, nil
 }
 
 // Reads the contents of a file, returns a bytes buffer

@@ -17,7 +17,8 @@ type ClientCommand struct {
 //Execute generates a client from a RAML specification
 func (command *ClientCommand) Execute() error {
 	log.Debug("Generating a rest client for ", command.Language)
-	apiDef, err := raml.ParseFile(command.RamlFile)
+	apiDef := new(raml.APIDefinition)
+	err := raml.ParseFile(command.RamlFile, apiDef)
 	if err != nil {
 		return err
 	}

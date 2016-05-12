@@ -12,7 +12,8 @@ import (
 
 func TestGeneratePythonClientFromRaml(t *testing.T) {
 	Convey("generate python client", t, func() {
-		apiDef, err := raml.ParseFile("./fixtures/python_client/client.raml")
+		apiDef := new(raml.APIDefinition)
+		err := raml.ParseFile("./fixtures/python_client/client.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		targetdir, err := ioutil.TempDir("", "")
