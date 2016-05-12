@@ -45,6 +45,15 @@ import (
 	"github.com/kr/pretty"
 )
 
+var (
+	// directory of raml file
+	// we need to save it as global variable because
+	// library inside library file path is not relative to
+	// the library that include it.
+	// But relative to RAML file
+	ramlFileDir string
+)
+
 // ParseFile parses an RAML file.
 // Returns a raml.APIDefinition value or an error if
 // something went wrong.
@@ -59,6 +68,9 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 
 	// Get the working directory
 	workingDirectory, fileName := filepath.Split(filePath)
+	if ramlFileDir == "" {
+		ramlFileDir = workingDirectory
+	}
 
 	// Read original file contents into a byte array
 	mainFileBytes, err := readFileContents(workingDirectory, fileName)
@@ -123,7 +135,9 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 		return []byte{}, ramlError
 	}
 
-	root.PostProcess(filePath)
+	if err := root.PostProcess(); err != nil {
+		return preprocessedContentsBytes, err
+	}
 
 	// Good.
 	return preprocessedContentsBytes, nil

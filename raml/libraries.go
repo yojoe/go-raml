@@ -1,5 +1,10 @@
 package raml
 
+import (
+	"fmt"
+	"path/filepath"
+)
+
 // Library is used to combine any collection of data type declarations,
 // resource type declarations, trait declarations, and security scheme declarations
 // into modular, externalized, reusable groups.
@@ -17,12 +22,25 @@ type Library struct {
 	Usage string `yaml:"usage"`
 
 	Libraries map[string]*Library `yaml:"-"`
-
-	ramlFile string
 }
 
-func (l *Library) PostProcess(filename string) error {
-	l.ramlFile = filename
+// PostProcess doing additional processing
+// that couldn't be done by yaml parser such as :
+// - inheritance
+// - setting some additional values not exist in the .raml
+// - allocate map fields
+func (l *Library) PostProcess() error {
+	// libraries
+	l.Libraries = map[string]*Library{}
+	for name, path := range l.Uses {
+		lib := new(Library)
+		if err := ParseFile(filepath.Join(ramlFileDir, path), lib); err != nil {
+			return fmt.Errorf("l.PostProcess() failed to parse library	name=%v, path=%v, err=%v",
+				name, path, err)
+		}
+		l.Libraries[name] = lib
+
+	}
 
 	// traits
 	for name, t := range l.Traits {

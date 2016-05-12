@@ -10,7 +10,7 @@ func TestLibraries(t *testing.T) {
 	Convey("Libraries", t, func() {
 		apiDef := new(APIDefinition)
 
-		Convey("simple library", func() {
+		Convey("two level library", func() {
 			err := ParseFile("./samples/simple_with_lib.raml", apiDef)
 			So(err, ShouldBeNil)
 
@@ -21,10 +21,19 @@ func TestLibraries(t *testing.T) {
 			// Check Libraries property
 			So(apiDef.Libraries, ShouldContainKey, "files")
 
+			// first level
 			files := apiDef.Libraries["files"]
 			So(files.Usage, ShouldEqual, "Use to define some basic file-related constructs.")
 			So(files.Traits, ShouldContainKey, "drm")
 			So(files.Uses, ShouldContainKey, "file-type")
+			So(files.ResourceTypes, ShouldContainKey, "file")
+
+			// second level
+			So(files.Libraries, ShouldContainKey, "file-type")
+			fileType := files.Libraries["file-type"]
+			So(fileType.Types, ShouldContainKey, "File")
+			File := fileType.Types["File"]
+			So(len(File.Properties), ShouldEqual, 2)
 		})
 
 	})
