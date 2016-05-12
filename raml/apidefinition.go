@@ -110,7 +110,6 @@ func (apiDef *APIDefinition) PostProcess() error {
 	// traits
 	for name, t := range apiDef.Traits {
 		t.postProcess(name)
-		traitsMap[name] = t
 		apiDef.Traits[name] = t
 	}
 
@@ -123,7 +122,7 @@ func (apiDef *APIDefinition) PostProcess() error {
 	// resources
 	for k := range apiDef.Resources {
 		r := apiDef.Resources[k]
-		r.postProcess(k, nil, apiDef.ResourceTypes)
+		r.postProcess(k, nil, apiDef.ResourceTypes, apiDef.Traits)
 		apiDef.Resources[k] = r
 	}
 	return nil

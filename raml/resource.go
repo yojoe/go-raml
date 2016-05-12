@@ -70,12 +70,13 @@ type Resource struct {
 // - assign all properties that can't be obtained from RAML document
 // - inherit from resource type
 // - inherit from traits
-func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType) error {
+func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType, traitsMap map[string]Trait) error {
 	r.URI = strings.TrimSpace(uri)
 	r.Parent = parent
 
-	r.setMethods()
+	r.setMethods(traitsMap)
 
+	// inherit from resource types
 	if err := r.inheritResourceType(resourceTypes); err != nil {
 		return err
 	}
@@ -83,7 +84,7 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[s
 	// process nested/child resources
 	for k := range r.Nested {
 		n := r.Nested[k]
-		if err := n.postProcess(k, r, resourceTypes); err != nil {
+		if err := n.postProcess(k, r, resourceTypes, traitsMap); err != nil {
 			return err
 		}
 		r.Nested[k] = n
@@ -165,35 +166,35 @@ func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) *Resou
 
 // set methods set all methods name
 // and add it to Methods slice
-func (r *Resource) setMethods() {
+func (r *Resource) setMethods(traitsMap map[string]Trait) {
 	if r.Get != nil {
 		r.Get.Name = "GET"
-		r.Get.inheritFromAllTraits(r)
+		r.Get.inheritFromTraits(r, append(r.Is, r.Get.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Get)
 	}
 	if r.Post != nil {
 		r.Post.Name = "POST"
-		r.Post.inheritFromAllTraits(r)
+		r.Post.inheritFromTraits(r, append(r.Is, r.Post.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Post)
 	}
 	if r.Put != nil {
 		r.Put.Name = "PUT"
-		r.Put.inheritFromAllTraits(r)
+		r.Put.inheritFromTraits(r, append(r.Is, r.Put.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Put)
 	}
 	if r.Patch != nil {
 		r.Patch.Name = "PATCH"
-		r.Patch.inheritFromAllTraits(r)
+		r.Patch.inheritFromTraits(r, append(r.Is, r.Patch.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Patch)
 	}
 	if r.Head != nil {
 		r.Head.Name = "HEAD"
-		r.Head.inheritFromAllTraits(r)
+		r.Head.inheritFromTraits(r, append(r.Is, r.Head.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Head)
 	}
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
-		r.Delete.inheritFromAllTraits(r)
+		r.Delete.inheritFromTraits(r, append(r.Is, r.Delete.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Delete)
 	}
 }

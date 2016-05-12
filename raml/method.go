@@ -93,8 +93,8 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *ResourceTypeMethod, r
 // inherit from all traits, inherited traits are:
 // - resource level trait
 // - method trait
-func (m *Method) inheritFromAllTraits(r *Resource) error {
-	for _, tDef := range append(r.Is, m.Is...) {
+func (m *Method) inheritFromTraits(r *Resource, is []DefinitionChoice, traitsMap map[string]Trait) error {
+	for _, tDef := range is {
 		// acquire traits object
 		t, ok := traitsMap[tDef.Name]
 		if !ok {
