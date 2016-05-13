@@ -21,7 +21,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 facebook
@@ -67,7 +67,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
@@ -86,7 +86,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langPython)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langPython)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in dropbox

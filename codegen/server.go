@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
-	"github.com/Jumpscale/go-raml/codegen/date"
 	"github.com/Jumpscale/go-raml/raml"
 
 	log "github.com/Sirupsen/logrus"
@@ -53,7 +52,7 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// generate all Type structs
-	if err := generateStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
+	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
@@ -63,7 +62,7 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// security scheme
-	if err := generateSecurity(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
+	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName, langGo); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
@@ -101,7 +100,7 @@ func (ps pythonServer) generate(dir string) error {
 		return err
 	}
 	// security scheme
-	if err := generateSecurity(ps.apiDef, dir, ps.PackageName, langPython); err != nil {
+	if err := generateSecurity(ps.apiDef.SecuritySchemes, dir, ps.PackageName, langPython); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}

@@ -21,14 +21,13 @@ type security struct {
 	PackageName string
 	Header      *raml.Header
 	QueryParams *raml.NamedParameter
-	apiDef      *raml.APIDefinition
+	//apiDef      *raml.APIDefinition
 }
 
 // create security struct
-func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, packageName string) security {
+func newSecurity(ss *raml.SecurityScheme, name, packageName string) security {
 	sd := security{
 		SecurityScheme: ss,
-		apiDef:         apiDef,
 	}
 	sd.Name = securitySchemeName(name)
 	sd.PackageName = packageName
@@ -51,16 +50,16 @@ func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, pack
 }
 
 // generate security related code
-func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
+func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, lang string) error {
 	var err error
 
 	// generate oauth2 middleware
-	for k, ss := range apiDef.SecuritySchemes {
+	for k, ss := range schemes {
 		if ss.Type != Oauth2 {
 			continue
 		}
 
-		sd := newSecurity(apiDef, &ss, k, packageName)
+		sd := newSecurity(&ss, k, packageName)
 
 		switch lang {
 		case langGo:
