@@ -37,10 +37,10 @@ import (
 	"io"
 	"io/ioutil"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-
 	"github.com/gigforks/yaml"
 	"github.com/kr/pretty"
 )
@@ -68,7 +68,7 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 
 	// Get the working directory
 	workingDirectory, fileName := filepath.Split(filePath)
-	if ramlFileDir == "" {
+	if strings.HasSuffix(fmt.Sprint(reflect.TypeOf(root)), "APIDefinition") { // when we parse for APIDefinition, we reset ramlFileDir
 		ramlFileDir = workingDirectory
 	}
 

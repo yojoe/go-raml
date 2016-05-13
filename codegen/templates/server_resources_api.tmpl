@@ -4,6 +4,10 @@ package {{.PackageName}}
 import (
 	{{ if .NeedJSON }}"encoding/json"{{ end }}
 	"net/http"
+
+    {{ range $k, $v := .APILibImportPaths }}
+        "{{$k}}"
+    {{ end -}}
 )
 {{$apiName := .Name}}
 // {{.Name}}API is API implementation of {{.Endpoint}} root endpoint

@@ -92,8 +92,10 @@ func libRelDir(filename string) string {
 
 // get lib import path from a type
 func libImportPath(rootPath, typ string) string {
+	if strings.Index(typ, ".") < 0 {
+		return ""
+	}
 	// library name in the current document
-	// TODO : add support for name with more than one '.'
 	libName := strings.Split(typ, ".")[0]
 
 	// raml file of this lib

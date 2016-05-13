@@ -15,13 +15,14 @@ var (
 )
 
 // global variables
-// It is not harmfull but better to not use global variable
 var (
 	// root import path
+	// TODO : make it as command line option
 	rootImportPath = "examples.com/ramlcode"
 
 	// global value of API definition
 	// it is needed for libraries support
+	// It is not harmfull but better to not use global variable
 	globAPIDef *raml.APIDefinition
 )
 

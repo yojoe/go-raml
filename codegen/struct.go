@@ -176,19 +176,19 @@ func generateStructs(types map[string]raml.Type, dir, packageName, lang string) 
 	return nil
 }
 
-// ImportPaths returns array of packages
-// that need to be imported by this struct
-func (sd structDef) ImportPaths() []string {
-	ip := []string{}
+// ImportPaths returns all packages that
+// need to be imported by this struct
+func (sd structDef) ImportPaths() map[string]struct{} {
+	ip := map[string]struct{}{}
 
 	if sd.OneLineDef == "" {
-		ip = append(ip, "gopkg.in/validator.v2")
+		ip["gopkg.in/validator.v2"] = struct{}{}
 	}
 
 	// libraries
 	for _, fd := range sd.Fields {
-		if strings.Index(fd.Type, ".") >= 0 {
-			ip = append(ip, libImportPath(rootImportPath, fd.Type))
+		if lib := libImportPath(rootImportPath, fd.Type); lib != "" {
+			ip[lib] = struct{}{}
 		}
 	}
 	return ip

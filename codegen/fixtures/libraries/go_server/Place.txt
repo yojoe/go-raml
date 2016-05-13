@@ -1,0 +1,17 @@
+package main
+
+import (
+	"examples.com/ramlcode/libraries/files"
+
+	"gopkg.in/validator.v2"
+)
+
+type Place struct {
+	Dir  files.Directory `json:"dir" validate:"nonzero"`
+	Name string          `json:"name" validate:"nonzero"`
+}
+
+func (s Place) Validate() error {
+
+	return validator.Validate(s)
+}

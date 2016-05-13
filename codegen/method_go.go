@@ -42,6 +42,21 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 	return nil
 }
 
+// return all libs imported by this method
+func (gm goServerMethod) libImported() map[string]struct{} {
+	libs := map[string]struct{}{}
+
+	// req body
+	if lib := libImportPath(rootImportPath, gm.ReqBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	// resp body
+	if lib := libImportPath(rootImportPath, gm.RespBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	return libs
+}
+
 type goClientMethod struct {
 	*method
 }

@@ -8,3 +8,12 @@ types:
     properties:
       name: string
       dir: files.Directory
+
+/dirs:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            type:  files.Directory
+
