@@ -12,6 +12,8 @@ import (
 
 var (
 	errInvalidLang = errors.New("invalid language")
+	rootImportPath = "examples.com/ramlcode"
+	globAPIDef     = new(raml.APIDefinition)
 )
 
 const (
@@ -40,6 +42,7 @@ type pythonServer struct {
 
 // generate all Go server files
 func (gs goServer) generate(dir string) error {
+	/// dates
 	d := dateGen{PackageName: gs.PackageName}
 	if err := d.generate(dir); err != nil {
 		log.Errorf("generate() failed to generate date files:%v", err)
@@ -73,6 +76,11 @@ func (gs goServer) generate(dir string) error {
 		return err
 	}
 	gs.ResourcesDef = rds
+
+	// libraries
+	if err := generateLibraries(gs.apiDef.Libraries, dir); err != nil {
+		return err
+	}
 
 	// generate main
 	if gs.withMain {
@@ -122,19 +130,20 @@ func (ps pythonServer) generate(dir string) error {
 
 // GenerateServer generates API server files
 func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
-	apiDef := new(raml.APIDefinition)
-	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
+	// parse the raml file
+	ramlBytes, err := raml.ParseReadFile(ramlFile, globAPIDef)
 	if err != nil {
 		return err
 	}
 
+	// create directory if needed
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
 
 	sd := server{
 		PackageName: packageName,
-		apiDef:      apiDef,
+		apiDef:      globAPIDef,
 		APIDocsDir:  apiDocsDir,
 		withMain:    generateMain,
 	}

@@ -22,6 +22,7 @@ type Library struct {
 	Usage string `yaml:"usage"`
 
 	Libraries map[string]*Library `yaml:"-"`
+	Filename  string              `yaml:"-"`
 }
 
 // PostProcess doing additional processing
@@ -29,11 +30,11 @@ type Library struct {
 // - inheritance
 // - setting some additional values not exist in the .raml
 // - allocate map fields
-func (l *Library) PostProcess() error {
+func (l *Library) PostProcess(fileName string) error {
 	// libraries
 	l.Libraries = map[string]*Library{}
 	for name, path := range l.Uses {
-		lib := new(Library)
+		lib := &Library{Filename: path}
 		if err := ParseFile(filepath.Join(ramlFileDir, path), lib); err != nil {
 			return fmt.Errorf("l.PostProcess() failed to parse library	name=%v, path=%v, err=%v",
 				name, path, err)

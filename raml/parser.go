@@ -135,7 +135,7 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 		return []byte{}, ramlError
 	}
 
-	if err := root.PostProcess(); err != nil {
+	if err := root.PostProcess(filePath); err != nil {
 		return preprocessedContentsBytes, err
 	}
 

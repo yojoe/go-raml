@@ -132,9 +132,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 // create directory if not exist
 func checkCreateDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, 0777); err != nil {
-			return err
-		}
+		return os.MkdirAll(dir, 0777)
 	}
 	return nil
 }

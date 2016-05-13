@@ -89,11 +89,15 @@ type structDef struct {
 }
 
 // true if this struct need to import 'fmt' package
+// It is required by validation code,
+// because validation error will need `fmt` to build error message
 func (sd structDef) NeedFmt() bool {
 	// array type min items and max items
 	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
 		return true
 	}
+
+	// unique items
 	for _, f := range sd.Fields {
 		if f.UniqueItems {
 			return true
@@ -170,6 +174,24 @@ func generateStructs(types map[string]raml.Type, dir, packageName, lang string) 
 		}
 	}
 	return nil
+}
+
+// ImportPaths returns array of packages
+// that need to be imported by this struct
+func (sd structDef) ImportPaths() []string {
+	ip := []string{}
+
+	if sd.OneLineDef == "" {
+		ip = append(ip, "gopkg.in/validator.v2")
+	}
+
+	// libraries
+	for _, fd := range sd.Fields {
+		if strings.Index(fd.Type, ".") >= 0 {
+			ip = append(ip, libImportPath(rootImportPath, fd.Type))
+		}
+	}
+	return ip
 }
 
 // handle advance type type into structField

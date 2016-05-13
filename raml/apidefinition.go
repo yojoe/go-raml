@@ -87,6 +87,8 @@ type APIDefinition struct {
 	Resources map[string]Resource `yaml:",regexp:/.*"`
 
 	Libraries map[string]*Library `yaml:"-"`
+
+	Filename string
 }
 
 // PostProcess doing additional processing
@@ -94,12 +96,13 @@ type APIDefinition struct {
 // - inheritance
 // - setting some additional values not exist in the .raml
 // - allocate map fields
-func (apiDef *APIDefinition) PostProcess() error {
+func (apiDef *APIDefinition) PostProcess(filename string) error {
+	apiDef.Filename = filename
 	// libraries
 	apiDef.Libraries = map[string]*Library{}
 
 	for name, path := range apiDef.Uses {
-		lib := new(Library)
+		lib := &Library{Filename: path}
 		if err := ParseFile(filepath.Join(ramlFileDir, path), lib); err != nil {
 			return fmt.Errorf("apiDef.PostProcess() failed to parse library	name=%v, path=%v\n\terr=%v",
 				name, path, err)
