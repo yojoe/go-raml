@@ -12,8 +12,17 @@ import (
 
 var (
 	errInvalidLang = errors.New("invalid language")
+)
+
+// global variables
+// It is not harmfull but better to not use global variable
+var (
+	// root import path
 	rootImportPath = "examples.com/ramlcode"
-	globAPIDef     = new(raml.APIDefinition)
+
+	// global value of API definition
+	// it is needed for libraries support
+	globAPIDef *raml.APIDefinition
 )
 
 const (
@@ -130,11 +139,13 @@ func (ps pythonServer) generate(dir string) error {
 
 // GenerateServer generates API server files
 func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
+	apiDef := new(raml.APIDefinition)
 	// parse the raml file
-	ramlBytes, err := raml.ParseReadFile(ramlFile, globAPIDef)
+	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
 	if err != nil {
 		return err
 	}
+	globAPIDef = apiDef
 
 	// create directory if needed
 	if err := checkCreateDir(dir); err != nil {
@@ -143,7 +154,7 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generat
 
 	sd := server{
 		PackageName: packageName,
-		apiDef:      globAPIDef,
+		apiDef:      apiDef,
 		APIDocsDir:  apiDocsDir,
 		withMain:    generateMain,
 	}
