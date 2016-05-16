@@ -172,7 +172,7 @@ func (sd structDef) ImportPaths() map[string]struct{} {
 
 	// libraries
 	for _, fd := range sd.Fields {
-		if lib := libImportPath(rootImportPath, fd.Type); lib != "" {
+		if lib := libImportPath(globRootImportPath, fd.Type); lib != "" {
 			ip[lib] = struct{}{}
 		}
 	}

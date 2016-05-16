@@ -92,7 +92,7 @@ func libRelDir(filename string) string {
 }
 
 // get lib import path from a type
-func libImportPath(rootPath, typ string) string {
+func libImportPath(rootImportPath, typ string) string {
 	if strings.Index(typ, ".") < 0 {
 		return ""
 	}

@@ -70,7 +70,7 @@ func (gr goResource) APILibImportPaths() map[string]struct{} {
 	// methods
 	for _, v := range gr.Methods {
 		gm := v.(goServerMethod)
-		for lib := range gm.libImported() {
+		for lib := range gm.libImported(globRootImportPath) {
 			ip[lib] = struct{}{}
 		}
 	}

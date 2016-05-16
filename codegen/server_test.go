@@ -14,7 +14,7 @@ func TestServer(t *testing.T) {
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 		Convey("simple Go server", func() {
-			err := GenerateServer("./fixtures/server/user_api/api.raml", targetdir, "main", "go", "apidocs", true)
+			err := GenerateServer("./fixtures/server/user_api/api.raml", targetdir, "main", "go", "apidocs", "examples.com/ramlcode", true)
 			So(err, ShouldBeNil)
 
 			// check users api implementation
@@ -67,7 +67,7 @@ func TestServer(t *testing.T) {
 		})
 
 		Convey("Congo python server", func() {
-			err := GenerateServer("./fixtures/congo/api.raml", targetdir, "main", "python", "apidocs", true)
+			err := GenerateServer("./fixtures/congo/api.raml", targetdir, "main", "python", "apidocs", "", true)
 			So(err, ShouldBeNil)
 
 			// check drones API implementation

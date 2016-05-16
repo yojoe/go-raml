@@ -14,7 +14,7 @@ func TestLibrary(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", "go", "apidocs", true)
+		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/ramlcode", true)
 		So(err, ShouldBeNil)
 
 		rootFixture := "./fixtures/libraries/go_server"

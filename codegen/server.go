@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
@@ -15,14 +16,12 @@ var (
 )
 
 // global variables
+// it is needed for libraries support
 var (
 	// root import path
-	// TODO : make it as command line option
-	rootImportPath = "examples.com/ramlcode"
+	globRootImportPath string
 
 	// global value of API definition
-	// it is needed for libraries support
-	// It is not harmfull but better to not use global variable
 	globAPIDef *raml.APIDefinition
 )
 
@@ -134,20 +133,24 @@ func (ps pythonServer) generate(dir string) error {
 }
 
 // GenerateServer generates API server files
-func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
+func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
 	apiDef := new(raml.APIDefinition)
 	// parse the raml file
 	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
 	if err != nil {
 		return err
 	}
+
+	// global variables
 	globAPIDef = apiDef
+	globRootImportPath = rootImportPath
 
 	// create directory if needed
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
 
+	// create base server
 	sd := server{
 		PackageName: packageName,
 		apiDef:      apiDef,
@@ -156,6 +159,9 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generat
 	}
 	switch lang {
 	case langGo:
+		if rootImportPath == "" {
+			return fmt.Errorf("invalid import path = empty")
+		}
 		gs := goServer{server: sd, RootImportPath: rootImportPath}
 		err = gs.generate(dir)
 	case langPython:
