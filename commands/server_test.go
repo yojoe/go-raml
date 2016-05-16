@@ -25,6 +25,7 @@ func TestServerGeneration(t *testing.T) {
 				Language:    "go",
 				Dir:         targetdir,
 				RamlFile:    "../codegen/fixtures/server/user_api/api.raml",
+				ImportPath:  "examples.com/ramlcode",
 				PackageName: "main",
 			}
 			err := cmd.Execute()
@@ -73,6 +74,7 @@ func TestServerNoMainGeneration(t *testing.T) {
 				RamlFile:         "../codegen/fixtures/server/user_api/api.raml",
 				PackageName:      "main",
 				Language:         "go",
+				ImportPath:       "examples.com/ramlcode",
 				NoMainGeneration: true,
 			}
 			err := cmd.Execute()

@@ -84,6 +84,12 @@ func main() {
 					Usage:       "Do not generate API Docs in /apidocs/ endpoint",
 					Destination: &serverCommand.NoAPIDocs,
 				},
+				cli.StringFlag{
+					Name:        "import-path",
+					Value:       "examples.com/ramlcode",
+					Usage:       "import path of the generated code",
+					Destination: &serverCommand.ImportPath,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
