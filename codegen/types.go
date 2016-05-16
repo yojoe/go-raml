@@ -11,11 +11,11 @@ var (
 		"number":        "float64",
 		"integer":       "int",
 		"boolean":       "bool",
-		"date":          "Date",
-		"date-only":     "DateOnly",
-		"time-only":     "TimeOnly",
-		"datetime-only": "DatetimeOnly",
-		"datetime":      "DateTime",
+		"date":          "goraml.Date",
+		"date-only":     "goraml.DateOnly",
+		"time-only":     "goraml.TimeOnly",
+		"datetime-only": "goraml.DatetimeOnly",
+		"datetime":      "goraml.DateTime",
 	}
 )
 

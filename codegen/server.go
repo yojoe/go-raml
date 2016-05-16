@@ -44,6 +44,7 @@ type server struct {
 
 type goServer struct {
 	server
+	RootImportPath string
 }
 
 type pythonServer struct {
@@ -52,15 +53,9 @@ type pythonServer struct {
 
 // generate all Go server files
 func (gs goServer) generate(dir string) error {
-	/// dates
-	d := dateGen{PackageName: gs.PackageName}
-	if err := d.generate(dir); err != nil {
-		log.Errorf("generate() failed to generate date files:%v", err)
-		return err
-	}
-
-	// generate struct validator
-	if err := generateInputValidator(gs.PackageName, dir); err != nil {
+	// helper package
+	gh := goramlHelper{rootImportPath: gs.RootImportPath}
+	if err := gh.generate(dir); err != nil {
 		return err
 	}
 
@@ -161,7 +156,7 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generat
 	}
 	switch lang {
 	case langGo:
-		gs := goServer{server: sd}
+		gs := goServer{server: sd, RootImportPath: rootImportPath}
 		err = gs.generate(dir)
 	case langPython:
 		ps := pythonServer{server: sd}

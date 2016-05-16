@@ -28,8 +28,8 @@ func newLibrary(lib *raml.Library, baseDir string) *library {
 	l.PackageName = normalizePkgName(l.PackageName)
 
 	// package directory : filename without the extension
-	relDir := libRelDir(l.Filename) //strings.TrimSuffix(l.Filename, filepath.Ext(l.Filename))
-	l.dir = filepath.Join(l.baseDir, relDir)
+	relDir := libRelDir(l.Filename)
+	l.dir = normalizePkgName(filepath.Join(l.baseDir, relDir))
 
 	return &l
 }
@@ -50,7 +50,8 @@ func (l *library) generate() error {
 	}
 
 	// generate dates
-	dg := dateGen{PackageName: l.PackageName}
+	/*dg := dateGen{PackageName: l.PackageName}
+
 
 	if err := dg.generate(l.dir); err != nil {
 		log.Errorf("library.generate() failed to generate date files:%v", err)
@@ -61,7 +62,7 @@ func (l *library) generate() error {
 	if err := generateInputValidator(l.PackageName, l.dir); err != nil {
 		return err
 	}
-
+	*/
 	// generate all Type structs
 	if err := generateStructs(l.Types, l.dir, l.PackageName, langGo); err != nil {
 		return err
@@ -97,6 +98,10 @@ func libImportPath(rootPath, typ string) string {
 	}
 	// library name in the current document
 	libName := strings.Split(typ, ".")[0]
+
+	if libName == "goraml" { // special package name, reserved for goraml
+		return filepath.Join(rootImportPath, "goraml")
+	}
 
 	// raml file of this lib
 	libRAMLFile := globAPIDef.FindLibFile(denormalizePkgName(libName))

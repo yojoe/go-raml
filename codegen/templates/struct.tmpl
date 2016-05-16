@@ -2,8 +2,7 @@
 package {{.PackageName}}
 
 import (
-    {{if .NeedFmt}}"fmt"{{end}}
-    {{ range $k, $v := .ImportPaths }}
+    {{ range $k, $v := .ImportPaths -}}
         "{{ $k }}"
     {{ end -}}
 )

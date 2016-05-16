@@ -41,17 +41,18 @@ func TestServer(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
-			// check date files
+			// check goraml package
 			rootFixture := "./fixtures/server/user_api/"
 			checks := []struct {
 				Result   string
 				Expected string
 			}{
-				{"datetime.go", "datetime.txt"},
-				{"date_only.go", "date_only.txt"},
-				{"datetime_only.go", "datetime_only.txt"},
-				{"datetime_rfc2616.go", "datetime_rfc2616.txt"},
-				{"time_only.go", "time_only.txt"},
+				{"goraml/datetime.go", "goraml/datetime.txt"},
+				{"goraml/date_only.go", "goraml/date_only.txt"},
+				{"goraml/datetime_only.go", "goraml/datetime_only.txt"},
+				{"goraml/datetime_rfc2616.go", "goraml/datetime_rfc2616.txt"},
+				{"goraml/time_only.go", "goraml/time_only.txt"},
+				{"goraml/struct_input_validator.go", "goraml/struct_input_validator.txt"},
 			}
 			for _, check := range checks {
 				s, err = testLoadFile(filepath.Join(targetdir, check.Result))

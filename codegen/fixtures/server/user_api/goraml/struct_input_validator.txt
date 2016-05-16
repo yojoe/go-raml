@@ -1,5 +1,4 @@
-{{define "struct_input_validator_template"}}
-package {{.PackageName}}
+package goraml
 
 import (
 	"fmt"
@@ -30,4 +29,3 @@ func MultipleOf(num interface{}, value string) error {
 
 	return nil
 }
-{{end}}

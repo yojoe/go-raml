@@ -4,13 +4,15 @@ import (
 	"log"
 	"net/http"
 
+	"examples.com/ramlcode/goraml"
+
 	"github.com/gorilla/mux"
 	"gopkg.in/validator.v2"
 )
 
 func main() {
 	// input validator
-	validator.SetValidationFunc("multipleOf", multipleOf)
+	validator.SetValidationFunc("multipleOf", goraml.MultipleOf)
 
 	r := mux.NewRouter()
 

@@ -88,24 +88,6 @@ type structDef struct {
 	Validators []string
 }
 
-// true if this struct need to import 'fmt' package
-// It is required by validation code,
-// because validation error will need `fmt` to build error message
-func (sd structDef) NeedFmt() bool {
-	// array type min items and max items
-	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
-		return true
-	}
-
-	// unique items
-	for _, f := range sd.Fields {
-		if f.UniqueItems {
-			return true
-		}
-	}
-	return false
-}
-
 // true if this struct is not an alias of `interface{}`
 func (sd structDef) NotBareInterface() bool {
 	return !strings.HasSuffix(sd.OneLineDef, " interface{}")
@@ -181,6 +163,9 @@ func generateStructs(types map[string]raml.Type, dir, packageName, lang string) 
 func (sd structDef) ImportPaths() map[string]struct{} {
 	ip := map[string]struct{}{}
 
+	if sd.needFmt() {
+		ip["fmt"] = struct{}{}
+	}
 	if sd.OneLineDef == "" {
 		ip["gopkg.in/validator.v2"] = struct{}{}
 	}
@@ -304,4 +289,22 @@ func generateInputValidator(packageName, dir string) error {
 		return err
 	}
 	return runGoFmt(fileName)
+}
+
+// true if this struct need to import 'fmt' package
+// It is required by validation code,
+// because validation error will need `fmt` to build error message
+func (sd structDef) needFmt() bool {
+	// array type min items and max items
+	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
+		return true
+	}
+
+	// unique items
+	for _, f := range sd.Fields {
+		if f.UniqueItems {
+			return true
+		}
+	}
+	return false
 }
