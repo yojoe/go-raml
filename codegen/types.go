@@ -43,5 +43,5 @@ func convertToGoType(tip string) string {
 	case strings.Index(tip, "|") > 0:
 		return convertUnion(tip)
 	}
-	return tip
+	return normalizePkgName(tip)
 }

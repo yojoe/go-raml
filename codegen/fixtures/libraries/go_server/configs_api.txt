@@ -1,0 +1,35 @@
+package main
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"examples.com/ramlcode/libraries/file_type"
+)
+
+// ConfigsAPI is API implementation of /configs root endpoint
+type ConfigsAPI struct {
+}
+
+// Get is the handler for GET /configs
+// get config files
+func (api ConfigsAPI) Get(w http.ResponseWriter, r *http.Request) {
+	var respBody file_type.File
+	json.NewEncoder(w).Encode(&respBody)
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}
+
+// Post is the handler for POST /configs
+func (api ConfigsAPI) Post(w http.ResponseWriter, r *http.Request) {
+	var respBody Place
+	json.NewEncoder(w).Encode(&respBody)
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}
+
+// Put is the handler for PUT /configs
+func (api ConfigsAPI) Put(w http.ResponseWriter, r *http.Request) {
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}

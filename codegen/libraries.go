@@ -25,7 +25,7 @@ func newLibrary(lib *raml.Library, baseDir string) *library {
 
 	// package name  : base of filename without the extension
 	l.PackageName = strings.TrimSuffix(filepath.Base(l.Filename), filepath.Ext(l.Filename))
-	l.PackageName = replaceNonAlphanumerics(l.PackageName)
+	l.PackageName = normalizePkgName(l.PackageName)
 
 	// package directory : filename without the extension
 	relDir := libRelDir(l.Filename) //strings.TrimSuffix(l.Filename, filepath.Ext(l.Filename))
@@ -99,10 +99,24 @@ func libImportPath(rootPath, typ string) string {
 	libName := strings.Split(typ, ".")[0]
 
 	// raml file of this lib
-	libRAMLFile := globAPIDef.Uses[libName]
+	libRAMLFile := globAPIDef.FindLibFile(denormalizePkgName(libName))
+
+	if libRAMLFile == "" {
+		log.Fatalf("can't find library : %v", libName)
+	}
 
 	// relative lib package
 	libPkg := libRelDir(libRAMLFile)
 
-	return filepath.Join(rootImportPath, libPkg)
+	return filepath.Join(rootImportPath, normalizePkgName(libPkg))
+}
+
+// normalize package name because not all characters can be used as package name
+func normalizePkgName(name string) string {
+	return strings.Replace(name, "-", "_", -1)
+}
+
+// inverse of normalizePkgName
+func denormalizePkgName(name string) string {
+	return strings.Replace(name, "_", "-", -1)
 }

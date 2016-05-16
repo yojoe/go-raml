@@ -95,9 +95,9 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[s
 // inherit from a resource type
 func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType) error {
 	// get resource type object to inherit
-	rt := r.getResourceType(resourceTypes)
-	if rt == nil {
-		return nil
+	rt, err := r.getResourceType(resourceTypes)
+	if rt == nil || err != nil {
+		return err
 	}
 
 	// initialize dicts
@@ -149,19 +149,19 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 }
 
 // get resource type from which this resource will inherit
-func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) *ResourceType {
+func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) (*ResourceType, error) {
 	// check if it's specify a resource type to inherit
 	if r.Type == nil || r.Type.Name == "" {
-		return nil
+		return nil, nil
 	}
 
 	// get resource type from array of resource type map
 	for k, rt := range resourceTypes {
 		if k == r.Type.Name {
-			return &rt
+			return &rt, nil
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("can't find resource type named :%v", r.Type.Name)
 }
 
 // set methods set all methods name

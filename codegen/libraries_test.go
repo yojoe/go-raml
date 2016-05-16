@@ -24,6 +24,7 @@ func TestLibrary(t *testing.T) {
 		}{
 			{"Place.go", "Place.txt"},
 			{"dirs_api.go", "dirs_api.txt"},
+			{"configs_api.go", "configs_api.txt"},
 		}
 
 		for _, check := range checks {

@@ -125,8 +125,45 @@ func (apiDef *APIDefinition) PostProcess(filename string) error {
 	// resources
 	for k := range apiDef.Resources {
 		r := apiDef.Resources[k]
-		r.postProcess(k, nil, apiDef.ResourceTypes, apiDef.Traits)
+		if err := r.postProcess(k, nil, apiDef.allResourceTypes(), apiDef.Traits); err != nil {
+			return err
+		}
 		apiDef.Resources[k] = r
 	}
 	return nil
+}
+
+// AllResourceTypes gets all resource type that defined in this api definition.
+// resource types could be from:
+// - this document itself
+// - library
+func (apiDef *APIDefinition) allResourceTypes() map[string]ResourceType {
+	rts := apiDef.ResourceTypes
+	if len(rts) == 0 {
+		rts = map[string]ResourceType{}
+	}
+
+	for libName, l := range apiDef.Libraries {
+		for rtName, rt := range l.ResourceTypes {
+			rts[fmt.Sprintf("%v.%v", libName, rtName)] = rt
+		}
+	}
+	return rts
+}
+
+// FindLibFile find lbrary file by it's name
+// we also search from included library
+func (apiDef *APIDefinition) FindLibFile(name string) string {
+	// search in it's document
+	if filename, ok := apiDef.Uses[name]; ok {
+		return filename
+	}
+
+	// search in included libraries
+	for _, lib := range apiDef.Libraries {
+		if filename, ok := lib.Uses[name]; ok {
+			return filename
+		}
+	}
+	return ""
 }

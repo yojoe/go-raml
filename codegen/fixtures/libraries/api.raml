@@ -17,3 +17,13 @@ types:
           application/json:
             type:  files.Directory
 
+/configs:
+  type: files.file
+  get:
+    description: get config files
+  post:
+    responses:
+      201:
+        body:
+          application/json:
+            type: Place
