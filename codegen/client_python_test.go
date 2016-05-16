@@ -20,7 +20,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple client", func() {
-			err = GenerateClient(apiDef, targetdir, "python")
+			err = GenerateClient(apiDef, targetdir, "python", "")
 			So(err, ShouldBeNil)
 
 			// cek with generated with fixtures

@@ -53,7 +53,11 @@ type pythonServer struct {
 // generate all Go server files
 func (gs goServer) generate(dir string) error {
 	// helper package
-	gh := goramlHelper{rootImportPath: gs.RootImportPath}
+	gh := goramlHelper{
+		rootImportPath: gs.RootImportPath,
+		packageName:    "goraml",
+		packageDir:     "goraml",
+	}
 	if err := gh.generate(dir); err != nil {
 		return err
 	}

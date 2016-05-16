@@ -6,19 +6,22 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-const (
-	goramlHelperPkgName = "goraml"
+var (
+	globGoramlPkgDir string // global variable, hold `goraml` package dir
 )
 
 // goramlHelper represents helper package
 // that is not described in .raml file but needed by
 // generated code.
 type goramlHelper struct {
-	rootImportPath string
+	rootImportPath string // only used by server
+	packageName    string
+	packageDir     string
 }
 
 func (gh goramlHelper) generate(dir string) error {
-	pkgDir := filepath.Join(dir, goramlHelperPkgName)
+	globGoramlPkgDir = gh.packageDir
+	pkgDir := filepath.Join(dir, gh.packageDir)
 
 	// create directory if needed
 	if err := checkCreateDir(pkgDir); err != nil {
@@ -26,14 +29,14 @@ func (gh goramlHelper) generate(dir string) error {
 	}
 
 	/// dates
-	d := dateGen{PackageName: goramlHelperPkgName}
+	d := dateGen{PackageName: gh.packageName}
 	if err := d.generate(pkgDir); err != nil {
 		log.Errorf("generate() failed to generate date files:%v", err)
 		return err
 	}
 
 	// generate struct validator
-	if err := generateInputValidator(goramlHelperPkgName, pkgDir); err != nil {
+	if err := generateInputValidator(gh.packageName, pkgDir); err != nil {
 		return err
 	}
 	return nil

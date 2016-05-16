@@ -6,16 +6,11 @@ import (
 
 var (
 	typeMap = map[string]string{
-		"string":        "string",
-		"file":          "string",
-		"number":        "float64",
-		"integer":       "int",
-		"boolean":       "bool",
-		"date":          "goraml.Date",
-		"date-only":     "goraml.DateOnly",
-		"time-only":     "goraml.TimeOnly",
-		"datetime-only": "goraml.DatetimeOnly",
-		"datetime":      "goraml.DateTime",
+		"string":  "string",
+		"file":    "string",
+		"number":  "float64",
+		"integer": "int",
+		"boolean": "bool",
 	}
 )
 
@@ -29,6 +24,23 @@ func convertUnion(strType string) string {
 // convert from raml type to go type
 func convertToGoType(tip string) string {
 	if v, ok := typeMap[tip]; ok {
+		return v
+	}
+	goramlPkgDir := func() string {
+		if globGoramlPkgDir == "" {
+			return ""
+		}
+		return globGoramlPkgDir + "."
+	}()
+	dateMap := map[string]string{
+		"date":          goramlPkgDir + "Date",
+		"date-only":     goramlPkgDir + "DateOnly",
+		"time-only":     goramlPkgDir + "TimeOnly",
+		"datetime-only": goramlPkgDir + "DatetimeOnly",
+		"datetime":      goramlPkgDir + "DateTime",
+	}
+
+	if v, ok := dateMap[tip]; ok {
 		return v
 	}
 

@@ -120,6 +120,12 @@ func main() {
 					Usage:       "Source raml file",
 					Destination: &clientCommand.RamlFile,
 				},
+				cli.StringFlag{
+					Name:        "import-path",
+					Value:       "examples.com/client",
+					Usage:       "import path of the generated code",
+					Destination: &clientCommand.ImportPath,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := clientCommand.Execute(); err != nil {

@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -31,11 +32,15 @@ func newClientDef(apiDef *raml.APIDefinition) clientDef {
 }
 
 // GenerateClient generates client library
-func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, lang, rootImportPath string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
+
+	// global variables
+	globAPIDef = apiDef
+	globRootImportPath = rootImportPath
 
 	// creates base client struct
 	cd := newClientDef(apiDef)
@@ -48,7 +53,16 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang string) error {
 
 	switch lang {
 	case langGo:
-		gc := goClient{clientDef: cd}
+		// rootImportPath only needed if we use libraries
+		if rootImportPath == "" && len(apiDef.Libraries) > 0 {
+			return fmt.Errorf("--import-path can't be empty when we use libraries")
+		}
+
+		gc := goClient{
+			clientDef:      cd,
+			libraries:      apiDef.Libraries,
+			RootImportPath: rootImportPath,
+		}
 		return gc.generate(apiDef, dir)
 	case langPython:
 		pc := pythonClient{clientDef: cd}

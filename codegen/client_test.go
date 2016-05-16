@@ -20,7 +20,7 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple client from raml", func() {
-			err = GenerateClient(apiDef, targetdir, "go")
+			err = GenerateClient(apiDef, targetdir, "go", "client")
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))

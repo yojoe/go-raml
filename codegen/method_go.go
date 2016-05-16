@@ -43,15 +43,15 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 }
 
 // return all libs imported by this method
-func (gm goServerMethod) libImported(rootImportPath string) map[string]struct{} {
+func (m method) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, gm.ReqBody); lib != "" {
+	if lib := libImportPath(rootImportPath, m.ReqBody); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
-	if lib := libImportPath(rootImportPath, gm.RespBody); lib != "" {
+	if lib := libImportPath(rootImportPath, m.RespBody); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	return libs
