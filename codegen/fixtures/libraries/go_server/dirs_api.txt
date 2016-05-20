@@ -2,9 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
-
 	"examples.com/ramlcode/libraries/files"
+	"net/http"
 )
 
 // DirsAPI is API implementation of /dirs root endpoint

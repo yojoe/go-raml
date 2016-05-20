@@ -3,6 +3,7 @@ title: Example API
 version: v1
 uses:
   files: libraries/files.raml
+  security: libraries/security.raml
 types:
   Place:
     properties:
@@ -19,6 +20,7 @@ types:
             type:  files.Directory
 
 /configs:
+  securedBy: [security.Dropbox]
   type: files.file
   get:
     description: get config files

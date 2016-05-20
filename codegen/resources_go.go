@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,8 +14,6 @@ const (
 
 type goResource struct {
 	*resourceDef
-	WithMiddleware bool // this resource need middleware, we need to import github/justinas/alice
-	NeedJSON       bool // if true, the API implementation to import encoding/json package
 }
 
 // generate interface file of a resource
@@ -39,41 +38,67 @@ func (gr *goResource) generateAPIFile(directory string) error {
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
 	gr.generateMethods(r, "go")
-	gr.setImport()
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
 	return gr.generateAPIFile(dir)
 }
 
-func (gr *goResource) setImport() {
+// InterfaceImportPaths returns all packages imported by
+// this resource interface file
+func (gr goResource) InterfaceImportPaths() []string {
+	ip := map[string]struct{}{
+		"net/http":               struct{}{},
+		"github.com/gorilla/mux": struct{}{},
+	}
+
 	for _, v := range gr.Methods {
 		gm := v.(goServerMethod)
 
-		// if there is request/response body, then it needs to import encoding/json
-		if gm.RespBody != "" || gm.ReqBody != "" {
-			gr.NeedJSON = true
-		}
-
-		// if has middleware, we need to import middleware lib
+		// if has middleware, we need to import middleware helper library
 		if len(gm.Middlewares) > 0 {
-			gr.WithMiddleware = true
+			ip["github.com/justinas/alice"] = struct{}{}
+		}
+		for _, sb := range gm.SecuredBy {
+			if lib := libImportPath(globRootImportPath, sb.Name); lib != "" {
+				ip[lib] = struct{}{}
+			}
 		}
 	}
+
+	// return sorted array for predictable order
+	// we need it for unit test to always return same order
+	return sortImportPaths(ip)
 }
 
 // APIImportPaths returns all packages that need to be imported
 // by the API implementation
-func (gr goResource) APILibImportPaths() map[string]struct{} {
-	ip := map[string]struct{}{}
+func (gr goResource) APILibImportPaths() []string {
+	ip := map[string]struct{}{
+		"net/http": struct{}{},
+	}
 
 	// methods
 	for _, v := range gr.Methods {
 		gm := v.(goServerMethod)
+		if gm.RespBody != "" || gm.ReqBody != "" {
+			ip["encoding/json"] = struct{}{}
+		}
 		for lib := range gm.libImported(globRootImportPath) {
 			ip[lib] = struct{}{}
 		}
 	}
-	return ip
 
+	// return sorted array for predictable order
+	// we need it for unit test to always return same order
+	return sortImportPaths(ip)
+}
+
+func sortImportPaths(ip map[string]struct{}) []string {
+	libs := []string{}
+	for k := range ip {
+		libs = append(libs, k)
+	}
+	sort.Strings(libs)
+	return libs
 }

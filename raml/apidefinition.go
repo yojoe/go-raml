@@ -3,6 +3,7 @@ package raml
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 // APIDefinition describes the basic information of an API, such as its
@@ -166,4 +167,28 @@ func (apiDef *APIDefinition) FindLibFile(name string) string {
 		}
 	}
 	return ""
+}
+
+// GetSecurityScheme gets security scheme by it's name
+// it also search in included library
+func (apiDef *APIDefinition) GetSecurityScheme(name string) (SecurityScheme, bool) {
+	var ss SecurityScheme
+	var ok bool
+
+	// split library name by '.'
+	// if there is '.', it means we need to look from the library
+	splitted := strings.Split(strings.TrimSpace(name), ".")
+
+	switch len(splitted) {
+	case 1:
+		ss, ok = apiDef.SecuritySchemes[name]
+	case 2:
+		var l *Library
+		l, ok = apiDef.Libraries[splitted[0]]
+		if !ok {
+			return ss, false
+		}
+		ss, ok = l.SecuritySchemes[splitted[1]]
+	}
+	return ss, ok
 }

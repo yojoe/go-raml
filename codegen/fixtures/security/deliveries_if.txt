@@ -29,9 +29,9 @@ type DeliveriesInterface interface { // Get is the handler for GET /deliveries
 
 // DeliveriesInterfaceRoutes is routing for /deliveries root endpoint
 func DeliveriesInterfaceRoutes(r *mux.Router, i DeliveriesInterface) {
-	r.Handle("/deliveries", alice.New(newOauth2FacebookMiddleware([]string{"ADMINISTRATOR"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
-	r.Handle("/deliveries", alice.New(newOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.Post))).Methods("POST")
+	r.Handle("/deliveries", alice.New(NewOauth2FacebookMiddleware([]string{"ADMINISTRATOR"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
+	r.Handle("/deliveries", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.Post))).Methods("POST")
 	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdGet).Methods("GET")
-	r.Handle("/deliveries/{deliveryId}", alice.New(newOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdPatch))).Methods("PATCH")
-	r.Handle("/deliveries/{deliveryId}", alice.New(newOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
+	r.Handle("/deliveries/{deliveryId}", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdPatch))).Methods("PATCH")
+	r.Handle("/deliveries/{deliveryId}", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
 }

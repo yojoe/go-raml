@@ -17,6 +17,7 @@ type library struct {
 	dir         string // library directory
 }
 
+// create new library instance
 func newLibrary(lib *raml.Library, baseDir string) *library {
 	l := library{
 		Library: lib,
@@ -34,6 +35,7 @@ func newLibrary(lib *raml.Library, baseDir string) *library {
 	return &l
 }
 
+// generate code of all libraries
 func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
 	for _, ramlLib := range libraries {
 		l := newLibrary(ramlLib, baseDir)
@@ -44,25 +46,12 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string) error
 	return nil
 }
 
+// generate code of this library
 func (l *library) generate() error {
 	if err := checkCreateDir(l.dir); err != nil {
 		return err
 	}
 
-	// generate dates
-	/*dg := dateGen{PackageName: l.PackageName}
-
-
-	if err := dg.generate(l.dir); err != nil {
-		log.Errorf("library.generate() failed to generate date files:%v", err)
-		return err
-	}
-
-	// generate input validator
-	if err := generateInputValidator(l.PackageName, l.dir); err != nil {
-		return err
-	}
-	*/
 	// generate all Type structs
 	if err := generateStructs(l.Types, l.dir, l.PackageName, langGo); err != nil {
 		return err
@@ -91,11 +80,13 @@ func libRelDir(filename string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
-// get lib import path from a type
+// get library import path from a type
 func libImportPath(rootImportPath, typ string) string {
+	// library use '.', return nothing if it is not a library
 	if strings.Index(typ, ".") < 0 {
 		return ""
 	}
+
 	// library name in the current document
 	libName := strings.Split(typ, ".")[0]
 

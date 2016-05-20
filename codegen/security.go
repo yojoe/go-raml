@@ -80,12 +80,27 @@ func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, 
 
 // get oauth2 middleware handler from a security scheme
 func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
+	// construct security scopes
 	quotedScopes, err := getQuotedSecurityScopes(ss)
 	if err != nil {
 		return "", err
 	}
 	scopesArgs := strings.Join(quotedScopes, ", ")
-	return fmt.Sprintf(`newOauth2%vMiddleware([]string{%v}).Handler`, securitySchemeName(ss.Name), scopesArgs), nil
+
+	// middleware name
+	// need to handle case where it reside in different package
+	var packageName string
+	name := ss.Name
+
+	if splitted := strings.Split(name, "."); len(splitted) == 2 {
+		packageName = splitted[0]
+		name = splitted[1]
+	}
+	mwr := fmt.Sprintf(`NewOauth2%vMiddleware([]string{%v}).Handler`, name, scopesArgs)
+	if packageName != "" {
+		mwr = packageName + "." + mwr
+	}
+	return mwr, nil
 }
 
 // get array of security scopes in the form of quoted string
@@ -137,7 +152,7 @@ func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
 	if name == "" || name == "null" {
 		return false
 	}
-	if ss, ok := apiDef.SecuritySchemes[name]; ok {
+	if ss, ok := apiDef.GetSecurityScheme(name); ok {
 		return ss.Type == Oauth2
 	}
 	return false
