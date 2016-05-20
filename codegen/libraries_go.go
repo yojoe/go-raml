@@ -10,7 +10,7 @@ import (
 
 // library defines an RAML library
 // it is implemented as package in Go
-type library struct {
+type goLibrary struct {
 	*raml.Library
 	PackageName string
 	baseDir     string // root directory
@@ -18,8 +18,8 @@ type library struct {
 }
 
 // create new library instance
-func newLibrary(lib *raml.Library, baseDir string) *library {
-	l := library{
+func newGoLibrary(lib *raml.Library, baseDir string) *goLibrary {
+	l := goLibrary{
 		Library: lib,
 		baseDir: baseDir,
 	}
@@ -38,7 +38,7 @@ func newLibrary(lib *raml.Library, baseDir string) *library {
 // generate code of all libraries
 func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
 	for _, ramlLib := range libraries {
-		l := newLibrary(ramlLib, baseDir)
+		l := newGoLibrary(ramlLib, baseDir)
 		if err := l.generate(); err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string) error
 }
 
 // generate code of this library
-func (l *library) generate() error {
+func (l *goLibrary) generate() error {
 	if err := checkCreateDir(l.dir); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (l *library) generate() error {
 
 	// included libraries
 	for _, ramlLib := range l.Libraries {
-		childLib := newLibrary(ramlLib, l.baseDir)
+		childLib := newGoLibrary(ramlLib, l.baseDir)
 		if err := childLib.generate(); err != nil {
 			return err
 		}

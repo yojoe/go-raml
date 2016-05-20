@@ -2,7 +2,7 @@
 {{- $apiName := .Name -}}
 from flask import Blueprint, jsonify, request
 {{ range $k, $v := .MiddlewaresArr -}}
-import {{$v.Name}} as {{$v.Name}}
+import {{$v.ImportPath}} as {{$v.Name}}
 {{ end }}
 {{ range $k, $v := .ReqBodies }}
 from {{$v}} import {{$v}}

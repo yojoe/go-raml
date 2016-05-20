@@ -16,17 +16,17 @@ func TestLibrary(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/ramlcode", true)
+		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", langPython, "apidocs", "examples.com/ramlcode", true)
 		So(err, ShouldBeNil)
 
-		rootFixture := "./fixtures/libraries/go_server"
+		rootFixture := "./fixtures/libraries/python_server"
 		checks := []struct {
 			Result   string
 			Expected string
 		}{
-			{"Place.go", "Place.txt"},
-			{"dirs_api.go", "dirs_api.txt"},
-			{"configs_api.go", "configs_api.txt"},
+			{"Place.py", "Place.py"},
+			{"configs.py", "configs.py"},
+			{"libraries/security/oauth2_Dropbox.py", "libraries/security/oauth2_Dropbox.py"},
 		}
 
 		for _, check := range checks {

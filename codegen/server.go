@@ -128,6 +128,11 @@ func (ps pythonServer) generate(dir string) error {
 	}
 	ps.ResourcesDef = rds
 
+	// libraries
+	if err := generatePythonLibraries(ps.apiDef.Libraries, dir); err != nil {
+		return err
+	}
+
 	// generate main
 	if ps.withMain {
 		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, filepath.Join(dir, "app.py"), true)
