@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
@@ -83,4 +84,30 @@ func (l *pythonLibrary) generate() error {
 		}
 	}
 	return nil
+}
+
+func pythonLibImportPath(typ, prefix string) (string, string) {
+	// library use '.'
+	if strings.Index(typ, ".") < 0 {
+		return prefix + typ, prefix + typ
+	}
+
+	splitted := strings.Split(typ, ".")
+	if len(splitted) != 2 {
+		log.Fatalf("pythonLibImportPath invalid typ:" + typ)
+	}
+	// library name in the current document
+	libName := splitted[0]
+
+	// raml file of this lib
+	libRAMLFile := globAPIDef.FindLibFile(denormalizePkgName(libName))
+
+	if libRAMLFile == "" {
+		log.Fatalf("pythonLibImportPath() can't find library : %v", libName)
+	}
+
+	// relative lib package
+	libPkg := libRelDir(libRAMLFile)
+
+	return strings.Replace(normalizePkgName(libPkg), "/", ".", -1) + "." + prefix + splitted[1], prefix + splitted[1]
 }
