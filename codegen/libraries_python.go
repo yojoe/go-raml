@@ -64,6 +64,12 @@ func (l *pythonLibrary) generate() error {
 		return err
 	}
 
+	// python classes
+	if err := generatePythonClasses(l.Types, l.dir); err != nil {
+		log.Errorf("failed to generate python clased:%v", err)
+		return err
+	}
+
 	// security schemes
 	if err := generateSecurity(l.SecuritySchemes, l.dir, "", langPython); err != nil {
 		return err

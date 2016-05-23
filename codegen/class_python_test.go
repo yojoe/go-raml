@@ -19,7 +19,7 @@ func TestGeneratePythonClass(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("python class from raml Types", func() {
-			err = generatePythonClasses(apiDef, targetDir)
+			err = generatePythonClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			// strings validator

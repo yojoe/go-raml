@@ -110,11 +110,13 @@ func (ps pythonServer) generate(dir string) error {
 		log.Errorf("failed to generate python classes from request body:%v", err)
 		return err
 	}
+
 	// python classes
-	if err := generatePythonClasses(ps.apiDef, dir); err != nil {
+	if err := generatePythonClasses(ps.apiDef.Types, dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
 		return err
 	}
+
 	// security scheme
 	if err := generateSecurity(ps.apiDef.SecuritySchemes, dir, ps.PackageName, langPython); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)

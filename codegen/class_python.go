@@ -28,6 +28,7 @@ type pythonClass struct {
 	Fields      map[string]pythonField
 }
 
+// create a python class representations
 func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
 	pc := pythonClass{
 		Name:        name,
@@ -194,8 +195,8 @@ func (pf pythonField) WTFType() string {
 }
 
 // generate all python classes from an RAML document
-func generatePythonClasses(apiDef *raml.APIDefinition, dir string) error {
-	for k, t := range apiDef.Types {
+func generatePythonClasses(types map[string]raml.Type, dir string) error {
+	for k, t := range types {
 		pc := newPythonClassFromType(t, k)
 		if err := pc.generate(dir); err != nil {
 			return err

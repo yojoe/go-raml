@@ -27,6 +27,7 @@ func TestLibrary(t *testing.T) {
 			{"Place.py", "Place.py"},
 			{"configs.py", "configs.py"},
 			{"libraries/security/oauth2_Dropbox.py", "libraries/security/oauth2_Dropbox.py"},
+			{"libraries/files/Directory.py", "libraries/files/Directory.py"},
 		}
 
 		for _, check := range checks {
