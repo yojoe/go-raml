@@ -23,30 +23,6 @@ func NewExampleAPI() *ExampleAPI {
 	return c
 }
 
-func (c *ExampleAPI) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u files.Directory
-
-	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/dirs"+qsParam, nil)
-	if err != nil {
-		return u, nil, err
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
 // get config files
 func (c *ExampleAPI) ConfigsGet(headers, queryParams map[string]interface{}) (file_type.File, *http.Response, error) {
 	qsParam := buildQueryString(queryParams)
@@ -95,4 +71,28 @@ func (c *ExampleAPI) ConfigsPut(headers, queryParams map[string]interface{}) (*h
 	defer resp.Body.Close()
 
 	return resp, nil
+}
+
+func (c *ExampleAPI) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
+	var u files.Directory
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/dirs"+qsParam, nil)
+	if err != nil {
+		return u, nil, err
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 }

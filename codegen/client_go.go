@@ -1,9 +1,11 @@
 package codegen
 
 import (
-	"github.com/Jumpscale/go-raml/raml"
 	"path/filepath"
+	"sort"
 	"strings"
+
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 type goClient struct {
@@ -15,6 +17,12 @@ type goClient struct {
 // generate Go client files
 func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	pkgName := filepath.Base(gc.RootImportPath)
+
+	// sort the method, so we have predictable ordering
+	// we don't need it to produce correct code,
+	// we need it for our unit test
+	sort.Sort(byEndpoint(gc.Methods))
+
 	// helper package
 	gh := goramlHelper{
 		packageName: pkgName,

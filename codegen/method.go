@@ -9,6 +9,7 @@ import (
 type methodInterface interface {
 	Verb() string
 	Resource() *raml.Resource
+	EndpointStr() string
 }
 
 // Method defines base Method struct
@@ -32,6 +33,10 @@ func (m method) Verb() string {
 
 func (m method) Resource() *raml.Resource {
 	return m.resource
+}
+
+func (m method) EndpointStr() string {
+	return m.Endpoint
 }
 
 func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) method {
@@ -149,4 +154,12 @@ func findResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
 		return []raml.DefinitionChoice{}
 	}
 	return findResourceSecuredBy(r.Parent)
+}
+
+type byEndpoint []methodInterface
+
+func (b byEndpoint) Len() int      { return len(b) }
+func (b byEndpoint) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
+func (b byEndpoint) Less(i, j int) bool {
+	return strings.Compare(b[i].EndpointStr(), b[j].EndpointStr()) < 0
 }
