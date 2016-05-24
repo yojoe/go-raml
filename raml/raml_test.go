@@ -32,6 +32,8 @@ package raml
 import (
 	"fmt"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 // TODO: Way, way more serious tests.
@@ -90,21 +92,18 @@ func TestParsing(t *testing.T) {
 }
 
 func TestMethodStringer(t *testing.T) {
-	def := new(APIDefinition)
-	ParseFile("./samples/simple_example.raml", def)
+	Convey("method stringer", t, func() {
+		def := new(APIDefinition)
+		err := ParseFile("./samples/simple_example.raml", def)
+		So(err, ShouldBeNil)
 
-	r := def.Resources["/resources"]
-	if r.Get.Name != "GET" {
-		t.Errorf("Got %s, instead of GET", r.Get.Name)
-	}
-	n := r.Nested["/{resourceId}"]
-	if n.Get.Name != "GET" {
-		t.Errorf("Got %s, instead of GET", n.Get.Name)
-	}
-	if n.Put.Name != "PUT" {
-		t.Errorf("Got %s, instead of PUT", n.Put.Name)
-	}
-	if n.Delete.Name != "DELETE" {
-		t.Errorf("Got %s, instead of DELETE", n.Delete.Name)
-	}
+		r := def.Resources["/resources"]
+		So(r.Get.Name, ShouldEqual, "GET")
+
+		n := r.Nested["/{resourceId}"]
+		So(n.Get.Name, ShouldEqual, "GET")
+		So(n.Put.Name, ShouldEqual, "PUT")
+		So(n.Delete.Name, ShouldEqual, "DELETE")
+
+	})
 }

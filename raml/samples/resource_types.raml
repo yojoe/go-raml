@@ -77,6 +77,11 @@ traits:
      headers:
        drm-key:
          required: true
+  ordered:
+    queryParameters:
+      orderBy:
+        description: Order by field
+        enum: <<filterValues>>
 
 /Users:
   type: collection
