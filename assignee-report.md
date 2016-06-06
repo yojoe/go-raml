@@ -2,7 +2,7 @@
 
 # Issues per assignee
 - [iwanbk](#iwanbk) has 3 assigned
-- [robvanmieghem](#robvanmieghem) has 2 assigned
+- [robvanmieghem](#robvanmieghem) has 1 assigned
 
 
 
@@ -19,6 +19,5 @@
 
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
-|[#106](https://github.com/jumpscale/go-raml/issues/106)|Raml1.0 rc2|:large_blue_circle: In Progress||
 |[#91](https://github.com/jumpscale/go-raml/issues/91)|Use new arg format for cli.|:red_circle: Open||
 
