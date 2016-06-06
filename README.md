@@ -58,7 +58,15 @@ Internally, go templates are used to generate the code, this provides a flexible
 
 ## Server
 
-`go-raml` able to generate Go & Python server. API Docs also generated in `/apidocs/` endpoint. API Docs generation can be disabled by specifying `no-apidocs` option.
+`go-raml` able to generate Go & Python server.
+
+Go server will listen on port 8080 while Python server listen on port 5000.
+
+### Simple home page and API Docs
+
+Both servers have simple home page that can be accessed in http://localhost:8000 for Go and http://localhost:5000 for Python.
+
+There is `API Docs` link that will go to auto generated API documentation powered by [api-console](https://github.com/mulesoft/api-console)
 
 ### Go Server
 
@@ -87,7 +95,7 @@ To generate the Flask/Python code for implementing the server in first design ap
    --ramlfile "."   Source raml file
    --package "main" package name
    --no-main        Do not generate a main.go file
-   --no-apidocs     Do not generate API Docs in /apidocs/ endpoint
+   --no-apidocs     Do not generate API Docs in /apidocs/?raml=api.raml endpoint
 ```
 
 ## Client
@@ -124,7 +132,6 @@ struct name = types name.
     file        | string
     sometype[]  | []sometype
     sometype[][]| [][]sometype
-    sometype{}  | map[string]sometype
     Union       | interface{}
 
 ## Bodies

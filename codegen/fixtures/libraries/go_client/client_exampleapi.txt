@@ -1,0 +1,98 @@
+package client
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"examples.com/client/libraries/file_type"
+	"examples.com/client/libraries/files"
+)
+
+const (
+	rootURL = ""
+)
+
+type ExampleAPI struct {
+	client http.Client
+}
+
+func NewExampleAPI() *ExampleAPI {
+	c := new(ExampleAPI)
+	c.client = http.Client{}
+	return c
+}
+
+// get config files
+func (c *ExampleAPI) ConfigsGet(headers, queryParams map[string]interface{}) (file_type.File, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
+	var u file_type.File
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/configs"+qsParam, nil)
+	if err != nil {
+		return u, nil, err
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+func (c *ExampleAPI) ConfigsPost(headers, queryParams map[string]interface{}) (Place, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
+	var u Place
+
+	resp, err := doReqWithBody("POST", rootURL+"/configs", nil, c.client, headers, qsParam)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+func (c *ExampleAPI) ConfigsPut(headers, queryParams map[string]interface{}) (*http.Response, error) {
+	qsParam := buildQueryString(queryParams)
+
+	resp, err := doReqWithBody("PUT", rootURL+"/configs", nil, c.client, headers, qsParam)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return resp, nil
+}
+
+func (c *ExampleAPI) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
+	qsParam := buildQueryString(queryParams)
+	var u files.Directory
+
+	// create request object
+	req, err := http.NewRequest("GET", rootURL+"/dirs"+qsParam, nil)
+	if err != nil {
+		return u, nil, err
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, fmt.Sprintf("%v", v))
+	}
+
+	//do the request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}

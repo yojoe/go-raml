@@ -1,0 +1,19 @@
+package main
+
+import (
+	"encoding/json"
+	"examples.com/ramlcode/libraries/files"
+	"net/http"
+)
+
+// DirsAPI is API implementation of /dirs root endpoint
+type DirsAPI struct {
+}
+
+// Get is the handler for GET /dirs
+func (api DirsAPI) Get(w http.ResponseWriter, r *http.Request) {
+	var respBody files.Directory
+	json.NewEncoder(w).Encode(&respBody)
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}

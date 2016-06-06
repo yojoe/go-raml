@@ -1,10 +1,9 @@
 #%RAML 1.0
 title: Dropbox API
 version: 1
-securedBy: [oauth_2_0_header]
 baseUri: https://api.dropbox.com/{version}
 securitySchemes:
-  - DropboxIncluded: !include dropbox_included.raml
+  DropboxIncluded: !include dropbox_included.raml
 types:
   User:
     properties:
@@ -22,7 +21,7 @@ types:
 /deliveries:
   get:
     description: Get a list of deliveries
-    securedBy: [oauth_2_0_query: { scopes: [ ADMINISTRATOR ] }]
+    securedBy: [DropboxIncluded: { scopes: [ ADMINISTRATOR ] }]
   post:
     description: Create/request a new delivery
   /{deliveryId}:

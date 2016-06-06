@@ -12,8 +12,8 @@ type Oauth2{{.Name}}Middleware struct {
 	scopes      []string
 }
 
-// newOauth2{{.Name}}Middlewarecreate new Oauth2{{.Name}}Middleware struct
-func newOauth2{{.Name}}Middleware(scopes []string) *Oauth2{{.Name}}Middleware {
+// NewOauth2{{.Name}}Middlewarecreate new Oauth2{{.Name}}Middleware struct
+func NewOauth2{{.Name}}Middleware(scopes []string) *Oauth2{{.Name}}Middleware {
     om := Oauth2{{.Name}}Middleware{
 		scopes:      scopes,
 	}

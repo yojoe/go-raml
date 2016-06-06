@@ -1,9 +1,5 @@
 package raml
 
-import (
-	"reflect"
-)
-
 // NamedParameter is collection of named parameters
 // The RAML Specification uses collections of named parameters for the
 // following properties: URI parameters, query string parameters, form
@@ -42,7 +38,9 @@ type NamedParameter struct {
 
 	// If the enum attribute is defined, API clients and servers MUST verify
 	// that a parameter's value matches a value in the enum array
-	Enum []Any `yaml:",flow"`
+	// Enum parsing is currently disabled because of:
+	// https://github.com/Jumpscale/go-raml/issues/99
+	//Enum []Any `yaml:",flow"`
 
 	// The pattern attribute is a regular expression that a parameter of type
 	// string MUST match. Regular expressions MUST follow the regular
@@ -89,7 +87,7 @@ type NamedParameter struct {
 }
 
 // check if an element exist in enum field
-func (np *NamedParameter) existInEnum(elem Any) bool {
+/*func (np *NamedParameter) existInEnum(elem Any) bool {
 	for _, e := range np.Enum {
 		if reflect.DeepEqual(e, elem) {
 			return true
@@ -97,17 +95,20 @@ func (np *NamedParameter) existInEnum(elem Any) bool {
 	}
 	return false
 }
+*/
 
 func (np *NamedParameter) inherit(parent NamedParameter, dicts map[string]interface{}) {
 	np.Name = substituteParams(np.Name, parent.Name, dicts)
 	np.DisplayName = substituteParams(np.DisplayName, parent.DisplayName, dicts)
 	np.Description = substituteParams(np.Description, parent.Description, dicts)
 
-	for _, elem := range parent.Enum {
-		if !np.existInEnum(elem) {
-			np.Enum = append(np.Enum, elem)
+	/*
+		for _, elem := range parent.Enum {
+			if !np.existInEnum(elem) {
+				np.Enum = append(np.Enum, elem)
+			}
 		}
-	}
+	*/
 	np.Pattern = inheritStringPointer(np.Pattern, parent.Pattern, dicts)
 	np.MinLength = inheritIntPointer(np.MinLength, parent.MinLength)
 	np.MaxLength = inheritIntPointer(np.MaxLength, parent.MaxLength)

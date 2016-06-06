@@ -17,10 +17,11 @@ func TestOauth2Middleware(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("middleware generation test", func() {
-			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 facebook
@@ -44,7 +45,8 @@ func TestOauth2Middleware(t *testing.T) {
 		})
 
 		Convey("Go routes generation", func() {
-			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main", langGo)
@@ -61,10 +63,11 @@ func TestOauth2Middleware(t *testing.T) {
 		})
 
 		Convey("With included .raml file", func() {
-			apiDef, err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
@@ -79,10 +82,11 @@ func TestOauth2Middleware(t *testing.T) {
 		})
 
 		Convey("python middleware generation test", func() {
-			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef, targetdir, "main", langPython)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langPython)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in dropbox
@@ -105,7 +109,8 @@ func TestOauth2Middleware(t *testing.T) {
 		})
 
 		Convey("Python routes generation", func() {
-			apiDef, err := raml.ParseFile("./fixtures/security/dropbox.raml")
+			apiDef := new(raml.APIDefinition)
+			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main", langPython)

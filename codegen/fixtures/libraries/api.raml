@@ -1,0 +1,32 @@
+#%RAML 1.0
+title: Example API
+version: v1
+uses:
+  files: libraries/files.raml
+  security: libraries/security.raml
+types:
+  Place:
+    properties:
+      name: string
+      dir: files.Directory
+      created: datetime
+
+/dirs:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            type:  files.Directory
+
+/configs:
+  securedBy: [security.Dropbox]
+  type: files.file
+  get:
+    description: get config files
+  post:
+    responses:
+      201:
+        body:
+          application/json:
+            type: Place

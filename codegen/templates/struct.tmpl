@@ -2,9 +2,9 @@
 package {{.PackageName}}
 
 import (
-    {{if .NeedFmt}}"fmt"{{end}}
-
-    {{if .OneLineDef}} {{else}}"gopkg.in/validator.v2" {{end}}
+    {{ range $k, $v := .ImportPaths -}}
+        "{{ $k }}"
+    {{ end -}}
 )
 
 {{ range $v := .Description }}

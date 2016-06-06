@@ -16,9 +16,10 @@ func TestClientGeneration(t *testing.T) {
 
 		Convey("Test run client command using go language", func() {
 			cmd := ClientCommand{
-				Language: "go",
-				Dir:      targetdir,
-				RamlFile: "../codegen/fixtures/client_resources/client.raml",
+				Language:   "go",
+				Dir:        targetdir,
+				RamlFile:   "../codegen/fixtures/client_resources/client.raml",
+				ImportPath: "examples.com/client",
 			}
 			err := cmd.Execute()
 			So(err, ShouldBeNil)

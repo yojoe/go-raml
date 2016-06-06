@@ -9,6 +9,7 @@ import (
 type methodInterface interface {
 	Verb() string
 	Resource() *raml.Resource
+	EndpointStr() string
 }
 
 // Method defines base Method struct
@@ -32,6 +33,10 @@ func (m method) Verb() string {
 
 func (m method) Resource() *raml.Resource {
 	return m.resource
+}
+
+func (m method) EndpointStr() string {
+	return m.Endpoint
 }
 
 func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) method {
@@ -118,10 +123,10 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 	}
 }
 
-// assignBodyName assign method's request body by bodies.Type or bodies.ApplicationJson
+// assignBodyName assign method's request body by bodies.Type or bodies.ApplicationJSON
 // if bodiesType generated from bodies.Type we dont need append prefix and suffix
 // 		example : bodies.Type = City, so bodiesType = City
-// if bodiesType generated from bodies.ApplicationJson, we get that value from prefix and suffix
+// if bodiesType generated from bodies.ApplicationJSON, we get that value from prefix and suffix
 //		suffix = [ReqBody | RespBody] and prefix should be uri + method name.
 //		example prefix could be UsersUserIdDelete
 func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
@@ -129,9 +134,9 @@ func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
 
 	if len(bodies.Type) > 0 {
 		bodiesType = convertToGoType(bodies.Type)
-	} else if bodies.ApplicationJson != nil {
-		if bodies.ApplicationJson.Type != "" {
-			bodiesType = convertToGoType(bodies.ApplicationJson.Type)
+	} else if bodies.ApplicationJSON != nil {
+		if bodies.ApplicationJSON.Type != "" {
+			bodiesType = convertToGoType(bodies.ApplicationJSON.Type)
 		} else {
 			bodiesType = prefix + suffix
 		}
@@ -149,4 +154,12 @@ func findResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
 		return []raml.DefinitionChoice{}
 	}
 	return findResourceSecuredBy(r.Parent)
+}
+
+type byEndpoint []methodInterface
+
+func (b byEndpoint) Len() int      { return len(b) }
+func (b byEndpoint) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
+func (b byEndpoint) Less(i, j int) bool {
+	return strings.Compare(b[i].EndpointStr(), b[j].EndpointStr()) < 0
 }

@@ -11,8 +11,8 @@ type Oauth2FacebookMiddleware struct {
 	scopes      []string
 }
 
-// newOauth2FacebookMiddlewarecreate new Oauth2FacebookMiddleware struct
-func newOauth2FacebookMiddleware(scopes []string) *Oauth2FacebookMiddleware {
+// NewOauth2FacebookMiddlewarecreate new Oauth2FacebookMiddleware struct
+func NewOauth2FacebookMiddleware(scopes []string) *Oauth2FacebookMiddleware {
 	om := Oauth2FacebookMiddleware{
 		scopes: scopes,
 	}

@@ -4,9 +4,9 @@ import (
 	"gopkg.in/validator.v2"
 )
 
-// city of angel city of angel city of angel city of angel city of angel city of angel
-// city of angel city of angel city of angelcity of angelcity of angelcity of angelcity
-// of angel city of angel
+// first line
+// second line
+// third line
 type EnumCity struct {
 	Enum_homeNum int    `json:"enum_homeNum" validate:"nonzero"`
 	Enum_parks   string `json:"enum_parks" validate:"nonzero"`

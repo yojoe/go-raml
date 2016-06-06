@@ -1,5 +1,5 @@
 {{- define "server_python_main_template" -}}
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, send_file
 import wtforms_json
 {{ range $k, $v := .ResourcesDef -}}
 from {{.Name | ToLower}} import {{.Name | ToLower}}_api
@@ -19,6 +19,10 @@ app.register_blueprint({{.Name | ToLower }}_api)
 def send_js(path):
     return send_from_directory('{{.APIDocsDir}}', path)
 {{ end }}
+
+@app.route('/', methods=['GET'])
+def home():
+    return send_file('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

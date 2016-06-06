@@ -132,9 +132,7 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 // create directory if not exist
 func checkCreateDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, 0777); err != nil {
-			return err
-		}
+		return os.MkdirAll(dir, 0777)
 	}
 	return nil
 }
@@ -179,31 +177,18 @@ func interfaceToString(data interface{}) string {
 	}
 }
 
-// create comment string from raml description field.
-// comment is around 80 characters per line
+// create string slice from an RAML description.
+// each element is a  description line
 func commentBuilder(desc string) []string {
-	tmpDesc := ""
-	var results []string
+	// we need to trim it because our parser usually give
+	// space after last newline
+	desc = strings.TrimSpace(desc)
 
-	for _, vv := range strings.Split(desc, "\n") {
-		splittedDesc := strings.Split(vv, " ")
-		for i, v := range splittedDesc {
-			tmpDesc += v
-			if len(tmpDesc) > maxCommentPerLine {
-				results = append(results, tmpDesc)
-				tmpDesc = ""
-			} else if i < len(splittedDesc)-1 { // add space to non last word
-				tmpDesc += " "
-			}
-		}
-
-		if len(tmpDesc) > 0 {
-			results = append(results, tmpDesc)
-			tmpDesc = ""
-		}
+	if desc == "" {
+		return []string{}
 	}
 
-	return results
+	return strings.Split(desc, "\n")
 }
 
 // replace non alphanumerics with "_"

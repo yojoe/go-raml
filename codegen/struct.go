@@ -88,20 +88,6 @@ type structDef struct {
 	Validators []string
 }
 
-// true if this struct need to import 'fmt' package
-func (sd structDef) NeedFmt() bool {
-	// array type min items and max items
-	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
-		return true
-	}
-	for _, f := range sd.Fields {
-		if f.UniqueItems {
-			return true
-		}
-	}
-	return false
-}
-
 // true if this struct is not an alias of `interface{}`
 func (sd structDef) NotBareInterface() bool {
 	return !strings.HasSuffix(sd.OneLineDef, " interface{}")
@@ -149,7 +135,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 		structName = structNamePrefix + reqBodySuffix
 	}
 
-	return newStructDef(structName, packageName, "", body.ApplicationJson.Properties)
+	return newStructDef(structName, packageName, "", body.ApplicationJSON.Properties)
 }
 
 // generate Go struct
@@ -162,14 +148,35 @@ func (sd structDef) generate(dir string) error {
 }
 
 // generate all structs from an RAML api definition
-func generateStructs(apiDefinition *raml.APIDefinition, dir, packageName, lang string) error {
-	for name, t := range apiDefinition.Types {
+func generateStructs(types map[string]raml.Type, dir, packageName, lang string) error {
+	for name, t := range types {
 		sd := newStructDefFromType(t, name, packageName, lang)
 		if err := sd.generate(dir); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+// ImportPaths returns all packages that
+// need to be imported by this struct
+func (sd structDef) ImportPaths() map[string]struct{} {
+	ip := map[string]struct{}{}
+
+	if sd.needFmt() {
+		ip["fmt"] = struct{}{}
+	}
+	if sd.OneLineDef == "" {
+		ip["gopkg.in/validator.v2"] = struct{}{}
+	}
+
+	// libraries
+	for _, fd := range sd.Fields {
+		if lib := libImportPath(globRootImportPath, fd.Type); lib != "" {
+			ip[lib] = struct{}{}
+		}
+	}
+	return ip
 }
 
 // handle advance type type into structField
@@ -194,8 +201,6 @@ func (sd *structDef) handleAdvancedType() {
 		sd.buildUnion()
 	case sd.T.IsArray(): // arary type
 		sd.buildArray()
-	case sd.T.IsMap(): //map
-		sd.buildMap()
 	case strings.ToLower(strType) == "object": // plain type
 		return
 	case sd.T.IsEnum(): // enum
@@ -250,26 +255,6 @@ func (sd *structDef) buildEnum() {
 	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 
-// build map type based on http://docs.raml.org/specs/1.0/#raml-10-spec-map-types
-// result is `type TypeName map[string]something`
-func (sd *structDef) buildMap() {
-	typeFromSquareBracketProp := func() string {
-		var p raml.Property
-		for k, v := range sd.T.Properties {
-			p = raml.ToProperty(k, v)
-			break
-		}
-
-		return convertToGoType(p.Type)
-	}
-	switch {
-	case sd.T.AdditionalProperties != "":
-		sd.buildOneLine(" map[string]" + convertToGoType(sd.T.AdditionalProperties))
-	case len(sd.T.Properties) == 1:
-		sd.buildOneLine(" map[string]" + typeFromSquareBracketProp())
-	}
-}
-
 // build array type
 // spec http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 // example result  `type TypeName []something`
@@ -304,4 +289,22 @@ func generateInputValidator(packageName, dir string) error {
 		return err
 	}
 	return runGoFmt(fileName)
+}
+
+// true if this struct need to import 'fmt' package
+// It is required by validation code,
+// because validation error will need `fmt` to build error message
+func (sd structDef) needFmt() bool {
+	// array type min items and max items
+	if sd.T.MinItems > 0 || sd.T.MaxItems > 0 {
+		return true
+	}
+
+	// unique items
+	for _, f := range sd.Fields {
+		if f.UniqueItems {
+			return true
+		}
+	}
+	return false
 }

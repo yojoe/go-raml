@@ -8,32 +8,6 @@ var (
 	dcRe = regexp.MustCompile(`\<<(.*?)\>>`) // double chevron regex
 )
 
-// ResourceTypeMethod is Method that is part of a ResourceType.
-// DIfferentiated from Traits since it
-// doesn't contain Usage, optional fields etc.
-type ResourceTypeMethod struct {
-	Name string
-
-	// Briefly describes what the method does to the resource
-	Description string
-
-	// As in Method.
-	Bodies Bodies `yaml:"body"`
-	// TODO: Check - how does the mediaType play play here? What it do?
-
-	// As in Method.
-	Headers map[HTTPHeader]Header `yaml:"headers"`
-
-	// As in Method.
-	Responses map[HTTPCode]Response `yaml:"responses"`
-
-	// As in Method.
-	QueryParameters map[string]NamedParameter `yaml:"queryParameters"`
-
-	// As in Method.
-	Protocols []string `yaml:"protocols"`
-}
-
 // ResourceType defines a resource type.
 // Resource and method declarations are frequently repetitive. For example, if
 // an API requires OAuth authentication, the API definition must include the
@@ -84,16 +58,20 @@ type ResourceType struct {
 	// As in Resource.
 	BaseURIParameters map[string]NamedParameter `yaml:"baseUriParameters"`
 
+	// A list of traits to apply to all methods declared (implicitly or explicitly) for this resource type.
+	// Individual methods can override this declaration.
+	Is []DefinitionChoice `yaml:"is"`
+
 	// In a RESTful API, methods are operations that are performed on a
 	// resource. A method MUST be one of the HTTP methods defined in the
 	// HTTP version 1.1 specification [RFC2616] and its extension,
 	// RFC5789 [RFC5789].
-	Get    *ResourceTypeMethod `yaml:"get"`
-	Head   *ResourceTypeMethod `yaml:"head"`
-	Post   *ResourceTypeMethod `yaml:"post"`
-	Put    *ResourceTypeMethod `yaml:"put"`
-	Delete *ResourceTypeMethod `yaml:"delete"`
-	Patch  *ResourceTypeMethod `yaml:"patch"`
+	Get    *Method `yaml:"get"`
+	Head   *Method `yaml:"head"`
+	Post   *Method `yaml:"post"`
+	Put    *Method `yaml:"put"`
+	Delete *Method `yaml:"delete"`
+	Patch  *Method `yaml:"patch"`
 
 	// When defining resource types and traits, it can be useful to capture
 	// patterns that manifest several levels below the inheriting resource or
@@ -108,15 +86,15 @@ type ResourceType struct {
 	// corresponding level in that resource or method.
 	OptionalURIParameters     map[string]NamedParameter `yaml:"uriParameters?"`
 	OptionalBaseURIParameters map[string]NamedParameter `yaml:"baseUriParameters?"`
-	OptionalGet               *ResourceTypeMethod       `yaml:"get?"`
-	OptionalHead              *ResourceTypeMethod       `yaml:"head?"`
-	OptionalPost              *ResourceTypeMethod       `yaml:"post?"`
-	OptionalPut               *ResourceTypeMethod       `yaml:"put?"`
-	OptionalDelete            *ResourceTypeMethod       `yaml:"delete?"`
-	OptionalPatch             *ResourceTypeMethod       `yaml:"patch?"`
+	OptionalGet               *Method                   `yaml:"get?"`
+	OptionalHead              *Method                   `yaml:"head?"`
+	OptionalPost              *Method                   `yaml:"post?"`
+	OptionalPut               *Method                   `yaml:"put?"`
+	OptionalDelete            *Method                   `yaml:"delete?"`
+	OptionalPatch             *Method                   `yaml:"patch?"`
 
-	methods         []*ResourceTypeMethod // all non-nil methods
-	optionalMethods []*ResourceTypeMethod // all non-nil optional methods
+	methods         []*Method // all non-nil methods
+	optionalMethods []*Method // all non-nil optional methods
 }
 
 // postProcess doing post processing of a resource type after being constructed
@@ -124,9 +102,9 @@ type ResourceType struct {
 // - assign all properties that can't be obtained from RAML document
 // - inherit from other resource type
 // - apply traits
-func (rt *ResourceType) postProcess(name string) {
+func (rt *ResourceType) postProcess(name string, traitsMap map[string]Trait) {
 	rt.Name = name
-	rt.setMethods()
+	rt.setMethods(traitsMap)
 	rt.setOptionalMethods()
 
 	// TODO : inherit from other resource type
@@ -136,29 +114,35 @@ func (rt *ResourceType) postProcess(name string) {
 
 // set methods set all methods name
 // and add it to methods slice
-func (rt *ResourceType) setMethods() {
+func (rt *ResourceType) setMethods(traitsMap map[string]Trait) {
 	if rt.Get != nil {
 		rt.Get.Name = "GET"
+		rt.Get.inheritFromTraits(nil, append(rt.Is, rt.Get.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Get)
 	}
 	if rt.Post != nil {
 		rt.Post.Name = "POST"
+		rt.Post.inheritFromTraits(nil, append(rt.Is, rt.Post.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Post)
 	}
 	if rt.Put != nil {
 		rt.Put.Name = "PUT"
+		rt.Put.inheritFromTraits(nil, append(rt.Is, rt.Put.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Put)
 	}
 	if rt.Patch != nil {
 		rt.Patch.Name = "PATCH"
+		rt.Patch.inheritFromTraits(nil, append(rt.Is, rt.Patch.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Patch)
 	}
 	if rt.Head != nil {
 		rt.Head.Name = "HEAD"
+		rt.Head.inheritFromTraits(nil, append(rt.Is, rt.Head.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Head)
 	}
 	if rt.Delete != nil {
 		rt.Delete.Name = "DELETE"
+		rt.Delete.inheritFromTraits(nil, append(rt.Is, rt.Delete.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Delete)
 	}
 }
@@ -196,7 +180,9 @@ func initResourceTypeDicts(r *Resource, dicts map[string]interface{}) map[string
 	if len(dicts) == 0 {
 		dicts = map[string]interface{}{}
 	}
-	dicts["resourcePathName"] = r.CleanURI()
-	dicts["resourcePath"] = r.FullURI()
+	if r != nil {
+		dicts["resourcePathName"] = r.CleanURI()
+		dicts["resourcePath"] = r.FullURI()
+	}
 	return dicts
 }

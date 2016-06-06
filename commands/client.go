@@ -9,17 +9,19 @@ import (
 
 //ClientCommand is executed to generate client from a RAML specification
 type ClientCommand struct {
-	Language string
-	Dir      string //target dir
-	RamlFile string //raml file
+	Language   string
+	Dir        string //target dir
+	RamlFile   string //raml file
+	ImportPath string
 }
 
 //Execute generates a client from a RAML specification
 func (command *ClientCommand) Execute() error {
 	log.Debug("Generating a rest client for ", command.Language)
-	apiDef, err := raml.ParseFile(command.RamlFile)
+	apiDef := new(raml.APIDefinition)
+	err := raml.ParseFile(command.RamlFile, apiDef)
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateClient(apiDef, command.Dir, command.Language)
+	return codegen.GenerateClient(apiDef, command.Dir, command.Language, command.ImportPath)
 }

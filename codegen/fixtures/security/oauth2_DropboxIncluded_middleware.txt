@@ -11,8 +11,8 @@ type Oauth2DropboxIncludedMiddleware struct {
 	scopes      []string
 }
 
-// newOauth2DropboxIncludedMiddlewarecreate new Oauth2DropboxIncludedMiddleware struct
-func newOauth2DropboxIncludedMiddleware(scopes []string) *Oauth2DropboxIncludedMiddleware {
+// NewOauth2DropboxIncludedMiddlewarecreate new Oauth2DropboxIncludedMiddleware struct
+func NewOauth2DropboxIncludedMiddleware(scopes []string) *Oauth2DropboxIncludedMiddleware {
 	om := Oauth2DropboxIncludedMiddleware{
 		scopes: scopes,
 	}

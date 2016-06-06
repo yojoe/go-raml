@@ -21,14 +21,13 @@ type security struct {
 	PackageName string
 	Header      *raml.Header
 	QueryParams *raml.NamedParameter
-	apiDef      *raml.APIDefinition
+	//apiDef      *raml.APIDefinition
 }
 
 // create security struct
-func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, packageName string) security {
+func newSecurity(ss *raml.SecurityScheme, name, packageName string) security {
 	sd := security{
 		SecurityScheme: ss,
-		apiDef:         apiDef,
 	}
 	sd.Name = securitySchemeName(name)
 	sd.PackageName = packageName
@@ -51,31 +50,29 @@ func newSecurity(apiDef *raml.APIDefinition, ss *raml.SecurityScheme, name, pack
 }
 
 // generate security related code
-func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
+func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, lang string) error {
 	var err error
 
 	// generate oauth2 middleware
-	for _, v := range apiDef.SecuritySchemes {
-		for k, ss := range v {
-			if ss.Type != Oauth2 {
-				continue
-			}
+	for k, ss := range schemes {
+		if ss.Type != Oauth2 {
+			continue
+		}
 
-			sd := newSecurity(apiDef, &ss, k, packageName)
+		sd := newSecurity(&ss, k, packageName)
 
-			switch lang {
-			case langGo:
-				gss := goSecurity{security: &sd}
-				err = gss.generate(dir)
+		switch lang {
+		case langGo:
+			gss := goSecurity{security: &sd}
+			err = gss.generate(dir)
 
-			case langPython:
-				pss := pythonSecurity{security: &sd}
-				err = pss.generate(dir)
-			}
-			if err != nil {
-				log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
-				return err
-			}
+		case langPython:
+			pss := pythonSecurity{security: &sd}
+			err = pss.generate(dir)
+		}
+		if err != nil {
+			log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
+			return err
 		}
 	}
 	return nil
@@ -83,12 +80,27 @@ func generateSecurity(apiDef *raml.APIDefinition, dir, packageName, lang string)
 
 // get oauth2 middleware handler from a security scheme
 func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
+	// construct security scopes
 	quotedScopes, err := getQuotedSecurityScopes(ss)
 	if err != nil {
 		return "", err
 	}
 	scopesArgs := strings.Join(quotedScopes, ", ")
-	return fmt.Sprintf(`newOauth2%vMiddleware([]string{%v}).Handler`, securitySchemeName(ss.Name), scopesArgs), nil
+
+	// middleware name
+	// need to handle case where it reside in different package
+	var packageName string
+	name := ss.Name
+
+	if splitted := strings.Split(name, "."); len(splitted) == 2 {
+		packageName = splitted[0]
+		name = splitted[1]
+	}
+	mwr := fmt.Sprintf(`NewOauth2%vMiddleware([]string{%v}).Handler`, name, scopesArgs)
+	if packageName != "" {
+		mwr = packageName + "." + mwr
+	}
+	return mwr, nil
 }
 
 // get array of security scopes in the form of quoted string
@@ -140,10 +152,8 @@ func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
 	if name == "" || name == "null" {
 		return false
 	}
-	for _, v := range apiDef.SecuritySchemes {
-		if ss, ok := v[name]; ok {
-			return ss.Type == Oauth2
-		}
+	if ss, ok := apiDef.GetSecurityScheme(name); ok {
+		return ss.Type == Oauth2
 	}
 	return false
 }

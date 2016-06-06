@@ -7,19 +7,22 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// go representation of a security scheme
+// python representation of a security scheme
 type pythonSecurity struct {
 	*security
 }
 
+// generate security schheme representation in python.
+// security scheme is generated as a middleware
 func (ps *pythonSecurity) generate(dir string) error {
 	fileName := path.Join(dir, "oauth2_"+ps.Name+".py")
 	return generateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
 }
 
 type pythonMiddleware struct {
-	Name string
-	Args string
+	ImportPath string
+	Name       string
+	Args       string
 }
 
 func newPythonOauth2Middleware(ss raml.DefinitionChoice) (pythonMiddleware, error) {
@@ -27,8 +30,16 @@ func newPythonOauth2Middleware(ss raml.DefinitionChoice) (pythonMiddleware, erro
 	if err != nil {
 		return pythonMiddleware{}, err
 	}
+
+	importPath, name := pythonOauth2libImportPath(ss.Name)
 	return pythonMiddleware{
-		Name: "oauth2_" + securitySchemeName(ss.Name),
-		Args: strings.Join(quotedScopes, ", "),
+		ImportPath: importPath,
+		Name:       name,
+		Args:       strings.Join(quotedScopes, ", "),
 	}, nil
+}
+
+// get library import path from a type
+func pythonOauth2libImportPath(typ string) (string, string) {
+	return pythonLibImportPath(securitySchemeName(typ), "oauth2_")
 }

@@ -6,16 +6,11 @@ import (
 
 var (
 	typeMap = map[string]string{
-		"string":        "string",
-		"file":          "string",
-		"number":        "float64",
-		"integer":       "int",
-		"boolean":       "bool",
-		"date":          "Date",
-		"date-only":     "DateOnly",
-		"time-only":     "TimeOnly",
-		"datetime-only": "DatetimeOnly",
-		"datetime":      "DateTime",
+		"string":  "string",
+		"file":    "string",
+		"number":  "float64",
+		"integer": "int",
+		"boolean": "bool",
 	}
 )
 
@@ -31,6 +26,23 @@ func convertToGoType(tip string) string {
 	if v, ok := typeMap[tip]; ok {
 		return v
 	}
+	goramlPkgDir := func() string {
+		if globGoramlPkgDir == "" {
+			return ""
+		}
+		return globGoramlPkgDir + "."
+	}()
+	dateMap := map[string]string{
+		"date":          goramlPkgDir + "Date",
+		"date-only":     goramlPkgDir + "DateOnly",
+		"time-only":     goramlPkgDir + "TimeOnly",
+		"datetime-only": goramlPkgDir + "DatetimeOnly",
+		"datetime":      goramlPkgDir + "DateTime",
+	}
+
+	if v, ok := dateMap[tip]; ok {
+		return v
+	}
 
 	// other types that need some processing
 	switch {
@@ -43,5 +55,5 @@ func convertToGoType(tip string) string {
 	case strings.Index(tip, "|") > 0:
 		return convertUnion(tip)
 	}
-	return tip
+	return normalizePkgName(tip)
 }

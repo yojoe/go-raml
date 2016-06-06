@@ -4,15 +4,6 @@ import (
 	"strings"
 )
 
-var (
-	// global map of traits for easy access
-	traitsMap map[string]Trait
-)
-
-func init() {
-	traitsMap = map[string]Trait{}
-}
-
 // A Trait is a partial method definition that, like a method, can provide
 // method-level properties such as description, headers, query string
 // parameters, and responses. Methods that use one or more traits inherit

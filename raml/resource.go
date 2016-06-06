@@ -7,17 +7,76 @@ import (
 	"strings"
 )
 
+// A Resource is the conceptual mapping to an entity or set of entities.
+type Resource struct {
+
+	// Resources are identified by their relative URI, which MUST begin with
+	// a slash (/).
+	URI string
+
+	// An alternate, human-friendly name for the resource.
+	// If the displayName property is not defined for a resource,
+	// documentation tools SHOULD refer to the resource by its property key
+	// which acts as the resource name. For example, tools should refer to the relative URI /jobs.
+	DisplayName string `yaml:"displayName"`
+
+	// A substantial, human-friendly description of a resource.
+	// Its value is a string and MAY be formatted using markdown.
+	Description string `yaml:"description"`
+
+	// TODO : annotationName
+
+	// In a RESTful API, methods are operations that are performed on a
+	// resource. A method MUST be one of the HTTP methods defined in the
+	// HTTP version 1.1 specification [RFC2616] and its extension,
+	// RFC5789 [RFC5789].
+	Get     *Method `yaml:"get"`
+	Patch   *Method `yaml:"patch"`
+	Put     *Method `yaml:"put"`
+	Head    *Method `yaml:"head"`
+	Post    *Method `yaml:"post"`
+	Delete  *Method `yaml:"delete"`
+	Options *Method `yaml:"options"`
+
+	// A list of traits to apply to all methods declared (implicitly or explicitly) for this resource.
+	// Individual methods can override this declaration.
+	Is []DefinitionChoice `yaml:"is"`
+
+	// The resource type that this resource inherits.
+	Type *DefinitionChoice `yaml:"type"`
+
+	// The security schemes that apply to all methods declared (implicitly or explicitly) for this resource.
+	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+
+	// Detailed information about any URI parameters of this resource.
+	URIParameters map[string]NamedParameter `yaml:"uriParameters"`
+
+	// A nested resource, which is identified as any property
+	// whose name begins with a slash ("/"), and is therefore treated as a relative URI.
+	Nested map[string]*Resource `yaml:",regexp:/.*"`
+
+	// A resource defined as a child property of another resource is called a
+	// nested resource, and its property's key is its URI relative to its
+	// parent resource's URI. If this is not nil, then this resource is a
+	// child resource.
+	Parent *Resource
+
+	// all methods of this resource
+	Methods []*Method `yaml:"-"`
+}
+
 // postProcess doing post processing of a resource after being constructed by the parser.
 // some of the workds:
 // - assign all properties that can't be obtained from RAML document
 // - inherit from resource type
 // - inherit from traits
-func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map[string]ResourceType) error {
+func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType, traitsMap map[string]Trait) error {
 	r.URI = strings.TrimSpace(uri)
 	r.Parent = parent
 
-	r.setMethods()
+	r.setMethods(traitsMap)
 
+	// inherit from resource types
 	if err := r.inheritResourceType(resourceTypes); err != nil {
 		return err
 	}
@@ -25,7 +84,7 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 	// process nested/child resources
 	for k := range r.Nested {
 		n := r.Nested[k]
-		if err := n.postProcess(k, r, resourceTypes); err != nil {
+		if err := n.postProcess(k, r, resourceTypes, traitsMap); err != nil {
 			return err
 		}
 		r.Nested[k] = n
@@ -34,11 +93,11 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes []map
 }
 
 // inherit from a resource type
-func (r *Resource) inheritResourceType(resourceTypes []map[string]ResourceType) error {
+func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType) error {
 	// get resource type object to inherit
-	rt := r.getResourceType(resourceTypes)
-	if rt == nil {
-		return nil
+	rt, err := r.getResourceType(resourceTypes)
+	if rt == nil || err != nil {
+		return err
 	}
 
 	// initialize dicts
@@ -90,54 +149,52 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 }
 
 // get resource type from which this resource will inherit
-func (r *Resource) getResourceType(resourceTypes []map[string]ResourceType) *ResourceType {
+func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) (*ResourceType, error) {
 	// check if it's specify a resource type to inherit
 	if r.Type == nil || r.Type.Name == "" {
-		return nil
+		return nil, nil
 	}
 
 	// get resource type from array of resource type map
-	for _, rts := range resourceTypes {
-		for k, rt := range rts {
-			if k == r.Type.Name {
-				return &rt
-			}
+	for k, rt := range resourceTypes {
+		if k == r.Type.Name {
+			return &rt, nil
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("can't find resource type named :%v", r.Type.Name)
 }
 
 // set methods set all methods name
 // and add it to Methods slice
-func (r *Resource) setMethods() {
+func (r *Resource) setMethods(traitsMap map[string]Trait) {
 	if r.Get != nil {
 		r.Get.Name = "GET"
-		r.Get.inheritFromAllTraits(r)
+		r.Get.inheritFromTraits(r, append(r.Is, r.Get.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Get)
 	}
 	if r.Post != nil {
 		r.Post.Name = "POST"
-		r.Post.inheritFromAllTraits(r)
+		r.Post.inheritFromTraits(r, append(r.Is, r.Post.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Post)
 	}
 	if r.Put != nil {
 		r.Put.Name = "PUT"
-		r.Put.inheritFromAllTraits(r)
+		r.Put.inheritFromTraits(r, append(r.Is, r.Put.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Put)
 	}
 	if r.Patch != nil {
 		r.Patch.Name = "PATCH"
-		r.Patch.inheritFromAllTraits(r)
+		r.Patch.inheritFromTraits(r, append(r.Is, r.Patch.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Patch)
 	}
 	if r.Head != nil {
 		r.Head.Name = "HEAD"
-		r.Head.inheritFromAllTraits(r)
+		r.Head.inheritFromTraits(r, append(r.Is, r.Head.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Head)
 	}
 	if r.Delete != nil {
 		r.Delete.Name = "DELETE"
-		r.Delete.inheritFromAllTraits(r)
+		r.Delete.inheritFromTraits(r, append(r.Is, r.Delete.Is...), traitsMap)
 		r.Methods = append(r.Methods, r.Delete)
 	}
 }
@@ -236,7 +293,7 @@ func getParamValue(param string, dicts map[string]interface{}) string {
 		var ok bool
 		val, ok = doInflect(val, inflector)
 		if !ok {
-			panic("invalid inflector " + inflector)
+			log.Fatalf("invalid inflector " + inflector)
 		}
 	}
 	return val

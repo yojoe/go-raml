@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from oauth2_Facebook import *
-from oauth2_Dropbox import *
+import oauth2_Facebook as oauth2_Facebook
+import oauth2_Dropbox as oauth2_Dropbox
 
 
 
@@ -8,7 +8,7 @@ deliveries_api = Blueprint('deliveries_api', __name__)
 
 
 @deliveries_api.route('/deliveries', methods=['GET'])
-@oauth2_Facebook(["ADMINISTRATOR"])
+@oauth2_Facebook.oauth2_Facebook(["ADMINISTRATOR"])
 def deliveries_get():
     '''
     Get a list of deliveries
@@ -19,7 +19,7 @@ def deliveries_get():
 
 
 @deliveries_api.route('/deliveries', methods=['POST'])
-@oauth2_Dropbox([])
+@oauth2_Dropbox.oauth2_Dropbox([])
 def deliveries_post():
     '''
     Create/request a new delivery
@@ -40,7 +40,7 @@ def deliveries_byDeliveryId_get(deliveryId):
 
 
 @deliveries_api.route('/deliveries/<deliveryId>', methods=['PATCH'])
-@oauth2_Dropbox([])
+@oauth2_Dropbox.oauth2_Dropbox([])
 def deliveries_byDeliveryId_patch(deliveryId):
     '''
     Update the information on a specific delivery
@@ -51,7 +51,7 @@ def deliveries_byDeliveryId_patch(deliveryId):
 
 
 @deliveries_api.route('/deliveries/<deliveryId>', methods=['DELETE'])
-@oauth2_Dropbox([])
+@oauth2_Dropbox.oauth2_Dropbox([])
 def deliveries_byDeliveryId_delete(deliveryId):
     '''
     Cancel a specific delivery

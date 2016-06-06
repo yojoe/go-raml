@@ -19,8 +19,10 @@ func TestResource(t *testing.T) {
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
+		apiDef := new(raml.APIDefinition)
+
 		Convey("simple resource", func() {
-			apiDef, err := raml.ParseFile("./fixtures/server_resources/deliveries.raml")
+			err := raml.ParseFile("./fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main", "go")
@@ -44,7 +46,7 @@ func TestResource(t *testing.T) {
 		})
 
 		Convey("resource with request body", func() {
-			apiDef, err := raml.ParseFile("./fixtures/server_resources/usergroups.raml")
+			err := raml.ParseFile("./fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main", "go")

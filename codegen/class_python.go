@@ -16,6 +16,7 @@ type pythonField struct {
 	Type        string
 	Required    bool
 	Validators  string
+	ramlType    string // the original raml type
 	isFormField bool
 	isList      bool                // it is a list field
 	validators  map[string][]string // array of validators, only used to build `Validators` field
@@ -28,6 +29,7 @@ type pythonClass struct {
 	Fields      map[string]pythonField
 }
 
+// create a python class representations
 func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
 	pc := pythonClass{
 		Name:        name,
@@ -134,14 +136,21 @@ func (pc pythonClass) Imports() []string {
 
 	for _, v := range pc.Fields {
 		if v.isFormField {
-			imports = append(imports, "from "+v.Type+" import "+v.Type)
+			if strings.Index(v.ramlType, ".") > 1 { // it is a library
+				importPath, name := pythonLibImportPath(v.ramlType, "")
+				imports = append(imports, "from "+importPath+" import "+name)
+			} else {
+				imports = append(imports, "from "+v.Type+" import "+v.Type)
+			}
 		}
 	}
+	sort.Strings(imports)
 	return imports
 }
 
 // convert from raml Type to python wtforms type
 func (pf *pythonField) setType(t string) {
+	pf.ramlType = t
 	switch t {
 	case "string":
 		pf.Type = "TextField"
@@ -172,6 +181,9 @@ func (pf *pythonField) setType(t string) {
 		log.Info("validator has no support for map, ignore it")
 	case strings.Index(t, "|") > 0:
 		log.Info("validator has no support for union, ignore it")
+	case strings.Index(t, ".") > 1:
+		pf.Type = t[strings.Index(t, ".")+1:]
+		pf.isFormField = true
 	default:
 		pf.isFormField = true
 		pf.Type = t
@@ -194,8 +206,8 @@ func (pf pythonField) WTFType() string {
 }
 
 // generate all python classes from an RAML document
-func generatePythonClasses(apiDef *raml.APIDefinition, dir string) error {
-	for k, t := range apiDef.Types {
+func generatePythonClasses(types map[string]raml.Type, dir string) error {
+	for k, t := range types {
 		pc := newPythonClassFromType(t, k)
 		if err := pc.generate(dir); err != nil {
 			return err

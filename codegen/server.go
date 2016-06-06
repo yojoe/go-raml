@@ -2,10 +2,10 @@ package codegen
 
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
-	"github.com/Jumpscale/go-raml/codegen/date"
 	"github.com/Jumpscale/go-raml/raml"
 
 	log "github.com/Sirupsen/logrus"
@@ -13,6 +13,16 @@ import (
 
 var (
 	errInvalidLang = errors.New("invalid language")
+)
+
+// global variables
+// it is needed for libraries support
+var (
+	// root import path
+	globRootImportPath string
+
+	// global value of API definition
+	globAPIDef *raml.APIDefinition
 )
 
 const (
@@ -25,6 +35,7 @@ const (
 // base server definition
 type server struct {
 	apiDef       *raml.APIDefinition
+	Title        string
 	ResourcesDef []resourceInterface
 	PackageName  string // Name of the package this server resides in
 	APIDocsDir   string // apidocs directory. apidocs won't be generated if it is empty
@@ -33,6 +44,7 @@ type server struct {
 
 type goServer struct {
 	server
+	RootImportPath string
 }
 
 type pythonServer struct {
@@ -41,18 +53,18 @@ type pythonServer struct {
 
 // generate all Go server files
 func (gs goServer) generate(dir string) error {
-	if err := gs.generateDates(dir); err != nil {
-		log.Errorf("generate() failed to generate date files:%v", err)
-		return err
+	// helper package
+	gh := goramlHelper{
+		rootImportPath: gs.RootImportPath,
+		packageName:    "goraml",
+		packageDir:     "goraml",
 	}
-
-	// generate struct validator
-	if err := generateInputValidator(gs.PackageName, dir); err != nil {
+	if err := gh.generate(dir); err != nil {
 		return err
 	}
 
 	// generate all Type structs
-	if err := generateStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
+	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName, langGo); err != nil {
 		return err
 	}
 
@@ -62,7 +74,7 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// security scheme
-	if err := generateSecurity(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
+	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName, langGo); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
@@ -74,42 +86,19 @@ func (gs goServer) generate(dir string) error {
 	}
 	gs.ResourcesDef = rds
 
+	// libraries
+	if err := generateLibraries(gs.apiDef.Libraries, dir); err != nil {
+		return err
+	}
+
 	// generate main
 	if gs.withMain {
+		if err := generateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+			return err
+		}
 		return generateFile(gs, serverMainTmplFile, serverMainTmplName, filepath.Join(dir, "main.go"), true)
 	}
 
-	return nil
-}
-
-// generate all dates files
-func (gs goServer) generateDates(dir string) error {
-	dates := []struct {
-		Type     string
-		Format   string
-		FileName string
-	}{
-		{"date-only", "", "date_only.go"},
-		{"time-only", "", "time_only.go"},
-		{"datetime-only", "", "datetime_only.go"},
-		{"datetime", "RFC3339", "datetime.go"},
-		{"datetime", "RFC2616", "datetime_rfc2616.go"},
-	}
-	for _, d := range dates {
-		b, err := date.Get(d.Type, d.Format)
-		if err != nil {
-			return err
-		}
-		ctx := map[string]interface{}{
-			"PackageName": gs.PackageName,
-			"Content":     string(b),
-		}
-
-		err = generateFile(ctx, "./templates/date.tmpl", "date", filepath.Join(dir, d.FileName), false)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -125,13 +114,15 @@ func (ps pythonServer) generate(dir string) error {
 		log.Errorf("failed to generate python classes from request body:%v", err)
 		return err
 	}
+
 	// python classes
-	if err := generatePythonClasses(ps.apiDef, dir); err != nil {
+	if err := generatePythonClasses(ps.apiDef.Types, dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
 		return err
 	}
+
 	// security scheme
-	if err := generateSecurity(ps.apiDef, dir, ps.PackageName, langPython); err != nil {
+	if err := generateSecurity(ps.apiDef.SecuritySchemes, dir, ps.PackageName, langPython); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
@@ -143,8 +134,17 @@ func (ps pythonServer) generate(dir string) error {
 	}
 	ps.ResourcesDef = rds
 
+	// libraries
+	if err := generatePythonLibraries(ps.apiDef.Libraries, dir); err != nil {
+		return err
+	}
+
 	// generate main
 	if ps.withMain {
+		if err := generateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+
+			return err
+		}
 		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, filepath.Join(dir, "app.py"), true)
 	}
 	return nil
@@ -152,25 +152,37 @@ func (ps pythonServer) generate(dir string) error {
 }
 
 // GenerateServer generates API server files
-func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir string, generateMain bool) error {
-	ramlBytes, apiDef, err := raml.ParseReadFile(ramlFile)
+func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
+	apiDef := new(raml.APIDefinition)
+	// parse the raml file
+	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
 	if err != nil {
 		return err
 	}
 
+	// global variables
+	globAPIDef = apiDef
+	globRootImportPath = rootImportPath
+
+	// create directory if needed
 	if err := checkCreateDir(dir); err != nil {
 		return err
 	}
 
+	// create base server
 	sd := server{
 		PackageName: packageName,
+		Title:       apiDef.Title,
 		apiDef:      apiDef,
 		APIDocsDir:  apiDocsDir,
 		withMain:    generateMain,
 	}
 	switch lang {
 	case langGo:
-		gs := goServer{server: sd}
+		if rootImportPath == "" {
+			return fmt.Errorf("invalid import path = empty")
+		}
+		gs := goServer{server: sd, RootImportPath: rootImportPath}
 		err = gs.generate(dir)
 	case langPython:
 		ps := pythonServer{server: sd}

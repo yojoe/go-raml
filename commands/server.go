@@ -13,6 +13,7 @@ type ServerCommand struct {
 	RamlFile         string //raml file
 	PackageName      string //package name in the generated go source files
 	NoMainGeneration bool   //do not generate a main.go file
+	ImportPath       string // root import path of the code, such as : github.com/jumpscale/restapi
 	NoAPIDocs        bool   // do not generate API Docs in /apidocs/ endpoint
 }
 
@@ -27,5 +28,5 @@ func (command *ServerCommand) Execute() error {
 	}
 
 	return codegen.GenerateServer(command.RamlFile, command.Dir, command.PackageName,
-		command.Language, apiDocsDir, !command.NoMainGeneration)
+		command.Language, apiDocsDir, command.ImportPath, !command.NoMainGeneration)
 }

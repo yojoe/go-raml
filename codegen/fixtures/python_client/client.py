@@ -10,8 +10,8 @@ class Client:
 
     def get_users(self, headers=None, query_params=None):
         """
-        Get a list of test, this comment is very long, to test our comment generator. Is it
-        good?
+        First line of comment.
+        Second line of comment
         It is method for GET /users
         """
         uri = self.url + "/users"

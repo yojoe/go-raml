@@ -37,32 +37,46 @@ import (
 	"io"
 	"io/ioutil"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-
 	"github.com/gigforks/yaml"
 	"github.com/kr/pretty"
+)
+
+var (
+	// directory of raml file
+	// we need to save it as global variable because
+	// library inside library file path is not relative to
+	// the library that include it.
+	// But relative to RAML file
+	ramlFileDir string
 )
 
 // ParseFile parses an RAML file.
 // Returns a raml.APIDefinition value or an error if
 // something went wrong.
-func ParseFile(filePath string) (*APIDefinition, error) {
-	_, apiDef, err := ParseReadFile(filePath)
-	return apiDef, err
+func ParseFile(filePath string, root Root) error {
+	_, err := ParseReadFile(filePath, root)
+	return err
 }
 
-func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
+// ParseReadFile parse an .raml file.
+// It returns API definition and the concatenated .raml file.
+func ParseReadFile(filePath string, root Root) ([]byte, error) {
 
 	// Get the working directory
 	workingDirectory, fileName := filepath.Split(filePath)
+	if strings.HasSuffix(fmt.Sprint(reflect.TypeOf(root)), "APIDefinition") { // when we parse for APIDefinition, we reset ramlFileDir
+		ramlFileDir = workingDirectory
+	}
 
 	// Read original file contents into a byte array
 	mainFileBytes, err := readFileContents(workingDirectory, fileName)
 
 	if err != nil {
-		return []byte{}, nil, err
+		return []byte{}, err
 	}
 
 	// Get the contents of the main file
@@ -72,20 +86,15 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 	var ramlVersion string
 	firstLine, err := mainFileBuffer.ReadString('\n')
 	if err != nil {
-		return []byte{}, nil, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
+		return []byte{}, fmt.Errorf("Problem reading RAML file (Error: %s)", err.Error())
 	}
 
 	// We read some data...
 	if len(firstLine) >= 10 {
 		ramlVersion = firstLine[:10]
 	}
-
-	// TODO: Make this smart. We probably won't support multiple RAML
-	// versions in the same package - we'll have different branches
-	// for different versions. This one is hard-coded to 0.8.
-	// Still, would be good to think about this.
 	if ramlVersion != "#%RAML 1.0" {
-		return []byte{}, nil, errors.New("Input file is not a RAML 1.0 file. Make " +
+		return []byte{}, errors.New("Input file is not a RAML 1.0 file. Make " +
 			"sure the file starts with #%RAML 1.0")
 	}
 
@@ -94,7 +103,7 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 		preProcess(mainFileBuffer, workingDirectory)
 
 	if err != nil {
-		return []byte{}, nil,
+		return []byte{},
 			fmt.Errorf("Error preprocessing RAML file (Error: %s)", err.Error())
 	}
 
@@ -103,17 +112,17 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 	}
 
 	// Unmarshal into an APIDefinition value
-	apiDefinition := new(APIDefinition)
-	apiDefinition.RAMLVersion = ramlVersion
+	//apiDefinition := new(APIDefinition)
+	//apiDefinition.RAMLVersion = ramlVersion
 
 	// Go!
-	err = yaml.Unmarshal(preprocessedContentsBytes, apiDefinition)
+	err = yaml.Unmarshal(preprocessedContentsBytes, root)
 
 	// Any errors?
 	if err != nil {
 
 		// Create a RAML error value
-		ramlError := new(RamlError)
+		ramlError := new(Error)
 
 		// Copy the YAML errors into it..
 		if yamlErrors, ok := err.(*yaml.TypeError); ok {
@@ -123,44 +132,15 @@ func ParseReadFile(filePath string) ([]byte, *APIDefinition, error) {
 			ramlError.Errors = append(ramlError.Errors, err.Error())
 		}
 
-		return []byte{}, nil, ramlError
+		return []byte{}, ramlError
 	}
 
-	apiDefinition.postProcess()
+	if err := root.PostProcess(filePath); err != nil {
+		return preprocessedContentsBytes, err
+	}
 
 	// Good.
-	return preprocessedContentsBytes, apiDefinition, nil
-}
-
-func (apiDef *APIDefinition) postProcess() {
-	// traits
-	for i, tMap := range apiDef.Traits {
-		for name := range tMap {
-			t := tMap[name]
-			t.postProcess(name)
-			tMap[name] = t
-			traitsMap[name] = t // add to global traits map
-		}
-		apiDef.Traits[i] = tMap
-	}
-
-	// resource types
-	for i, rtMap := range apiDef.ResourceTypes {
-		for name := range rtMap {
-			rt := rtMap[name]
-			rt.postProcess(name)
-			rtMap[name] = rt
-		}
-		apiDef.ResourceTypes[i] = rtMap
-	}
-
-	// resources
-	for k := range apiDef.Resources {
-		r := apiDef.Resources[k]
-		r.postProcess(k, nil, apiDef.ResourceTypes)
-		apiDef.Resources[k] = r
-	}
-
+	return preprocessedContentsBytes, nil
 }
 
 // Reads the contents of a file, returns a bytes buffer
