@@ -6,12 +6,14 @@ mediaType: application/json
 types:
   City:
     properties:
-      names:
-        type: enum
+      name:
+        type: string
+        minLength: 10
   Address:
     properties:
       name:
         type: string
+        minLength: 10
 /users:
   get:
     displayName: get_users
