@@ -144,6 +144,7 @@ func (pc pythonClass) Imports() []string {
 			}
 		}
 	}
+	sort.Strings(imports)
 	return imports
 }
 

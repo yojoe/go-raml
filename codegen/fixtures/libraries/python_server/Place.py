@@ -4,8 +4,8 @@ from wtforms.validators import DataRequired, Length, Regexp, NumberRange, requir
 from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField, FieldList
 from input_validators import multiple_of
 
-from libraries.files.Directory import Directory
 from datetime import datetime
+from libraries.files.Directory import Directory
 
 
 class Place(Form):
