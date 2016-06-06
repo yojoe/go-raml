@@ -17,6 +17,11 @@ func main() {
 
 	r := mux.NewRouter()
 
+    // home page
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+
     {{ if .APIDocsDir }}
     // apidocs
     r.PathPrefix("/{{.APIDocsDir}}/").Handler(http.StripPrefix("/{{.APIDocsDir}}/", http.FileServer(http.Dir("./apidocs/"))))

@@ -35,6 +35,7 @@ const (
 // base server definition
 type server struct {
 	apiDef       *raml.APIDefinition
+	Title        string
 	ResourcesDef []resourceInterface
 	PackageName  string // Name of the package this server resides in
 	APIDocsDir   string // apidocs directory. apidocs won't be generated if it is empty
@@ -92,6 +93,9 @@ func (gs goServer) generate(dir string) error {
 
 	// generate main
 	if gs.withMain {
+		if err := generateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+			return err
+		}
 		return generateFile(gs, serverMainTmplFile, serverMainTmplName, filepath.Join(dir, "main.go"), true)
 	}
 
@@ -137,6 +141,10 @@ func (ps pythonServer) generate(dir string) error {
 
 	// generate main
 	if ps.withMain {
+		if err := generateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+
+			return err
+		}
 		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, filepath.Join(dir, "app.py"), true)
 	}
 	return nil
@@ -164,6 +172,7 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 	// create base server
 	sd := server{
 		PackageName: packageName,
+		Title:       apiDef.Title,
 		apiDef:      apiDef,
 		APIDocsDir:  apiDocsDir,
 		withMain:    generateMain,
