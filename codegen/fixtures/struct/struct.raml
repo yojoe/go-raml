@@ -25,7 +25,7 @@ types:
       name?: string
       colours:
         type: string[]
-      cities: 
+      cities:
         type: EnumCity[]
         minItems: 1
         maxItems: 10
@@ -65,7 +65,7 @@ types:
     enum: [ str_a, str_b ]
   Pet:
     type: Cat | animal
-    discriminator: kind
+    #discriminator: kind
   ArrayOfPets:
     type: (Cat | animal)[]
   Specialization:
