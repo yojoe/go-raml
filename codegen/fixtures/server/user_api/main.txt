@@ -16,6 +16,11 @@ func main() {
 
 	r := mux.NewRouter()
 
+	// home page
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+
 	// apidocs
 	r.PathPrefix("/apidocs/").Handler(http.StripPrefix("/apidocs/", http.FileServer(http.Dir("./apidocs/"))))
 

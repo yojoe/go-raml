@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, send_file
 import wtforms_json
 from deliveries import deliveries_api
 from drones import drones_api
@@ -18,6 +18,10 @@ app.register_blueprint(drones_api)
 def send_js(path):
     return send_from_directory('apidocs', path)
 
+
+@app.route('/', methods=['GET'])
+def home():
+    return send_file('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

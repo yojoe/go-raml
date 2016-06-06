@@ -22,10 +22,8 @@ types:
     queryParameters:
       sinceDate:
         type: datetime
-        example: Mon, 14 Jul 2014 07:00:00 GMT
       throughDate:
         type: datetime
-        example: Mon, 18 Jul 2014 07:00:00 GMT
     responses:
       200:
         body:
@@ -70,19 +68,15 @@ types:
       atLatitude:
         description: Latitude in decimal degrees
         type: number
-        example: 37.8
       atLongitude:
         description: Longitude in decimal degrees
         type: number
-        example: -122.3
       atAltitude:
         description: Altitude in meters above the [ellipsoid](http://www.w3.org/TR/geolocation-API/#ref-wgs)
         type: number
-        example: 0
       atRange:
         description: Maximum distance from location, in meters
         type: number
-        example: 50
         default: 100
     responses:
       200:
