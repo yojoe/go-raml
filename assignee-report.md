@@ -10,7 +10,7 @@
 
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
-|[#73](https://github.com/jumpscale/go-raml/issues/73)|resource's method with no properties is set to nil|:red_circle: Open|unknown|
+|[#73](https://github.com/jumpscale/go-raml/issues/73)|resource's method with no properties is set to nil|:red_circle: Open||
 |[#80](https://github.com/jumpscale/go-raml/issues/80)|Raml-1.0-rc2 support|:red_circle: Open||
 |[#89](https://github.com/jumpscale/go-raml/issues/89)|libraries support |:red_circle: Open||
 
