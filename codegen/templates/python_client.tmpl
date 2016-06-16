@@ -8,6 +8,7 @@ BASE_URI = "{{.BaseURI}}"
 class Client:
     def __init__(self):
         self.url = BASE_URI
+        self.session = requests.Session()
 {{ range $k, $v := .Methods }}
     def {{$v.MethodName}}({{$v.Params}}):
         """{{ range $kf, $vf := $v.FuncComments }}
@@ -16,6 +17,6 @@ class Client:
         """
         uri = self.url + {{$v.ResourcePath}}
         uri = uri + build_query_string(query_params)
-        return requests.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
+        return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
 {{ end }}
 {{- end -}}
