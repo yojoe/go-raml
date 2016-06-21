@@ -1,4 +1,11 @@
 language: go
 
+install:
+  - go get -u github.com/jteeuwen/go-bindata/...
+
 go:
   - 1.6
+
+script:
+  - ./build.sh
+  - go test -v ./...
