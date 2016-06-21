@@ -16,25 +16,36 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		err := raml.ParseFile("./fixtures/python_client/client.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("Simple client", func() {
-			err = GenerateClient(apiDef, targetdir, "python", "")
+			err = GenerateClient(apiDef, targetDir, "python", "")
 			So(err, ShouldBeNil)
 
+			rootFixture := "./fixtures/python_client"
 			// cek with generated with fixtures
-			fixture, err := testLoadFile("./fixtures/python_client/client.py")
-			So(err, ShouldBeNil)
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"client.py", "client.py"},
+				{"client_utils.py", "client_utils.py"},
+			}
 
-			generated, err := testLoadFile(filepath.Join(targetdir, "client.py"))
-			So(err, ShouldBeNil)
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
 
-			So(generated, ShouldEqual, fixture)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
 		})
 
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
 }
