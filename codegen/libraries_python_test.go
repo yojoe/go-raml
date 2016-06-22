@@ -52,7 +52,7 @@ func TestLibrary(t *testing.T) {
 		err = raml.ParseFile("./fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		err = GenerateClient(apiDef, targetDir, langGo, "examples.com/client")
+		err = GenerateClient(apiDef, targetDir, "theclient", langGo, "examples.com/client")
 		So(err, ShouldBeNil)
 
 		rootFixture := "./fixtures/libraries/go_client"
