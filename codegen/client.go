@@ -7,11 +7,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-const (
-	clientResourceTemplate       = "./templates/client_resource.tmpl"
-	clientHelperResourceTemplate = "./templates/client_helper_resource.tmpl"
-)
-
 // API client definition
 type clientDef struct {
 	Name    string

@@ -1,10 +1,7 @@
 package codegen
 
-const (
-	pythonClientTmplFile     = "./templates/python_client.tmpl"
-	pythonClientUtilTmplFile = "./templates/python_client_utils.tmpl"
-	pythonClientTmplName     = "python_client_template"
-	pythonClientUtilTmplName = "python_client_utils"
+import (
+	"path/filepath"
 )
 
 // python client definition
@@ -15,9 +12,9 @@ type pythonClient struct {
 // generate python lib files
 func (pc pythonClient) generate(dir string) error {
 	// generate helper
-	if err := generateFile(nil, pythonClientUtilTmplFile, pythonClientUtilTmplName, dir+"/client_utils.py", false); err != nil {
+	if err := generateFile(nil, "./templates/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
 		return err
 	}
 	// generate main client lib file
-	return generateFile(pc, pythonClientTmplFile, pythonClientTmplName, dir+"/client.py", true)
+	return generateFile(pc, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
 }
