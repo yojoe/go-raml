@@ -9,10 +9,11 @@ import (
 
 //ClientCommand is executed to generate client from a RAML specification
 type ClientCommand struct {
-	Language   string
-	Dir        string //target dir
-	RamlFile   string //raml file
-	ImportPath string
+	Language    string
+	Dir         string //target dir
+	RamlFile    string //raml file
+	PackageName string //package name in the generated go source files
+	ImportPath  string
 }
 
 //Execute generates a client from a RAML specification
@@ -23,5 +24,5 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateClient(apiDef, command.Dir, command.Language, command.ImportPath)
+	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language, command.ImportPath)
 }

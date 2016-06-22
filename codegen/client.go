@@ -7,11 +7,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-const (
-	clientResourceTemplate       = "./templates/client_resource.tmpl"
-	clientHelperResourceTemplate = "./templates/client_helper_resource.tmpl"
-)
-
 // API client definition
 type clientDef struct {
 	Name    string
@@ -32,7 +27,7 @@ func newClientDef(apiDef *raml.APIDefinition) clientDef {
 }
 
 // GenerateClient generates client library
-func GenerateClient(apiDef *raml.APIDefinition, dir, lang, rootImportPath string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath string) error {
 	//check create dir
 	if err := checkCreateDir(dir); err != nil {
 		return err
@@ -61,6 +56,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, lang, rootImportPath string
 		gc := goClient{
 			clientDef:      cd,
 			libraries:      apiDef.Libraries,
+			PackageName:    packageName,
 			RootImportPath: rootImportPath,
 		}
 		return gc.generate(apiDef, dir)

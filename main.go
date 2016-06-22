@@ -121,6 +121,12 @@ func main() {
 					Destination: &clientCommand.RamlFile,
 				},
 				cli.StringFlag{
+					Name:        "package",
+					Value:       "client",
+					Usage:       "package name",
+					Destination: &clientCommand.PackageName,
+				},
+				cli.StringFlag{
 					Name:        "import-path",
 					Value:       "examples.com/client",
 					Usage:       "import path of the generated code",

@@ -11,6 +11,7 @@ import (
 type goClient struct {
 	clientDef
 	libraries      map[string]*raml.Library
+	PackageName    string
 	RootImportPath string
 }
 
@@ -55,14 +56,14 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 
 // generate Go client helper
 func (gc *goClient) generateHelperFile(dir string) error {
-	fileName := dir + "/client_utils.go"
-	return generateFile(gc, clientHelperResourceTemplate, "client_helper_resource", fileName, false)
+	fileName := filepath.Join(dir, "/client_utils.go")
+	return generateFile(gc, "./templates/client_utils_go.tmpl", "client_utils_go", fileName, false)
 }
 
 // generate Go client lib file
 func (gc *goClient) generateClientFile(dir string) error {
-	fileName := dir + "/client_" + strings.ToLower(gc.Name) + ".go"
-	return generateFile(gc, clientResourceTemplate, "client_resource", fileName, false)
+	fileName := filepath.Join(dir, "/client_"+strings.ToLower(gc.Name)+".go")
+	return generateFile(gc, "./templates/client_go.tmpl", "client_go", fileName, false)
 }
 
 // LibImportPaths returns all imported lib
