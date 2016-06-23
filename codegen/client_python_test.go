@@ -30,6 +30,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				Expected string
 			}{
 				{"client.py", "client.py"},
+				{"__init__.py", "__init__.py"},
 				{"client_utils.py", "client_utils.py"},
 			}
 
