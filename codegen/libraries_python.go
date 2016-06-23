@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,9 +55,7 @@ func (l *pythonLibrary) generate() error {
 		if !info.IsDir() {
 			return nil
 		}
-		name := filepath.Join(path, "__init__.py")
-		log.Infof("write empty %v", name)
-		return ioutil.WriteFile(name, []byte(""), 0666)
+		return generateEmptyInitPy(path)
 	}
 
 	if err := filepath.Walk(l.baseDir, walkFn); err != nil {
