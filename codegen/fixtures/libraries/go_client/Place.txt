@@ -1,4 +1,4 @@
-package client
+package theclient
 
 import (
 	"examples.com/client/libraries/files"
