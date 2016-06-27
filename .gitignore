@@ -27,6 +27,4 @@ _testmain.go
 *.prof
 go-raml
 tags
-codegen/bindata/bindata.go
-codegen/date/bindate.go
 codegen/apidocs/apidocs_html_zip.go

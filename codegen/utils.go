@@ -10,7 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/Jumpscale/go-raml/codegen/bindata"
+	"github.com/Jumpscale/go-raml/codegen/templates"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -99,10 +99,10 @@ func generateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	}
 
 	// all template files path is relative to current directory (./)
-	// while go-bindata files exist in ./bindata directory
-	tmplFile = strings.Replace(tmplFile, "./", "../", -1)
+	// while go-bindata files exist in templates directory
+	tmplFile = strings.Replace(tmplFile, "./", "", -1)
 
-	byteData, err := bindata.Asset(tmplFile)
+	byteData, err := templates.Asset(tmplFile)
 	if err != nil {
 		return err
 	}
