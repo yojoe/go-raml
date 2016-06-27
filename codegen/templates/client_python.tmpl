@@ -9,12 +9,24 @@ class Client:
     def __init__(self):
         self.url = BASE_URI
         self.session = requests.Session()
+        self.auth_header = ''
+    
+    def set_auth_header(val):
+        ''' set authorization header value'''
+        self.auth_header = val
 {{ range $k, $v := .Methods }}
+
     def {{$v.MethodName}}({{$v.Params}}):
         """{{ range $kf, $vf := $v.FuncComments }}
         {{$vf}}{{end}}
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + {{$v.ResourcePath}}
         uri = uri + build_query_string(query_params)
         return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
