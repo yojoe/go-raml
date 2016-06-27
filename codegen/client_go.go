@@ -17,8 +17,6 @@ type goClient struct {
 
 // generate Go client files
 func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
-	pkgName := filepath.Base(gc.RootImportPath)
-
 	// sort the method, so we have predictable ordering
 	// we don't need it to produce correct code,
 	// we need it for our unit test
@@ -26,7 +24,7 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 
 	// helper package
 	gh := goramlHelper{
-		packageName: pkgName,
+		packageName: gc.PackageName,
 		packageDir:  "",
 	}
 	if err := gh.generate(dir); err != nil {
@@ -34,12 +32,12 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	}
 
 	// generate struct
-	if err := generateStructs(apiDef.Types, dir, pkgName, langGo); err != nil {
+	if err := generateStructs(apiDef.Types, dir, gc.PackageName, langGo); err != nil {
 		return err
 	}
 
 	// generate strucs from bodies
-	if err := generateBodyStructs(apiDef, dir, pkgName, langGo); err != nil {
+	if err := generateBodyStructs(apiDef, dir, gc.PackageName, langGo); err != nil {
 		return err
 	}
 

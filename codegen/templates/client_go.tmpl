@@ -18,6 +18,7 @@ const (
 {{$apiName := .Name}}
 type {{.Name}} struct {
 	client http.Client
+    AuthHeader string // Authorization header, will be sent on each request if not empty
 }
 
 func New{{.Name}}() *{{.Name}} {
@@ -42,9 +43,13 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 			{{- end -}}
 		}
 
+        if c.AuthHeader != "" {
+            req.Header.Set("Authorization", c.AuthHeader)
+        }
+
 		for k, v := range headers {
          req.Header.Set(k, fmt.Sprintf("%v", v))
-    }
+        }
 
 		//do the request
 		resp, err := c.client.Do(req)
@@ -76,7 +81,7 @@ func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
-        resp, err := doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&{{$v.ReqBody | ToLower}}{{else}}nil{{end}}, c.client, headers, qsParam)
+        resp, err := c.doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&{{$v.ReqBody | ToLower}}{{else}}nil{{end}}, headers, qsParam)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err

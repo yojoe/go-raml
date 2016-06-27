@@ -8,6 +8,12 @@ class Client:
     def __init__(self):
         self.url = BASE_URI
         self.session = requests.Session()
+        self.auth_header = ''
+    
+    def set_auth_header(val):
+        ''' set authorization header value'''
+        self.auth_header = val
+
 
     def get_users(self, headers=None, query_params=None):
         """
@@ -15,35 +21,63 @@ class Client:
         Second line of comment
         It is method for GET /users
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + "/users"
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
+
 
     def create_users(self, data, headers=None, query_params=None):
         """
         create users
         It is method for POST /users
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + "/users"
         uri = uri + build_query_string(query_params)
         return self.session.post(uri, data, headers=headers)
+
 
     def getuserid(self, userId, headers=None, query_params=None):
         """
         get id
         It is method for GET /users/{userId}
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + "/users/"+userId
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
+
 
     def users_byUserId_delete(self, userId, headers=None, query_params=None):
         """
         It is method for DELETE /users/{userId}
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + "/users/"+userId
         uri = uri + build_query_string(query_params)
         return self.session.delete(uri, headers=headers)
+
 
     def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
         """
@@ -51,6 +85,12 @@ class Client:
         of address
         It is method for GET /users/{userId}/address/{addressId}
         """
+        if self.auth_header:
+            if not headers:
+                headers = {'Authorization': self.auth_header}
+            else:
+                headers['Authorization'] = self.auth_header
+
         uri = self.url + "/users/"+userId+"/address/"+addressId
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
