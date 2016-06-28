@@ -135,6 +135,11 @@ func (ps pythonServer) generate(dir string) error {
 		return err
 	}
 
+	// requirements.txt file
+	if err := generateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
+		return err
+	}
+
 	// generate main
 	if ps.withMain {
 		// generate HTML front page
