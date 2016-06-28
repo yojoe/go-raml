@@ -25,13 +25,6 @@ var (
 	globAPIDef *raml.APIDefinition
 )
 
-const (
-	serverMainTmplFile       = "./templates/server_main.tmpl"
-	serverMainTmplName       = "server_main_template"
-	serverPythonMainTmplFile = "./templates/server_python_main.tmpl"
-	serverPythonMainTmplName = "server_python_main_template"
-)
-
 // base server definition
 type server struct {
 	apiDef       *raml.APIDefinition
@@ -93,15 +86,18 @@ func (gs goServer) generate(dir string) error {
 
 	// generate main
 	if gs.withMain {
+		// HTML front page
 		if err := generateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
 			return err
 		}
-		return generateFile(gs, serverMainTmplFile, serverMainTmplName, filepath.Join(dir, "main.go"), true)
+		// main file
+		return generateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(dir, "main.go"), true)
 	}
 
 	return nil
 }
 
+// generate all python server files
 func (ps pythonServer) generate(dir string) error {
 	// generate input validators helper
 	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
@@ -139,13 +135,19 @@ func (ps pythonServer) generate(dir string) error {
 		return err
 	}
 
+	// requirements.txt file
+	if err := generateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
+		return err
+	}
+
 	// generate main
 	if ps.withMain {
+		// generate HTML front page
 		if err := generateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
-
 			return err
 		}
-		return generateFile(ps, serverPythonMainTmplFile, serverPythonMainTmplName, filepath.Join(dir, "app.py"), true)
+		// main file
+		return generateFile(ps, "./templates/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
 	}
 	return nil
 

@@ -7,5 +7,6 @@ go:
   - 1.6
 
 script:
+  - ./build_apidocs.sh
   - ./build.sh
   - go test -v ./...

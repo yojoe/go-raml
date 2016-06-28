@@ -27,4 +27,3 @@ _testmain.go
 *.prof
 go-raml
 tags
-codegen/apidocs/apidocs_html_zip.go

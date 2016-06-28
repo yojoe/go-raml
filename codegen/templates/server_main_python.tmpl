@@ -1,0 +1,29 @@
+{{- define "server_main_python" -}}
+from flask import Flask, send_from_directory, send_file
+import wtforms_json
+{{ range $k, $v := .ResourcesDef -}}
+from {{.Name | ToLower}} import {{.Name | ToLower}}_api
+{{end }}
+
+app = Flask(__name__)
+
+app.config["WTF_CSRF_ENABLED"] = False
+wtforms_json.init()
+
+{{range $k, $v := .ResourcesDef -}}
+app.register_blueprint({{.Name | ToLower }}_api)
+{{end}}
+
+{{ if .APIDocsDir }}
+@app.route('/{{.APIDocsDir}}/<path:path>')
+def send_js(path):
+    return send_from_directory('{{.APIDocsDir}}', path)
+{{ end }}
+
+@app.route('/', methods=['GET'])
+def home():
+    return send_file('index.html')
+
+if __name__ == "__main__":
+    app.run(debug=True)
+{{end -}}

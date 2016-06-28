@@ -9,60 +9,42 @@
   $export PATH=$PATH:$GOPATH/bin
   ```
 
-2. Install godep as package manager
-
-  ```
-  $go get -u github.com/tools/godep
-  ```
-
-3. Install go-bindata, we need it to compile the template files to .go file
-
-  ```
-  $go get -u github.com/jteeuwen/go-bindata/...
-  ```
-
-4. Install go-raml
+2. Install go-raml
 
   ```
   $go get -u github.com/Jumpscale/go-raml
   ```
 
-5. Build
-
-  First, we need to compile the templates
+3. create dir for generated Go code
 
   ```
-  $cd $GOPATH/src/github.com/Jumpscale/go-raml
-  $sh build.sh
-  ```
-
-6. create dir for generated code
-
-  ```
-  $mkdir tutorial
+  $mkdir -p /opt/go/src/github.com/mycompany/server
   ```
   ##Code Generation
   we will use simple_example.raml exists in the raml/samples
 
-7. generate server code GoLang
+4. generate server code GoLang
 
   ```
-  $go-raml server -l go --dir ./tutorial/server --ramlfile tutorial/tutorial.raml
+  $go-raml server -l go --dir /opt/go/src/github.com/mycompany/server --ramlfile tutorial/tutorial.raml --import-path github.com/mycompany/server
   ```
-
-8. generate client code in python
+  
+  
+5. generate client code in python
 
   ```
+  mkdir -p tutorial/client
   $go-raml client -l python --dir ./tutorial/client --ramlfile tutorial/tutorial.raml
   ```
-
-  you will find two new directories server and client
-
+  
+Install required packages
   ```
-  $cd tutorial/server
+  $cd /opt/go/src/github.com/mycompany/server
   $go get github.com/gorilla/mux
   $go get gopkg.in/validator.v2
   ```
+  
+  You can find more info about generated code and how to use it in https://github.com/Jumpscale/go-raml/blob/master/README.md#using-generated-code
 
   ## Playing with the generated code
   we will edit methods of the server/resources_api.go method with any dummy response
@@ -81,7 +63,7 @@
   $./server
   ```
 
-9. open a new terminal and cd to client dir under tutorial
+6. open a new terminal and cd to client dir under tutorial
 
   install ipython you didn't have it
 
