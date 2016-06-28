@@ -164,6 +164,13 @@ Generated code details:
 
 The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
 
+install required packages
+```
+ $go get github.com/gorilla/mux
+ $go get gopkg.in/validator.v2
+ $go get github.com/justinas/alice
+```
+
 Build the code
 
 `go build ./...`
