@@ -21,6 +21,7 @@ Table of Contents
   * [Using Go Client Library](#using-go-client-library)
   * [Using Python Client Library](#using-python-client-library)
 * [Specification File](#specification-file)
+* [Viewing and Editing RAML file](#viewing-and-editing-raml-file)
 * [Contribute](#contribute)
 * [Roadmap](#roadmap)
 * [RAML to Code Translation](#raml-to-code-translation)
@@ -211,6 +212,14 @@ Generated python client library only need python-requests as dependency
 Besides generation of a new RAML specification file, updating an existing raml file is also supported. This way the raml filestructure that can be included in the main raml file is honored.
 
 `go-raml spec ...`
+
+## Viewing and Editing RAML File
+
+There are many ways to view and edit RAML file:
+
+- [API Workbench](http://apiworkbench.com/) is an atom package for designing, building, testing, documenting and sharing RESTful HTTP APIs
+- Vim : it is enough for simple purpose
+
 
 ## Contribute
 
