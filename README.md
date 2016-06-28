@@ -11,10 +11,15 @@ Table of Contents
 * [Code Generation](#code-generation)
 * [Usage](#usage)
 * [Generating Server](#generating-server)
-  * [Simple Homepage & API Docs](#simple-home-page-and-api-docs)
   * [Go Server](#go-server)
   * [Flask / Python Server](#flaskpython-server)
 * [Generating Client](#generating-client)
+* [Using Generated Code](#using-generated-code)
+  * [Simple Homepage & API Docs](#simple-home-page-and-api-docs)
+  * [Using Go Server](#using-go-server)
+  * [Using Python Server](#using-python-server)
+  * [Using Go Client Library([#using-go-client-library)
+  * [Using Python Client Library)(#using-python-client-library)
 * [Specification File](#specification-file)
 * [Contribute](#contribute)
 * [Roadmap](#roadmap)
@@ -168,7 +173,7 @@ Execute it
 
 The server will then run in port 5000, you can go to http://localhost:5000 to see default html page as described above
 
-### Using generated python server
+### Using Python Server
 
 The generated code is utilizing [Flask Blueprint](http://flask.pocoo.org/docs/0.11/blueprints/) to give you modular flask code.
 
@@ -190,6 +195,8 @@ Run the code
 ```
 python3 app.py
 ```
+
+The server will then run in port 5000, you can go to http://localhost:5000 to see default html page as described above
 
 ### Using Go client library
 
