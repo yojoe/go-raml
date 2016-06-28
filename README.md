@@ -8,15 +8,17 @@ Table of Contents
 * [What is go-raml](#what-is-go-raml)
 * [Supported RAML Versions](#raml-versions)
 * [Install & Build in Development](#install)
-* [Usage](#usage)
 * [Code Generation](#code-generation)
-* [Server](#server)
+* [Usage](#usage)
+* [Generating Server](#generating-server)
   * [Simple Homepage & API Docs](#simple-home-page-and-api-docs)
   * [Go Server](#go-server)
   * [Flask / Python Server](#flaskpython-server)
-* [Client](#client)
+* [Generating Client](#generating-client)
+* [Specification File](#specification-file)
 * [Contribute](#contribute)
 * [Roadmap](#roadmap)
+* [RAML to Code Translation](#raml-to-code-translation)
 
 
 ## What is go-raml
@@ -68,6 +70,10 @@ cd $GOPATH/src/github.com/Jumpscale/go-raml
 sh build.sh
 ```
 
+## Code generation
+
+Internally, go templates are used to generate the code, this provides a flexible way to alter the generated code and to add different languages for the client.
+
 ## Usage
 
 To use it on the commandline, just execute `go-raml` without any arguments, it will output the help on the stdout.
@@ -77,38 +83,32 @@ To invoke the codegeneration using `go generate`, specify the generation in 1 of
 
 go-raml needs to be on the path for this to work off course.
 
-## Code generation
 
-Internally, go templates are used to generate the code, this provides a flexible way to alter the generated code and to add different languages for the client.
-
-## Server
+## Generating Server
 
 `go-raml` able to generate Go & Python server.
 
 Generated server will listen on port 5000
 
-### Simple home page and API Docs
-
-Both servers have simple home page that can be accessed in http://localhost:5000.
-
-There is `API Docs` link that will go to auto generated API documentation powered by [api-console](https://github.com/mulesoft/api-console)
 
 ### Go Server
 
 To generate the Go code for implementing the server in first design approach, execute
 
-`go-raml server -l go --dir ./result_directory --ramlfile api.raml`
+`go-raml server -l go --dir /gopath/src/github.com/mycompany/myapi --ramlfile api.raml --import-path github.com/mycompany/myapi`
 
-The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
+`--dir` specify generated code directory. Except you really know what you do, use $GOPATH as root directory. In above example $GOPATH is /gopath.
 
--Generated codestructure:
--* Interfaces types, always regenerated
--* Implementing types, only generated when the file is not present
+
+`--ramlfile` is the path RAML file
+
+`--import-path` is the root import path of the code. Generated code contains sub packages and need it to properly import code from another packages
+
 
 
 ### Flask/Python Server
 
-To generate the Flask/Python code for implementing the server in first design approach, execute
+To generate the Flask/Python code for implementing the server, execute
 
 `go-raml server -l python --dir ./result_directory --ramlfile api.raml`
 
@@ -121,9 +121,10 @@ To generate the Flask/Python code for implementing the server in first design ap
    --package "main" package name
    --no-main        Do not generate a main.go file
    --no-apidocs     Do not generate API Docs in /apidocs/?raml=api.raml endpoint
+   --import-path    "examples.com/ramlcode"	import path of the generated code
 ```
 
-## Client
+## Generating Client
 
 `go-raml client --language go  --dir ./result_directory --ramlfile api.raml`
 
@@ -133,6 +134,70 @@ A go 1.5.x compatible client is generated in result_directory directory.
 
 A python 3.5 compatible client is generated in result_directory directory.
 
+
+## Using Generated Code
+
+### Simple home page and API Docs
+
+Both servers have simple HTML home page that can be accessed in http://localhost:5000.
+it provide simple description of the API server and link to auto generated API Documentation
+powered by [api-console](https://github.com/mulesoft/api-console)
+
+### Using Go Server
+
+Generated go server can be used as your API server skeleton. It gives you routing code, implementation skeleton, simple request validation,  and all struct based on raml types and request/response body. You can then extend the generated code to fit your need.
+
+Generated code details:
+
+- an optional main file which contain routing code and other inialization code
+- Interfaces files, contain routing code which mapped one to one with RAML resources. It always regenerated
+- Interface implementation. It is code skeleton of the resource implemetation, only generated when the file is not present. So you can easily modify it
+- Struct for RAML types and request/response body, only generated when the file is not present.
+- Validation code
+- Helper files
+
+The generated server uses [Gorilla Mux](http://www.gorillatoolkit.org/pkg/mux) as HTTP request multiplexer.
+
+Build the code
+
+`go build ./...`
+
+Execute it
+
+`./binary_name`
+
+The server will then run in port 5000, you can go to http://localhost:5000 to see default html page as described above
+
+### Using generated python server
+
+The generated code is utilizing [Flask Blueprint](http://flask.pocoo.org/docs/0.11/blueprints/) to give you modular flask code.
+
+Generated code details:
+
+- main file named app.py which initialize the app
+- one bluperint/module for each root RAML resource
+- helper file
+- requirements.txt which contains list of packages needed to run the app.
+
+Install needed packages
+```
+pip3 install -r requirements.txt
+```
+
+You might want to install it inside virtualenv
+
+Run the code
+```
+python3 app.py
+```
+
+### Using Go client library
+
+Generated go client library can be used directly as modular package of your project
+
+### Using Python Client library
+
+Generated python client library only need python-requests as dependency
 
 ## Specification file
 
@@ -144,7 +209,7 @@ Besides generation of a new RAML specification file, updating an existing raml f
 
 When you want to contribute to the development, follow the [contribution guidelines](contributing.md).
 
-## roadmap
+## Roadmap
 **v0.1**
 
 * Generation of the server using [gorilla mux](http://www.gorillatoolkit.org/pkg/mux)
@@ -170,7 +235,7 @@ When you want to contribute to the development, follow the [contribution guideli
 * Update of a RAML specification file
 
 
-## RAML to code translation
+## RAML to Code Translation
 
 Below are incomplete description about how we translate .raml file into code.
 
