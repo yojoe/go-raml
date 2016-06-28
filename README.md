@@ -24,20 +24,27 @@ Currently there are still some [limitations](docs/limitations.md) on the RAML 1.
 
 make sure you have at least go 1.6 installed !
 
-Install `godep` as package manager
+`go get -u github.com/Jumpscale/go-raml`
+
+
+### Build in development
+
+Install `godep` as package manager, we need it for vendoring tool
 
 `$go get -u github.com/tools/godep`
 
-Install go-bindata, we need it to compile the template files to .go file
+Install go-bindata, we need it to compile all resource files to .go file
 
 `go get -u github.com/jteeuwen/go-bindata/...`
 
-Install go-raml
 
-`go get -u github.com/Jumpscale/go-raml`
+To rebuild APIDocs files to .go file
+```
+cd $GOPATH/src/github.com/Jumpscale/go-raml
+sh build_apidocs.sh
+```
 
-### Build
-
+Build go-raml and all resource files
 ```
 cd $GOPATH/src/github.com/Jumpscale/go-raml
 sh build.sh
@@ -60,11 +67,11 @@ Internally, go templates are used to generate the code, this provides a flexible
 
 `go-raml` able to generate Go & Python server.
 
-Go server will listen on port 8080 while Python server listen on port 5000.
+Generated server will listen on port 5000
 
 ### Simple home page and API Docs
 
-Both servers have simple home page that can be accessed in http://localhost:8000 for Go and http://localhost:5000 for Python.
+Both servers have simple home page that can be accessed in http://localhost:5000.
 
 There is `API Docs` link that will go to auto generated API documentation powered by [api-console](https://github.com/mulesoft/api-console)
 
