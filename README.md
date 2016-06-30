@@ -208,11 +208,15 @@ The server will then run in port 5000, you can go to http://localhost:5000 to se
 
 ### Using Go client library
 
-Generated go client library can be used directly as modular package of your project
+Generated go client library can be used directly as modular package of your project. 
+
+It has `AuthHeader` field, which if not empty will be used as value of `Authorization` header on each request.
 
 ### Using Python Client library
 
-Generated python client library only need python-requests as dependency
+Generated python client library only need python-requests as dependency.
+
+It has `set_auth_header` method to set `Authorization` header value on each request.
 
 ## Specification file
 
