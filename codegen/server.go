@@ -203,5 +203,5 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 
 	log.Infof("Generating API Docs to %v endpoint", sd.APIDocsDir)
 
-	return apidocs.Generate(ramlBytes, filepath.Join(dir, sd.APIDocsDir))
+	return apidocs.Generate(apiDef, ramlFile, ramlBytes, filepath.Join(dir, sd.APIDocsDir))
 }
