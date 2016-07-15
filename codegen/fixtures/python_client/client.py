@@ -28,8 +28,7 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + "/users"
-        uri = uri + build_query_string(query_params)
-        return self.session.get(uri, headers=headers)
+        return self.session.get(uri, headers=headers, params=query_params)
 
 
     def create_users(self, data, headers=None, query_params=None):
@@ -44,8 +43,7 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + "/users"
-        uri = uri + build_query_string(query_params)
-        return self.session.post(uri, data, headers=headers)
+        return self.session.post(uri, data, headers=headers, params=query_params)
 
 
     def getuserid(self, userId, headers=None, query_params=None):
@@ -60,8 +58,7 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + "/users/"+userId
-        uri = uri + build_query_string(query_params)
-        return self.session.get(uri, headers=headers)
+        return self.session.get(uri, headers=headers, params=query_params)
 
 
     def users_byUserId_delete(self, userId, headers=None, query_params=None):
@@ -75,8 +72,7 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + "/users/"+userId
-        uri = uri + build_query_string(query_params)
-        return self.session.delete(uri, headers=headers)
+        return self.session.delete(uri, headers=headers, params=query_params)
 
 
     def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
@@ -92,5 +88,4 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + "/users/"+userId+"/address/"+addressId
-        uri = uri + build_query_string(query_params)
-        return self.session.get(uri, headers=headers)
+        return self.session.get(uri, headers=headers, params=query_params)

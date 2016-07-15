@@ -28,7 +28,6 @@ class Client:
                 headers['Authorization'] = self.auth_header
 
         uri = self.url + {{$v.ResourcePath}}
-        uri = uri + build_query_string(query_params)
-        return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
+        return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers, params=query_params)
 {{ end }}
 {{- end -}}
