@@ -3,7 +3,6 @@ package codegen
 import (
 	"fmt"
 	"github.com/Jumpscale/go-raml/raml"
-	"log"
 )
 
 type markdownDocs struct {
@@ -23,15 +22,6 @@ func (d *markdownDocs) flatten(resources map[string]*raml.Resource, base string,
 }
 
 func (d *markdownDocs) generate() error {
-	//d.api.BaseURI
-	for _, v := range d.api.Resources {
-		log.Printf("Resource: %s", v.DisplayName)
-
-		for _, m := range v.Methods {
-			log.Printf("%s:%s", m.Name, m.DisplayName)
-		}
-	}
-
 	resources := make(map[string]*raml.Resource)
 	for k, v := range d.api.Resources {
 		func(resource raml.Resource) {
@@ -40,6 +30,5 @@ func (d *markdownDocs) generate() error {
 	}
 	flat := make(map[string]*raml.Resource)
 	d.flatten(resources, "", flat)
-	log.Printf("Flat resource: %s", flat)
 	return generateFile(map[string]interface{}{"Api": d.api, "Resources": flat}, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
 }
