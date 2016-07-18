@@ -56,7 +56,9 @@
 |Name|Description|Type|
 |---|---|---|
 {{ range $propName, $prop := $type.Properties -}}
-|**{{ $propName }}**||{{ $prop }}|
+{{ with $property := call $.Property $propName $prop }}
+|**{{ $propName }}**| {{ $property.Description }}|{{ $property.Type }}|
+{{ end -}}
 {{ end -}}
 
 {{ end -}}

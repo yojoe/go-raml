@@ -35,6 +35,8 @@ func (d *markdownDocs) generate() error {
 	ctx := map[string]interface{}{
 		"Api":       d.api,
 		"Resources": flat,
+		"Property":  raml.ToProperty,
 	}
+
 	return generateFile(ctx, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
 }
