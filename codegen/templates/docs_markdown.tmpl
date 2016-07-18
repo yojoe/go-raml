@@ -16,7 +16,7 @@
 {{ range $_, $method := $resource.Methods -}}
 
 <a name="{{ $method.DisplayName}}"></a>
-### {{ or $method.Description $method.DisplayName $method.Name }}
+### {{ or $method.Description $method.DisplayName $resourceName }}
 
 ```
 {{ $method.Name }} {{ $resourceName }}
