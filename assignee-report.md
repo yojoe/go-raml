@@ -2,7 +2,7 @@
 
 # Issues per assignee
 - [iwanbk](#iwanbk) has 5 assigned
-- [robvanmieghem](#robvanmieghem) has 3 assigned
+- [robvanmieghem](#robvanmieghem) has 2 assigned
 
 
 
@@ -21,7 +21,6 @@
 
 |Issue|Title|State|Type|
 |-----|-----|-----|----|
-|[#91](https://github.com/jumpscale/go-raml/issues/91)|Use new arg format for cli.|:red_circle: Open||
 |[#129](https://github.com/jumpscale/go-raml/issues/129)|Python client:no need to build query params manually.|:large_blue_circle: In Progress||
 |[#130](https://github.com/jumpscale/go-raml/issues/130)|Rework Method post processing|:large_blue_circle: In Progress||
 
