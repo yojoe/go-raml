@@ -14,6 +14,7 @@ Table of Contents
   * [Go Server](#go-server)
   * [Flask / Python Server](#flaskpython-server)
 * [Generating Client](#generating-client)
+* [Generating Docs](#generating-docs)
 * [Using Generated Code](#using-generated-code)
   * [Simple Homepage & API Docs](#simple-home-page-and-api-docs)
   * [Using Go Server](#using-go-server)
@@ -140,6 +141,10 @@ A go 1.5.x compatible client is generated in result_directory directory.
 
 A python 3.5 compatible client is generated in result_directory directory.
 
+## Generating Docs
+`go-raml docs [--format markdown] --ramlfile ~/work/mddocs/itsyouonline.raml --output ~/work/proj_sberbank/documentation/api/itsyouonline.md`
+
+A single file `markdown` documentation is generated. Note that only markdown format is supported at the moment.
 
 ## Using Generated Code
 
