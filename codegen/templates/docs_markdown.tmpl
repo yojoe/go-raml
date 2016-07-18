@@ -53,10 +53,10 @@
 ### {{ $typeName }}
 {{ $type.Description }}
 
-|Name|Description|Schema|
+|Name|Description|Type|
 |---|---|---|
 {{ range $propName, $prop := $type.Properties -}}
-|**{{ $propName}}**|||
+|**{{ $propName }}**||{{ $prop }}|
 {{ end -}}
 
 {{ end -}}

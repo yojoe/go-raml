@@ -28,7 +28,13 @@ func (d *markdownDocs) generate() error {
 			resources[k] = &resource
 		}(v)
 	}
+
 	flat := make(map[string]*raml.Resource)
 	d.flatten(resources, "", flat)
-	return generateFile(map[string]interface{}{"Api": d.api, "Resources": flat}, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
+
+	ctx := map[string]interface{}{
+		"Api":       d.api,
+		"Resources": flat,
+	}
+	return generateFile(ctx, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
 }
