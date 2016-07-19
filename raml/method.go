@@ -61,6 +61,13 @@ func newMethod(name string) *Method {
 	}
 }
 
+// doing post processing that can't be done by YAML parser
+func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trait) {
+	m.Name = name
+	m.inheritFromTraits(r, append(r.Is, m.Is...), traitsMap)
+	r.Methods = append(r.Methods, m)
+}
+
 // inherit from resource type
 // fields need to be inherited:
 // - description
