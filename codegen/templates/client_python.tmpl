@@ -1,6 +1,5 @@
 {{- define "client_python" -}}
 import requests
-from client_utils import build_query_string
 
 BASE_URI = "{{.BaseURI}}"
 
@@ -11,7 +10,7 @@ class Client:
         self.session = requests.Session()
         self.auth_header = ''
     
-    def set_auth_header(val):
+    def set_auth_header(self, val):
         ''' set authorization header value'''
         self.auth_header = val
 {{ range $k, $v := .Methods }}
@@ -22,10 +21,7 @@ class Client:
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + {{$v.ResourcePath}}
         return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers, params=query_params)
