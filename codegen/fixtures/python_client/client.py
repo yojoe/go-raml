@@ -1,5 +1,4 @@
 import requests
-from client_utils import build_query_string
 
 BASE_URI = "http://api.jumpscale.com/v3"
 
@@ -10,7 +9,7 @@ class Client:
         self.session = requests.Session()
         self.auth_header = ''
     
-    def set_auth_header(val):
+    def set_auth_header(self, val):
         ''' set authorization header value'''
         self.auth_header = val
 
@@ -22,10 +21,7 @@ class Client:
         It is method for GET /users
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + "/users"
         return self.session.get(uri, headers=headers, params=query_params)
@@ -37,10 +33,7 @@ class Client:
         It is method for POST /users
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + "/users"
         return self.session.post(uri, data, headers=headers, params=query_params)
@@ -52,10 +45,7 @@ class Client:
         It is method for GET /users/{userId}
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + "/users/"+userId
         return self.session.get(uri, headers=headers, params=query_params)
@@ -66,10 +56,7 @@ class Client:
         It is method for DELETE /users/{userId}
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + "/users/"+userId
         return self.session.delete(uri, headers=headers, params=query_params)
@@ -82,10 +69,7 @@ class Client:
         It is method for GET /users/{userId}/address/{addressId}
         """
         if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+            self.session.headers.update({"Authorization":self.auth_header})
 
         uri = self.url + "/users/"+userId+"/address/"+addressId
         return self.session.get(uri, headers=headers, params=query_params)
