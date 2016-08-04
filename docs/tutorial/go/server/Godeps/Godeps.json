@@ -1,0 +1,14 @@
+{
+	"ImportPath": "github.com/Jumpscale/go-raml/docs/tutorial/go/server",
+	"GoVersion": "go1.6",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v3.0.0-6-g63734ea",
+			"Rev": "63734eae1ef55eaac06fdc0f312615f2e321e273"
+		}
+	]
+}
