@@ -39,6 +39,17 @@ class Client:
         return self.session.post(uri, data, headers=headers, params=query_params)
 
 
+    def option_users(self, headers=None, query_params=None):
+        """
+        It is method for OPTIONS /users
+        """
+        if self.auth_header:
+            self.session.headers.update({"Authorization":self.auth_header})
+
+        uri = self.url + "/users"
+        return self.session.options(uri, headers=headers, params=query_params)
+
+
     def getuserid(self, userId, headers=None, query_params=None):
         """
         get id
