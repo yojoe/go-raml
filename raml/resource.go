@@ -185,6 +185,9 @@ func (r *Resource) setMethods(traitsMap map[string]Trait) {
 	if r.Delete != nil {
 		r.Delete.postProcess(r, "DELETE", traitsMap)
 	}
+	if r.Options != nil {
+		r.Options.postProcess(r, "OPTIONS", traitsMap)
+	}
 }
 
 // MethodByName return resource's method by it's name
@@ -202,6 +205,8 @@ func (r *Resource) MethodByName(name string) *Method {
 		return r.Head
 	case "DELETE":
 		return r.Delete
+	case "OPTIONS":
+		return r.Options
 	default:
 		return nil
 	}
@@ -221,6 +226,8 @@ func (r *Resource) assignMethod(m *Method, name string) {
 		r.Head = m
 	case "DELETE":
 		r.Delete = m
+	case "OPTIONS":
+		r.Options = m
 	default:
 		log.Fatalf("assignMethod fatal error, invalid method name:%v", name)
 	}

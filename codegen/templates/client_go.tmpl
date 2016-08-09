@@ -32,11 +32,11 @@ func New{{.Name}}() *{{.Name}} {
 // {{$vf}} {{end}}
 func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
 	qsParam := buildQueryString(queryParams)
-	{{- if eq $v.Verb "GET" }}
+	{{- if eq $v.Verb "GET" "OPTIONS"}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
 		// create request object
-		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
+        req, err := http.NewRequest("{{$v.Verb}}", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err

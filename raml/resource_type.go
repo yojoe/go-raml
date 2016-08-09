@@ -66,12 +66,13 @@ type ResourceType struct {
 	// resource. A method MUST be one of the HTTP methods defined in the
 	// HTTP version 1.1 specification [RFC2616] and its extension,
 	// RFC5789 [RFC5789].
-	Get    *Method `yaml:"get"`
-	Head   *Method `yaml:"head"`
-	Post   *Method `yaml:"post"`
-	Put    *Method `yaml:"put"`
-	Delete *Method `yaml:"delete"`
-	Patch  *Method `yaml:"patch"`
+	Get     *Method `yaml:"get"`
+	Head    *Method `yaml:"head"`
+	Post    *Method `yaml:"post"`
+	Put     *Method `yaml:"put"`
+	Delete  *Method `yaml:"delete"`
+	Patch   *Method `yaml:"patch"`
+	Options *Method `yaml:"options"`
 
 	// When defining resource types and traits, it can be useful to capture
 	// patterns that manifest several levels below the inheriting resource or
@@ -92,6 +93,7 @@ type ResourceType struct {
 	OptionalPut               *Method                   `yaml:"put?"`
 	OptionalDelete            *Method                   `yaml:"delete?"`
 	OptionalPatch             *Method                   `yaml:"patch?"`
+	OptionalOptions           *Method                   `yaml:"options?"`
 
 	methods         []*Method // all non-nil methods
 	optionalMethods []*Method // all non-nil optional methods
@@ -145,6 +147,11 @@ func (rt *ResourceType) setMethods(traitsMap map[string]Trait) {
 		rt.Delete.inheritFromTraits(nil, append(rt.Is, rt.Delete.Is...), traitsMap)
 		rt.methods = append(rt.methods, rt.Delete)
 	}
+	if rt.Options != nil {
+		rt.Options.Name = "OPTIONS"
+		rt.Options.inheritFromTraits(nil, append(rt.Is, rt.Options.Is...), traitsMap)
+		rt.methods = append(rt.methods, rt.Options)
+	}
 }
 
 // setOptionalMethods set name of all optional methods
@@ -173,6 +180,10 @@ func (rt *ResourceType) setOptionalMethods() {
 	if rt.OptionalDelete != nil {
 		rt.OptionalDelete.Name = "DELETE"
 		rt.optionalMethods = append(rt.optionalMethods, rt.OptionalDelete)
+	}
+	if rt.OptionalOptions != nil {
+		rt.OptionalOptions.Name = "OPTIONS"
+		rt.optionalMethods = append(rt.optionalMethods, rt.OptionalOptions)
 	}
 }
 

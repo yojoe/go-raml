@@ -40,6 +40,7 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 		{"Put", r.Put},
 		{"Delete", r.Delete},
 		{"Patch", r.Patch},
+		{"Options", r.Options},
 	}
 	for _, v := range methods {
 		if err := buildBodyFromMethod(structName, v.Name, dir, packageName, lang, v.Method); err != nil {
