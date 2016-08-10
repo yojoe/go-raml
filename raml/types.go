@@ -224,7 +224,7 @@ type Type struct {
 	//    a) the name of a user-defined type or
 	//    b) the name of a built-in RAML data type (object, array, or one of the scalar types) or
 	//    c) an inline type declaration.
-	Type interface{} `yaml:"type"`
+	Type interface{} `yaml:"type" json:"type"`
 
 	// An example of an instance of this type.
 	// This can be used, e.g., by documentation generators to generate sample values for an object of this type.
@@ -232,21 +232,21 @@ type Type struct {
 	// An example of an instance of this type that can be used,
 	// for example, by documentation generators to generate sample values for an object of this type.
 	// The "example" property MUST not be available when the "examples" property is already defined.
-	Example interface{} `yaml:"example"`
+	Example interface{} `yaml:"example" json:"example"`
 
 	// An object containing named examples of instances of this type.
 	// This can be used, for example, by documentation generators
 	// to generate sample values for an object of this type.
 	// The "examples" property MUST not be available
 	// when the "example" property is already defined.
-	Examples map[string]interface{} `yaml:"examples"`
+	Examples map[string]interface{} `yaml:"examples" json:"examples"`
 
 	// An alternate, human-friendly name for the type
-	DisplayName string `yaml:"displayName"`
+	DisplayName string `yaml:"displayName" json:"displayName"`
 
 	// A substantial, human-friendly description of the type.
 	// Its value is a string and MAY be formatted using markdown.
-	Description string `yaml:"description"`
+	Description string `yaml:"description" json:"description"`
 
 	// TODO : annotation names
 
@@ -254,82 +254,82 @@ type Type struct {
 
 	// The properties that instances of this type may or must have.
 	// we use `interface{}` as property type to support syntactic sugar & shortcut
-	Properties map[string]interface{} `yaml:"properties"`
+	Properties map[string]interface{} `yaml:"properties" json:"properties"`
 
 	// -------- Below facets are available for object type --------------//
 
 	// The minimum number of properties allowed for instances of this type.
-	MinProperties int `yaml:"minProperties"`
+	MinProperties int `yaml:"minProperties" json:"minProperties"`
 
 	// The maximum number of properties allowed for instances of this type.
-	MaxProperties int `yaml:"maxProperties"`
+	MaxProperties int `yaml:"maxProperties" json:"maxProperties"`
 
 	// A Boolean that indicates if an object instance has additional properties.
 	// TODO: Default : true
-	AdditionalProperties string `yaml:"additionalProperties"`
+	AdditionalProperties string `yaml:"additionalProperties" json:"additionalProperties"`
 
 	// Determines the concrete type of an individual object at runtime when,
 	// for example, payloads contain ambiguous types due to unions or inheritance.
 	// The value must match the name of one of the declared properties of a type.
 	// Unsupported practices are inline type declarations and using discriminator with non-scalar properties.
-	Discriminator string `yaml:"discriminator"`
+	Discriminator string `yaml:"discriminator" json:"discriminator"`
 
 	// Identifies the declaring type.
 	// Requires including a discriminator property in the type declaration.
 	// A valid value is an actual value that might identify the type
 	// of an individual object and is unique in the hierarchy of the type.
 	// Inline type declarations are not supported.
-	DiscriminatorValue string `yaml:"discriminatorValue"`
+	DiscriminatorValue string `yaml:"discriminatorValue" json:"discriminatorValue"`
 
 	// ---- facets for Array type --- //
 
 	// Indicates the type all items in the array are inherited from.
 	// Can be a reference to an existing type or an inline type declaration.
-	Items interface{} `yaml:"items"`
+	Items interface{} `yaml:"items" json:"items"`
 
 	// Minimum amount of items in array. Value MUST be equal to or greater than 0.
-	MinItems int `yaml:"minItems" validate:"min=0"`
+	MinItems int `yaml:"minItems" validate:"min=0" json:"minItems"`
 
 	// Maximum amount of items in array. Value MUST be equal to or greater than 0.
-	MaxItems int `yaml:"maxItems" validate:"min=0"`
+	MaxItems int `yaml:"maxItems" validate:"min=0" json:"maxItems"`
 
 	// Boolean value that indicates if items in the array MUST be unique.
-	UniqueItems bool `yaml:"uniqueItems"`
+	UniqueItems bool `yaml:"uniqueItems" json:"uniqueItems"`
 
 	// ---------- facets for scalar type --------------------------//
 	// Enumeration of possible values for this built-in scalar type.
 	// The value is an array containing representations of possible values,
 	// or a single value if there is only one possible value.
-	Enum interface{} `yaml:"enum"`
+	Enum interface{} `yaml:"enum" json:"enum"`
 
 	// ---------- facets for string type ------------------------//
 	// Regular expression that this string should match.
-	Pattern string `yaml:"pattern"`
+	Pattern string `yaml:"pattern" json:"pattern"`
 
 	// Minimum length of the string. Value MUST be equal to or greater than 0.
-	MinLength int `yaml:"minLength" validate:"min=0"`
+	MinLength int `yaml:"minLength" validate:"min=0" json:"minLength"`
 
 	// Maximum length of the string. Value MUST be equal to or greater than 0.
-	MaxLength int `yaml:"maxLength" validate:"max=0"`
+	MaxLength int `yaml:"maxLength" validate:"max=0" json:"maxLength"`
 
 	// ----------- facets for Number -------------------------- //
 	// The minimum value of the parameter. Applicable only to parameters of type number or integer.
-	Minimum int `yaml:"minimum"`
+	Minimum int `yaml:"minimum" json:"minimum"`
 
 	// The maximum value of the parameter. Applicable only to parameters of type number or integer.
-	Maximum int `yaml:"maximum"`
+	Maximum int `yaml:"maximum" json:"maximum"`
 
 	// The format of the value. The value MUST be one of the following:
 	// int32, int64, int, long, float, double, int16, int8
-	Format string `yaml:"format"`
+	Format string `yaml:"format" json:"format"`
 
 	// A numeric instance is valid against "multipleOf"
 	// if the result of dividing the instance by this keyword's value is an integer.
-	MultipleOf int `yaml:"multipleOf"`
+	MultipleOf int `yaml:"multipleOf" json:"multipleOf"`
 
 	// ---------- facets for file --------------------------------//
 	// A list of valid content-type strings for the file. The file type */* MUST be a valid value.
-	FileTypes string `yaml:"fileTypes"`
+	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
 }
 
 // IsArray checks if this type is an Array

@@ -91,9 +91,12 @@ func buildBodyFromMethod(normalizedPath, methodName, dir, packageName, lang stri
 	return nil
 }
 
-// check if this raml.Bodies has JSON body that need to be generated
+// check if this raml.Bodies has JSON body that need to be generated it's struct.
+// rules:
+//	- not nil application/json
+//	- has properties or has tipe in JSON string
 func hasJSONBody(body *raml.Bodies) bool {
-	return body.ApplicationJSON != nil && len(body.ApplicationJSON.Properties) > 0
+	return body.ApplicationJSON != nil && (len(body.ApplicationJSON.Properties) > 0 || isJSONString(body.ApplicationJSON.Type))
 }
 
 // generate a struct from an RAML request/response body

@@ -195,3 +195,9 @@ func commentBuilder(desc string) []string {
 func replaceNonAlphanumerics(s string) string {
 	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
 }
+
+// check if a string is a JSON string
+func isJSONString(s string) bool {
+	s = strings.TrimSpace(s)
+	return strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}")
+}

@@ -128,21 +128,27 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 // Rules:
 //	- use bodies.Type if not empty and not `object`
 //	- use bodies.ApplicationJSON.Type if not empty and not `object`
-//	- use prefix+suffix
+//	- use prefix+suffix if:
+//		- not meet previous rules
+//		- previous rules produces JSON string
 func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
-	var bodiesType string
+	var tipe string
 
 	if len(bodies.Type) > 0 && bodies.Type != "object" {
-		bodiesType = convertToGoType(bodies.Type)
+		tipe = convertToGoType(bodies.Type)
 	} else if bodies.ApplicationJSON != nil {
 		if bodies.ApplicationJSON.Type != "" && bodies.ApplicationJSON.Type != "object" {
-			bodiesType = convertToGoType(bodies.ApplicationJSON.Type)
+			tipe = convertToGoType(bodies.ApplicationJSON.Type)
 		} else {
-			bodiesType = prefix + suffix
+			tipe = prefix + suffix
 		}
 	}
 
-	return bodiesType
+	if isJSONString(tipe) {
+		tipe = prefix + suffix
+	}
+
+	return tipe
 }
 
 // find resource's securedBy recursively
