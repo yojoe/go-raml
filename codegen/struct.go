@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -135,6 +136,25 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 		structName = structNamePrefix + reqBodySuffix
 	}
 
+	// handle JSON string type
+	// for example:
+	// application/json: # media type
+	//		type: | # structural definition of a response (schema or type)
+	//			{
+	//				"title": "Hello world Response",
+	//				"type": "object",
+	//					"properties": {
+	//					"message": {
+	//						"type": "string"
+	//						}
+	//					}
+	//				}
+	if body.ApplicationJSON.Type != "" {
+		var t raml.Type
+		if err := json.Unmarshal([]byte(body.ApplicationJSON.Type), &t); err == nil {
+			return newStructDefFromType(t, structName, packageName, langGo)
+		}
+	}
 	return newStructDef(structName, packageName, "", body.ApplicationJSON.Properties)
 }
 
