@@ -27,8 +27,6 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 		return nil
 	}
 
-	structName := normalizeURITitle(resourcePath + r.URI)
-
 	// build
 	var methods = []struct {
 		Name   string
@@ -42,8 +40,11 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 		{"Patch", r.Patch},
 		{"Options", r.Options},
 	}
+
+	normalizedPath := normalizeURITitle(resourcePath + r.URI)
+
 	for _, v := range methods {
-		if err := buildBodyFromMethod(structName, v.Name, dir, packageName, lang, v.Method); err != nil {
+		if err := buildBodyFromMethod(normalizedPath, v.Name, dir, packageName, lang, v.Method); err != nil {
 			return err
 		}
 	}
@@ -60,7 +61,7 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 
 // build request and reponse body of a method.
 // in python case, we only need to build it for request body because we only need it for validator
-func buildBodyFromMethod(structName, methodName, dir, packageName, lang string, method *raml.Method) error {
+func buildBodyFromMethod(normalizedPath, methodName, dir, packageName, lang string, method *raml.Method) error {
 	if method == nil {
 		return nil
 	}
@@ -68,20 +69,20 @@ func buildBodyFromMethod(structName, methodName, dir, packageName, lang string, 
 	//generate struct for request body
 	switch lang {
 	case langGo:
-		if err := generateStructFromBody(structName+methodName, dir, packageName, &method.Bodies, true); err != nil {
+		if err := generateStructFromBody(normalizedPath+methodName, dir, packageName, &method.Bodies, true); err != nil {
 			return err
 		}
 	case langPython:
 		if !hasJSONBody(&method.Bodies) {
 			return nil
 		}
-		pc := newPythonClass(structName+methodName+reqBodySuffix, "", method.Bodies.ApplicationJSON.Properties)
+		pc := newPythonClass(normalizedPath+methodName+reqBodySuffix, "", method.Bodies.ApplicationJSON.Properties)
 		return pc.generate(dir)
 	}
 
 	//generate struct for response body
 	for _, val := range method.Responses {
-		if err := generateStructFromBody(structName+methodName, dir, packageName, &val.Bodies, false); err != nil {
+		if err := generateStructFromBody(normalizedPath+methodName, dir, packageName, &val.Bodies, false); err != nil {
 			return err
 		}
 
