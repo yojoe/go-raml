@@ -48,12 +48,12 @@ func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName str
 	}
 
 	// set request body
-	method.ReqBody = assignBodyName(m.Bodies, normalizeURITitle(method.Endpoint)+methodName, "ReqBody")
+	method.ReqBody = setBodyName(m.Bodies, normalizeURITitle(method.Endpoint)+methodName, reqBodySuffix)
 
 	//set response body
 	for k, v := range m.Responses {
 		if k >= 200 && k < 300 {
-			method.RespBody = assignBodyName(v.Bodies, normalizeURITitle(method.Endpoint)+methodName, "RespBody")
+			method.RespBody = setBodyName(v.Bodies, normalizeURITitle(method.Endpoint)+methodName, respBodySuffix)
 		}
 	}
 
@@ -106,7 +106,7 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 
 	name := normalizeURITitle(method.Endpoint)
 
-	method.ReqBody = assignBodyName(m.Bodies, name+methodName, "ReqBody")
+	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
 
 	switch lang {
 	case langGo:
@@ -123,19 +123,19 @@ func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodNa
 	}
 }
 
-// assignBodyName assign method's request body by bodies.Type or bodies.ApplicationJSON
-// if bodiesType generated from bodies.Type we dont need append prefix and suffix
-// 		example : bodies.Type = City, so bodiesType = City
-// if bodiesType generated from bodies.ApplicationJSON, we get that value from prefix and suffix
-//		suffix = [ReqBody | RespBody] and prefix should be uri + method name.
-//		example prefix could be UsersUserIdDelete
-func assignBodyName(bodies raml.Bodies, prefix, suffix string) string {
+// setBodyName set name of method's request/response body.
+//
+// Rules:
+//	- use bodies.Type if not empty and not `object`
+//	- use bodies.ApplicationJSON.Type if not empty and not `object`
+//	- use prefix+suffix
+func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	var bodiesType string
 
-	if len(bodies.Type) > 0 {
+	if len(bodies.Type) > 0 && bodies.Type != "object" {
 		bodiesType = convertToGoType(bodies.Type)
 	} else if bodies.ApplicationJSON != nil {
-		if bodies.ApplicationJSON.Type != "" {
+		if bodies.ApplicationJSON.Type != "" && bodies.ApplicationJSON.Type != "object" {
 			bodiesType = convertToGoType(bodies.ApplicationJSON.Type)
 		} else {
 			bodiesType = prefix + suffix

@@ -20,6 +20,14 @@ types:
       name:
         type: string
         example: test
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            properties:
+              page:
+                type: string
   post:
     description: create users
     body:
