@@ -116,6 +116,10 @@ func (c *StructAPITest) UsersUserIdDelete(userId string, headers, queryParams ma
 	}
 	req.URL.RawQuery = buildQueryString(req, queryParams)
 
+	if c.AuthHeader != "" {
+		req.Header.Set("Authorization", c.AuthHeader)
+	}
+
 	for k, v := range headers {
 		req.Header.Set(k, fmt.Sprintf("%v", v))
 	}
