@@ -1,0 +1,49 @@
+#%RAML 1.0
+title: goraml dir
+description: goraml developers directory
+baseUri: http://localhost:5000
+mediaType: application/json
+securitySchemes:
+  itsyouonline:
+    description: |
+      Itsyouonline supports OAuth 2.0 for authenticating all API requests.
+    type: OAuth 2.0
+    describedBy:
+      headers:
+        Authorization:
+          description: jwt token
+          type: string
+types:
+  User:
+    properties:
+        username:
+          type: string
+        name:
+/users:
+  get:
+    securedBy: [itsyouonline: { scopes: [ "user:memberof:goraml" ] }]
+    description: Get list of all developers
+    responses:
+      200:
+        body:
+          application/json:
+            type: User[]
+  post:
+    securedBy: [itsyouonline: { scopes: [ "user:memberof:goraml-admin" ] }]
+    description: Add user
+    body:
+      type: User
+    responses:
+      201:
+        body:
+          application/json:
+            type: User
+  /{username}:
+    get:
+      securedBy: [itsyouonline: { scopes: [ "user:memberof:goraml" ] }]
+      description: Get information on a specific user
+      responses:
+        200:
+          body:
+            application/json:
+              type: User
