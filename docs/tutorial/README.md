@@ -110,7 +110,7 @@ Then you need to modify:
 Follow below tutorials according to your preferred language:
 
 - [Go tutorial](./go/README.md)
-- Python tutorial
+- [Python tutorial](./python/README.md)
 
 Inside above tutorials, there is guide for `itsyou.online` oauth2 integration and how to access auto generated API docs.
 

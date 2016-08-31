@@ -97,7 +97,7 @@ after above steps, client are ready to make API call to `goramldir` server.
 
 The code is relatively simple and have enough comment, so it should be easy to understand. 
 
-** execute client program**
+**execute client program**
 
 ```
 go build

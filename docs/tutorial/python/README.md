@@ -77,3 +77,49 @@ You can find the modified file in [oauth2_itsyouonline.py](./server/oauth2_itsyo
 **execute the server**
 
 ```python3 app.py```
+
+
+## Client
+
+Generate client code by using this command
+
+```
+go-raml client --ramlfile ../api.raml --dir client -l python
+```
+Then you can find client code in client directory.
+
+**Install python requests library**
+
+We need it to make HTTP request to server
+
+```
+$ cd client
+$ virtualenv -p python3 env
+$ source env/bin/activate
+$ pip3 install requests
+```
+
+**Install itsyou.online client library**
+
+We need it to authenticate using JWT token from itsyou.online.
+
+Because there is still no pypi package for itsyou.online client library,
+we need to copy it manually
+
+```
+$ git clone --depth=1 https://github.com/itsyouonline/identityserver.git
+$ cp -a identityserver/clients/python/itsyouonline .
+$ rm -rf identityserver
+```
+
+**simple client main code**
+
+A simple example of the client program can be found in [main.py](main.py).
+
+The code is well commented to give you idea about what happens in the code.
+
+**execute the client**
+
+`python3 main.py [application_id] [application_secret]`
+
+Change `[application_id]` and `[application_secret]` above with your own application ID and secret.
