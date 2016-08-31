@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// create itsyou.online JWT token
-	jwtToken, err := ioc.CreateJWTToken([]string{"user:memberof:goraml"}, nil)
+	jwtToken, err := ioc.CreateJWTToken([]string{"user:memberof:goraml"}, []string{"external1"})
 	if err != nil {
 		log.Fatalf("failed to create itsyou.online JWT token:%v", err)
 	}
@@ -39,8 +39,8 @@ func main() {
 	// set goramldir authorization header to use JWT token
 	gr.AuthHeader = "token " + jwtToken
 
-	// calling GET /users
-	users, resp, err := gr.UsersGet(map[string]interface{}{}, map[string]interface{}{})
+	// calling GET /users/john
+	user, resp, err := gr.UsersUsernameGet("john", nil, nil)
 	if err != nil {
 		log.Fatalf("failed to GET /users:%v, resp code = %v", err, resp.StatusCode)
 	}
@@ -49,6 +49,6 @@ func main() {
 		log.Fatalf("GET /users failed. http status code = %v", resp.StatusCode)
 	}
 
-	log.Printf("users = %v\n", users)
+	log.Printf("user = %v\n", user)
 
 }

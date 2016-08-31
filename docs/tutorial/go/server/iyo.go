@@ -40,17 +40,17 @@ func getIyoUserScope(tokenStr string) ([]string, error) {
 		return JWTPublicKey, nil
 	})
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !(ok && token.Valid) {
-		return []string{}, fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	// check if the issuer is itsyou.online
 	if claims["iss"].(string) != "itsyouonline" {
-		return []string{}, fmt.Errorf("invalid issuer:%v", claims["iss"])
+		return nil, fmt.Errorf("invalid issuer:%v", claims["iss"])
 	}
 
 	var scopes []string
