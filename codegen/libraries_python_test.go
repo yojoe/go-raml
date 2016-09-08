@@ -63,6 +63,8 @@ func TestLibrary(t *testing.T) {
 			{"Place.go", "Place.txt"},
 			{"client_exampleapi.go", "client_exampleapi.txt"},
 			{"client_utils.go", "client_utils.txt"},
+			{"dirs_service.go", "dirs_service.txt"},
+			{"configs_service.go", "configs_service.txt"},
 		}
 
 		for _, check := range checks {

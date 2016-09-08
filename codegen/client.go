@@ -9,16 +9,18 @@ import (
 
 // API client definition
 type clientDef struct {
-	Name    string
-	BaseURI string
-	Methods []methodInterface
+	Name     string
+	BaseURI  string
+	Methods  []methodInterface
+	Services map[string]ClientService
 }
 
 // create client definition from RAML API definition
 func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	cd := clientDef{
-		Name:    normalizeURI(apiDef.Title),
-		BaseURI: apiDef.BaseURI,
+		Name:     normalizeURI(apiDef.Title),
+		BaseURI:  apiDef.BaseURI,
+		Services: map[string]ClientService{},
 	}
 	if strings.Index(cd.BaseURI, "{version}") > 0 {
 		cd.BaseURI = strings.Replace(cd.BaseURI, "{version}", apiDef.Version, -1)
@@ -40,10 +42,17 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 	// creates base client struct
 	cd := newClientDef(apiDef)
 
-	for _, v := range apiDef.Resources {
-		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), "main")
+	services := map[string]*ClientService{}
+	for k, v := range apiDef.Resources {
+		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), packageName)
 		rd.generateMethods(&v, lang)
-		cd.Methods = append(cd.Methods, rd.Methods...)
+		cd.Methods = append(cd.Methods, rd.Methods...) // will be deleted soon
+		cs := ClientService{
+			rootEndpoint: k,
+			PackageName:  packageName,
+		}
+		cs.Methods = rd.Methods
+		services[k] = &cs
 	}
 
 	switch lang {
@@ -58,6 +67,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 			libraries:      apiDef.Libraries,
 			PackageName:    packageName,
 			RootImportPath: rootImportPath,
+			Services:       services,
 		}
 		return gc.generate(apiDef, dir)
 	case langPython:

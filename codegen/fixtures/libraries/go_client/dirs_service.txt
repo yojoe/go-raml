@@ -1,0 +1,20 @@
+package theclient
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type DirsService service
+
+func (s *DirsService) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
+	var u files.Directory
+
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/dirs", headers, queryParams)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}

@@ -13,6 +13,7 @@ type goClient struct {
 	libraries      map[string]*raml.Library
 	PackageName    string
 	RootImportPath string
+	Services       map[string]*ClientService
 }
 
 // generate Go client files
@@ -49,6 +50,10 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	if err := gc.generateHelperFile(dir); err != nil {
 		return err
 	}
+
+	if err := gc.generateServices(dir); err != nil {
+		return err
+	}
 	return gc.generateClientFile(dir)
 }
 
@@ -56,6 +61,16 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 func (gc *goClient) generateHelperFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_utils.go")
 	return generateFile(gc, "./templates/client_utils_go.tmpl", "client_utils_go", fileName, false)
+}
+
+func (gc *goClient) generateServices(dir string) error {
+	for _, s := range gc.Services {
+		sort.Sort(byEndpoint(s.Methods))
+		if err := generateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // generate Go client lib file
