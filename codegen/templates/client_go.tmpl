@@ -3,10 +3,6 @@ package {{.PackageName}}
 
 import (
 	"net/http"
-
-    {{ range $k, $v := .LibImportPaths -}}
-    "{{$k}}"
-    {{end -}}
 )
 
 const (

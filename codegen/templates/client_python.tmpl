@@ -1,5 +1,7 @@
 {{- define "client_python" -}}
 import requests
+{{ range $k, $v := .Services }}
+from {{$v.FilenameNoExt}} import  {{$v.Name}} {{end}}
 
 BASE_URI = "{{.BaseURI}}"
 
@@ -8,22 +10,11 @@ class Client:
     def __init__(self):
         self.url = BASE_URI
         self.session = requests.Session()
-        self.auth_header = ''
+        {{ range $k, $v := .Services }}
+        self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
     
     def set_auth_header(self, val):
         ''' set authorization header value'''
-        self.auth_header = val
-{{ range $k, $v := .Methods }}
+        self.session.headers.update({"Authorization":val})
 
-    def {{$v.MethodName}}({{$v.Params}}):
-        """{{ range $kf, $vf := $v.FuncComments }}
-        {{$vf}}{{end}}
-        It is method for {{$v.Verb}} {{$v.Endpoint}}
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + {{$v.ResourcePath}}
-        return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers, params=query_params)
-{{ end }}
 {{- end -}}

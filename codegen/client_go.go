@@ -18,11 +18,6 @@ type goClient struct {
 
 // generate Go client files
 func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
-	// sort the method, so we have predictable ordering
-	// we don't need it to produce correct code,
-	// we need it for our unit test
-	sort.Sort(byEndpoint(gc.Methods))
-
 	// helper package
 	gh := goramlHelper{
 		packageName: gc.PackageName,
@@ -77,18 +72,4 @@ func (gc *goClient) generateServices(dir string) error {
 func (gc *goClient) generateClientFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_"+strings.ToLower(gc.Name)+".go")
 	return generateFile(gc, "./templates/client_go.tmpl", "client_go", fileName, false)
-}
-
-// LibImportPaths returns all imported lib
-func (gc goClient) LibImportPaths() map[string]struct{} {
-	ip := map[string]struct{}{}
-
-	// methods
-	for _, v := range gc.Methods {
-		gm := v.(goClientMethod)
-		for lib := range gm.libImported(globRootImportPath) {
-			ip[lib] = struct{}{}
-		}
-	}
-	return ip
 }

@@ -43,6 +43,7 @@ func TestGoLibrary(t *testing.T) {
 			os.RemoveAll(targetDir)
 		})
 	})
+
 	Convey("Library usage in client", t, func() {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
@@ -51,7 +52,7 @@ func TestGoLibrary(t *testing.T) {
 		err = raml.ParseFile("./fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		err = GenerateClient(apiDef, targetDir, "theclient", langGo, "examples.com/client")
+		err = GenerateClient(apiDef, targetDir, "theclient", langGo, "examples.com/theclient")
 		So(err, ShouldBeNil)
 
 		rootFixture := "./fixtures/libraries/go_client"
@@ -62,6 +63,8 @@ func TestGoLibrary(t *testing.T) {
 			{"Place.go", "Place.txt"},
 			{"client_exampleapi.go", "client_exampleapi.txt"},
 			{"client_utils.go", "client_utils.txt"},
+			{"dirs_service.go", "dirs_service.txt"},
+			{"configs_service.go", "configs_service.txt"},
 		}
 
 		for _, check := range checks {

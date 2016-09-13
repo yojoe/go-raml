@@ -11,7 +11,6 @@ import (
 type clientDef struct {
 	Name     string
 	BaseURI  string
-	Methods  []methodInterface
 	Services map[string]ClientService
 }
 
@@ -46,8 +45,8 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 	for k, v := range apiDef.Resources {
 		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), packageName)
 		rd.generateMethods(&v, lang)
-		cd.Methods = append(cd.Methods, rd.Methods...) // will be deleted soon
 		cs := ClientService{
+			lang:         lang,
 			rootEndpoint: k,
 			PackageName:  packageName,
 		}
@@ -71,7 +70,10 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 		}
 		return gc.generate(apiDef, dir)
 	case langPython:
-		pc := pythonClient{clientDef: cd}
+		pc := pythonClient{
+			clientDef: cd,
+			Services:  services,
+		}
 		return pc.generate(dir)
 	}
 	return errInvalidLang

@@ -1,5 +1,7 @@
 import requests
 
+from users_service import  UsersService 
+
 BASE_URI = "http://api.jumpscale.com/v3"
 
 
@@ -7,80 +9,9 @@ class Client:
     def __init__(self):
         self.url = BASE_URI
         self.session = requests.Session()
-        self.auth_header = ''
+        
+        self.users = UsersService(self)
     
     def set_auth_header(self, val):
         ''' set authorization header value'''
-        self.auth_header = val
-
-
-    def get_users(self, headers=None, query_params=None):
-        """
-        First line of comment.
-        Second line of comment
-        It is method for GET /users
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users"
-        return self.session.get(uri, headers=headers, params=query_params)
-
-
-    def create_users(self, data, headers=None, query_params=None):
-        """
-        create users
-        It is method for POST /users
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users"
-        return self.session.post(uri, data, headers=headers, params=query_params)
-
-
-    def option_users(self, headers=None, query_params=None):
-        """
-        It is method for OPTIONS /users
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users"
-        return self.session.options(uri, headers=headers, params=query_params)
-
-
-    def getuserid(self, userId, headers=None, query_params=None):
-        """
-        get id
-        It is method for GET /users/{userId}
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users/"+userId
-        return self.session.get(uri, headers=headers, params=query_params)
-
-
-    def users_byUserId_delete(self, userId, headers=None, query_params=None):
-        """
-        It is method for DELETE /users/{userId}
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users/"+userId
-        return self.session.delete(uri, headers=headers, params=query_params)
-
-
-    def users_byUserId_address_byAddressId_get(self, addressId, userId, headers=None, query_params=None):
-        """
-        get address id
-        of address
-        It is method for GET /users/{userId}/address/{addressId}
-        """
-        if self.auth_header:
-            self.session.headers.update({"Authorization":self.auth_header})
-
-        uri = self.url + "/users/"+userId+"/address/"+addressId
-        return self.session.get(uri, headers=headers, params=query_params)
+        self.session.headers.update({"Authorization":val})

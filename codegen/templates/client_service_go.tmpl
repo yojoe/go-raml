@@ -5,6 +5,10 @@ package {{.PackageName}}
 import (
 	"encoding/json"
 	"net/http"
+
+    {{ range $k, $v := .LibImportPaths -}}
+    "{{$k}}"
+    {{end -}}
 )
 
 type {{.Name}} service

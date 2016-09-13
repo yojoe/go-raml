@@ -3,6 +3,8 @@ package theclient
 import (
 	"encoding/json"
 	"net/http"
+
+	"examples.com/theclient/libraries/files"
 )
 
 type DirsService service

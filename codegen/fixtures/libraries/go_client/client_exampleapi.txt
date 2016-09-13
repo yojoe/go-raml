@@ -2,9 +2,6 @@ package theclient
 
 import (
 	"net/http"
-
-	"examples.com/client/libraries/file_type"
-	"examples.com/client/libraries/files"
 )
 
 const (

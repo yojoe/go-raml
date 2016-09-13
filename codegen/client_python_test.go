@@ -32,6 +32,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				{"client.py", "client.py"},
 				{"__init__.py", "__init__.py"},
 				{"client_utils.py", "client_utils.py"},
+				{"users_service.py", "users_service.py"},
 			}
 
 			for _, check := range checks {
