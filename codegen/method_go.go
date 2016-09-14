@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
@@ -103,4 +104,15 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	gcm.Params = methodParam
 
 	return nil
+}
+
+// ReturnTypes returns all types returned by this method
+func (gcm goClientMethod) ReturnTypes() string {
+	var types []string
+	if gcm.RespBody != "" {
+		types = append(types, gcm.RespBody)
+	}
+	types = append(types, []string{"*http.Response", "error"}...)
+
+	return fmt.Sprintf("(%v)", strings.Join(types, ","))
 }

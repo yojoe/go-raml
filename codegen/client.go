@@ -45,13 +45,12 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 	for k, v := range apiDef.Resources {
 		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), packageName)
 		rd.generateMethods(&v, lang)
-		cs := ClientService{
+		services[k] = &ClientService{
 			lang:         lang,
 			rootEndpoint: k,
 			PackageName:  packageName,
+			Methods:      rd.Methods,
 		}
-		cs.Methods = rd.Methods
-		services[k] = &cs
 	}
 
 	switch lang {
