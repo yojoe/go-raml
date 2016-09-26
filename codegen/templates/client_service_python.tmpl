@@ -1,0 +1,17 @@
+{{- define "client_service_python" -}}
+
+class {{.Name}}:
+    def __init__(self, client):
+        self.client = client
+
+{{ range $k, $v := .Methods }}
+
+    def {{$v.MethodName}}({{$v.Params}}):
+        """{{ range $kf, $vf := $v.FuncComments }}
+        {{$vf}}{{end}}
+        It is method for {{$v.Verb}} {{$v.Endpoint}}
+        """
+        uri = self.client.base_url + {{$v.ResourcePath}}
+        return self.client.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers, params=query_params)
+{{ end }}
+{{- end -}}

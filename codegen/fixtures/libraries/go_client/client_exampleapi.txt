@@ -1,12 +1,7 @@
 package theclient
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
-
-	"examples.com/client/libraries/file_type"
-	"examples.com/client/libraries/files"
 )
 
 const (
@@ -17,6 +12,14 @@ type ExampleAPI struct {
 	client     http.Client
 	AuthHeader string // Authorization header, will be sent on each request if not empty
 	BaseURI    string
+	common     service // Reuse a single struct instead of allocating one for each service on the heap.
+
+	Configs *ConfigsService
+	Dirs    *DirsService
+}
+
+type service struct {
+	client *ExampleAPI
 }
 
 func NewExampleAPI() *ExampleAPI {
@@ -24,85 +27,10 @@ func NewExampleAPI() *ExampleAPI {
 		BaseURI: defaultBaseURI,
 		client:  http.Client{},
 	}
+	c.common.client = c
+
+	c.Configs = (*ConfigsService)(&c.common)
+	c.Dirs = (*DirsService)(&c.common)
+
 	return c
-}
-
-// get config files
-func (c *ExampleAPI) ConfigsGet(headers, queryParams map[string]interface{}) (file_type.File, *http.Response, error) {
-	var u file_type.File
-
-	// create request object
-	req, err := http.NewRequest("GET", c.BaseURI+"/configs", nil)
-	if err != nil {
-		return u, nil, err
-	}
-	req.URL.RawQuery = buildQueryString(req, queryParams)
-
-	if c.AuthHeader != "" {
-		req.Header.Set("Authorization", c.AuthHeader)
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-func (c *ExampleAPI) ConfigsPost(headers, queryParams map[string]interface{}) (Place, *http.Response, error) {
-	var u Place
-
-	resp, err := c.doReqWithBody("POST", c.BaseURI+"/configs", nil, headers, queryParams)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-func (c *ExampleAPI) ConfigsPut(headers, queryParams map[string]interface{}) (*http.Response, error) {
-
-	resp, err := c.doReqWithBody("PUT", c.BaseURI+"/configs", nil, headers, queryParams)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	return resp, nil
-}
-
-func (c *ExampleAPI) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
-	var u files.Directory
-
-	// create request object
-	req, err := http.NewRequest("GET", c.BaseURI+"/dirs", nil)
-	if err != nil {
-		return u, nil, err
-	}
-	req.URL.RawQuery = buildQueryString(req, queryParams)
-
-	if c.AuthHeader != "" {
-		req.Header.Set("Authorization", c.AuthHeader)
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 }
