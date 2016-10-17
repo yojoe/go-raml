@@ -82,4 +82,35 @@ func TestGoLibrary(t *testing.T) {
 		})
 	})
 
+	Convey("raml-examples", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		err = GenerateServer("./fixtures/raml-examples/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/libro", true)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/libraries/raml-examples"
+		checks := []struct {
+			Result   string
+			Expected string
+		}{
+			{"person_api.go", "person_api.txt"},
+			{"types_lib/Person.go", "types_lib/Person.txt"},
+		}
+
+		for _, check := range checks {
+			s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
 }

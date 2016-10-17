@@ -108,3 +108,11 @@ func pythonLibImportPath(typ, prefix string) (string, string) {
 
 	return strings.Replace(normalizePkgName(libPkg), "/", ".", -1) + "." + prefix + splitted[1], prefix + splitted[1]
 }
+
+// get relative lib directory from library filename
+// this relative directory will be used as:
+// - lib package name
+// - lib files directory
+func libRelDir(filename string) string {
+	return strings.TrimSuffix(filename, filepath.Ext(filename))
+}

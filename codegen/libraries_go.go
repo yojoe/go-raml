@@ -9,7 +9,14 @@ import (
 )
 
 // library defines an RAML library
-// it is implemented as package in Go
+// it is implemented as package in Go.
+// Library defined in RAML using `uses` keyword.
+// - key become library's package name
+// - if value contain directory, the directories become root directory
+//   of the generated package
+// example :
+// files: libraries/files.raml -> generated as `files` package in `libraries` directory
+// types-lib: lib-types.raml  -> generated as `types_lib` package in current directory
 type goLibrary struct {
 	*raml.Library
 	PackageName string
@@ -18,27 +25,19 @@ type goLibrary struct {
 }
 
 // create new library instance
-func newGoLibrary(lib *raml.Library, baseDir string) *goLibrary {
-	l := goLibrary{
-		Library: lib,
-		baseDir: baseDir,
+func newGoLibrary(name string, lib *raml.Library, baseDir string) *goLibrary {
+	return &goLibrary{
+		Library:     lib,
+		baseDir:     baseDir,
+		PackageName: normalizePkgName(name),
+		dir:         normalizePkgName(filepath.Join(baseDir, goLibPackageDir(name, lib.Filename))),
 	}
-
-	// package name  : base of filename without the extension
-	l.PackageName = strings.TrimSuffix(filepath.Base(l.Filename), filepath.Ext(l.Filename))
-	l.PackageName = normalizePkgName(l.PackageName)
-
-	// package directory : filename without the extension
-	relDir := libRelDir(l.Filename)
-	l.dir = normalizePkgName(filepath.Join(l.baseDir, relDir))
-
-	return &l
 }
 
 // generate code of all libraries
 func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
-	for _, ramlLib := range libraries {
-		l := newGoLibrary(ramlLib, baseDir)
+	for name, ramlLib := range libraries {
+		l := newGoLibrary(name, ramlLib, baseDir)
 		if err := l.generate(); err != nil {
 			return err
 		}
@@ -63,21 +62,13 @@ func (l *goLibrary) generate() error {
 	}
 
 	// included libraries
-	for _, ramlLib := range l.Libraries {
-		childLib := newGoLibrary(ramlLib, l.baseDir)
+	for name, ramlLib := range l.Libraries {
+		childLib := newGoLibrary(name, ramlLib, l.baseDir)
 		if err := childLib.generate(); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// get relative lib directory from library filename
-// this relative directory will be used as:
-// - lib package name
-// - lib files directory
-func libRelDir(filename string) string {
-	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
 // get library import path from a type
@@ -101,10 +92,7 @@ func libImportPath(rootImportPath, typ string) string {
 		log.Fatalf("can't find library : %v", libName)
 	}
 
-	// relative lib package
-	libPkg := libRelDir(libRAMLFile)
-
-	return filepath.Join(rootImportPath, normalizePkgName(libPkg))
+	return filepath.Join(rootImportPath, goLibPackageDir(libName, libRAMLFile))
 }
 
 // normalize package name because not all characters can be used as package name
@@ -115,4 +103,11 @@ func normalizePkgName(name string) string {
 // inverse of normalizePkgName
 func denormalizePkgName(name string) string {
 	return strings.Replace(name, "_", "-", -1)
+}
+
+// returns Go package directory of a library
+// name is library name. filename is library file name.
+// for the rule, see comment of `type goLibrary struct`
+func goLibPackageDir(name, filename string) string {
+	return normalizePkgName(filepath.Join(filepath.Dir(filename), name))
 }
