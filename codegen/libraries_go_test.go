@@ -86,27 +86,57 @@ func TestGoLibrary(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateServer("./fixtures/raml-examples/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/libro", true)
-		So(err, ShouldBeNil)
-
-		rootFixture := "./fixtures/libraries/raml-examples"
-		checks := []struct {
-			Result   string
-			Expected string
-		}{
-			{"person_api.go", "person_api.txt"},
-			{"types_lib/Person.go", "types_lib/Person.txt"},
-		}
-
-		for _, check := range checks {
-			s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+		Convey("server", func() {
+			err = GenerateServer("./fixtures/raml-examples/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/libro", true)
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+			rootFixture := "./fixtures/libraries/raml-examples/go_server"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"person_api.go", "person_api.txt"},
+				{"types_lib/Person.go", "types_lib/Person.txt"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
+		Convey("client", func() {
+			var apiDef raml.APIDefinition
+			err = raml.ParseFile("./fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
-		}
+			err = GenerateClient(&apiDef, targetDir, "client", langGo, "examples.com/libro")
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/libraries/raml-examples/go_client"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"person_service.go", "person_service.txt"},
+				{"types_lib/Person.go", "types_lib/Person.txt"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
 
 		Reset(func() {
 			os.RemoveAll(targetDir)
