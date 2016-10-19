@@ -1,6 +1,7 @@
 package nim
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 
@@ -22,7 +23,7 @@ type field struct {
 	Type string // field type
 }
 
-// GenerateObject generates Nim objects from RAML types
+// GenerateObjects generates Nim objects from RAML types
 func GenerateObjects(types map[string]raml.Type, dir string) error {
 	for name, t := range types {
 		if err := generateObject(t, name, dir); err != nil {
@@ -32,19 +33,54 @@ func GenerateObjects(types map[string]raml.Type, dir string) error {
 	return nil
 }
 
-func generateObject(t raml.Type, name, dir string) error {
-	obj, err := newObject(t, name)
+// GenerateObjectFromBody generate a Nim object from an RAML Body
+func GenerateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, dir string) error {
+	if !commons.HasJSONBody(body) {
+		return nil
+	}
+	obj, err := newObjectFromBody(methodName, body, isReq)
 	if err != nil {
 		return err
 	}
 	return obj.generate(dir)
 }
 
-func newObject(t raml.Type, name string) (object, error) {
+// generates Nim object from an RAML type
+func generateObject(t raml.Type, name, dir string) error {
+	obj, err := newObjectFromType(t, name)
+	if err != nil {
+		return err
+	}
+	return obj.generate(dir)
+}
+
+func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
+	name := methodName + "RespBody"
+	if isReq {
+		name = methodName + "ReqBody"
+	}
+
+	if body.ApplicationJSON.Type != "" {
+		var t raml.Type
+		if err := json.Unmarshal([]byte(body.ApplicationJSON.Type), &t); err == nil {
+			return newObjectFromType(t, name)
+		}
+	}
+
+	return newObject(name, "", body.ApplicationJSON.Properties)
+}
+
+func newObjectFromType(t raml.Type, name string) (object, error) {
+	obj, err := newObject(name, t.Description, t.Properties)
+	obj.T = t
+	return obj, err
+}
+
+func newObject(name, description string, properties map[string]interface{}) (object, error) {
 	// generate fields from type properties
 	fields := make(map[string]field)
 
-	for k, v := range t.Properties {
+	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
 		fd := field{
 			Name: prop.Name,
@@ -59,8 +95,7 @@ func newObject(t raml.Type, name string) (object, error) {
 	return object{
 		Name:        name,
 		Fields:      fields,
-		Description: commons.ParseDescription(t.Description),
-		T:           t,
+		Description: commons.ParseDescription(description),
 	}, nil
 }
 

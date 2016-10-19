@@ -145,7 +145,7 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 		}
 	}
 
-	if isJSONString(tipe) {
+	if commons.IsJSONString(tipe) {
 		tipe = prefix + suffix
 	}
 

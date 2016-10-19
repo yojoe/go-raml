@@ -10,8 +10,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGenerateStructFromRaml(t *testing.T) {
-	Convey("generate struct from raml", t, func() {
+func TestGenerateObjectFromRaml(t *testing.T) {
+	Convey("generate object from raml", t, func() {
 		var apiDef raml.APIDefinition
 		err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 		So(err, ShouldBeNil)
@@ -45,6 +45,46 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 		})
 
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+}
+func TestGenerateObjectMethodBody(t *testing.T) {
+	Convey("generate object from method body", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		Convey("generate request body", func() {
+			var body raml.Bodies
+			properties := map[string]interface{}{
+				"age": map[interface{}]interface{}{
+					"type": "integer",
+				},
+				"ID": map[interface{}]interface{}{
+					"type": "string",
+				},
+				"item": map[interface{}]interface{}{},
+				"grades": map[interface{}]interface{}{
+					"type": "integer[]",
+				},
+			}
+			body.ApplicationJSON = &raml.BodiesProperty{
+				Properties: properties,
+			}
+
+			err := GenerateObjectFromBody("UsersPost", &body, true, targetDir)
+			So(err, ShouldBeNil)
+
+			s, err := testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.nim"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := testLoadFile("./fixtures/object/UsersPostReqBody.nim")
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+
+		})
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
