@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -55,13 +56,13 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 // generate Go client helper
 func (gc *goClient) generateHelperFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_utils.go")
-	return generateFile(gc, "./templates/client_utils_go.tmpl", "client_utils_go", fileName, false)
+	return commons.GenerateFile(gc, "./templates/client_utils_go.tmpl", "client_utils_go", fileName, false)
 }
 
 func (gc *goClient) generateServices(dir string) error {
 	for _, s := range gc.Services {
 		sort.Sort(byEndpoint(s.Methods))
-		if err := generateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
+		if err := commons.GenerateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
 			return err
 		}
 	}
@@ -71,5 +72,5 @@ func (gc *goClient) generateServices(dir string) error {
 // generate Go client lib file
 func (gc *goClient) generateClientFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_"+strings.ToLower(gc.Name)+".go")
-	return generateFile(gc, "./templates/client_go.tmpl", "client_go", fileName, false)
+	return commons.GenerateFile(gc, "./templates/client_go.tmpl", "client_go", fileName, false)
 }

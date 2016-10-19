@@ -1,0 +1,7 @@
+{{define "object_nim"}}
+type
+  {{ .Name }}* = object
+    {{- range $k, $v := .Fields }}
+    {{ $v.Name }}*: {{$v.Type}}
+    {{- end }}
+{{end}}

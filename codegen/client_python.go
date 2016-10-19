@@ -3,6 +3,8 @@ package codegen
 import (
 	"path/filepath"
 	"sort"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 // python client definition
@@ -13,7 +15,7 @@ type pythonClient struct {
 
 // generate empty __init__.py without overwrite it
 func generateEmptyInitPy(dir string) error {
-	return generateFile(nil, "./templates/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
+	return commons.GenerateFile(nil, "./templates/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
 }
 
 // generate python lib files
@@ -24,7 +26,7 @@ func (pc pythonClient) generate(dir string) error {
 	}
 
 	// generate helper
-	if err := generateFile(nil, "./templates/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
 		return err
 	}
 
@@ -32,13 +34,13 @@ func (pc pythonClient) generate(dir string) error {
 		return err
 	}
 	// generate main client lib file
-	return generateFile(pc, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
+	return commons.GenerateFile(pc, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
 }
 
 func (pc pythonClient) generateServices(dir string) error {
 	for _, s := range pc.Services {
 		sort.Sort(byEndpoint(s.Methods))
-		if err := generateFile(s, "./templates/client_service_python.tmpl", "client_service_python", s.filename(dir), false); err != nil {
+		if err := commons.GenerateFile(s, "./templates/client_service_python.tmpl", "client_service_python", s.filename(dir), false); err != nil {
 			return err
 		}
 	}

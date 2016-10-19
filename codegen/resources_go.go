@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -19,13 +20,13 @@ type goResource struct {
 // generate interface file of a resource
 func (gr *goResource) generateInterfaceFile(directory string) error {
 	filename := directory + "/" + strings.ToLower(gr.Name) + "_if.go"
-	return generateFile(gr, resourceIfTemplate, "resource_if_template", filename, true)
+	return commons.GenerateFile(gr, resourceIfTemplate, "resource_if_template", filename, true)
 }
 
 // generate API file of a resource
 func (gr *goResource) generateAPIFile(directory string) error {
 	filename := directory + "/" + strings.ToLower(gr.Name) + "_api.go"
-	return generateFile(gr, resourceAPITemplate, "resource_api_template", filename, false)
+	return commons.GenerateFile(gr, resourceAPITemplate, "resource_api_template", filename, false)
 }
 
 // generate Go representation of server's resource.

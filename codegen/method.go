@@ -3,6 +3,7 @@ package codegen
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -59,7 +60,7 @@ func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName str
 
 	// set func comment
 	if len(m.Description) > 0 {
-		method.FuncComments = commentBuilder(m.Description)
+		method.FuncComments = commons.ParseDescription(m.Description)
 	}
 
 	return method

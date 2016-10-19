@@ -3,6 +3,7 @@ package codegen
 import (
 	"path/filepath"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/date"
 )
 
@@ -33,7 +34,7 @@ func (dg dateGen) generate(dir string) error {
 			"Content":     string(b),
 		}
 
-		err = generateFile(ctx, "./templates/date.tmpl", "date", filepath.Join(dir, d.FileName), false)
+		err = commons.GenerateFile(ctx, "./templates/date.tmpl", "date", filepath.Join(dir, d.FileName), false)
 		if err != nil {
 			return err
 		}

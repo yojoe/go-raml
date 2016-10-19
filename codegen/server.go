@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/Jumpscale/go-raml/codegen/apidocs"
-	"github.com/Jumpscale/go-raml/raml"
-
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/apidocs"
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
@@ -87,11 +88,11 @@ func (gs goServer) generate(dir string) error {
 	// generate main
 	if gs.withMain {
 		// HTML front page
-		if err := generateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+		if err := commons.GenerateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
 			return err
 		}
 		// main file
-		return generateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(dir, "main.go"), true)
+		return commons.GenerateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(dir, "main.go"), true)
 	}
 
 	return nil
@@ -100,7 +101,7 @@ func (gs goServer) generate(dir string) error {
 // generate all python server files
 func (ps pythonServer) generate(dir string) error {
 	// generate input validators helper
-	if err := generateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
+	if err := commons.GenerateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
 		filepath.Join(dir, "input_validators.py"), false); err != nil {
 		return err
 	}
@@ -136,18 +137,18 @@ func (ps pythonServer) generate(dir string) error {
 	}
 
 	// requirements.txt file
-	if err := generateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
 		return err
 	}
 
 	// generate main
 	if ps.withMain {
 		// generate HTML front page
-		if err := generateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+		if err := commons.GenerateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
 			return err
 		}
 		// main file
-		return generateFile(ps, "./templates/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
+		return commons.GenerateFile(ps, "./templates/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
 	}
 	return nil
 

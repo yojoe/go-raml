@@ -4,6 +4,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -16,7 +17,7 @@ type pythonSecurity struct {
 // security scheme is generated as a middleware
 func (ps *pythonSecurity) generate(dir string) error {
 	fileName := path.Join(dir, "oauth2_"+ps.Name+".py")
-	return generateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
+	return commons.GenerateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
 }
 
 type pythonMiddleware struct {

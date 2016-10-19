@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -113,7 +114,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		Name:        name,
 		PackageName: packageName,
 		Fields:      fields,
-		Description: commentBuilder(description),
+		Description: commons.ParseDescription(description),
 	}
 }
 
@@ -161,10 +162,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 // generate Go struct
 func (sd structDef) generate(dir string) error {
 	fileName := filepath.Join(dir, sd.Name+".go")
-	if err := generateFile(sd, structTemplateLocation, "struct_template", fileName, false); err != nil {
-		return err
-	}
-	return runGoFmt(fileName)
+	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
 }
 
 // generate all structs from an RAML api definition
@@ -305,10 +303,7 @@ func generateInputValidator(packageName, dir string) error {
 		PackageName: packageName,
 	}
 	fileName := filepath.Join(dir, inputValidatorFileResult)
-	if err := generateFile(ctx, inputValidatorTemplateLocation, "struct_input_validator_template", fileName, true); err != nil {
-		return err
-	}
-	return runGoFmt(fileName)
+	return commons.GenerateFile(ctx, inputValidatorTemplateLocation, "struct_input_validator_template", fileName, true)
 }
 
 // true if this struct need to import 'fmt' package

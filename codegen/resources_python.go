@@ -3,6 +3,7 @@ package codegen
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -41,7 +42,7 @@ func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
 	pr.generateMethods(r, "python")
 	pr.setMiddlewares()
 	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
-	return generateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
+	return commons.GenerateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
 }
 
 // return array of request body in this resource
