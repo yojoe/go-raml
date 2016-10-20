@@ -1,13 +1,15 @@
 {{- define "server_main_nim" -}}
 import jester, asyncdispatch, json, marshal
+{{ range $k, $v := .Imports }}
+import {{$v}}{{end}}
 
 routes:
 {{- range $k, $v := .Resources }}
 {{- range $km, $vm := $v.Methods}}
-  {{$vm.Verb}} "{{$vm.Endpoint}}":
-    let ret = {{$vm.MethodName}}(request)
+  {{$vm.Verb}} "{{$vm.JesterEndpoint}}":
+    let ret = {{$vm.MethodName}}({{$vm.CallParams}})
     resp(ret.code, $$ret.content)
-{{- end }}
+{{end }}
 {{- end }}
 
 runForever()

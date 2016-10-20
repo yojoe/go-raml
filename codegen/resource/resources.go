@@ -1,11 +1,16 @@
 package resource
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
+)
+
+var (
+	reResource = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
 )
 
 const (
@@ -71,4 +76,28 @@ func (rd *Resource) GenerateMethods(r *raml.Resource, lang string, smc ServerMet
 	for _, v := range r.Nested {
 		rd.GenerateMethods(v, lang, smc, cmc)
 	}
+}
+
+// _getResourceParams is the recursive function of getResourceParams
+func _getResourceParams(r *raml.Resource, params []string) []string {
+	if r == nil {
+		return params
+	}
+
+	matches := reResource.FindAllString(r.URI, -1)
+	for _, v := range matches {
+		params = append(params, v[1:len(v)-1])
+	}
+
+	return _getResourceParams(r.Parent, params)
+}
+
+// GetResourceParams get all params of a resource
+// examples:
+// /users  							  : no params
+// /users/{userId}					  : params 1 = userId
+// /users/{userId}/address/{addressId : params 1= userId, param 2= addressId
+func GetResourceParams(r *raml.Resource) []string {
+	params := []string{}
+	return _getResourceParams(r, params)
 }

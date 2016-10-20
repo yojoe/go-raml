@@ -67,7 +67,7 @@ type goClientMethod struct {
 func (gcm *goClientMethod) setup(methodName string) error {
 	// build func/method params
 	buildParams := func(r *raml.Resource, bodyType string) (string, error) {
-		paramsStr := strings.Join(getResourceParams(r), ",")
+		paramsStr := strings.Join(resource.GetResourceParams(r), ",")
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
 		}

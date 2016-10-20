@@ -1,6 +1,7 @@
 package nim
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -24,6 +25,44 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resour
 		rm.MethodName = commons.NormalizeURI(r.FullURI()) + methodName
 	}
 	return method{Method: &rm}
+}
+
+// JesterEndpoint returns endpoint in jester format
+func (m method) JesterEndpoint() string {
+	e := strings.Replace(m.Endpoint, "{", "@", -1)
+	return strings.Replace(e, "}", "", -1)
+}
+
+// ProcParams are params of this jester endpoint handler
+func (m method) ProcParams() string {
+	var params []string
+
+	for _, p := range cr.GetResourceParams(m.Resource()) {
+		params = append(params, p+": string")
+	}
+
+	params = append(params, "req: PRequest")
+	return strings.Join(params, ", ")
+}
+
+// CallParams are params when we call jester handler
+func (m method) CallParams() string {
+	var params []string
+
+	for _, p := range cr.GetResourceParams(m.Resource()) {
+		params = append(params, fmt.Sprintf(`@"%v"`, p))
+	}
+
+	params = append(params, "request")
+	return strings.Join(params, ", ")
+}
+
+func (m method) ContentRetval() string {
+	retval := m.RespBody
+	if retval == "" {
+		retval = "string"
+	}
+	return retval
 }
 
 // setBodyName set name of method's request/response body.

@@ -23,7 +23,7 @@ func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource
 	} else {
 		pm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(pm.Verb())
 	}
-	pm.Params = strings.Join(getResourceParams(r), ", ")
+	pm.Params = strings.Join(resource.GetResourceParams(r), ", ")
 	pm.Endpoint = strings.Replace(pm.Endpoint, "{", "<", -1)
 	pm.Endpoint = strings.Replace(pm.Endpoint, "}", ">", -1)
 
@@ -60,7 +60,7 @@ func (pcm *pythonClientMethod) setup() {
 	}
 	pcm.PRArgs = prArgs
 
-	params = append(params, getResourceParams(pcm.Resource())...)
+	params = append(params, resource.GetResourceParams(pcm.Resource())...)
 	pcm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
 
 	if len(pcm.DisplayName) > 0 {

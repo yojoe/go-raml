@@ -19,12 +19,17 @@ func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef)
 
 	// generate all objects
-	if err := GenerateObjects(s.APIDef.Types, s.Dir); err != nil {
+	objNames, err := GenerateObjects(s.APIDef.Types, s.Dir)
+	if err != nil {
+		return err
+	}
+	addGeneratedObjects(objNames)
+
+	if err := s.generateMain(); err != nil {
 		return err
 	}
 
-	// main file
-	if err := s.generateMain(); err != nil {
+	if err := s.generateResourceAPIs(); err != nil {
 		return err
 	}
 	return nil
@@ -34,4 +39,22 @@ func (s *Server) Generate() error {
 func (s *Server) generateMain() error {
 	filename := filepath.Join(s.Dir, "main.nim")
 	return commons.GenerateFile(s, "./templates/server_main_nim.tmpl", "server_main_nim", filename, true)
+}
+
+func (s *Server) Imports() []string {
+	imports := []string{}
+
+	for _, r := range s.Resources {
+		imports = append(imports, r.apiName())
+	}
+	return imports
+}
+
+func (s *Server) generateResourceAPIs() error {
+	for _, r := range s.Resources {
+		if err := r.generate(s.Dir); err != nil {
+			return err
+		}
+	}
+	return nil
 }

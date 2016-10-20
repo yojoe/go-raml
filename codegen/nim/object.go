@@ -9,6 +9,14 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+var (
+	generatedObjects map[string]struct{}
+)
+
+func init() {
+	generatedObjects = map[string]struct{}{}
+}
+
 // object represents a Nim object
 type object struct {
 	Name        string
@@ -24,13 +32,15 @@ type field struct {
 }
 
 // GenerateObjects generates Nim objects from RAML types
-func GenerateObjects(types map[string]raml.Type, dir string) error {
+func GenerateObjects(types map[string]raml.Type, dir string) ([]string, error) {
+	names := []string{}
 	for name, t := range types {
 		if err := generateObject(t, name, dir); err != nil {
-			fmt.Printf("failed : %v\n", err)
+			fmt.Printf("failed : %v\n", err) // TODO : return err if failed
 		}
+		names = append(names, name)
 	}
-	return nil
+	return names, nil
 }
 
 // GenerateObjectFromBody generate a Nim object from an RAML Body
@@ -103,4 +113,15 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 func (o *object) generate(dir string) error {
 	filename := filepath.Join(dir, o.Name+".nim")
 	return commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true)
+}
+
+func addGeneratedObjects(objs []string) {
+	for _, v := range objs {
+		generatedObjects[v] = struct{}{}
+	}
+}
+
+func inGeneratedObjs(obj string) bool {
+	_, ok := generatedObjects[obj]
+	return ok
 }

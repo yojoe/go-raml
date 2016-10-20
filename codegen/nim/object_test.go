@@ -20,7 +20,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			err = GenerateObjects(apiDef.Types, targetDir)
+			_, err = GenerateObjects(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"
