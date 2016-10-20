@@ -51,12 +51,12 @@ func NewMethod(r *raml.Resource, rd *Resource, m *raml.Method, methodName string
 	}
 
 	// set request body
-	method.ReqBody = sbn(m.Bodies, commons.NormalizeURITitle(method.Endpoint)+methodName, commons.ReqBodySuffix)
+	method.ReqBody = sbn(m.Bodies, method.Endpoint+methodName, commons.ReqBodySuffix)
 
 	//set response body
 	for k, v := range m.Responses {
 		if k >= 200 && k < 300 {
-			method.RespBody = sbn(v.Bodies, commons.NormalizeURITitle(method.Endpoint)+methodName, commons.RespBodySuffix)
+			method.RespBody = sbn(v.Bodies, method.Endpoint+methodName, commons.RespBodySuffix)
 		}
 	}
 

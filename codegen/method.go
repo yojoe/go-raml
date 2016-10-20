@@ -74,6 +74,7 @@ func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, me
 //		- previous rules produces JSON string
 func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	var tipe string
+	prefix = commons.NormalizeURITitle(prefix)
 
 	if len(bodies.Type) > 0 && bodies.Type != "object" {
 		tipe = convertToGoType(bodies.Type)

@@ -1,6 +1,6 @@
 
 type
-  UsersPostReqBody* = object
+  usersPostReqBody* = object
     ID*: string
     age*: int
     grades*: seq[int]

@@ -18,17 +18,26 @@ type Server struct {
 func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef)
 
-	// generate all objects
-	objNames, err := GenerateObjects(s.APIDef.Types, s.Dir)
+	// generate all objects from all RAML types
+	objNames, err := generateObjects(s.APIDef.Types, s.Dir)
 	if err != nil {
 		return err
 	}
 	addGeneratedObjects(objNames)
 
+	// generate all objects from request/response body
+	objNames, err = generateObjectsFromBodies(s.Resources, s.Dir)
+	if err != nil {
+		return err
+	}
+	addGeneratedObjects(objNames)
+
+	// main file
 	if err := s.generateMain(); err != nil {
 		return err
 	}
 
+	// API implementation
 	if err := s.generateResourceAPIs(); err != nil {
 		return err
 	}

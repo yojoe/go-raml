@@ -20,7 +20,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			_, err = GenerateObjects(apiDef.Types, targetDir)
+			_, err = generateObjects(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"
@@ -73,18 +73,48 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 				Properties: properties,
 			}
 
-			err := GenerateObjectFromBody("UsersPost", &body, true, targetDir)
+			_, err := generateObjectFromBody("usersPost", &body, true, targetDir)
 			So(err, ShouldBeNil)
 
-			s, err := testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.nim"))
+			s, err := testLoadFile(filepath.Join(targetDir, "usersPostReqBody.nim"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/object/UsersPostReqBody.nim")
+			tmpl, err := testLoadFile("./fixtures/object/usersPostReqBody.nim")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
 
 		})
+
+		Convey("Simple struct from raml", func() {
+			var apiDef raml.APIDefinition
+			err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
+			So(err, ShouldBeNil)
+
+			_, err = generateObjectsFromBodies(getAllResources(&apiDef), targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/object/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"usersPostReqBody.nim", "usersPostReqBody.nim"},
+				{"usersidGetRespBody.nim", "usersidGetRespBody.nim"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})

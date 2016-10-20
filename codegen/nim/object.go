@@ -31,8 +31,8 @@ type field struct {
 	Type string // field type
 }
 
-// GenerateObjects generates Nim objects from RAML types
-func GenerateObjects(types map[string]raml.Type, dir string) ([]string, error) {
+// generateObjects generates Nim objects from RAML types
+func generateObjects(types map[string]raml.Type, dir string) ([]string, error) {
 	names := []string{}
 	for name, t := range types {
 		if err := generateObject(t, name, dir); err != nil {
@@ -43,16 +43,50 @@ func GenerateObjects(types map[string]raml.Type, dir string) ([]string, error) {
 	return names, nil
 }
 
-// GenerateObjectFromBody generate a Nim object from an RAML Body
-func GenerateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, dir string) error {
+func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
+	names := []string{}
+	for _, r := range rs {
+		for _, mi := range r.Methods {
+			m := mi.(method)
+			ns, err := generateObjectFromMethod(r, m, dir)
+			if err != nil {
+				fmt.Printf("failed : %v\n", err) // TODO : return err if failed
+			}
+			names = append(names, ns...)
+		}
+	}
+	return names, nil
+}
+
+func generateObjectFromMethod(r resource, m method, dir string) ([]string, error) {
+	names := []string{}
+
+	name, err := generateObjectFromBody(m.MethodName, &m.Bodies, true, dir)
+	if err != nil {
+		return names, err
+	}
+	names = append(names, name)
+
+	for _, v := range m.Responses {
+		name, err := generateObjectFromBody(m.MethodName, &v.Bodies, false, dir)
+		if err != nil {
+			return names, err
+		}
+		names = append(names, name)
+	}
+	return names, nil
+}
+
+// generateObjectFromBody generate a Nim object from an RAML Body
+func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, dir string) (string, error) {
 	if !commons.HasJSONBody(body) {
-		return nil
+		return "", nil
 	}
 	obj, err := newObjectFromBody(methodName, body, isReq)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return obj.generate(dir)
+	return obj.Name, obj.generate(dir)
 }
 
 // generates Nim object from an RAML type
