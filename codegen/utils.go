@@ -41,27 +41,6 @@ func checkCreateDir(dir string) error {
 	return nil
 }
 
-// convert interface type to string
-// example :
-// 1. string type, result would be string
-// 2. []interface{} type, result would be array of string. ex: a,b,c
-// Please add other type as needed
-func interfaceToString(data interface{}) string {
-	switch data.(type) {
-	case string:
-		return data.(string)
-	case []interface{}:
-		interfaceArr := data.([]interface{})
-		resultStr := ""
-		for _, v := range interfaceArr {
-			resultStr += interfaceToString(v) + ","
-		}
-		return resultStr[:len(resultStr)-1]
-	default:
-		return ""
-	}
-}
-
 // replace non alphanumerics with "_"
 func replaceNonAlphanumerics(s string) string {
 	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")

@@ -210,7 +210,7 @@ func (sd *structDef) handleAdvancedType() {
 		sd.T.Type = "object"
 	}
 
-	strType := interfaceToString(sd.T.Type)
+	strType := commons.InterfaceToString(sd.T.Type)
 
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance

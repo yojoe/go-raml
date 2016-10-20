@@ -1,7 +1,11 @@
 {{define "object_nim"}}
 type
+{{- if .OneLineDef }}
+  {{ .OneLineDef }}
+{{- else }}
   {{ .Name }}* = object
     {{- range $k, $v := .Fields }}
     {{ $v.Name }}*: {{$v.Type}}
     {{- end }}
+{{- end }}
 {{end}}

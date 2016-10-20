@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -23,6 +24,7 @@ type object struct {
 	Description []string
 	Fields      map[string]field
 	T           raml.Type
+	OneLineDef  string
 }
 
 // field represents a Nim object field
@@ -37,6 +39,7 @@ func generateObjects(types map[string]raml.Type, dir string) ([]string, error) {
 	for name, t := range types {
 		if err := generateObject(t, name, dir); err != nil {
 			fmt.Printf("failed : %v\n", err) // TODO : return err if failed
+			return names, err
 		}
 		names = append(names, name)
 	}
@@ -117,6 +120,7 @@ func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object
 func newObjectFromType(t raml.Type, name string) (object, error) {
 	obj, err := newObject(name, t.Description, t.Properties)
 	obj.T = t
+	obj.handleAdvancedType()
 	return obj, err
 }
 
@@ -147,6 +151,27 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 func (o *object) generate(dir string) error {
 	filename := filepath.Join(dir, o.Name+".nim")
 	return commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true)
+}
+
+func (o *object) handleAdvancedType() {
+	if o.T.Type == nil {
+		o.T.Type = "object"
+	}
+	strType := commons.InterfaceToString(o.T.Type)
+
+	switch {
+	case strings.ToLower(strType) == "object": // plain type
+	case o.T.IsArray():
+		o.makeArray(strType)
+	}
+}
+
+func (o *object) makeArray(t string) {
+	o.buildOneLine(toNimType(t))
+}
+
+func (o *object) buildOneLine(tipe string) {
+	o.OneLineDef = fmt.Sprintf("%v* = %v", o.Name, tipe)
 }
 
 func addGeneratedObjects(objs []string) {

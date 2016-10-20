@@ -94,6 +94,27 @@ func GenerateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	return nil
 }
 
+// InterfaceToString converts interface type to string
+// example :
+// 1. string type, result would be string
+// 2. []interface{} type, result would be array of string. ex: a,b,c
+// Please add other type as needed
+func InterfaceToString(data interface{}) string {
+	switch data.(type) {
+	case string:
+		return data.(string)
+	case []interface{}:
+		interfaceArr := data.([]interface{})
+		resultStr := ""
+		for _, v := range interfaceArr {
+			resultStr += InterfaceToString(v) + ","
+		}
+		return resultStr[:len(resultStr)-1]
+	default:
+		return ""
+	}
+}
+
 // cek if a file exist
 func isFileExist(filePath string) bool {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {

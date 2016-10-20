@@ -76,6 +76,8 @@ func (m method) ContentRetval() string {
 func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	var tipe string
 
+	prefix = commons.NormalizeURI(prefix)
+
 	if len(bodies.Type) > 0 && bodies.Type != "object" {
 		tipe = toNimType(bodies.Type)
 	} else if bodies.ApplicationJSON != nil {

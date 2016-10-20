@@ -6,8 +6,8 @@ import (
 
 var (
 	typeMap = map[string]string{
-		"string": "string",
-		//"file":    "string",
+		"string":  "string",
+		"file":    "string",
 		"number":  "float64",
 		"integer": "int",
 		"boolean": "bool",
