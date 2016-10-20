@@ -26,13 +26,12 @@ type Resource struct {
 
 // New creates a resource definition
 func New(apiDef *raml.APIDefinition, endpoint, packageName string) Resource {
-	rd := Resource{
-		Endpoint: endpoint,
-		APIDef:   apiDef,
+	return Resource{
+		Endpoint:    endpoint,
+		APIDef:      apiDef,
+		Name:        strings.Title(commons.NormalizeURI(endpoint)),
+		PackageName: packageName,
 	}
-	rd.Name = strings.Title(commons.NormalizeURI(endpoint))
-	rd.PackageName = packageName
-	return rd
 }
 
 type ServerMethodConstructor func(*raml.APIDefinition, *raml.Resource, *Resource, *raml.Method, string, string) MethodInterface
@@ -60,7 +59,7 @@ func (rd *Resource) addMethod(r *raml.Resource, m *raml.Method, methodName, lang
 	rd.Methods = append(rd.Methods, im)
 }
 
-// generate all methods of a resource recursively
+// GenerateMethods generates all methods of a resource recursively
 func (rd *Resource) GenerateMethods(r *raml.Resource, lang string, smc ServerMethodConstructor, cmc ClientMethodConstructor) {
 	rd.addMethod(r, r.Get, "Get", lang, smc, cmc)
 	rd.addMethod(r, r.Post, "Post", lang, smc, cmc)

@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -191,6 +192,14 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 	case langPython:
 		ps := pythonServer{server: sd}
 		err = ps.generate(dir)
+	case langNim:
+		ns := nim.Server{
+			Title:      apiDef.Title,
+			APIDef:     apiDef,
+			APIDocsDir: apiDocsDir,
+			Dir:        dir,
+		}
+		err = ns.Generate()
 	default:
 		return errInvalidLang
 	}

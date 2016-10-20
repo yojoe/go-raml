@@ -1,0 +1,14 @@
+{{- define "server_main_nim" -}}
+import jester, asyncdispatch, json, marshal
+
+routes:
+{{- range $k, $v := .Resources }}
+{{- range $km, $vm := $v.Methods}}
+  {{$vm.Verb}} "{{$vm.Endpoint}}":
+    let ret = {{$vm.MethodName}}(request)
+    resp(ret.code, $$ret.content)
+{{- end }}
+{{- end }}
+
+runForever()
+{{ end }}
