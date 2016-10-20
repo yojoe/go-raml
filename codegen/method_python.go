@@ -3,18 +3,20 @@ package codegen
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
 )
 
 // python server method
 type pythonServerMethod struct {
-	*method
+	*resource.Method
 	MiddlewaresArr []pythonMiddleware
 }
 
 // setup sets all needed variables
-func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef) error {
+func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource) error {
 	// method name
 	if len(pm.DisplayName) > 0 {
 		pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
@@ -43,7 +45,7 @@ func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource
 
 // defines a python client lib method
 type pythonClientMethod struct {
-	method
+	resource.Method
 	PRArgs string // python requests's args
 }
 
@@ -79,7 +81,7 @@ func _snakeCaseResourceURI(r *raml.Resource, completeURI string) string {
 	}
 	var snake string
 	if len(r.URI) > 0 {
-		uri := normalizeURI(r.URI)
+		uri := commons.NormalizeURI(r.URI)
 		if r.Parent != nil { // not root resource, need to add "_"
 			snake = "_"
 		}

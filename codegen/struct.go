@@ -132,9 +132,9 @@ func newStructDefFromType(t raml.Type, sName, packageName, lang string) structDe
 // create struct definition from RAML Body node
 func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName string, isGenerateRequest bool) structDef {
 	// set struct name based on request or response
-	structName := structNamePrefix + respBodySuffix
+	structName := structNamePrefix + commons.RespBodySuffix
 	if isGenerateRequest {
-		structName = structNamePrefix + reqBodySuffix
+		structName = structNamePrefix + commons.ReqBodySuffix
 	}
 
 	// handle JSON string type

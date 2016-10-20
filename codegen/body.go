@@ -5,11 +5,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-const (
-	reqBodySuffix  = "ReqBody"
-	respBodySuffix = "RespBody"
-)
-
 // generate all body struct from an RAML definition
 func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
 	// generate
@@ -42,7 +37,7 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 		{"Options", r.Options},
 	}
 
-	normalizedPath := normalizeURITitle(resourcePath + r.URI)
+	normalizedPath := commons.NormalizeURITitle(resourcePath + r.URI)
 
 	for _, v := range methods {
 		if err := buildBodyFromMethod(normalizedPath, v.Name, dir, packageName, lang, v.Method); err != nil {
@@ -77,7 +72,7 @@ func buildBodyFromMethod(normalizedPath, methodName, dir, packageName, lang stri
 		if !commons.HasJSONBody(&method.Bodies) {
 			return nil
 		}
-		pc := newPythonClass(normalizedPath+methodName+reqBodySuffix, "", method.Bodies.ApplicationJSON.Properties)
+		pc := newPythonClass(normalizedPath+methodName+commons.ReqBodySuffix, "", method.Bodies.ApplicationJSON.Properties)
 		return pc.generate(dir)
 	}
 

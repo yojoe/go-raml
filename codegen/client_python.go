@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 // python client definition
@@ -39,7 +40,7 @@ func (pc pythonClient) generate(dir string) error {
 
 func (pc pythonClient) generateServices(dir string) error {
 	for _, s := range pc.Services {
-		sort.Sort(byEndpoint(s.Methods))
+		sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, "./templates/client_service_python.tmpl", "client_service_python", s.filename(dir), false); err != nil {
 			return err
 		}

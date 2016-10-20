@@ -3,6 +3,8 @@ package codegen
 import (
 	"path/filepath"
 	"strings"
+
+	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 // ClientService represents a root endpoint of an API
@@ -10,7 +12,7 @@ type ClientService struct {
 	lang         string
 	rootEndpoint string
 	PackageName  string
-	Methods      []methodInterface
+	Methods      []resource.MethodInterface
 }
 
 // Name returns it's struct name

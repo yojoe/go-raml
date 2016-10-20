@@ -1,76 +1,16 @@
 package codegen
 
 import (
-	"strings"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-type methodInterface interface {
-	Verb() string
-	Resource() *raml.Resource
-	EndpointStr() string
-}
-
-// Method defines base Method struct
-type method struct {
-	*raml.Method
-	MethodName   string
-	Endpoint     string
-	verb         string
-	ReqBody      string         // request body type
-	RespBody     string         // response body type
-	ResourcePath string         // normalized resource path
-	resource     *raml.Resource // resource object of this method
-	Params       string         // methods params
-	FuncComments []string
-	SecuredBy    []raml.DefinitionChoice
-}
-
-func (m method) Verb() string {
-	return m.verb
-}
-
-func (m method) Resource() *raml.Resource {
-	return m.resource
-}
-
-func (m method) EndpointStr() string {
-	return m.Endpoint
-}
-
-func newMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName string) method {
-	method := method{
-		Method:   m,
-		Endpoint: r.FullURI(),
-		verb:     strings.ToUpper(methodName),
-		resource: r,
-	}
-
-	// set request body
-	method.ReqBody = setBodyName(m.Bodies, normalizeURITitle(method.Endpoint)+methodName, reqBodySuffix)
-
-	//set response body
-	for k, v := range m.Responses {
-		if k >= 200 && k < 300 {
-			method.RespBody = setBodyName(v.Bodies, normalizeURITitle(method.Endpoint)+methodName, respBodySuffix)
-		}
-	}
-
-	// set func comment
-	if len(m.Description) > 0 {
-		method.FuncComments = commons.ParseDescription(m.Description)
-	}
-
-	return method
-}
-
 // create server resource's method
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, m *raml.Method,
-	methodName, lang string) methodInterface {
+func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName, lang string) resource.MethodInterface {
 
-	method := newMethod(r, rd, m, methodName)
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	// security scheme
 	if len(m.SecuredBy) > 0 {
@@ -84,13 +24,13 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceD
 	switch lang {
 	case langGo:
 		gm := goServerMethod{
-			method: &method,
+			Method: &method,
 		}
 		gm.setup(apiDef, r, rd, methodName)
 		return gm
 	case langPython:
 		pm := pythonServerMethod{
-			method: &method,
+			Method: &method,
 		}
 		pm.setup(apiDef, r, rd)
 		return pm
@@ -100,22 +40,22 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceD
 }
 
 // create client resource's method
-func newClientMethod(r *raml.Resource, rd *resourceDef, m *raml.Method, methodName, lang string) (methodInterface, error) {
-	method := newMethod(r, rd, m, methodName)
+func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	method.ResourcePath = paramizingURI(method.Endpoint)
 
-	name := normalizeURITitle(method.Endpoint)
+	name := commons.NormalizeURITitle(method.Endpoint)
 
 	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
 
 	switch lang {
 	case langGo:
-		gcm := goClientMethod{method: &method}
+		gcm := goClientMethod{Method: &method}
 		err := gcm.setup(methodName)
 		return gcm, err
 	case langPython:
-		pcm := pythonClientMethod{method: method}
+		pcm := pythonClientMethod{Method: method}
 		pcm.setup()
 		return pcm, nil
 	default:
@@ -161,12 +101,4 @@ func findResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
 		return []raml.DefinitionChoice{}
 	}
 	return findResourceSecuredBy(r.Parent)
-}
-
-type byEndpoint []methodInterface
-
-func (b byEndpoint) Len() int      { return len(b) }
-func (b byEndpoint) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
-func (b byEndpoint) Less(i, j int) bool {
-	return strings.Compare(b[i].EndpointStr(), b[j].EndpointStr()) < 0
 }

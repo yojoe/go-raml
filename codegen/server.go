@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -30,7 +31,7 @@ var (
 type server struct {
 	apiDef       *raml.APIDefinition
 	Title        string
-	ResourcesDef []resourceInterface
+	ResourcesDef []resource.ResourceInterface
 	PackageName  string // Name of the package this server resides in
 	APIDocsDir   string // apidocs directory. apidocs won't be generated if it is empty
 	withMain     bool

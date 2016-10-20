@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -17,7 +19,7 @@ type clientDef struct {
 // create client definition from RAML API definition
 func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	cd := clientDef{
-		Name:     normalizeURI(apiDef.Title),
+		Name:     commons.NormalizeURI(apiDef.Title),
 		BaseURI:  apiDef.BaseURI,
 		Services: map[string]ClientService{},
 	}
@@ -43,8 +45,8 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 
 	services := map[string]*ClientService{}
 	for k, v := range apiDef.Resources {
-		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), packageName)
-		rd.generateMethods(&v, lang)
+		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
+		rd.GenerateMethods(&v, lang, newServerMethod, newClientMethod)
 		services[k] = &ClientService{
 			lang:         lang,
 			rootEndpoint: k,

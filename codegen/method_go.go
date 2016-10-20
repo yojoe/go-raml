@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 type goServerMethod struct {
-	*method
+	*resource.Method
 	Middlewares string
 }
 
 // setup go server method, initializes all needed variables
-func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, methodName string) error {
+func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
 	// set method name
-	name := normalizeURI(gm.Endpoint)
+	name := commons.NormalizeURI(gm.Endpoint)
 	if len(gm.DisplayName) > 0 {
 		gm.MethodName = strings.Replace(gm.DisplayName, " ", "", -1)
 	} else {
@@ -44,7 +46,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 }
 
 // return all libs imported by this method
-func (m method) libImported(rootImportPath string) map[string]struct{} {
+func (m goServerMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
@@ -59,7 +61,7 @@ func (m method) libImported(rootImportPath string) map[string]struct{} {
 }
 
 type goClientMethod struct {
-	*method
+	*resource.Method
 }
 
 func (gcm *goClientMethod) setup(methodName string) error {
@@ -88,7 +90,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	}
 
 	// method name
-	name := normalizeURITitle(gcm.Endpoint)
+	name := commons.NormalizeURITitle(gcm.Endpoint)
 
 	if len(gcm.DisplayName) > 0 {
 		gcm.MethodName = strings.Replace(gcm.DisplayName, " ", "", -1)
@@ -97,7 +99,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	}
 
 	// method param
-	methodParam, err := buildParams(gcm.resource, gcm.ReqBody)
+	methodParam, err := buildParams(gcm.RAMLResource, gcm.ReqBody)
 	if err != nil {
 		return err
 	}
@@ -115,4 +117,18 @@ func (gcm goClientMethod) ReturnTypes() string {
 	types = append(types, []string{"*http.Response", "error"}...)
 
 	return fmt.Sprintf("(%v)", strings.Join(types, ","))
+}
+
+func (m goClientMethod) libImported(rootImportPath string) map[string]struct{} {
+	libs := map[string]struct{}{}
+
+	// req body
+	if lib := libImportPath(rootImportPath, m.ReqBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	// resp body
+	if lib := libImportPath(rootImportPath, m.RespBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	return libs
 }

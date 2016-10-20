@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -14,7 +15,7 @@ const (
 )
 
 type goResource struct {
-	*resourceDef
+	*resource.Resource
 }
 
 // generate interface file of a resource
@@ -38,7 +39,7 @@ func (gr *goResource) generateAPIFile(directory string) error {
 //		implementation of the API interface.
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
-	gr.generateMethods(r, "go")
+	gr.GenerateMethods(r, "go", newServerMethod, newClientMethod)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}

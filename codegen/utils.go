@@ -13,24 +13,6 @@ var (
 	regNonAlphanum = regexp.MustCompile("[^A-Za-z0-9]+")
 )
 
-// doNormalizeURI removes `{`, `}`, and `/` from an URI
-func doNormalizeURI(URI string) string {
-	s := strings.Replace(URI, "/", " ", -1)
-	s = strings.Replace(s, "{", "", -1)
-	return strings.Replace(s, "}", "", -1)
-}
-
-// normalizeURI removes `{`, `}`, `/`, and space from an URI
-func normalizeURI(URI string) string {
-	return strings.Replace(doNormalizeURI(URI), " ", "", -1)
-}
-
-func normalizeURITitle(URI string) string {
-	s := strings.Title(doNormalizeURI(URI))
-	return strings.Replace(s, " ", "", -1)
-
-}
-
 // _getResourceParams is the recursive function of getResourceParams
 func _getResourceParams(r *raml.Resource, params []string) []string {
 	if r == nil {

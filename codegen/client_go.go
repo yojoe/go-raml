@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -61,7 +62,7 @@ func (gc *goClient) generateHelperFile(dir string) error {
 
 func (gc *goClient) generateServices(dir string) error {
 	for _, s := range gc.Services {
-		sort.Sort(byEndpoint(s.Methods))
+		sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
 			return err
 		}

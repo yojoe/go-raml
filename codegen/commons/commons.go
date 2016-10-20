@@ -12,6 +12,29 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/templates"
 )
 
+const (
+	ReqBodySuffix  = "ReqBody"
+	RespBodySuffix = "RespBody"
+)
+
+// doNormalizeURI removes `{`, `}`, and `/` from an URI
+func doNormalizeURI(URI string) string {
+	s := strings.Replace(URI, "/", " ", -1)
+	s = strings.Replace(s, "{", "", -1)
+	return strings.Replace(s, "}", "", -1)
+}
+
+// normalizeURI removes `{`, `}`, `/`, and space from an URI
+func NormalizeURI(URI string) string {
+	return strings.Replace(doNormalizeURI(URI), " ", "", -1)
+}
+
+func NormalizeURITitle(URI string) string {
+	s := strings.Title(doNormalizeURI(URI))
+	return strings.Replace(s, " ", "", -1)
+
+}
+
 // ParseDescription create string slice from an RAML description.
 // each element is a  description line
 func ParseDescription(desc string) []string {
