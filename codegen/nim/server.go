@@ -39,6 +39,12 @@ func (s *Server) Generate() error {
 	if err := s.generateResourceAPIs(); err != nil {
 		return err
 	}
+
+	// HTML front page
+	if err := commons.GenerateFile(s, "./templates/index.html.tmpl", "index.html", filepath.Join(s.Dir, "index.html"), false); err != nil {
+		return err
+	}
+
 	return nil
 }
 

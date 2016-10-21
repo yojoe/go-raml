@@ -26,7 +26,7 @@ func extract(dir string) error {
 
 	// create dir if needed
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, 0777); err != nil {
+		if err := os.MkdirAll(dir, 0777); err != nil {
 			return err
 		}
 	}

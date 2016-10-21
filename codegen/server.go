@@ -203,7 +203,6 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 	default:
 		return errInvalidLang
 	}
-
 	if err != nil {
 		return err
 	}
@@ -212,7 +211,11 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		return nil
 	}
 
-	log.Infof("Generating API Docs to %v endpoint", sd.APIDocsDir)
+	if lang == langNim {
+		sd.APIDocsDir = "public/" + sd.APIDocsDir
+	}
+
+	log.Infof("Generating API Docs to %v", sd.APIDocsDir)
 
 	return apidocs.Generate(ramlBytes, filepath.Join(dir, sd.APIDocsDir))
 }

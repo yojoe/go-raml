@@ -1,5 +1,5 @@
 {{- define "server_main_nim" -}}
-import jester, asyncdispatch, json, marshal
+import jester, asyncdispatch, json, marshal, system
 {{ range $k, $v := .Imports }}
 import {{$v}}{{end}}
 
@@ -10,6 +10,9 @@ routes:
     let ret = {{$vm.MethodName}}({{$vm.CallParams}})
     resp(ret.code, $$ret.content)
 {{end }}
+
+  GET "/":
+    resp(readFile("index.html"))
 {{- end }}
 
 runForever()
