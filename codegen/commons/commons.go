@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -13,7 +14,10 @@ import (
 )
 
 const (
-	ReqBodySuffix  = "ReqBody"
+	// ReqBodySuffix is suffix name for request body object
+	ReqBodySuffix = "ReqBody"
+
+	// RespBodySuffix is suffix name for response body object
 	RespBodySuffix = "RespBody"
 )
 
@@ -24,11 +28,12 @@ func doNormalizeURI(URI string) string {
 	return strings.Replace(s, "}", "", -1)
 }
 
-// normalizeURI removes `{`, `}`, `/`, and space from an URI
+// NormalizeURI removes `{`, `}`, `/`, and space from an URI
 func NormalizeURI(URI string) string {
 	return strings.Replace(doNormalizeURI(URI), " ", "", -1)
 }
 
+// NormalizeURITitle does NormalizeURI with first character in upper case
 func NormalizeURITitle(URI string) string {
 	s := strings.Title(doNormalizeURI(URI))
 	return strings.Replace(s, " ", "", -1)
@@ -94,25 +99,37 @@ func GenerateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	return nil
 }
 
-// InterfaceToString converts interface type to string
+// InterfaceToString converts interface type to string.
+//
+// We can't simply do this using type casting.
 // example :
 // 1. string type, result would be string
 // 2. []interface{} type, result would be array of string. ex: a,b,c
-// Please add other type as needed
+// Please add other type as needed.
 func InterfaceToString(data interface{}) string {
 	switch data.(type) {
 	case string:
 		return data.(string)
 	case []interface{}:
 		interfaceArr := data.([]interface{})
-		resultStr := ""
+		results := []string{}
 		for _, v := range interfaceArr {
-			resultStr += InterfaceToString(v) + ","
+			results = append(results, InterfaceToString(v))
 		}
-		return resultStr[:len(resultStr)-1]
+		return strings.Join(results, ",")
 	default:
 		return ""
 	}
+}
+
+// MapToSortedStrings returns sorted string arrays from a map
+func MapToSortedStrings(m map[string]struct{}) []string {
+	ss := []string{}
+	for k := range m {
+		ss = append(ss, k)
+	}
+	sort.Strings(ss)
+	return ss
 }
 
 // cek if a file exist

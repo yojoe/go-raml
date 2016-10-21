@@ -223,8 +223,8 @@ func (sd *structDef) handleAdvancedType() {
 		return
 	case sd.T.IsEnum(): // enum
 		sd.buildEnum()
-	case len(sd.T.Properties) == 0: // specialization
-		sd.buildSpecialization()
+	case strType != "" && len(sd.T.Properties) == 0: // type alias
+		sd.buildTypeAlias()
 	default: // single inheritance
 		sd.addSingleInheritance(strType)
 	}
@@ -287,7 +287,7 @@ func (sd *structDef) buildUnion() {
 	sd.buildOneLine(convertUnion(sd.T.Type.(string)))
 }
 
-func (sd *structDef) buildSpecialization() {
+func (sd *structDef) buildTypeAlias() {
 	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 

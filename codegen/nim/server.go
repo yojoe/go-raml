@@ -7,6 +7,7 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+// Server represents a Nim server
 type Server struct {
 	APIDef     *raml.APIDefinition
 	Dir        string
@@ -15,22 +16,19 @@ type Server struct {
 	Resources  []resource
 }
 
+// Generate generates all Nim server files
 func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef)
 
 	// generate all objects from all RAML types
-	objNames, err := generateObjects(s.APIDef.Types, s.Dir)
-	if err != nil {
+	if err := generateObjects(s.APIDef.Types, s.Dir); err != nil {
 		return err
 	}
-	addGeneratedObjects(objNames)
 
 	// generate all objects from request/response body
-	objNames, err = generateObjectsFromBodies(s.Resources, s.Dir)
-	if err != nil {
+	if _, err := generateObjectsFromBodies(s.Resources, s.Dir); err != nil {
 		return err
 	}
-	addGeneratedObjects(objNames)
 
 	// main file
 	if err := s.generateMain(); err != nil {
@@ -50,13 +48,14 @@ func (s *Server) generateMain() error {
 	return commons.GenerateFile(s, "./templates/server_main_nim.tmpl", "server_main_nim", filename, true)
 }
 
+// Imports returns array of modules that need to be imported by server's main file
 func (s *Server) Imports() []string {
-	imports := []string{}
+	imports := map[string]struct{}{}
 
 	for _, r := range s.Resources {
-		imports = append(imports, r.apiName())
+		imports[r.apiName()] = struct{}{}
 	}
-	return imports
+	return commons.MapToSortedStrings(imports)
 }
 
 func (s *Server) generateResourceAPIs() error {

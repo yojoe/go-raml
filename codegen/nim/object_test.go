@@ -20,7 +20,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			_, err = generateObjects(apiDef.Types, targetDir)
+			err = generateObjects(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"
@@ -31,6 +31,8 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				{"EnumCity.nim", "EnumCity.nim"},
 				{"animal.nim", "animal.nim"},
 				{"Cage.nim", "Cage.nim"},
+				{"Cat.nim", "Cat.nim"},                 // array in fields
+				{"ArrayOfCats.nim", "ArrayOfCats.nim"}, // array in fields
 			}
 
 			for _, check := range checks {
@@ -86,7 +88,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 
 		})
 
-		Convey("Simple struct from raml", func() {
+		Convey("Simple object from raml", func() {
 			var apiDef raml.APIDefinition
 			err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 			So(err, ShouldBeNil)

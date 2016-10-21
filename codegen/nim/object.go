@@ -11,11 +11,14 @@ import (
 )
 
 var (
-	generatedObjects map[string]struct{}
+	// saves all generated objects
+	objectsRegister map[string]struct{}
 )
 
 func init() {
-	generatedObjects = map[string]struct{}{}
+	// register of all objects.
+	// needed to generate `import`
+	objectsRegister = map[string]struct{}{}
 }
 
 // object represents a Nim object
@@ -25,6 +28,7 @@ type object struct {
 	Fields      map[string]field
 	T           raml.Type
 	OneLineDef  string
+	Parents     []string
 }
 
 // field represents a Nim object field
@@ -33,19 +37,30 @@ type field struct {
 	Type string // field type
 }
 
-// generateObjects generates Nim objects from RAML types
-func generateObjects(types map[string]raml.Type, dir string) ([]string, error) {
-	names := []string{}
+// generates Nim objects from RAML types
+func generateObjects(types map[string]raml.Type, dir string) error {
+	objs := []object{}
 	for name, t := range types {
-		if err := generateObject(t, name, dir); err != nil {
-			fmt.Printf("failed : %v\n", err) // TODO : return err if failed
-			return names, err
+		obj, err := newObjectFromType(t, name)
+		if err != nil {
+			return err
 		}
-		names = append(names, name)
+		objs = append(objs, obj)
 	}
-	return names, nil
+
+	for _, obj := range objs {
+		registerObject(&obj)
+	}
+
+	for _, obj := range objs {
+		if err := obj.generate(dir); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
+// generate objects from method request & response bodies of all resources
 func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
 	names := []string{}
 	for _, r := range rs {
@@ -61,6 +76,7 @@ func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
 	return names, nil
 }
 
+// generate object from a method
 func generateObjectFromMethod(r resource, m method, dir string) ([]string, error) {
 	names := []string{}
 
@@ -93,14 +109,15 @@ func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, di
 }
 
 // generates Nim object from an RAML type
-func generateObject(t raml.Type, name, dir string) error {
+/*func generateObject(t raml.Type, name, dir string) error {
 	obj, err := newObjectFromType(t, name)
 	if err != nil {
 		return err
 	}
 	return obj.generate(dir)
-}
+}*/
 
+// create new object from a method body
 func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
 	name := methodName + "RespBody"
 	if isReq {
@@ -117,6 +134,7 @@ func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object
 	return newObject(name, "", body.ApplicationJSON.Properties)
 }
 
+// create new object from an RAML type
 func newObjectFromType(t raml.Type, name string) (object, error) {
 	obj, err := newObject(name, t.Description, t.Properties)
 	obj.T = t
@@ -150,9 +168,32 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 // generate nim object representation
 func (o *object) generate(dir string) error {
 	filename := filepath.Join(dir, o.Name+".nim")
-	return commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true)
+	if err := commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true); err != nil {
+		return err
+	}
+	registerObject(o)
+	return nil
 }
 
+// get array of all imported modules
+func (o object) Imports() []string {
+	ip := map[string]struct{}{}
+
+	for f := range o.Fields {
+		if objectRegistered(f) {
+			ip[f] = struct{}{}
+		}
+	}
+
+	for _, p := range o.Parents {
+		if objectRegistered(p) {
+			ip[p] = struct{}{}
+		}
+	}
+	return commons.MapToSortedStrings(ip)
+}
+
+// handle RAML advanced data type
 func (o *object) handleAdvancedType() {
 	if o.T.Type == nil {
 		o.T.Type = "object"
@@ -160,6 +201,8 @@ func (o *object) handleAdvancedType() {
 	strType := commons.InterfaceToString(o.T.Type)
 
 	switch {
+	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
+		// TODO
 	case strings.ToLower(strType) == "object": // plain type
 	case o.T.IsArray():
 		o.makeArray(strType)
@@ -167,6 +210,7 @@ func (o *object) handleAdvancedType() {
 }
 
 func (o *object) makeArray(t string) {
+	o.Parents = append(o.Parents, t[:len(t)-2])
 	o.buildOneLine(toNimType(t))
 }
 
@@ -174,13 +218,12 @@ func (o *object) buildOneLine(tipe string) {
 	o.OneLineDef = fmt.Sprintf("%v* = %v", o.Name, tipe)
 }
 
-func addGeneratedObjects(objs []string) {
-	for _, v := range objs {
-		generatedObjects[v] = struct{}{}
-	}
+func registerObject(obj *object) {
+	objectsRegister[obj.Name] = struct{}{}
 }
 
-func inGeneratedObjs(obj string) bool {
-	_, ok := generatedObjects[obj]
+// check if an object named `obj` has been generated
+func objectRegistered(objName string) bool {
+	_, ok := objectsRegister[objName]
 	return ok
 }

@@ -1,4 +1,6 @@
 {{define "object_nim"}}
+{{- range $k, $v := .Imports }}
+import {{$v}}{{end}}
 type
 {{- if .OneLineDef }}
   {{ .OneLineDef }}

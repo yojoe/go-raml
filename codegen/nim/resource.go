@@ -25,28 +25,20 @@ func newResource(name string, apiDef *raml.APIDefinition) resource {
 	return r
 }
 
+// get array of all imported modules
 func (r *resource) Imports() []string {
 	ip := map[string]struct{}{}
 
 	for _, mi := range r.Methods {
 		m := mi.(method)
-		if m.ReqBody != "" {
+		if m.ReqBody != "" && objectRegistered(m.ReqBody) {
 			ip[m.ReqBody] = struct{}{}
 		}
-		if m.RespBody != "" {
+		if m.RespBody != "" && objectRegistered(m.RespBody) {
 			ip[m.RespBody] = struct{}{}
 		}
 	}
-	// filter it
-	imports := []string{}
-	for k := range ip {
-		if !inGeneratedObjs(k) {
-			continue
-		}
-		imports = append(imports, k)
-	}
-	sort.Strings(imports)
-	return imports
+	return commons.MapToSortedStrings(ip)
 }
 
 func (r *resource) generate(dir string) error {
