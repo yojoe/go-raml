@@ -5,6 +5,8 @@ import {{$v}}{{end}}
 
 {{ range $k, $v := .Methods}}
 proc {{$v.MethodName}}*({{$v.ProcParams}}) : tuple[code: HttpCode, content: {{$v.ContentRetval}}] =
+  {{- range $kc, $vc := $v.FuncComments}}
+  # {{$vc}}{{end}}
   {{if .ReqBody -}}
   let reqBody = to[{{.ReqBody}}](req.body)
   {{- end }}
