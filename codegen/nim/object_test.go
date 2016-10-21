@@ -102,7 +102,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 				Expected string
 			}{
 				{"usersPostReqBody.nim", "usersPostReqBody.nim"},
-				{"usersidGetRespBody.nim", "usersidGetRespBody.nim"},
+				{"usersByIdGetRespBody.nim", "usersByIdGetRespBody.nim"},
 			}
 
 			for _, check := range checks {

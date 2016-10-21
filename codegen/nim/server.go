@@ -36,7 +36,7 @@ func (s *Server) Generate() error {
 	}
 
 	// API implementation
-	if err := s.generateResourceAPIs(); err != nil {
+	if err := generateResourceAPIs(s.Resources, s.Dir); err != nil {
 		return err
 	}
 
@@ -64,9 +64,9 @@ func (s *Server) Imports() []string {
 	return commons.MapToSortedStrings(imports)
 }
 
-func (s *Server) generateResourceAPIs() error {
-	for _, r := range s.Resources {
-		if err := r.generate(s.Dir); err != nil {
+func generateResourceAPIs(rs []resource, dir string) error {
+	for _, r := range rs {
+		if err := r.generate(dir); err != nil {
 			return err
 		}
 	}

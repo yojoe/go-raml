@@ -22,7 +22,7 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resour
 	if len(rm.DisplayName) > 0 {
 		rm.MethodName = strings.Replace(rm.DisplayName, " ", "", -1)
 	} else {
-		rm.MethodName = commons.NormalizeURI(r.FullURI()) + methodName
+		rm.MethodName = commons.NormalizeURI(formatProcName(r.FullURI())) + methodName
 	}
 	return method{Method: &rm}
 }
@@ -93,4 +93,37 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	}
 
 	return tipe
+}
+
+// format Nim proc name from complete URI
+func formatProcName(fullURI string) string {
+	// remove leading `/`
+	fullURI = fullURI[1:]
+
+	// When meet `/{`
+	// - replace it with `By`
+	// - make uppercase the first char after `/{`
+	spl := strings.Split(fullURI, "/{")
+	tmp := []string{}
+	for i, v := range spl {
+		if i != 0 {
+			v = strings.Title(v)
+		}
+		tmp = append(tmp, v)
+	}
+	name := strings.Join(tmp, "By")
+
+	// when meet `/`
+	// - make uppercase the first char after `/`
+	// - remove the `/`
+	spl = strings.Split(name, "/")
+	tmp = []string{}
+	for i, v := range spl {
+		if i != 0 {
+			v = strings.Title(v)
+		}
+		tmp = append(tmp, v)
+	}
+
+	return strings.Join(tmp, "")
 }
