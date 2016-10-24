@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	cr "github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,8 +15,8 @@ type method struct {
 	*cr.Method
 }
 
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName, lang string) cr.MethodInterface {
+func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
+	methodName, lang string) (cr.MethodInterface, error) {
 
 	rm := cr.NewMethod(r, rd, m, methodName, setBodyName)
 
@@ -24,7 +26,16 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resour
 	} else {
 		rm.MethodName = commons.NormalizeURI(formatProcName(r.FullURI())) + methodName
 	}
-	return method{Method: &rm}
+	return method{Method: &rm}, nil
+}
+
+func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
+	methodName, lang string) cr.MethodInterface {
+	mi, err := newMethod(r, rd, m, methodName, lang)
+	if err != nil {
+		log.Errorf("newServerMethod unexpected error:%v", err)
+	}
+	return mi
 }
 
 // JesterEndpoint returns endpoint in jester format

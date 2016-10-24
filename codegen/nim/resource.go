@@ -14,14 +14,14 @@ type resource struct {
 	cr.Resource
 }
 
-func newResource(name string, apiDef *raml.APIDefinition) resource {
+func newResource(name string, apiDef *raml.APIDefinition, isServer bool) resource {
 	rd := cr.New(apiDef, name, "")
-	rd.IsServer = true
+	rd.IsServer = isServer
 	r := resource{
 		Resource: rd,
 	}
 	res := apiDef.Resources[name]
-	r.GenerateMethods(&res, "nim", newServerMethod, nil)
+	r.GenerateMethods(&res, "nim", newServerMethod, newMethod)
 	return r
 }
 
@@ -50,7 +50,7 @@ func (r *resource) apiName() string {
 	return strings.ToLower(r.Name) + "_api"
 }
 
-func getAllResources(apiDef *raml.APIDefinition) []resource {
+func getAllResources(apiDef *raml.APIDefinition, isServer bool) []resource {
 	rs := []resource{}
 
 	// sort the keys, so we have resource sorted by keys.
@@ -63,7 +63,7 @@ func getAllResources(apiDef *raml.APIDefinition) []resource {
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		rs = append(rs, newResource(k, apiDef))
+		rs = append(rs, newResource(k, apiDef, isServer))
 	}
 	return rs
 }

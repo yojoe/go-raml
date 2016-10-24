@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -44,14 +45,16 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 	cd := newClientDef(apiDef)
 
 	services := map[string]*ClientService{}
-	for k, v := range apiDef.Resources {
-		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
-		rd.GenerateMethods(&v, lang, newServerMethod, newClientMethod)
-		services[k] = &ClientService{
-			lang:         lang,
-			rootEndpoint: k,
-			PackageName:  packageName,
-			Methods:      rd.Methods,
+	if lang != langNim { // TODO : make it better
+		for k, v := range apiDef.Resources {
+			rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
+			rd.GenerateMethods(&v, lang, newServerMethod, newClientMethod)
+			services[k] = &ClientService{
+				lang:         lang,
+				rootEndpoint: k,
+				PackageName:  packageName,
+				Methods:      rd.Methods,
+			}
 		}
 	}
 
@@ -76,6 +79,12 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 			Services:  services,
 		}
 		return pc.generate(dir)
+	case langNim:
+		nc := nim.Client{
+			APIDef: apiDef,
+			Dir:    dir,
+		}
+		return nc.Generate()
 	}
 	return errInvalidLang
 }

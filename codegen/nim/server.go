@@ -18,7 +18,7 @@ type Server struct {
 
 // Generate generates all Nim server files
 func (s *Server) Generate() error {
-	s.Resources = getAllResources(s.APIDef)
+	s.Resources = getAllResources(s.APIDef, true)
 
 	// generate all objects from all RAML types
 	if err := generateObjects(s.APIDef.Types, s.Dir); err != nil {
