@@ -39,7 +39,7 @@ func (gr *goResource) generateAPIFile(directory string) error {
 //		implementation of the API interface.
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
-	gr.GenerateMethods(r, "go", newServerMethod, newClientMethod)
+	gr.GenerateMethods(r, "go", newServerMethod, newGoClientMethod)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}

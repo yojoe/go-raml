@@ -64,6 +64,21 @@ type goClientMethod struct {
 	*resource.Method
 }
 
+// create client resource's method
+func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
+
+	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
+
+	name := commons.NormalizeURITitle(method.Endpoint)
+
+	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
+
+	gcm := goClientMethod{Method: &method}
+	err := gcm.setup(methodName)
+	return gcm, err
+}
+
 func (gcm *goClientMethod) setup(methodName string) error {
 	// build func/method params
 	buildParams := func(r *raml.Resource, bodyType string) (string, error) {

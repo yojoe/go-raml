@@ -49,6 +49,20 @@ type pythonClientMethod struct {
 	PRArgs string // python requests's args
 }
 
+func newPythonClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
+
+	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
+
+	name := commons.NormalizeURITitle(method.Endpoint)
+
+	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
+
+	pcm := pythonClientMethod{Method: method}
+	pcm.setup()
+	return pcm, nil
+}
+
 func (pcm *pythonClientMethod) setup() {
 	var prArgs string
 	params := []string{"self"}

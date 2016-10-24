@@ -39,31 +39,6 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.
 	}
 }
 
-// create client resource's method
-func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-
-	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
-
-	name := commons.NormalizeURITitle(method.Endpoint)
-
-	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
-
-	switch lang {
-	case langGo:
-		gcm := goClientMethod{Method: &method}
-		err := gcm.setup(methodName)
-		return gcm, err
-	case langPython:
-		pcm := pythonClientMethod{Method: method}
-		pcm.setup()
-		return pcm, nil
-	default:
-		panic("invalid language:" + lang)
-
-	}
-}
-
 // setBodyName set name of method's request/response body.
 //
 // Rules:

@@ -6,12 +6,30 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 // python client definition
 type pythonClient struct {
 	clientDef
 	Services map[string]*ClientService
+}
+
+func newPythonClient(cd clientDef, apiDef *raml.APIDefinition) pythonClient {
+	services := map[string]*ClientService{}
+	for k, v := range apiDef.Resources {
+		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
+		rd.GenerateMethods(&v, langPython, newServerMethod, newPythonClientMethod)
+		services[k] = &ClientService{
+			lang:         langPython,
+			rootEndpoint: k,
+			Methods:      rd.Methods,
+		}
+	}
+	return pythonClient{
+		clientDef: cd,
+		Services:  services,
+	}
 }
 
 // generate empty __init__.py without overwrite it

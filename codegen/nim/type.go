@@ -6,11 +6,12 @@ import (
 
 var (
 	typeMap = map[string]string{
-		"string":  "string",
-		"file":    "string",
-		"number":  "float64",
-		"integer": "int",
-		"boolean": "bool",
+		"string":   "string",
+		"file":     "string",
+		"number":   "float64",
+		"integer":  "int",
+		"boolean":  "bool",
+		"datetime": "Time",
 	}
 )
 

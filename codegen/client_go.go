@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -16,6 +17,33 @@ type goClient struct {
 	PackageName    string
 	RootImportPath string
 	Services       map[string]*ClientService
+}
+
+func newGoClient(cd clientDef, apiDef *raml.APIDefinition, packageName, rootImportPath string) (goClient, error) {
+	// rootImportPath only needed if we use libraries
+	if rootImportPath == "" && len(apiDef.Libraries) > 0 {
+		return goClient{}, fmt.Errorf("--import-path can't be empty when we use libraries")
+	}
+
+	globRootImportPath = rootImportPath
+	services := map[string]*ClientService{}
+	for k, v := range apiDef.Resources {
+		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
+		rd.GenerateMethods(&v, langGo, newServerMethod, newGoClientMethod)
+		services[k] = &ClientService{
+			lang:         langGo,
+			rootEndpoint: k,
+			PackageName:  packageName,
+			Methods:      rd.Methods,
+		}
+	}
+	return goClient{
+		clientDef:      cd,
+		libraries:      apiDef.Libraries,
+		PackageName:    packageName,
+		RootImportPath: rootImportPath,
+		Services:       services,
+	}, nil
 }
 
 // generate Go client files

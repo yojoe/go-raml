@@ -183,6 +183,9 @@ func (o object) Imports() []string {
 		if objectRegistered(f) {
 			ip[f] = struct{}{}
 		}
+		if f == "Time" {
+			ip["Time"] = struct{}{}
+		}
 	}
 
 	for _, p := range o.Parents {
