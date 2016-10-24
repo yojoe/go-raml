@@ -53,7 +53,7 @@ func (m method) ServerProcParams() string {
 		params = append(params, p+": string")
 	}
 
-	params = append(params, "req: PRequest")
+	params = append(params, "req: Request")
 	return strings.Join(params, ", ")
 }
 

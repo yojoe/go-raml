@@ -179,12 +179,12 @@ func (o *object) generate(dir string) error {
 func (o object) Imports() []string {
 	ip := map[string]struct{}{}
 
-	for f := range o.Fields {
-		if objectRegistered(f) {
-			ip[f] = struct{}{}
+	for _, f := range o.Fields {
+		if objectRegistered(f.Type) {
+			ip[f.Type] = struct{}{}
 		}
-		if f == "Time" {
-			ip["Time"] = struct{}{}
+		if f.Type == "Time" {
+			ip["times"] = struct{}{}
 		}
 	}
 

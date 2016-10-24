@@ -7,11 +7,13 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+// Client represents a Nim client
 type Client struct {
 	APIDef *raml.APIDefinition
 	Dir    string
 }
 
+// Generate generates all Nim client files
 func (c *Client) Generate() error {
 	rs := getAllResources(c.APIDef, false)
 
