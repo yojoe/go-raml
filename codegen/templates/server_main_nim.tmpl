@@ -7,7 +7,7 @@ routes:
 {{- range $k, $v := .Resources }}
 {{- range $km, $vm := $v.Methods}}
   {{$vm.Verb}} "{{$vm.JesterEndpoint}}":
-    let ret = {{$vm.MethodName}}({{$vm.CallParams}})
+    let ret = {{$vm.MethodName}}({{$vm.ServerCallParams}})
     resp(ret.code, $$ret.content)
 {{end }}
 

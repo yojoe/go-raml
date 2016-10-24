@@ -26,6 +26,7 @@ func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
 	} else {
 		rm.MethodName = commons.NormalizeURI(formatProcName(r.FullURI())) + methodName
 	}
+	rm.ResourcePath = commons.ParamizingURI(rm.Endpoint, "&")
 	return method{Method: &rm}, nil
 }
 
@@ -45,7 +46,7 @@ func (m method) JesterEndpoint() string {
 }
 
 // ProcParams are params of this jester endpoint handler
-func (m method) ProcParams() string {
+func (m method) ServerProcParams() string {
 	var params []string
 
 	for _, p := range cr.GetResourceParams(m.Resource()) {
@@ -57,7 +58,7 @@ func (m method) ProcParams() string {
 }
 
 // CallParams are params when we call jester handler
-func (m method) CallParams() string {
+func (m method) ServerCallParams() string {
 	var params []string
 
 	for _, p := range cr.GetResourceParams(m.Resource()) {
@@ -65,6 +66,37 @@ func (m method) CallParams() string {
 	}
 
 	params = append(params, "request")
+	return strings.Join(params, ", ")
+}
+
+func (m method) ClientProcParams() string {
+	params := []string{}
+
+	if m.ReqBody != "" {
+		params = append(params, fmt.Sprintf("reqBody: %v", m.ReqBody))
+	}
+
+	for _, p := range cr.GetResourceParams(m.Resource()) {
+		params = append(params, fmt.Sprintf("%v: string", p))
+	}
+
+	str := strings.Join(params, ", ")
+	if str != "" {
+		str = ", " + str
+	}
+	return str
+}
+
+// ClientCallParams are params when we call jester handler
+func (m method) ClientCallParams() string {
+	params := []string{
+		m.ResourcePath,
+		fmt.Sprintf(`"%v"`, m.Verb()),
+	}
+	if m.ReqBody != "" {
+		params = append(params, "$$reqBody")
+	}
+
 	return strings.Join(params, ", ")
 }
 

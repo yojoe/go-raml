@@ -93,7 +93,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateObjectsFromBodies(getAllResources(&apiDef), targetDir)
+			_, err = generateObjectsFromBodies(getAllResources(&apiDef, true), targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"

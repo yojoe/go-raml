@@ -140,6 +140,29 @@ func isFileExist(filePath string) bool {
 	return true
 }
 
+// ParamizingURI creates parameterized URI
+// Input : raw string, ex : /users/{userId}/address/{addressId}
+// Output : "/users/"+userId+"/address/"+addressId
+func ParamizingURI(URI, sep string) string {
+	uri := `"` + URI + `"`
+	// replace { with "+
+	uri = strings.Replace(uri, "{", `"`+sep, -1)
+
+	// if ended with }/" or }", remove trailing "
+	if strings.HasSuffix(uri, `}/"`) || strings.HasSuffix(uri, `}"`) {
+		uri = uri[:len(uri)-1]
+	}
+
+	// replace } with +"
+	uri = strings.Replace(uri, "}", sep+`"`, -1)
+
+	// clean trailing +"
+	if strings.HasSuffix(uri, sep+`"`) {
+		uri = uri[:len(uri)-2]
+	}
+	return uri
+}
+
 // run `go fmt` command to a file
 func runGoFmt(filePath string) error {
 	args := []string{"fmt", filePath}

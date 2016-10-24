@@ -43,7 +43,7 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.
 func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
-	method.ResourcePath = paramizingURI(method.Endpoint)
+	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
 
 	name := commons.NormalizeURITitle(method.Endpoint)
 

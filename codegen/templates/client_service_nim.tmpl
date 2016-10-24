@@ -1,0 +1,21 @@
+{{- define "client_service_nim" -}}
+import marshal
+import client
+{{ range $k, $v := .Imports }}
+import {{$v}}{{end}}
+
+{{$serviceName := .Name}}
+type
+  {{.Name}}_service* = object
+    client*: Client
+    name*: string
+
+proc {{.Name}}Srv*(c : Client) : {{.Name}}_service  =
+  return {{.Name}}_service(client:c, name:c.baseURI)
+
+{{ range $km, $vm := .Methods}}
+proc {{$vm.MethodName}}*(srv: {{$serviceName}}_service{{$vm.ClientProcParams}}) : {{$vm.ContentRetval}} =
+  let resp = srv.client.request({{$vm.ClientCallParams}})
+  return to[{{$vm.ContentRetval}}](resp.body)
+{{end}}
+{{end}}

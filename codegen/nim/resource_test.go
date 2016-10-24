@@ -20,7 +20,7 @@ func TestGenerateResourceAPI(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("deliveries API", func() {
-			err = generateResourceAPIs(getAllResources(&apiDef), targetDir)
+			err = generateResourceAPIs(getAllResources(&apiDef, true), targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/resource/"
