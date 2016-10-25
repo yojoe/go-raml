@@ -2,11 +2,11 @@
 
 In this tutorial, we will show you how to:
 
-- getting started with RAML and it's editor
-- generate Go server & client from an RAML file
-- generate Python server & client fron an RAML file
-- integrate Go & Python server with oauth2 server, we use [itsyou.online](https://www.itsyou.online/) as example.
-- accessing auto generated API Docs
+* [getting started with RAML and it's editor](#getting-started)
+* [Setting up itsyou.online for oauth2 integration](#itsyouonline-oauth2-integration)
+* [Generate Go, Python, and Nim server and client from an RAML file](#generate-server--client-code)
+     * integrate Go & Python server with oauth2 server, we use [itsyou.online](https://www.itsyou.online/) as example.
+     * accessing auto generated API Docs
 
 We will call the generated application as `goramldir`.
 It is a simple server for `go-raml` developer database directory.
@@ -40,7 +40,7 @@ In this section, we give short intro to RAML and it's editor.
   - Install (Atom)[https://atom.io/)
   - Open "Settings" and "Install Packages", Search for `api-workbench`.
 
-4. API Designed as RAML web editor
+4. API Designer as RAML web editor
 
   [API Designer](https://github.com/mulesoft/api-designer) is a standalone/embeddable editor for RAML written in JavaScript using Angular.JS.
   By default, the editor uses an in-browser filesystem stored in HTML5 Localstorage.
@@ -111,6 +111,7 @@ Follow below tutorials according to your preferred language:
 
 - [Go tutorial](./go/README.md)
 - [Python tutorial](./python/README.md)
+- [Nim tutorial](./nim/README.md)
 
 Inside above tutorials, there is guide for `itsyou.online` oauth2 integration and how to access auto generated API docs.
 
