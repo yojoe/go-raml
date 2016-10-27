@@ -31,8 +31,9 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				{"EnumCity.nim", "EnumCity.nim"},
 				{"animal.nim", "animal.nim"},
 				{"Cage.nim", "Cage.nim"},
-				{"Cat.nim", "Cat.nim"},                 // array in fields
-				{"ArrayOfCats.nim", "ArrayOfCats.nim"}, // array in fields
+				{"Cat.nim", "Cat.nim"},
+				{"ArrayOfCats.nim", "ArrayOfCats.nim"},
+				{"BidimensionalArrayOfCats.nim", "BidimensionalArrayOfCats.nim"},
 			}
 
 			for _, check := range checks {
