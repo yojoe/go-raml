@@ -165,9 +165,9 @@ func ParamizingURI(URI, sep string) string {
 
 // run `go fmt` command to a file
 func runGoFmt(filePath string) error {
-	args := []string{"fmt", filePath}
+	args := []string{"-w", filePath}
 
-	if out, err := exec.Command("go", args...).CombinedOutput(); err != nil {
+	if out, err := exec.Command("gofmt", args...).CombinedOutput(); err != nil {
 		log.Errorf("Error running go fmt on '%s' failed:\n%s", filePath, string(out))
 		return errors.New("go fmt failed")
 	}
