@@ -19,7 +19,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 	// set method name
 	name := commons.NormalizeURI(gm.Endpoint)
 	if len(gm.DisplayName) > 0 {
-		gm.MethodName = strings.Replace(gm.DisplayName, " ", "", -1)
+		gm.MethodName = displayNameToFuncName(gm.DisplayName)
 	} else {
 		gm.MethodName = name[len(rd.Name):] + methodName
 	}
@@ -108,7 +108,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	name := commons.NormalizeURITitle(gcm.Endpoint)
 
 	if len(gcm.DisplayName) > 0 {
-		gcm.MethodName = strings.Replace(gcm.DisplayName, " ", "", -1)
+		gcm.MethodName = displayNameToFuncName(gcm.DisplayName)
 	} else {
 		gcm.MethodName = strings.Title(name + methodName)
 	}

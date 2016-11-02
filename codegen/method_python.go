@@ -19,7 +19,7 @@ type pythonServerMethod struct {
 func (pm *pythonServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource) error {
 	// method name
 	if len(pm.DisplayName) > 0 {
-		pm.MethodName = strings.Replace(pm.DisplayName, " ", "", -1)
+		pm.MethodName = displayNameToFuncName(pm.DisplayName)
 	} else {
 		pm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(pm.Verb())
 	}
@@ -78,7 +78,7 @@ func (pcm *pythonClientMethod) setup() {
 	pcm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
 
 	if len(pcm.DisplayName) > 0 {
-		pcm.MethodName = strings.Replace(pcm.DisplayName, " ", "", -1)
+		pcm.MethodName = displayNameToFuncName(pcm.DisplayName)
 	} else {
 		pcm.MethodName = snakeCaseResourceURI(pcm.Resource()) + "_" + strings.ToLower(pcm.Verb())
 	}

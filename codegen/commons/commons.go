@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -172,4 +173,13 @@ func runGoFmt(filePath string) error {
 		return errors.New("go fmt failed")
 	}
 	return nil
+}
+
+// AtoiOrPanic convert a string to int and panic if failed
+func AtoiOrPanic(str string) int {
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		log.Fatalf("%v is not valid integer string. err = %v", str, err)
+	}
+	return i
 }

@@ -55,7 +55,8 @@ func NewMethod(r *raml.Resource, rd *Resource, m *raml.Method, methodName string
 
 	//set response body
 	for k, v := range m.Responses {
-		if k >= 200 && k < 300 {
+		code := commons.AtoiOrPanic(string(k))
+		if code >= 200 && code < 300 {
 			method.RespBody = sbn(v.Bodies, method.Endpoint+methodName, commons.RespBodySuffix)
 		}
 	}
