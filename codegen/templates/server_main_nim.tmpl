@@ -1,0 +1,19 @@
+{{- define "server_main_nim" -}}
+import jester, asyncdispatch, json, marshal, system
+{{ range $k, $v := .Imports }}
+import {{$v}}{{end}}
+
+routes:
+{{- range $k, $v := .Resources }}
+{{- range $km, $vm := $v.Methods}}
+  {{$vm.Verb}} "{{$vm.JesterEndpoint}}":
+    let ret = {{$vm.MethodName}}({{$vm.ServerCallParams}})
+    resp(ret.code, $$ret.content)
+{{end }}
+
+  GET "/":
+    resp(readFile("index.html"))
+{{- end }}
+
+runForever()
+{{ end }}

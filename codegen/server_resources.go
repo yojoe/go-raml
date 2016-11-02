@@ -3,12 +3,13 @@ package codegen
 import (
 	"sort"
 
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 // generate Server's Go representation of RAML resources
-func generateServerResources(apiDef *raml.APIDefinition, directory, packageName, lang string) ([]resourceInterface, error) {
-	var rds []resourceInterface
+func generateServerResources(apiDef *raml.APIDefinition, directory, packageName, lang string) ([]resource.ResourceInterface, error) {
+	var rds []resource.ResourceInterface
 
 	rs := apiDef.Resources
 
@@ -25,14 +26,14 @@ func generateServerResources(apiDef *raml.APIDefinition, directory, packageName,
 	var err error
 	for _, k := range keys {
 		r := rs[k]
-		rd := newResourceDef(apiDef, k, packageName)
+		rd := resource.New(apiDef, k, packageName)
 		rd.IsServer = true
 		switch lang {
 		case langGo:
-			gr := goResource{resourceDef: &rd}
+			gr := goResource{Resource: &rd}
 			err = gr.generate(&r, k, directory)
 		case langPython:
-			pr := pythonResource{resourceDef: &rd}
+			pr := pythonResource{Resource: &rd}
 			err = pr.generate(&r, k, directory)
 		}
 		if err != nil {

@@ -1,9 +1,10 @@
 package codegen
 
 import (
-	"fmt"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -17,7 +18,7 @@ type clientDef struct {
 // create client definition from RAML API definition
 func newClientDef(apiDef *raml.APIDefinition) clientDef {
 	cd := clientDef{
-		Name:     normalizeURI(apiDef.Title),
+		Name:     commons.NormalizeURI(apiDef.Title),
 		BaseURI:  apiDef.BaseURI,
 		Services: map[string]ClientService{},
 	}
@@ -36,44 +37,26 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 
 	// global variables
 	globAPIDef = apiDef
-	globRootImportPath = rootImportPath
 
 	// creates base client struct
 	cd := newClientDef(apiDef)
 
-	services := map[string]*ClientService{}
-	for k, v := range apiDef.Resources {
-		rd := newResourceDef(apiDef, normalizeURITitle(apiDef.Title), packageName)
-		rd.generateMethods(&v, lang)
-		services[k] = &ClientService{
-			lang:         lang,
-			rootEndpoint: k,
-			PackageName:  packageName,
-			Methods:      rd.Methods,
-		}
-	}
-
 	switch lang {
 	case langGo:
-		// rootImportPath only needed if we use libraries
-		if rootImportPath == "" && len(apiDef.Libraries) > 0 {
-			return fmt.Errorf("--import-path can't be empty when we use libraries")
-		}
-
-		gc := goClient{
-			clientDef:      cd,
-			libraries:      apiDef.Libraries,
-			PackageName:    packageName,
-			RootImportPath: rootImportPath,
-			Services:       services,
+		gc, err := newGoClient(cd, apiDef, packageName, rootImportPath)
+		if err != nil {
+			return err
 		}
 		return gc.generate(apiDef, dir)
 	case langPython:
-		pc := pythonClient{
-			clientDef: cd,
-			Services:  services,
-		}
+		pc := newPythonClient(cd, apiDef)
 		return pc.generate(dir)
+	case langNim:
+		nc := nim.Client{
+			APIDef: apiDef,
+			Dir:    dir,
+		}
+		return nc.Generate()
 	}
 	return errInvalidLang
 }

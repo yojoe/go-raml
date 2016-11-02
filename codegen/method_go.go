@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 type goServerMethod struct {
-	*method
+	*resource.Method
 	Middlewares string
 }
 
 // setup go server method, initializes all needed variables
-func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resourceDef, methodName string) error {
+func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
 	// set method name
-	name := normalizeURI(gm.Endpoint)
+	name := commons.NormalizeURI(gm.Endpoint)
 	if len(gm.DisplayName) > 0 {
 		gm.MethodName = strings.Replace(gm.DisplayName, " ", "", -1)
 	} else {
@@ -44,28 +46,43 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 }
 
 // return all libs imported by this method
-func (m method) libImported(rootImportPath string) map[string]struct{} {
+func (gm goServerMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, m.ReqBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.ReqBody); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
-	if lib := libImportPath(rootImportPath, m.RespBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.RespBody); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	return libs
 }
 
 type goClientMethod struct {
-	*method
+	*resource.Method
+}
+
+// create client resource's method
+func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
+
+	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
+
+	name := commons.NormalizeURITitle(method.Endpoint)
+
+	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
+
+	gcm := goClientMethod{Method: &method}
+	err := gcm.setup(methodName)
+	return gcm, err
 }
 
 func (gcm *goClientMethod) setup(methodName string) error {
 	// build func/method params
 	buildParams := func(r *raml.Resource, bodyType string) (string, error) {
-		paramsStr := strings.Join(getResourceParams(r), ",")
+		paramsStr := strings.Join(resource.GetResourceParams(r), ",")
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
 		}
@@ -88,7 +105,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	}
 
 	// method name
-	name := normalizeURITitle(gcm.Endpoint)
+	name := commons.NormalizeURITitle(gcm.Endpoint)
 
 	if len(gcm.DisplayName) > 0 {
 		gcm.MethodName = strings.Replace(gcm.DisplayName, " ", "", -1)
@@ -97,7 +114,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	}
 
 	// method param
-	methodParam, err := buildParams(gcm.resource, gcm.ReqBody)
+	methodParam, err := buildParams(gcm.RAMLResource, gcm.ReqBody)
 	if err != nil {
 		return err
 	}
@@ -115,4 +132,18 @@ func (gcm goClientMethod) ReturnTypes() string {
 	types = append(types, []string{"*http.Response", "error"}...)
 
 	return fmt.Sprintf("(%v)", strings.Join(types, ","))
+}
+
+func (gcm goClientMethod) libImported(rootImportPath string) map[string]struct{} {
+	libs := map[string]struct{}{}
+
+	// req body
+	if lib := libImportPath(rootImportPath, gcm.ReqBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	// resp body
+	if lib := libImportPath(rootImportPath, gcm.RespBody); lib != "" {
+		libs[lib] = struct{}{}
+	}
+	return libs
 }

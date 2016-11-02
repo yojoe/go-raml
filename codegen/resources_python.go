@@ -3,6 +3,8 @@ package codegen
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -11,7 +13,7 @@ const (
 )
 
 type pythonResource struct {
-	*resourceDef
+	*resource.Resource
 	MiddlewaresArr []pythonMiddleware
 }
 
@@ -38,10 +40,10 @@ func (pr *pythonResource) setMiddlewares() {
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
-	pr.generateMethods(r, "python")
+	pr.GenerateMethods(r, "python", newServerMethod, newPythonClientMethod)
 	pr.setMiddlewares()
 	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
-	return generateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
+	return commons.GenerateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
 }
 
 // return array of request body in this resource

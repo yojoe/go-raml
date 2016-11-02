@@ -6,8 +6,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 // pythons class's field
@@ -33,7 +35,7 @@ type pythonClass struct {
 func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
 	pc := pythonClass{
 		Name:        name,
-		Description: commentBuilder(description),
+		Description: commons.ParseDescription(description),
 		Fields:      map[string]pythonField{},
 	}
 
@@ -65,7 +67,7 @@ func newPythonClassFromType(T raml.Type, name string) pythonClass {
 
 func (pc *pythonClass) generate(dir string) error {
 	fileName := filepath.Join(dir, pc.Name+".py")
-	return generateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
+	return commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
 }
 
 func (pf *pythonField) addValidator(name, arg string, val interface{}) {

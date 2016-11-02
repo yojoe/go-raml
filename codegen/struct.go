@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -113,7 +114,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		Name:        name,
 		PackageName: packageName,
 		Fields:      fields,
-		Description: commentBuilder(description),
+		Description: commons.ParseDescription(description),
 	}
 }
 
@@ -131,9 +132,9 @@ func newStructDefFromType(t raml.Type, sName, packageName, lang string) structDe
 // create struct definition from RAML Body node
 func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName string, isGenerateRequest bool) structDef {
 	// set struct name based on request or response
-	structName := structNamePrefix + respBodySuffix
+	structName := structNamePrefix + commons.RespBodySuffix
 	if isGenerateRequest {
-		structName = structNamePrefix + reqBodySuffix
+		structName = structNamePrefix + commons.ReqBodySuffix
 	}
 
 	// handle JSON string type
@@ -161,10 +162,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 // generate Go struct
 func (sd structDef) generate(dir string) error {
 	fileName := filepath.Join(dir, sd.Name+".go")
-	if err := generateFile(sd, structTemplateLocation, "struct_template", fileName, false); err != nil {
-		return err
-	}
-	return runGoFmt(fileName)
+	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
 }
 
 // generate all structs from an RAML api definition
@@ -212,7 +210,7 @@ func (sd *structDef) handleAdvancedType() {
 		sd.T.Type = "object"
 	}
 
-	strType := interfaceToString(sd.T.Type)
+	strType := commons.InterfaceToString(sd.T.Type)
 
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
@@ -225,8 +223,8 @@ func (sd *structDef) handleAdvancedType() {
 		return
 	case sd.T.IsEnum(): // enum
 		sd.buildEnum()
-	case len(sd.T.Properties) == 0: // specialization
-		sd.buildSpecialization()
+	case strType != "" && len(sd.T.Properties) == 0: // type alias
+		sd.buildTypeAlias()
 	default: // single inheritance
 		sd.addSingleInheritance(strType)
 	}
@@ -289,7 +287,7 @@ func (sd *structDef) buildUnion() {
 	sd.buildOneLine(convertUnion(sd.T.Type.(string)))
 }
 
-func (sd *structDef) buildSpecialization() {
+func (sd *structDef) buildTypeAlias() {
 	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
 }
 
@@ -305,10 +303,7 @@ func generateInputValidator(packageName, dir string) error {
 		PackageName: packageName,
 	}
 	fileName := filepath.Join(dir, inputValidatorFileResult)
-	if err := generateFile(ctx, inputValidatorTemplateLocation, "struct_input_validator_template", fileName, true); err != nil {
-		return err
-	}
-	return runGoFmt(fileName)
+	return commons.GenerateFile(ctx, inputValidatorTemplateLocation, "struct_input_validator_template", fileName, true)
 }
 
 // true if this struct need to import 'fmt' package

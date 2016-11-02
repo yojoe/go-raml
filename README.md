@@ -25,6 +25,7 @@ Table of Contents
 * [Contribute](#contribute)
 * [Roadmap](#roadmap)
 * [RAML to Code Translation](#raml-to-code-translation)
+* [Tutorial](#tutorial)
 
 
 ## What is go-raml
@@ -92,7 +93,7 @@ go-raml needs to be on the path for this to work off course.
 
 ## Generating Server
 
-`go-raml` able to generate Go & Python server.
+`go-raml` able to generate Go & Python server. Nim server is under development.
 
 Generated server will listen on port 5000
 
@@ -358,3 +359,8 @@ The generated code in the server is in the form of commented code:
  array Type minItems        |   v   |   x
  array Type maxItems        |   v   |   x
  array Type uniqueItems     |   v   |   x
+ 
+ 
+ ## Tutorial
+ 
+ Tutorial for Go, Python, and Nim is available at [docs/tutorial directory](./docs/tutorial)
