@@ -41,7 +41,7 @@ import "strings"
 type Any interface{}
 
 // HTTPCode defines an HTTP status code, for extra clarity
-type HTTPCode int // e.g. 200
+type HTTPCode string // e.g. 200
 
 // HTTPHeader defines an HTTP header
 type HTTPHeader string // e.g. Content-Length

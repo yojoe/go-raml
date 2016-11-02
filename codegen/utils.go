@@ -22,3 +22,8 @@ func checkCreateDir(dir string) error {
 func replaceNonAlphanumerics(s string) string {
 	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
 }
+
+func displayNameToFuncName(str string) string {
+	str = strings.Replace(str, " ", "", -1) // remove the space
+	return replaceNonAlphanumerics(str)     // change the other to _
+}
