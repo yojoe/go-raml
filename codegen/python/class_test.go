@@ -1,4 +1,4 @@
-package codegen
+package python
 
 import (
 	"io/ioutil"
@@ -13,7 +13,7 @@ import (
 func TestGeneratePythonClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("./fixtures/struct/struct.raml", apiDef)
+		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 		So(err, ShouldBeNil)
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
@@ -26,7 +26,7 @@ func TestGeneratePythonClass(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetDir, "ValidationString.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/struct/ValidationString.py")
+			tmpl, err := testLoadFile("../fixtures/struct/ValidationString.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -35,7 +35,7 @@ func TestGeneratePythonClass(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetDir, "Cage.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/Cage.py")
+			tmpl, err = testLoadFile("../fixtures/struct/Cage.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -44,7 +44,7 @@ func TestGeneratePythonClass(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetDir, "animal.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/animal.py")
+			tmpl, err = testLoadFile("../fixtures/struct/animal.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

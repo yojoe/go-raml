@@ -1,4 +1,4 @@
-package codegen
+package python
 
 import (
 	"io/ioutil"
@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 func TestLibrary(t *testing.T) {
@@ -14,10 +16,19 @@ func TestLibrary(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", langPython, "apidocs", "examples.com/ramlcode", true)
+		apiDef := new(raml.APIDefinition)
+		_, err = raml.ParseReadFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		rootFixture := "./fixtures/libraries/python_server"
+		server := Server{
+			APIDef:   apiDef,
+			Title:    apiDef.Title,
+			WithMain: true,
+		}
+		err = server.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "../fixtures/libraries/python_server"
 		checks := []struct {
 			Result   string
 			Expected string

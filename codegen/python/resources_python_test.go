@@ -1,4 +1,4 @@
-package codegen
+package python
 
 import (
 	"io/ioutil"
@@ -17,17 +17,17 @@ func TestPythonResource(t *testing.T) {
 
 		Convey("resource with request body", func() {
 			apiDef := new(raml.APIDefinition)
-			err := raml.ParseFile("./fixtures/server_resources/deliveries.raml", apiDef)
+			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir, "", "python")
+			_, err = generateServerResources(apiDef, targetdir)
 			So(err, ShouldBeNil)
 
 			// check  api implementation
 			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server_resources/deliveries.py")
+			tmpl, err := testLoadFile("../fixtures/server_resources/deliveries.py")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})

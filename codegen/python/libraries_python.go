@@ -1,10 +1,11 @@
-package codegen
+package python
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
 )
@@ -23,7 +24,7 @@ func newPythonLibrary(lib *raml.Library, baseDir string) *pythonLibrary {
 
 	// package directory : filename without the extension
 	relDir := libRelDir(pl.Filename)
-	pl.dir = normalizePkgName(filepath.Join(pl.baseDir, relDir))
+	pl.dir = commons.NormalizePkgName(filepath.Join(pl.baseDir, relDir))
 
 	return &pl
 }
@@ -43,7 +44,7 @@ func generatePythonLibraries(libraries map[string]*raml.Library, baseDir string)
 // generate code of this library
 func (l *pythonLibrary) generate() error {
 	// create directory if needed
-	if err := checkCreateDir(l.dir); err != nil {
+	if err := commons.CheckCreateDir(l.dir); err != nil {
 		return err
 	}
 
@@ -69,7 +70,7 @@ func (l *pythonLibrary) generate() error {
 	}
 
 	// security schemes
-	if err := generateSecurity(l.SecuritySchemes, l.dir, "", langPython); err != nil {
+	if err := generateSecurity(l.SecuritySchemes, l.dir); err != nil {
 		return err
 	}
 
@@ -97,7 +98,7 @@ func pythonLibImportPath(typ, prefix string) (string, string) {
 	libName := splitted[0]
 
 	// raml file of this lib
-	libRAMLFile := globAPIDef.FindLibFile(denormalizePkgName(libName))
+	libRAMLFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
 
 	if libRAMLFile == "" {
 		log.Fatalf("pythonLibImportPath() can't find library : %v", libName)
@@ -106,7 +107,7 @@ func pythonLibImportPath(typ, prefix string) (string, string) {
 	// relative lib package
 	libPkg := libRelDir(libRAMLFile)
 
-	return strings.Replace(normalizePkgName(libPkg), "/", ".", -1) + "." + prefix + splitted[1], prefix + splitted[1]
+	return strings.Replace(commons.NormalizePkgName(libPkg), "/", ".", -1) + "." + prefix + splitted[1], prefix + splitted[1]
 }
 
 // get relative lib directory from library filename

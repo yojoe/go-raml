@@ -1,6 +1,7 @@
-package codegen
+package python
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -27,10 +28,21 @@ func (pr *pythonResource) addMiddleware(mwr pythonMiddleware) {
 	pr.MiddlewaresArr = append(pr.MiddlewaresArr, mwr)
 }
 
+func newResource(name string, apiDef *raml.APIDefinition, isServer bool) pythonResource {
+	rd := resource.New(apiDef, name, "")
+	rd.IsServer = isServer
+	r := pythonResource{
+		Resource: &rd,
+	}
+	res := apiDef.Resources[name]
+	r.GenerateMethods(&res, "python", newServerMethod, newPythonClientMethod)
+	return r
+}
+
 // set middlewares to import
 func (pr *pythonResource) setMiddlewares() {
 	for _, v := range pr.Methods {
-		pm := v.(pythonServerMethod)
+		pm := v.(serverMethod)
 		for _, m := range pm.MiddlewaresArr {
 			pr.addMiddleware(m)
 		}
@@ -50,10 +62,28 @@ func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
 func (pr pythonResource) ReqBodies() []string {
 	var reqs []string
 	for _, m := range pr.Methods {
-		pm := m.(pythonServerMethod)
+		pm := m.(serverMethod)
 		if pm.ReqBody != "" {
 			reqs = append(reqs, pm.ReqBody)
 		}
 	}
 	return reqs
+}
+
+func getAllResources(apiDef *raml.APIDefinition, isServer bool) []pythonResource {
+	rs := []pythonResource{}
+
+	// sort the keys, so we have resource sorted by keys.
+	// the generated code actually don't need it to be sorted.
+	// but test fixture need it
+	var keys []string
+	for k := range apiDef.Resources {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		rs = append(rs, newResource(k, apiDef, isServer))
+	}
+	return rs
 }

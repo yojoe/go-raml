@@ -2,7 +2,7 @@ package codegen
 
 import (
 	"io/ioutil"
-	//"os"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -47,38 +47,8 @@ func TestServer(t *testing.T) {
 
 		})
 
-		Convey("Congo python server", func() {
-			err := GenerateServer("./fixtures/congo/api.raml", targetdir, "main", "python", "apidocs", "", true)
-			So(err, ShouldBeNil)
-
-			// check drones API implementation
-			s, err := testLoadFile(filepath.Join(targetdir, "drones.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := testLoadFile("./fixtures/congo/python_server/drones.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
-			// check deliveries API implementation
-			s, err = testLoadFile(filepath.Join(targetdir, "deliveries.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/congo/python_server/deliveries.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
-			// check main file
-			s, err = testLoadFile(filepath.Join(targetdir, "app.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/congo/python_server/app.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
-		})
-
 		Reset(func() {
-			//os.RemoveAll(targetdir)
+			os.RemoveAll(targetdir)
 		})
 	})
 }

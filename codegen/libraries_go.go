@@ -95,16 +95,6 @@ func libImportPath(rootImportPath, typ string) string {
 	return filepath.Join(rootImportPath, goLibPackageDir(libName, libRAMLFile))
 }
 
-// normalize package name because not all characters can be used as package name
-func normalizePkgName(name string) string {
-	return strings.Replace(name, "-", "_", -1)
-}
-
-// inverse of normalizePkgName
-func denormalizePkgName(name string) string {
-	return strings.Replace(name, "_", "-", -1)
-}
-
 // returns Go package directory of a library
 // name is library name. filename is library file name.
 // for the rule, see comment of `type goLibrary struct`

@@ -1,11 +1,10 @@
-package codegen
+package security
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
-	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -15,7 +14,7 @@ const (
 
 // security define a security scheme, we only support oauth2 now.
 // we generate middleware that checking for oauth2 credential
-type security struct {
+type Security struct {
 	*raml.SecurityScheme
 	Name        string
 	PackageName string
@@ -25,11 +24,11 @@ type security struct {
 }
 
 // create security struct
-func newSecurity(ss *raml.SecurityScheme, name, packageName string) security {
-	sd := security{
+func New(ss *raml.SecurityScheme, name, packageName string) Security {
+	sd := Security{
 		SecurityScheme: ss,
 	}
-	sd.Name = securitySchemeName(name)
+	sd.Name = SecuritySchemeName(name)
 	sd.PackageName = packageName
 
 	// assign header, if any
@@ -50,7 +49,7 @@ func newSecurity(ss *raml.SecurityScheme, name, packageName string) security {
 }
 
 // generate security related code
-func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, lang string) error {
+/*func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, lang string) error {
 	var err error
 
 	// generate oauth2 middleware
@@ -76,12 +75,12 @@ func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, 
 		}
 	}
 	return nil
-}
+}*/
 
 // get oauth2 middleware handler from a security scheme
 func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 	// construct security scopes
-	quotedScopes, err := getQuotedSecurityScopes(ss)
+	quotedScopes, err := GetQuotedScopes(ss)
 	if err != nil {
 		return "", err
 	}
@@ -104,7 +103,7 @@ func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 }
 
 // get array of security scopes in the form of quoted string
-func getQuotedSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
+func GetQuotedScopes(ss raml.DefinitionChoice) ([]string, error) {
 	var quoted []string
 	scopes, err := getSecurityScopes(ss)
 	if err != nil {
@@ -140,7 +139,7 @@ func getSecurityScopes(ss raml.DefinitionChoice) ([]string, error) {
 }
 
 // return security scheme name that could be used in code
-func securitySchemeName(name string) string {
+func SecuritySchemeName(name string) string {
 	return strings.Replace(name, " ", "", -1)
 }
 
@@ -148,7 +147,7 @@ func securitySchemeName(name string) string {
 // - not empty
 // - not 'null'
 // - oauth2 -> we only support oauth2 now
-func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
+func ValidateScheme(name string, apiDef *raml.APIDefinition) bool {
 	if name == "" || name == "null" {
 		return false
 	}
@@ -156,4 +155,15 @@ func validateSecurityScheme(name string, apiDef *raml.APIDefinition) bool {
 		return ss.Type == Oauth2
 	}
 	return false
+}
+
+// find resource's securedBy recursively
+func FindResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
+	if len(r.SecuredBy) > 0 {
+		return r.SecuredBy
+	}
+	if r.Parent == nil {
+		return []raml.DefinitionChoice{}
+	}
+	return FindResourceSecuredBy(r.Parent)
 }

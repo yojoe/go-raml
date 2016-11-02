@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -14,12 +15,19 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/templates"
 )
 
+var (
+	regNonAlphanum = regexp.MustCompile("[^A-Za-z0-9]+")
+)
+
 const (
 	// ReqBodySuffix is suffix name for request body object
 	ReqBodySuffix = "ReqBody"
 
 	// RespBodySuffix is suffix name for response body object
 	RespBodySuffix = "RespBody"
+
+	LangGo     = "go"
+	LangPython = "python"
 )
 
 // doNormalizeURI removes `{`, `}`, and `/` from an URI
@@ -175,6 +183,16 @@ func runGoFmt(filePath string) error {
 	return nil
 }
 
+// normalize package name because not all characters can be used as package name
+func NormalizePkgName(name string) string {
+	return strings.Replace(name, "-", "_", -1)
+}
+
+// inverse of normalizePkgName
+func DenormalizePkgName(name string) string {
+	return strings.Replace(name, "_", "-", -1)
+}
+
 // AtoiOrPanic convert a string to int and panic if failed
 func AtoiOrPanic(str string) int {
 	i, err := strconv.Atoi(str)
@@ -182,4 +200,22 @@ func AtoiOrPanic(str string) int {
 		log.Fatalf("%v is not valid integer string. err = %v", str, err)
 	}
 	return i
+}
+
+// create directory if not exist
+func CheckCreateDir(dir string) error {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return os.MkdirAll(dir, 0777)
+	}
+	return nil
+}
+
+// replace non alphanumerics with "_"
+func replaceNonAlphanumerics(s string) string {
+	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
+}
+
+func DisplayNameToFuncName(str string) string {
+	str = strings.Replace(str, " ", "", -1) // remove the space
+	return replaceNonAlphanumerics(str)     // change the other to _
 }

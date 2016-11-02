@@ -1,35 +1,50 @@
-package codegen
+package python
 
 import (
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// python client definition
-type pythonClient struct {
-	clientDef
-	Services map[string]*ClientService
+const (
+	langPython = "python"
+)
+
+var (
+	globAPIDef *raml.APIDefinition
+)
+
+type Client struct {
+	Name     string
+	APIDef   *raml.APIDefinition
+	BaseURI  string
+	Services map[string]*service
 }
 
-func newPythonClient(cd clientDef, apiDef *raml.APIDefinition) pythonClient {
-	services := map[string]*ClientService{}
+func NewClient(apiDef *raml.APIDefinition) Client {
+	services := map[string]*service{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
-		rd.GenerateMethods(&v, langPython, newServerMethod, newPythonClientMethod)
-		services[k] = &ClientService{
-			lang:         langPython,
+		rd.GenerateMethods(&v, "python", newServerMethod, newPythonClientMethod)
+		services[k] = &service{
 			rootEndpoint: k,
 			Methods:      rd.Methods,
 		}
 	}
-	return pythonClient{
-		clientDef: cd,
-		Services:  services,
+	c := Client{
+		Name:     commons.NormalizeURI(apiDef.Title),
+		APIDef:   apiDef,
+		BaseURI:  apiDef.BaseURI,
+		Services: services,
 	}
+	if strings.Index(c.BaseURI, "{version}") > 0 {
+		c.BaseURI = strings.Replace(c.BaseURI, "{version}", apiDef.Version, -1)
+	}
+	return c
 }
 
 // generate empty __init__.py without overwrite it
@@ -38,7 +53,8 @@ func generateEmptyInitPy(dir string) error {
 }
 
 // generate python lib files
-func (pc pythonClient) generate(dir string) error {
+func (c Client) Generate(dir string) error {
+	globAPIDef = c.APIDef
 	// generate empty __init__.py
 	if err := generateEmptyInitPy(dir); err != nil {
 		return err
@@ -49,15 +65,15 @@ func (pc pythonClient) generate(dir string) error {
 		return err
 	}
 
-	if err := pc.generateServices(dir); err != nil {
+	if err := c.generateServices(dir); err != nil {
 		return err
 	}
 	// generate main client lib file
-	return commons.GenerateFile(pc, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
+	return commons.GenerateFile(c, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
 }
 
-func (pc pythonClient) generateServices(dir string) error {
-	for _, s := range pc.Services {
+func (c Client) generateServices(dir string) error {
+	for _, s := range c.Services {
 		sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, "./templates/client_service_python.tmpl", "client_service_python", s.filename(dir), false); err != nil {
 			return err

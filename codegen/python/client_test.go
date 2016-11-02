@@ -1,4 +1,4 @@
-package codegen
+package python
 
 import (
 	"io/ioutil"
@@ -13,17 +13,18 @@ import (
 func TestGeneratePythonClientFromRaml(t *testing.T) {
 	Convey("generate python client", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("./fixtures/python_client/client.raml", apiDef)
+		err := raml.ParseFile("../fixtures/python_client/client.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("Simple client", func() {
-			err = GenerateClient(apiDef, targetDir, "", "python", "")
+			client := NewClient(apiDef)
+			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/python_client"
+			rootFixture := "../fixtures/python_client"
 			// cek with generated with fixtures
 			checks := []struct {
 				Result   string
@@ -50,4 +51,9 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			os.RemoveAll(targetDir)
 		})
 	})
+}
+
+func testLoadFile(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	return string(b), err
 }

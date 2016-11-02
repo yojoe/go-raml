@@ -67,14 +67,3 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 
 	return tipe
 }
-
-// find resource's securedBy recursively
-func findResourceSecuredBy(r *raml.Resource) []raml.DefinitionChoice {
-	if len(r.SecuredBy) > 0 {
-		return r.SecuredBy
-	}
-	if r.Parent == nil {
-		return []raml.DefinitionChoice{}
-	}
-	return findResourceSecuredBy(r.Parent)
-}
