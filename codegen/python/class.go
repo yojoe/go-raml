@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/chuckpreslar/inflect"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -72,6 +73,29 @@ func (pc *pythonClass) generate(dir string) error {
 
 func (pf *pythonField) addValidator(name, arg string, val interface{}) {
 	pf.validators[name] = append(pf.validators[name], fmt.Sprintf("%v=%v", arg, val))
+}
+
+func generateClassFromBodies(rs []pythonResource, dir string) error {
+	for _, r := range rs {
+		for _, mi := range r.Methods {
+			m := mi.(serverMethod)
+			if err := generateClassesFromMethod(m, dir); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func generateClassesFromMethod(m serverMethod, dir string) error {
+	if commons.HasJSONBody(&m.Bodies) {
+		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
+		class := newPythonClass(name, "", m.Bodies.ApplicationJSON.Properties)
+		if err := class.generate(dir); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // build validators string

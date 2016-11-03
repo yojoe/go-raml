@@ -10,6 +10,7 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/nim"
+	"github.com/Jumpscale/go-raml/codegen/python"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -70,13 +71,13 @@ func (gs goServer) generate(dir string) error {
 	}
 
 	// security scheme
-	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName, langGo); err != nil {
+	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(gs.apiDef, dir, gs.PackageName, langGo)
+	rds, err := generateServerResources(gs.apiDef, dir, gs.PackageName)
 	if err != nil {
 		return err
 	}
@@ -100,62 +101,6 @@ func (gs goServer) generate(dir string) error {
 	return nil
 }
 
-// generate all python server files
-func (ps pythonServer) generate(dir string) error {
-	// generate input validators helper
-	if err := commons.GenerateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
-		filepath.Join(dir, "input_validators.py"), false); err != nil {
-		return err
-	}
-
-	// generate request body
-	if err := generateBodyStructs(ps.apiDef, dir, "", langPython); err != nil {
-		log.Errorf("failed to generate python classes from request body:%v", err)
-		return err
-	}
-
-	// python classes
-	if err := generatePythonClasses(ps.apiDef.Types, dir); err != nil {
-		log.Errorf("failed to generate python clased:%v", err)
-		return err
-	}
-
-	// security scheme
-	if err := generateSecurity(ps.apiDef.SecuritySchemes, dir, ps.PackageName, langPython); err != nil {
-		log.Errorf("failed to generate security scheme:%v", err)
-		return err
-	}
-
-	// genereate resources
-	rds, err := generateServerResources(ps.apiDef, dir, ps.PackageName, langPython)
-	if err != nil {
-		return err
-	}
-	ps.ResourcesDef = rds
-
-	// libraries
-	if err := generatePythonLibraries(ps.apiDef.Libraries, dir); err != nil {
-		return err
-	}
-
-	// requirements.txt file
-	if err := commons.GenerateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
-		return err
-	}
-
-	// generate main
-	if ps.withMain {
-		// generate HTML front page
-		if err := commons.GenerateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
-			return err
-		}
-		// main file
-		return commons.GenerateFile(ps, "./templates/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
-	}
-	return nil
-
-}
-
 // GenerateServer generates API server files
 func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
 	apiDef := new(raml.APIDefinition)
@@ -170,7 +115,7 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 	globRootImportPath = rootImportPath
 
 	// create directory if needed
-	if err := checkCreateDir(dir); err != nil {
+	if err := commons.CheckCreateDir(dir); err != nil {
 		return err
 	}
 
@@ -190,8 +135,13 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		gs := goServer{server: sd, RootImportPath: rootImportPath}
 		err = gs.generate(dir)
 	case langPython:
-		ps := pythonServer{server: sd}
-		err = ps.generate(dir)
+		ps := python.Server{
+			APIDef:     apiDef,
+			Title:      apiDef.Title,
+			APIDocsDir: apiDocsDir,
+			WithMain:   generateMain,
+		}
+		err = ps.Generate(dir)
 	case langNim:
 		ns := nim.Server{
 			Title:      apiDef.Title,

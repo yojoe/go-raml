@@ -8,7 +8,7 @@ import (
 )
 
 // generate Server's Go representation of RAML resources
-func generateServerResources(apiDef *raml.APIDefinition, directory, packageName, lang string) ([]resource.ResourceInterface, error) {
+func generateServerResources(apiDef *raml.APIDefinition, directory, packageName string) ([]resource.ResourceInterface, error) {
 	var rds []resource.ResourceInterface
 
 	rs := apiDef.Resources
@@ -28,14 +28,8 @@ func generateServerResources(apiDef *raml.APIDefinition, directory, packageName,
 		r := rs[k]
 		rd := resource.New(apiDef, k, packageName)
 		rd.IsServer = true
-		switch lang {
-		case langGo:
-			gr := goResource{Resource: &rd}
-			err = gr.generate(&r, k, directory)
-		case langPython:
-			pr := pythonResource{Resource: &rd}
-			err = pr.generate(&r, k, directory)
-		}
+		gr := goResource{Resource: &rd}
+		err = gr.generate(&r, k, directory)
 		if err != nil {
 			return rds, err
 		}

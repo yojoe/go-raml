@@ -3,6 +3,7 @@ package codegen
 import (
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
+	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -15,28 +16,17 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.
 	// security scheme
 	if len(m.SecuredBy) > 0 {
 		method.SecuredBy = m.SecuredBy
-	} else if sb := findResourceSecuredBy(r); len(sb) > 0 {
+	} else if sb := security.FindResourceSecuredBy(r); len(sb) > 0 {
 		method.SecuredBy = sb
 	} else {
 		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
-	switch lang {
-	case langGo:
-		gm := goServerMethod{
-			Method: &method,
-		}
-		gm.setup(apiDef, r, rd, methodName)
-		return gm
-	case langPython:
-		pm := pythonServerMethod{
-			Method: &method,
-		}
-		pm.setup(apiDef, r, rd)
-		return pm
-	default:
-		panic("invalid language:" + lang)
+	gm := goServerMethod{
+		Method: &method,
 	}
+	gm.setup(apiDef, r, rd, methodName)
+	return gm
 }
 
 // setBodyName set name of method's request/response body.

@@ -2,6 +2,8 @@ package codegen
 
 import (
 	"strings"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 var (
@@ -55,5 +57,5 @@ func convertToGoType(tip string) string {
 	case strings.Index(tip, "|") > 0:
 		return convertUnion(tip)
 	}
-	return normalizePkgName(tip)
+	return commons.NormalizePkgName(tip)
 }

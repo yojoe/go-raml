@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
+	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -19,7 +20,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 	// set method name
 	name := commons.NormalizeURI(gm.Endpoint)
 	if len(gm.DisplayName) > 0 {
-		gm.MethodName = displayNameToFuncName(gm.DisplayName)
+		gm.MethodName = commons.DisplayNameToFuncName(gm.DisplayName)
 	} else {
 		gm.MethodName = name[len(rd.Name):] + methodName
 	}
@@ -29,7 +30,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 
 	// security middlewares
 	for _, v := range gm.SecuredBy {
-		if !validateSecurityScheme(v.Name, apiDef) {
+		if !security.ValidateScheme(v.Name, apiDef) {
 			continue
 		}
 		// oauth2 middleware
@@ -108,7 +109,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 	name := commons.NormalizeURITitle(gcm.Endpoint)
 
 	if len(gcm.DisplayName) > 0 {
-		gcm.MethodName = displayNameToFuncName(gcm.DisplayName)
+		gcm.MethodName = commons.DisplayNameToFuncName(gcm.DisplayName)
 	} else {
 		gcm.MethodName = strings.Title(name + methodName)
 	}
@@ -146,4 +147,29 @@ func (gcm goClientMethod) libImported(rootImportPath string) map[string]struct{}
 		libs[lib] = struct{}{}
 	}
 	return libs
+}
+
+// get oauth2 middleware handler from a security scheme
+func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
+	// construct security scopes
+	quotedScopes, err := security.GetQuotedScopes(ss)
+	if err != nil {
+		return "", err
+	}
+	scopesArgs := strings.Join(quotedScopes, ", ")
+
+	// middleware name
+	// need to handle case where it reside in different package
+	var packageName string
+	name := ss.Name
+
+	if splitted := strings.Split(name, "."); len(splitted) == 2 {
+		packageName = splitted[0]
+		name = splitted[1]
+	}
+	mwr := fmt.Sprintf(`NewOauth2%vMiddleware([]string{%v}).Handler`, name, scopesArgs)
+	if packageName != "" {
+		mwr = packageName + "." + mwr
+	}
+	return mwr, nil
 }

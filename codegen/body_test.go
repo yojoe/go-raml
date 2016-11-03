@@ -42,21 +42,6 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(s, ShouldEqual, tmpl)
 		})
 
-		Convey("python class from request/response bodies", func() {
-			err = generateBodyStructs(apiDef, targetDir, "", langPython)
-			So(err, ShouldBeNil)
-
-			// req body
-			s, err := testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := testLoadFile("./fixtures/struct/UsersPostReqBody.py")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-		})
-
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})

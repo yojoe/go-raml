@@ -21,7 +21,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// oauth 2 facebook
@@ -49,7 +49,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir, "main", langGo)
+			_, err = generateServerResources(apiDef, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// check route
@@ -67,7 +67,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("./fixtures/security/dropbox_with_include.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langGo)
+			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main")
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
@@ -79,51 +79,6 @@ func TestOauth2Middleware(t *testing.T) {
 
 			So(s, ShouldEqual, tmpl)
 
-		})
-
-		Convey("python middleware generation test", func() {
-			apiDef := new(raml.APIDefinition)
-			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
-			So(err, ShouldBeNil)
-
-			err = generateSecurity(apiDef.SecuritySchemes, targetdir, "main", langPython)
-			So(err, ShouldBeNil)
-
-			// oauth 2 in dropbox
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_Dropbox.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := testLoadFile("./fixtures/security/oauth2_Dropbox.py")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// oauth 2 facebook
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Facebook.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/security/oauth2_Facebook.py")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-		})
-
-		Convey("Python routes generation", func() {
-			apiDef := new(raml.APIDefinition)
-			err := raml.ParseFile("./fixtures/security/dropbox.raml", apiDef)
-			So(err, ShouldBeNil)
-
-			_, err = generateServerResources(apiDef, targetdir, "main", langPython)
-			So(err, ShouldBeNil)
-
-			// check route
-			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := testLoadFile("./fixtures/security/deliveries.py")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
 		})
 
 		Reset(func() {

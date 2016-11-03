@@ -4,6 +4,8 @@ import (
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 var (
@@ -24,7 +26,7 @@ func (gh goramlHelper) generate(dir string) error {
 	pkgDir := filepath.Join(dir, gh.packageDir)
 
 	// create directory if needed
-	if err := checkCreateDir(pkgDir); err != nil {
+	if err := commons.CheckCreateDir(pkgDir); err != nil {
 		return err
 	}
 

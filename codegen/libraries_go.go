@@ -4,8 +4,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 // library defines an RAML library
@@ -29,8 +31,8 @@ func newGoLibrary(name string, lib *raml.Library, baseDir string) *goLibrary {
 	return &goLibrary{
 		Library:     lib,
 		baseDir:     baseDir,
-		PackageName: normalizePkgName(name),
-		dir:         normalizePkgName(filepath.Join(baseDir, goLibPackageDir(name, lib.Filename))),
+		PackageName: commons.NormalizePkgName(name),
+		dir:         commons.NormalizePkgName(filepath.Join(baseDir, goLibPackageDir(name, lib.Filename))),
 	}
 }
 
@@ -47,7 +49,7 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string) error
 
 // generate code of this library
 func (l *goLibrary) generate() error {
-	if err := checkCreateDir(l.dir); err != nil {
+	if err := commons.CheckCreateDir(l.dir); err != nil {
 		return err
 	}
 
@@ -57,7 +59,7 @@ func (l *goLibrary) generate() error {
 	}
 
 	// security schemes
-	if err := generateSecurity(l.SecuritySchemes, l.dir, l.PackageName, langGo); err != nil {
+	if err := generateSecurity(l.SecuritySchemes, l.dir, l.PackageName); err != nil {
 		return err
 	}
 
@@ -86,7 +88,7 @@ func libImportPath(rootImportPath, typ string) string {
 	}
 
 	// raml file of this lib
-	libRAMLFile := globAPIDef.FindLibFile(denormalizePkgName(libName))
+	libRAMLFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
 
 	if libRAMLFile == "" {
 		log.Fatalf("can't find library : %v", libName)
@@ -99,5 +101,5 @@ func libImportPath(rootImportPath, typ string) string {
 // name is library name. filename is library file name.
 // for the rule, see comment of `type goLibrary struct`
 func goLibPackageDir(name, filename string) string {
-	return normalizePkgName(filepath.Join(filepath.Dir(filename), name))
+	return commons.NormalizePkgName(filepath.Join(filepath.Dir(filename), name))
 }

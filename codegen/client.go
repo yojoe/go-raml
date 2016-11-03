@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/nim"
+	"github.com/Jumpscale/go-raml/codegen/python"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -31,7 +32,7 @@ func newClientDef(apiDef *raml.APIDefinition) clientDef {
 // GenerateClient generates client library
 func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath string) error {
 	//check create dir
-	if err := checkCreateDir(dir); err != nil {
+	if err := commons.CheckCreateDir(dir); err != nil {
 		return err
 	}
 
@@ -49,8 +50,8 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 		}
 		return gc.generate(apiDef, dir)
 	case langPython:
-		pc := newPythonClient(cd, apiDef)
-		return pc.generate(dir)
+		pc := python.NewClient(apiDef)
+		return pc.Generate(dir)
 	case langNim:
 		nc := nim.Client{
 			APIDef: apiDef,

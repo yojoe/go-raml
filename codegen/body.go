@@ -63,17 +63,8 @@ func buildBodyFromMethod(normalizedPath, methodName, dir, packageName, lang stri
 	}
 
 	//generate struct for request body
-	switch lang {
-	case langGo:
-		if err := generateStructFromBody(normalizedPath+methodName, dir, packageName, &method.Bodies, true); err != nil {
-			return err
-		}
-	case langPython:
-		if !commons.HasJSONBody(&method.Bodies) {
-			return nil
-		}
-		pc := newPythonClass(normalizedPath+methodName+commons.ReqBodySuffix, "", method.Bodies.ApplicationJSON.Properties)
-		return pc.generate(dir)
+	if err := generateStructFromBody(normalizedPath+methodName, dir, packageName, &method.Bodies, true); err != nil {
+		return err
 	}
 
 	//generate struct for response body

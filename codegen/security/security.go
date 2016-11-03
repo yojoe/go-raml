@@ -48,60 +48,6 @@ func New(ss *raml.SecurityScheme, name, packageName string) Security {
 	return sd
 }
 
-// generate security related code
-/*func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName, lang string) error {
-	var err error
-
-	// generate oauth2 middleware
-	for k, ss := range schemes {
-		if ss.Type != Oauth2 {
-			continue
-		}
-
-		sd := newSecurity(&ss, k, packageName)
-
-		switch lang {
-		case langGo:
-			gss := goSecurity{security: &sd}
-			err = gss.generate(dir)
-
-		case langPython:
-			pss := pythonSecurity{security: &sd}
-			err = pss.generate(dir)
-		}
-		if err != nil {
-			log.Errorf("generateSecurity() failed to generate %v, err=%v", k, err)
-			return err
-		}
-	}
-	return nil
-}*/
-
-// get oauth2 middleware handler from a security scheme
-func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
-	// construct security scopes
-	quotedScopes, err := GetQuotedScopes(ss)
-	if err != nil {
-		return "", err
-	}
-	scopesArgs := strings.Join(quotedScopes, ", ")
-
-	// middleware name
-	// need to handle case where it reside in different package
-	var packageName string
-	name := ss.Name
-
-	if splitted := strings.Split(name, "."); len(splitted) == 2 {
-		packageName = splitted[0]
-		name = splitted[1]
-	}
-	mwr := fmt.Sprintf(`NewOauth2%vMiddleware([]string{%v}).Handler`, name, scopesArgs)
-	if packageName != "" {
-		mwr = packageName + "." + mwr
-	}
-	return mwr, nil
-}
-
 // get array of security scopes in the form of quoted string
 func GetQuotedScopes(ss raml.DefinitionChoice) ([]string, error) {
 	var quoted []string

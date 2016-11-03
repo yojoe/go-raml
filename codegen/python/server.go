@@ -30,10 +30,9 @@ func (ps Server) Generate(dir string) error {
 	}
 
 	// generate request body
-	/*if err := generateBodyStructs(ps.APIDef, dir, "", langPython); err != nil {
-		log.Errorf("failed to generate python classes from request body:%v", err)
+	if err := generateClassFromBodies(getAllResources(ps.APIDef, true), dir); err != nil {
 		return err
-	}*/
+	}
 
 	// python classes
 	if err := generatePythonClasses(ps.APIDef.Types, dir); err != nil {
