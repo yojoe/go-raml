@@ -9,97 +9,15 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/golang"
 	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/python"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
 	errInvalidLang = errors.New("invalid language")
 )
-
-// global variables
-// it is needed for libraries support
-var (
-	// root import path
-	globRootImportPath string
-
-	// global value of API definition
-	globAPIDef *raml.APIDefinition
-)
-
-// base server definition
-type server struct {
-	apiDef       *raml.APIDefinition
-	Title        string
-	ResourcesDef []resource.ResourceInterface
-	PackageName  string // Name of the package this server resides in
-	APIDocsDir   string // apidocs directory. apidocs won't be generated if it is empty
-	withMain     bool
-}
-
-type goServer struct {
-	server
-	RootImportPath string
-}
-
-type pythonServer struct {
-	server
-}
-
-// generate all Go server files
-func (gs goServer) generate(dir string) error {
-	// helper package
-	gh := goramlHelper{
-		rootImportPath: gs.RootImportPath,
-		packageName:    "goraml",
-		packageDir:     "goraml",
-	}
-	if err := gh.generate(dir); err != nil {
-		return err
-	}
-
-	// generate all Type structs
-	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName, langGo); err != nil {
-		return err
-	}
-
-	// generate all request & response body
-	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
-		return err
-	}
-
-	// security scheme
-	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName); err != nil {
-		log.Errorf("failed to generate security scheme:%v", err)
-		return err
-	}
-
-	// genereate resources
-	rds, err := generateServerResources(gs.apiDef, dir, gs.PackageName)
-	if err != nil {
-		return err
-	}
-	gs.ResourcesDef = rds
-
-	// libraries
-	if err := generateLibraries(gs.apiDef.Libraries, dir); err != nil {
-		return err
-	}
-
-	// generate main
-	if gs.withMain {
-		// HTML front page
-		if err := commons.GenerateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
-			return err
-		}
-		// main file
-		return commons.GenerateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(dir, "main.go"), true)
-	}
-
-	return nil
-}
 
 // GenerateServer generates API server files
 func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
@@ -110,30 +28,18 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		return err
 	}
 
-	// global variables
-	globAPIDef = apiDef
-	globRootImportPath = rootImportPath
-
 	// create directory if needed
 	if err := commons.CheckCreateDir(dir); err != nil {
 		return err
 	}
 
-	// create base server
-	sd := server{
-		PackageName: packageName,
-		Title:       apiDef.Title,
-		apiDef:      apiDef,
-		APIDocsDir:  apiDocsDir,
-		withMain:    generateMain,
-	}
 	switch lang {
 	case langGo:
 		if rootImportPath == "" {
 			return fmt.Errorf("invalid import path = empty")
 		}
-		gs := goServer{server: sd, RootImportPath: rootImportPath}
-		err = gs.generate(dir)
+		gs := golang.NewServer(apiDef, packageName, apiDocsDir, rootImportPath, generateMain)
+		err = gs.Generate(dir)
 	case langPython:
 		ps := python.Server{
 			APIDef:     apiDef,
@@ -157,15 +63,15 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		return err
 	}
 
-	if sd.APIDocsDir == "" {
+	if apiDocsDir == "" {
 		return nil
 	}
 
 	if lang == langNim {
-		sd.APIDocsDir = "public/" + sd.APIDocsDir
+		apiDocsDir = "public/" + apiDocsDir
 	}
 
-	log.Infof("Generating API Docs to %v", sd.APIDocsDir)
+	log.Infof("Generating API Docs to %v", apiDocsDir)
 
-	return apidocs.Generate(ramlBytes, filepath.Join(dir, sd.APIDocsDir))
+	return apidocs.Generate(ramlBytes, filepath.Join(dir, apiDocsDir))
 }

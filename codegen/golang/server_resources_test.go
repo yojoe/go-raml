@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"io/ioutil"
@@ -22,7 +22,7 @@ func TestResource(t *testing.T) {
 		apiDef := new(raml.APIDefinition)
 
 		Convey("simple resource", func() {
-			err := raml.ParseFile("./fixtures/server_resources/deliveries.raml", apiDef)
+			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main")
@@ -32,7 +32,7 @@ func TestResource(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server_resources/deliveries_if.txt")
+			tmpl, err := testLoadFile("../fixtures/server_resources/deliveries_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -40,13 +40,13 @@ func TestResource(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "deliveries_api.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/server_resources/deliveries_api.txt")
+			tmpl, err = testLoadFile("../fixtures/server_resources/deliveries_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})
 
 		Convey("resource with request body", func() {
-			err := raml.ParseFile("./fixtures/server_resources/usergroups.raml", apiDef)
+			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			_, err = generateServerResources(apiDef, targetdir, "main")
@@ -56,7 +56,7 @@ func TestResource(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server_resources/users_api.txt")
+			tmpl, err := testLoadFile("../fixtures/server_resources/users_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -64,7 +64,7 @@ func TestResource(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/server_resources/users_if.txt")
+			tmpl, err = testLoadFile("../fixtures/server_resources/users_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 

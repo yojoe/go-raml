@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"fmt"
@@ -172,4 +172,55 @@ func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 		mwr = packageName + "." + mwr
 	}
 	return mwr, nil
+}
+
+// create server resource's method
+func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName, lang string) resource.MethodInterface {
+
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
+
+	// security scheme
+	if len(m.SecuredBy) > 0 {
+		method.SecuredBy = m.SecuredBy
+	} else if sb := security.FindResourceSecuredBy(r); len(sb) > 0 {
+		method.SecuredBy = sb
+	} else {
+		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
+	}
+
+	gm := goServerMethod{
+		Method: &method,
+	}
+	gm.setup(apiDef, r, rd, methodName)
+	return gm
+}
+
+// setBodyName set name of method's request/response body.
+//
+// Rules:
+//	- use bodies.Type if not empty and not `object`
+//	- use bodies.ApplicationJSON.Type if not empty and not `object`
+//	- use prefix+suffix if:
+//		- not meet previous rules
+//		- previous rules produces JSON string
+func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
+	var tipe string
+	prefix = commons.NormalizeURITitle(prefix)
+
+	if len(bodies.Type) > 0 && bodies.Type != "object" {
+		tipe = convertToGoType(bodies.Type)
+	} else if bodies.ApplicationJSON != nil {
+		if bodies.ApplicationJSON.Type != "" && bodies.ApplicationJSON.Type != "object" {
+			tipe = convertToGoType(bodies.ApplicationJSON.Type)
+		} else {
+			tipe = prefix + suffix
+		}
+	}
+
+	if commons.IsJSONString(tipe) {
+		tipe = prefix + suffix
+	}
+
+	return tipe
 }

@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"fmt"
@@ -11,21 +11,29 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+const (
+	langGo = "go"
+)
+
 type goClient struct {
-	clientDef
+	apiDef         *raml.APIDefinition
+	Name           string
+	BaseURI        string
 	libraries      map[string]*raml.Library
 	PackageName    string
 	RootImportPath string
 	Services       map[string]*ClientService
 }
 
-func newGoClient(cd clientDef, apiDef *raml.APIDefinition, packageName, rootImportPath string) (goClient, error) {
+func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath string) (goClient, error) {
 	// rootImportPath only needed if we use libraries
 	if rootImportPath == "" && len(apiDef.Libraries) > 0 {
 		return goClient{}, fmt.Errorf("--import-path can't be empty when we use libraries")
 	}
 
 	globRootImportPath = rootImportPath
+	globAPIDef = apiDef
+
 	services := map[string]*ClientService{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
@@ -37,17 +45,24 @@ func newGoClient(cd clientDef, apiDef *raml.APIDefinition, packageName, rootImpo
 			Methods:      rd.Methods,
 		}
 	}
-	return goClient{
-		clientDef:      cd,
+	client := goClient{
+		apiDef:         apiDef,
+		Name:           commons.NormalizeURI(apiDef.Title),
+		BaseURI:        apiDef.BaseURI,
 		libraries:      apiDef.Libraries,
 		PackageName:    packageName,
 		RootImportPath: rootImportPath,
 		Services:       services,
-	}, nil
+	}
+
+	if strings.Index(client.BaseURI, "{version}") > 0 {
+		client.BaseURI = strings.Replace(client.BaseURI, "{version}", apiDef.Version, -1)
+	}
+	return client, nil
 }
 
 // generate Go client files
-func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
+func (gc goClient) Generate(dir string) error {
 	// helper package
 	gh := goramlHelper{
 		packageName: gc.PackageName,
@@ -58,12 +73,12 @@ func (gc goClient) generate(apiDef *raml.APIDefinition, dir string) error {
 	}
 
 	// generate struct
-	if err := generateStructs(apiDef.Types, dir, gc.PackageName, langGo); err != nil {
+	if err := generateStructs(gc.apiDef.Types, dir, gc.PackageName, langGo); err != nil {
 		return err
 	}
 
 	// generate strucs from bodies
-	if err := generateBodyStructs(apiDef, dir, gc.PackageName, langGo); err != nil {
+	if err := generateBodyStructs(gc.apiDef, dir, gc.PackageName, langGo); err != nil {
 		return err
 	}
 

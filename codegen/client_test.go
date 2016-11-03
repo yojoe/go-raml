@@ -45,3 +45,8 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		})
 	})
 }
+
+func testLoadFile(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	return string(b), err
+}

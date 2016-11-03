@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"io/ioutil"
@@ -13,7 +13,7 @@ import (
 func TestGenerateStructFromRaml(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("./fixtures/struct/struct.raml", apiDef)
+		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 		So(err, ShouldBeNil)
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
@@ -26,7 +26,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "EnumCity.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/struct/enumcity.txt")
+			tmpl, err := testLoadFile("../fixtures/struct/enumcity.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -35,7 +35,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "animal.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/animal.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/animal.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -44,7 +44,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "SingleInheritance.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/singleinheritance.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/singleinheritance.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -53,7 +53,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "MultipleInheritance.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/multipleinheritance.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/multipleinheritance.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -62,7 +62,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfCats.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/arrayofcats.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/arrayofcats.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -71,7 +71,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "BidimensionalArrayOfCats.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/bidimensionalarrayofcats.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/bidimensionalarrayofcats.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -80,7 +80,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "petshop.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/petshop.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/petshop.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -89,7 +89,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "Pet.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/Pet.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/Pet.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -98,7 +98,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfPets.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/ArrayOfPets.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/ArrayOfPets.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -107,7 +107,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "Specialization.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/Specialization.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/Specialization.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -116,7 +116,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "EnumString.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/enumstring.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/enumstring.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -125,7 +125,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "ValidationString.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/ValidationString.txt")
+			tmpl, err = testLoadFile("../fixtures/struct/ValidationString.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

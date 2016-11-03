@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"io/ioutil"
@@ -13,13 +13,19 @@ import (
 
 func TestGoLibrary(t *testing.T) {
 	Convey("Library usage in server", t, func() {
+		var apiDef raml.APIDefinition
+
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateServer("./fixtures/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/ramlcode", true)
+		err = raml.ParseFile("../fixtures/libraries/api.raml", &apiDef)
 		So(err, ShouldBeNil)
 
-		rootFixture := "./fixtures/libraries/go_server"
+		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true)
+		err = server.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "../fixtures/libraries/go_server"
 		checks := []struct {
 			Result   string
 			Expected string
@@ -49,13 +55,16 @@ func TestGoLibrary(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		apiDef := new(raml.APIDefinition)
-		err = raml.ParseFile("./fixtures/libraries/api.raml", apiDef)
+		err = raml.ParseFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		err = GenerateClient(apiDef, targetDir, "theclient", langGo, "examples.com/theclient")
+		client, err := NewClient(apiDef, "theclient", "examples.com/theclient")
 		So(err, ShouldBeNil)
 
-		rootFixture := "./fixtures/libraries/go_client"
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "../fixtures/libraries/go_client"
 		checks := []struct {
 			Result   string
 			Expected string
@@ -87,10 +96,16 @@ func TestGoLibrary(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("server", func() {
-			err = GenerateServer("./fixtures/raml-examples/libraries/api.raml", targetDir, "main", "go", "apidocs", "examples.com/libro", true)
+			var apiDef raml.APIDefinition
+
+			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/libraries/raml-examples/go_server"
+			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true)
+			err = server.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "../fixtures/libraries/raml-examples/go_server"
 			checks := []struct {
 				Result   string
 				Expected string
@@ -112,13 +127,17 @@ func TestGoLibrary(t *testing.T) {
 
 		Convey("client", func() {
 			var apiDef raml.APIDefinition
-			err = raml.ParseFile("./fixtures/raml-examples/libraries/api.raml", &apiDef)
+
+			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			err = GenerateClient(&apiDef, targetDir, "client", langGo, "examples.com/libro")
+			client, err := NewClient(&apiDef, "client", "examples.com/libro")
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/libraries/raml-examples/go_client"
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "../fixtures/libraries/raml-examples/go_client"
 			checks := []struct {
 				Result   string
 				Expected string

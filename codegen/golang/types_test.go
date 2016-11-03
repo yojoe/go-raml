@@ -1,4 +1,4 @@
-package codegen
+package golang
 
 import (
 	"testing"
@@ -8,6 +8,7 @@ import (
 
 func TestTypeConversion(t *testing.T) {
 	Convey("Test Type Conversion", t, func() {
+		globGoramlPkgDir = "goraml"
 		Convey("Type conversion", func() {
 			So(convertToGoType("string"), ShouldEqual, "string")
 			So(convertToGoType("number"), ShouldEqual, "float64")
