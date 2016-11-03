@@ -21,7 +21,7 @@ func TestGenerateClassFromBody(t *testing.T) {
 
 		Convey("python class from request/response bodies", func() {
 			rs := getAllResources(apiDef, true)
-			err = generateClassFromBodies(rs, targetDir)
+			err = generateClassesFromBodies(rs, targetDir)
 			So(err, ShouldBeNil)
 
 			// req body

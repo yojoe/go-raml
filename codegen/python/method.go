@@ -13,7 +13,7 @@ import (
 // python server method
 type serverMethod struct {
 	*resource.Method
-	MiddlewaresArr []pythonMiddleware
+	MiddlewaresArr []middleware
 }
 
 // setup sets all needed variables
@@ -45,12 +45,12 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 }
 
 // defines a python client lib method
-type pythonClientMethod struct {
+type clientMethod struct {
 	resource.Method
 	PRArgs string // python requests's args
 }
 
-func newPythonClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
@@ -59,12 +59,12 @@ func newPythonClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Meth
 
 	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
 
-	pcm := pythonClientMethod{Method: method}
+	pcm := clientMethod{Method: method}
 	pcm.setup()
 	return pcm, nil
 }
 
-func (pcm *pythonClientMethod) setup() {
+func (pcm *clientMethod) setup() {
 	var prArgs string
 	params := []string{"self"}
 

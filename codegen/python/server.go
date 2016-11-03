@@ -10,7 +10,7 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// base server definition
+// Server represents a python server
 type Server struct {
 	APIDef       *raml.APIDefinition
 	Title        string
@@ -19,7 +19,7 @@ type Server struct {
 	APIDocsDir   string
 }
 
-// generate all python server files
+// Generate generates all python server files
 func (ps Server) Generate(dir string) error {
 
 	globAPIDef = ps.APIDef
@@ -30,12 +30,12 @@ func (ps Server) Generate(dir string) error {
 	}
 
 	// generate request body
-	if err := generateClassFromBodies(getAllResources(ps.APIDef, true), dir); err != nil {
+	if err := generateClassesFromBodies(getAllResources(ps.APIDef, true), dir); err != nil {
 		return err
 	}
 
 	// python classes
-	if err := generatePythonClasses(ps.APIDef.Types, dir); err != nil {
+	if err := generateClasses(ps.APIDef.Types, dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
 		return err
 	}
@@ -54,7 +54,7 @@ func (ps Server) Generate(dir string) error {
 	ps.ResourcesDef = rds
 
 	// libraries
-	if err := generatePythonLibraries(ps.APIDef.Libraries, dir); err != nil {
+	if err := generateLibraries(ps.APIDef.Libraries, dir); err != nil {
 		return err
 	}
 

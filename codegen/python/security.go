@@ -42,20 +42,20 @@ func (ps *pythonSecurity) generate(dir string) error {
 	return commons.GenerateFile(ps, "./templates/oauth2_middleware_python.tmpl", "oauth2_middleware_python", fileName, false)
 }
 
-type pythonMiddleware struct {
+type middleware struct {
 	ImportPath string
 	Name       string
 	Args       string
 }
 
-func newPythonOauth2Middleware(ss raml.DefinitionChoice) (pythonMiddleware, error) {
+func newPythonOauth2Middleware(ss raml.DefinitionChoice) (middleware, error) {
 	quotedScopes, err := security.GetQuotedScopes(ss)
 	if err != nil {
-		return pythonMiddleware{}, err
+		return middleware{}, err
 	}
 
 	importPath, name := pythonOauth2libImportPath(ss.Name)
-	return pythonMiddleware{
+	return middleware{
 		ImportPath: importPath,
 		Name:       name,
 		Args:       strings.Join(quotedScopes, ", "),
@@ -64,5 +64,5 @@ func newPythonOauth2Middleware(ss raml.DefinitionChoice) (pythonMiddleware, erro
 
 // get library import path from a type
 func pythonOauth2libImportPath(typ string) (string, string) {
-	return pythonLibImportPath(security.SecuritySchemeName(typ), "oauth2_")
+	return libImportPath(security.SecuritySchemeName(typ), "oauth2_")
 }

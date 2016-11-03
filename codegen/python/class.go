@@ -14,7 +14,7 @@ import (
 )
 
 // pythons class's field
-type pythonField struct {
+type field struct {
 	Name        string
 	Type        string
 	Required    bool
@@ -25,25 +25,26 @@ type pythonField struct {
 	validators  map[string][]string // array of validators, only used to build `Validators` field
 }
 
-type pythonClass struct {
+// class defines a python class
+type class struct {
 	T           raml.Type
 	Name        string
 	Description []string
-	Fields      map[string]pythonField
+	Fields      map[string]field
 }
 
 // create a python class representations
-func newPythonClass(name, description string, properties map[string]interface{}) pythonClass {
-	pc := pythonClass{
+func newClass(name, description string, properties map[string]interface{}) class {
+	pc := class{
 		Name:        name,
 		Description: commons.ParseDescription(description),
-		Fields:      map[string]pythonField{},
+		Fields:      map[string]field{},
 	}
 
 	// generate fields
 	for k, v := range properties {
 		p := raml.ToProperty(k, v)
-		field := pythonField{
+		field := field{
 			Name:     p.Name,
 			Required: p.Required,
 		}
@@ -60,22 +61,24 @@ func newPythonClass(name, description string, properties map[string]interface{})
 	return pc
 }
 
-func newPythonClassFromType(T raml.Type, name string) pythonClass {
-	pc := newPythonClass(name, T.Description, T.Properties)
+func newClassFromType(T raml.Type, name string) class {
+	pc := newClass(name, T.Description, T.Properties)
 	pc.T = T
 	return pc
 }
 
-func (pc *pythonClass) generate(dir string) error {
+// generate a python class file
+func (pc *class) generate(dir string) error {
 	fileName := filepath.Join(dir, pc.Name+".py")
 	return commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
 }
 
-func (pf *pythonField) addValidator(name, arg string, val interface{}) {
+func (pf *field) addValidator(name, arg string, val interface{}) {
 	pf.validators[name] = append(pf.validators[name], fmt.Sprintf("%v=%v", arg, val))
 }
 
-func generateClassFromBodies(rs []pythonResource, dir string) error {
+// generate all classes from all  methods request/response bodies
+func generateClassesFromBodies(rs []pythonResource, dir string) error {
 	for _, r := range rs {
 		for _, mi := range r.Methods {
 			m := mi.(serverMethod)
@@ -87,10 +90,28 @@ func generateClassFromBodies(rs []pythonResource, dir string) error {
 	return nil
 }
 
+// generate classes from a method
+//
+// TODO:
+// we currently camel case instead of snake case because of mistake in previous code
+// and we might need to maintain backward compatibility. Fix this!
 func generateClassesFromMethod(m serverMethod, dir string) error {
+	// request body
 	if commons.HasJSONBody(&m.Bodies) {
 		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-		class := newPythonClass(name, "", m.Bodies.ApplicationJSON.Properties)
+		class := newClass(name, "", m.Bodies.ApplicationJSON.Properties)
+		if err := class.generate(dir); err != nil {
+			return err
+		}
+	}
+
+	// response body
+	for _, r := range m.Responses {
+		if !commons.HasJSONBody(&r.Bodies) {
+			continue
+		}
+		name := inflect.UpperCamelCase(m.MethodName + "RespBody")
+		class := newClass(name, "", r.Bodies.ApplicationJSON.Properties)
 		if err := class.generate(dir); err != nil {
 			return err
 		}
@@ -99,7 +120,7 @@ func generateClassesFromMethod(m serverMethod, dir string) error {
 }
 
 // build validators string
-func (pf *pythonField) buildValidators(p raml.Property) {
+func (pf *field) buildValidators(p raml.Property) {
 	pf.validators = map[string][]string{}
 	// string
 	if p.MinLength != nil {
@@ -141,7 +162,7 @@ func (pf *pythonField) buildValidators(p raml.Property) {
 	pf.buildValidatorsString()
 }
 
-func (pf *pythonField) buildValidatorsString() {
+func (pf *field) buildValidatorsString() {
 	var v []string
 	if pf.Validators != "" {
 		return
@@ -157,13 +178,13 @@ func (pf *pythonField) buildValidatorsString() {
 }
 
 // return list of import statements
-func (pc pythonClass) Imports() []string {
+func (pc class) Imports() []string {
 	var imports []string
 
 	for _, v := range pc.Fields {
 		if v.isFormField {
 			if strings.Index(v.ramlType, ".") > 1 { // it is a library
-				importPath, name := pythonLibImportPath(v.ramlType, "")
+				importPath, name := libImportPath(v.ramlType, "")
 				imports = append(imports, "from "+importPath+" import "+name)
 			} else {
 				imports = append(imports, "from "+v.Type+" import "+v.Type)
@@ -175,7 +196,7 @@ func (pc pythonClass) Imports() []string {
 }
 
 // convert from raml Type to python wtforms type
-func (pf *pythonField) setType(t string) {
+func (pf *field) setType(t string) {
 	pf.ramlType = t
 	switch t {
 	case "string":
@@ -218,7 +239,7 @@ func (pf *pythonField) setType(t string) {
 }
 
 // WTFType return wtforms type of a field
-func (pf pythonField) WTFType() string {
+func (pf field) WTFType() string {
 	switch {
 	case pf.isList && pf.isFormField:
 		return fmt.Sprintf("FieldList(FormField(%v))", pf.Type)
@@ -232,9 +253,9 @@ func (pf pythonField) WTFType() string {
 }
 
 // generate all python classes from an RAML document
-func generatePythonClasses(types map[string]raml.Type, dir string) error {
+func generateClasses(types map[string]raml.Type, dir string) error {
 	for k, t := range types {
-		pc := newPythonClassFromType(t, k)
+		pc := newClassFromType(t, k)
 		if err := pc.generate(dir); err != nil {
 			return err
 		}

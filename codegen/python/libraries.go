@@ -10,14 +10,14 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-type pythonLibrary struct {
+type library struct {
 	*raml.Library
 	baseDir string
 	dir     string
 }
 
-func newPythonLibrary(lib *raml.Library, baseDir string) *pythonLibrary {
-	pl := pythonLibrary{
+func newLibrary(lib *raml.Library, baseDir string) *library {
+	pl := library{
 		Library: lib,
 		baseDir: baseDir,
 	}
@@ -30,9 +30,9 @@ func newPythonLibrary(lib *raml.Library, baseDir string) *pythonLibrary {
 }
 
 // generate code of all libraries
-func generatePythonLibraries(libraries map[string]*raml.Library, baseDir string) error {
+func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
 	for _, ramlLib := range libraries {
-		pl := newPythonLibrary(ramlLib, baseDir)
+		pl := newLibrary(ramlLib, baseDir)
 
 		if err := pl.generate(); err != nil {
 			return err
@@ -42,7 +42,7 @@ func generatePythonLibraries(libraries map[string]*raml.Library, baseDir string)
 }
 
 // generate code of this library
-func (l *pythonLibrary) generate() error {
+func (l *library) generate() error {
 	// create directory if needed
 	if err := commons.CheckCreateDir(l.dir); err != nil {
 		return err
@@ -64,7 +64,7 @@ func (l *pythonLibrary) generate() error {
 	}
 
 	// python classes
-	if err := generatePythonClasses(l.Types, l.dir); err != nil {
+	if err := generateClasses(l.Types, l.dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
 		return err
 	}
@@ -76,7 +76,7 @@ func (l *pythonLibrary) generate() error {
 
 	// included libraries
 	for _, ramlLib := range l.Libraries {
-		childLib := newPythonLibrary(ramlLib, l.baseDir)
+		childLib := newLibrary(ramlLib, l.baseDir)
 		if err := childLib.generate(); err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func (l *pythonLibrary) generate() error {
 	return nil
 }
 
-func pythonLibImportPath(typ, prefix string) (string, string) {
+func libImportPath(typ, prefix string) (string, string) {
 	// library use '.'
 	if strings.Index(typ, ".") < 0 {
 		return prefix + typ, prefix + typ

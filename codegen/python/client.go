@@ -18,6 +18,7 @@ var (
 	globAPIDef *raml.APIDefinition
 )
 
+// Client represents a python client
 type Client struct {
 	Name     string
 	APIDef   *raml.APIDefinition
@@ -25,11 +26,12 @@ type Client struct {
 	Services map[string]*service
 }
 
+// NewClient creates a python Client
 func NewClient(apiDef *raml.APIDefinition) Client {
 	services := map[string]*service{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
-		rd.GenerateMethods(&v, "python", newServerMethod, newPythonClientMethod)
+		rd.GenerateMethods(&v, "python", newServerMethod, newClientMethod)
 		services[k] = &service{
 			rootEndpoint: k,
 			Methods:      rd.Methods,
@@ -52,7 +54,7 @@ func generateEmptyInitPy(dir string) error {
 	return commons.GenerateFile(nil, "./templates/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
 }
 
-// generate python lib files
+// Generate generates python client library files
 func (c Client) Generate(dir string) error {
 	globAPIDef = c.APIDef
 	// generate empty __init__.py

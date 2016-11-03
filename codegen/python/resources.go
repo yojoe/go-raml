@@ -15,10 +15,10 @@ const (
 
 type pythonResource struct {
 	*resource.Resource
-	MiddlewaresArr []pythonMiddleware
+	MiddlewaresArr []middleware
 }
 
-func (pr *pythonResource) addMiddleware(mwr pythonMiddleware) {
+func (pr *pythonResource) addMiddleware(mwr middleware) {
 	// check if already exist
 	for _, v := range pr.MiddlewaresArr {
 		if v.Name == mwr.Name {
@@ -35,7 +35,7 @@ func newResource(name string, apiDef *raml.APIDefinition, isServer bool) pythonR
 		Resource: &rd,
 	}
 	res := apiDef.Resources[name]
-	r.GenerateMethods(&res, "python", newServerMethod, newPythonClientMethod)
+	r.GenerateMethods(&res, "python", newServerMethod, newClientMethod)
 	return r
 }
 
@@ -52,7 +52,7 @@ func (pr *pythonResource) setMiddlewares() {
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
-	pr.GenerateMethods(r, "python", newServerMethod, newPythonClientMethod)
+	pr.GenerateMethods(r, "python", newServerMethod, newClientMethod)
 	pr.setMiddlewares()
 	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
 	return commons.GenerateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
