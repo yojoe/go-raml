@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-import libraries.security.oauth2_Dropbox as oauth2_Dropbox
 
+import libraries.security.oauth2_Dropbox as oauth2_Dropbox
 
 
 configs_api = Blueprint('configs_api', __name__)

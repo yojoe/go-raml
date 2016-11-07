@@ -1,12 +1,10 @@
 {{- define "resource_python_template" -}}
 {{- $apiName := .Name -}}
 from flask import Blueprint, jsonify, request
-{{ range $k, $v := .MiddlewaresArr -}}
-import {{$v.ImportPath}} as {{$v.Name}}
-{{ end }}
+{{ range $k, $v := .MiddlewaresArr}}
+import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
 {{ range $k, $v := .ReqBodies }}
-from {{$v}} import {{$v}}
-{{ end }}
+from {{$v}} import {{$v}}{{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}

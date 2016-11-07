@@ -16,7 +16,7 @@ type method struct {
 }
 
 func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName, lang string) (cr.MethodInterface, error) {
+	methodName string) (cr.MethodInterface, error) {
 
 	rm := cr.NewMethod(r, rd, m, methodName, setBodyName)
 
@@ -31,8 +31,8 @@ func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
 }
 
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName, lang string) cr.MethodInterface {
-	mi, err := newMethod(r, rd, m, methodName, lang)
+	methodName string) cr.MethodInterface {
+	mi, err := newMethod(r, rd, m, methodName)
 	if err != nil {
 		log.Errorf("newServerMethod unexpected error:%v", err)
 	}

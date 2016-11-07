@@ -16,6 +16,16 @@ type Server struct {
 	Resources  []resource
 }
 
+// NewServer creates a new Nim server
+func NewServer(apiDef *raml.APIDefinition, apiDocsDir, dir string) Server {
+	return Server{
+		Title:      apiDef.Title,
+		APIDef:     apiDef,
+		APIDocsDir: apiDocsDir,
+		Dir:        dir,
+	}
+}
+
 // Generate generates all Nim server files
 func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef, true)
