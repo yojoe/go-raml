@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: Struct API Test
+mediaType: application/json
+types:
+  Animal:
+    description: |
+      Animal represent animal object.
+      It contains field that construct animal
+      such as : name, colours, and cities.
+    type: object
+    properties:
+      name:
+        type: string
+        capnpFieldNumber: 1
+      colours:
+        type: string[]
+        capnpFieldNumber: 0

@@ -1,0 +1,10 @@
+{{define "struct_capnp" -}}
+{{.ImportLang}}
+{{.ID}};
+{{range $k, $v := .Annotations}}
+{{$v}};{{end}}
+struct {{.Name}} {
+{{- range $k, $v := .OrderedFields }}
+  {{$v.Name}} @{{$v.Num}} :{{$v.Type}};{{end}}
+}
+{{end}}
