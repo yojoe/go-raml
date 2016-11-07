@@ -10,13 +10,13 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-type goServerMethod struct {
+type serverMethod struct {
 	*resource.Method
 	Middlewares string
 }
 
 // setup go server method, initializes all needed variables
-func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
+func (gm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
 	// set method name
 	name := commons.NormalizeURI(gm.Endpoint)
 	if len(gm.DisplayName) > 0 {
@@ -47,7 +47,7 @@ func (gm *goServerMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd
 }
 
 // return all libs imported by this method
-func (gm goServerMethod) libImported(rootImportPath string) map[string]struct{} {
+func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
@@ -61,12 +61,12 @@ func (gm goServerMethod) libImported(rootImportPath string) map[string]struct{} 
 	return libs
 }
 
-type goClientMethod struct {
+type clientMethod struct {
 	*resource.Method
 }
 
 // create client resource's method
-func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
@@ -75,12 +75,12 @@ func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, 
 
 	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
 
-	gcm := goClientMethod{Method: &method}
+	gcm := clientMethod{Method: &method}
 	err := gcm.setup(methodName)
 	return gcm, err
 }
 
-func (gcm *goClientMethod) setup(methodName string) error {
+func (gcm *clientMethod) setup(methodName string) error {
 	// build func/method params
 	buildParams := func(r *raml.Resource, bodyType string) (string, error) {
 		paramsStr := strings.Join(resource.GetResourceParams(r), ",")
@@ -125,7 +125,7 @@ func (gcm *goClientMethod) setup(methodName string) error {
 }
 
 // ReturnTypes returns all types returned by this method
-func (gcm goClientMethod) ReturnTypes() string {
+func (gcm clientMethod) ReturnTypes() string {
 	var types []string
 	if gcm.RespBody != "" {
 		types = append(types, gcm.RespBody)
@@ -135,7 +135,7 @@ func (gcm goClientMethod) ReturnTypes() string {
 	return fmt.Sprintf("(%v)", strings.Join(types, ","))
 }
 
-func (gcm goClientMethod) libImported(rootImportPath string) map[string]struct{} {
+func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
@@ -176,7 +176,7 @@ func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 
 // create server resource's method
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName, lang string) resource.MethodInterface {
+	methodName string) resource.MethodInterface {
 
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
@@ -189,7 +189,7 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.
 		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
 	}
 
-	gm := goServerMethod{
+	gm := serverMethod{
 		Method: &method,
 	}
 	gm.setup(apiDef, r, rd, methodName)

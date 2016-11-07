@@ -50,7 +50,7 @@ type clientMethod struct {
 	PRArgs string // python requests's args
 }
 
-func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName, lang string) (resource.MethodInterface, error) {
+func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
@@ -87,7 +87,7 @@ func (pcm *clientMethod) setup() {
 
 // create server resource's method
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName, lang string) resource.MethodInterface {
+	methodName string) resource.MethodInterface {
 
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 

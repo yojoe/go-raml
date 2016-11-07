@@ -13,6 +13,14 @@ type Client struct {
 	Dir    string
 }
 
+// NewClient creates a new Nim client
+func NewClient(apiDef *raml.APIDefinition, dir string) Client {
+	return Client{
+		APIDef: apiDef,
+		Dir:    dir,
+	}
+}
+
 // Generate generates all Nim client files
 func (c *Client) Generate() error {
 	rs := getAllResources(c.APIDef, false)

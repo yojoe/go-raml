@@ -10,10 +10,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-const (
-	langPython = "python"
-)
-
 var (
 	globAPIDef *raml.APIDefinition
 )

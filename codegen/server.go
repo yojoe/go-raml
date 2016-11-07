@@ -41,20 +41,10 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		gs := golang.NewServer(apiDef, packageName, apiDocsDir, rootImportPath, generateMain)
 		err = gs.Generate(dir)
 	case langPython:
-		ps := python.Server{
-			APIDef:     apiDef,
-			Title:      apiDef.Title,
-			APIDocsDir: apiDocsDir,
-			WithMain:   generateMain,
-		}
+		ps := python.NewServer(apiDef, apiDocsDir, generateMain)
 		err = ps.Generate(dir)
 	case langNim:
-		ns := nim.Server{
-			Title:      apiDef.Title,
-			APIDef:     apiDef,
-			APIDocsDir: apiDocsDir,
-			Dir:        dir,
-		}
+		ns := nim.NewServer(apiDef, apiDocsDir, dir)
 		err = ns.Generate()
 	default:
 		return errInvalidLang

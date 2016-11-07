@@ -54,7 +54,7 @@ func (l *goLibrary) generate() error {
 	}
 
 	// generate all Type structs
-	if err := generateStructs(l.Types, l.dir, l.PackageName, langGo); err != nil {
+	if err := generateStructs(l.Types, l.dir, l.PackageName); err != nil {
 		return err
 	}
 

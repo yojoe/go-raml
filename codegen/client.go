@@ -26,11 +26,9 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 		pc := python.NewClient(apiDef)
 		return pc.Generate(dir)
 	case langNim:
-		nc := nim.Client{
-			APIDef: apiDef,
-			Dir:    dir,
-		}
+		nc := nim.NewClient(apiDef, dir)
 		return nc.Generate()
+	default:
+		return errInvalidLang
 	}
-	return errInvalidLang
 }

@@ -210,6 +210,16 @@ func CheckCreateDir(dir string) error {
 	return nil
 }
 
+// IsStrInArray check if a string `str` is part of array `arr`
+func IsStrInArray(arr []string, str string) bool {
+	for _, s := range arr {
+		if str == s {
+			return true
+		}
+	}
+	return false
+}
+
 // replace non alphanumerics with "_"
 func replaceNonAlphanumerics(s string) string {
 	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")

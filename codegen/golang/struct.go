@@ -14,7 +14,6 @@ const (
 	structTemplateLocation         = "./templates/struct.tmpl"
 	inputValidatorTemplateLocation = "./templates/struct_input_validator.tmpl"
 	inputValidatorFileResult       = "struct_input_validator.go"
-	maxStringLen                   = 2147483647
 )
 
 // FieldDef defines a field of a struct
@@ -119,7 +118,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 }
 
 // create struct definition from RAML Type node
-func newStructDefFromType(t raml.Type, sName, packageName, lang string) structDef {
+func newStructDefFromType(t raml.Type, sName, packageName string) structDef {
 	sd := newStructDef(sName, packageName, t.Description, t.Properties)
 	sd.T = t
 
@@ -153,7 +152,7 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 	if body.ApplicationJSON.Type != "" {
 		var t raml.Type
 		if err := json.Unmarshal([]byte(body.ApplicationJSON.Type), &t); err == nil {
-			return newStructDefFromType(t, structName, packageName, langGo)
+			return newStructDefFromType(t, structName, packageName)
 		}
 	}
 	return newStructDef(structName, packageName, "", body.ApplicationJSON.Properties)
@@ -166,9 +165,9 @@ func (sd structDef) generate(dir string) error {
 }
 
 // generate all structs from an RAML api definition
-func generateStructs(types map[string]raml.Type, dir, packageName, lang string) error {
+func generateStructs(types map[string]raml.Type, dir, packageName string) error {
 	for name, t := range types {
-		sd := newStructDefFromType(t, name, packageName, lang)
+		sd := newStructDefFromType(t, name, packageName)
 		if err := sd.generate(dir); err != nil {
 			return err
 		}

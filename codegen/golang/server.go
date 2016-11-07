@@ -31,6 +31,7 @@ type Server struct {
 	RootImportPath string
 }
 
+// NewServer creates a new Golang server
 func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string, withMain bool) Server {
 	// global variables
 	globAPIDef = apiDef
@@ -46,7 +47,7 @@ func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPa
 	}
 }
 
-// generate all Go server files
+// Generate generates all Go server files
 func (gs Server) Generate(dir string) error {
 	// helper package
 	gh := goramlHelper{
@@ -59,7 +60,7 @@ func (gs Server) Generate(dir string) error {
 	}
 
 	// generate all Type structs
-	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName, langGo); err != nil {
+	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName); err != nil {
 		return err
 	}
 

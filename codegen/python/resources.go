@@ -63,10 +63,11 @@ func (pr pythonResource) ReqBodies() []string {
 	var reqs []string
 	for _, m := range pr.Methods {
 		pm := m.(serverMethod)
-		if pm.ReqBody != "" {
+		if pm.ReqBody != "" && !commons.IsStrInArray(reqs, pm.ReqBody) {
 			reqs = append(reqs, pm.ReqBody)
 		}
 	}
+	sort.Strings(reqs)
 	return reqs
 }
 

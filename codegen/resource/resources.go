@@ -13,10 +13,6 @@ var (
 	reResource = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
 )
 
-const (
-	maxCommentPerLine = 80
-)
-
 type ResourceInterface interface{}
 
 // Resource is Go code representation of a resource
@@ -39,11 +35,11 @@ func New(apiDef *raml.APIDefinition, endpoint, packageName string) Resource {
 	}
 }
 
-type ServerMethodConstructor func(*raml.APIDefinition, *raml.Resource, *Resource, *raml.Method, string, string) MethodInterface
-type ClientMethodConstructor func(*raml.Resource, *Resource, *raml.Method, string, string) (MethodInterface, error)
+type ServerMethodConstructor func(*raml.APIDefinition, *raml.Resource, *Resource, *raml.Method, string) MethodInterface
+type ClientMethodConstructor func(*raml.Resource, *Resource, *raml.Method, string) (MethodInterface, error)
 
 // add a method to resource definition
-func (rd *Resource) addMethod(r *raml.Resource, m *raml.Method, methodName, lang string,
+func (rd *Resource) addMethod(r *raml.Resource, m *raml.Method, methodName string,
 	smc ServerMethodConstructor, cmc ClientMethodConstructor) {
 	var im MethodInterface
 	var err error
@@ -53,9 +49,9 @@ func (rd *Resource) addMethod(r *raml.Resource, m *raml.Method, methodName, lang
 	}
 
 	if rd.IsServer {
-		im = smc(rd.APIDef, r, rd, m, methodName, lang)
+		im = smc(rd.APIDef, r, rd, m, methodName)
 	} else {
-		im, err = cmc(r, rd, m, methodName, lang)
+		im, err = cmc(r, rd, m, methodName)
 		if err != nil {
 			log.Errorf("client interface method error, err = %v", err)
 			return
@@ -66,12 +62,12 @@ func (rd *Resource) addMethod(r *raml.Resource, m *raml.Method, methodName, lang
 
 // GenerateMethods generates all methods of a resource recursively
 func (rd *Resource) GenerateMethods(r *raml.Resource, lang string, smc ServerMethodConstructor, cmc ClientMethodConstructor) {
-	rd.addMethod(r, r.Get, "Get", lang, smc, cmc)
-	rd.addMethod(r, r.Post, "Post", lang, smc, cmc)
-	rd.addMethod(r, r.Put, "Put", lang, smc, cmc)
-	rd.addMethod(r, r.Patch, "Patch", lang, smc, cmc)
-	rd.addMethod(r, r.Delete, "Delete", lang, smc, cmc)
-	rd.addMethod(r, r.Options, "Options", lang, smc, cmc)
+	rd.addMethod(r, r.Get, "Get", smc, cmc)
+	rd.addMethod(r, r.Post, "Post", smc, cmc)
+	rd.addMethod(r, r.Put, "Put", smc, cmc)
+	rd.addMethod(r, r.Patch, "Patch", smc, cmc)
+	rd.addMethod(r, r.Delete, "Delete", smc, cmc)
+	rd.addMethod(r, r.Options, "Options", smc, cmc)
 
 	for _, v := range r.Nested {
 		rd.GenerateMethods(v, lang, smc, cmc)

@@ -55,7 +55,7 @@ func (gr goResource) InterfaceImportPaths() []string {
 	}
 
 	for _, v := range gr.Methods {
-		gm := v.(goServerMethod)
+		gm := v.(serverMethod)
 
 		// if has middleware, we need to import middleware helper library
 		if len(gm.Middlewares) > 0 {
@@ -82,7 +82,7 @@ func (gr goResource) APILibImportPaths() []string {
 
 	// methods
 	for _, v := range gr.Methods {
-		gm := v.(goServerMethod)
+		gm := v.(serverMethod)
 		if gm.RespBody != "" || gm.ReqBody != "" {
 			ip["encoding/json"] = struct{}{}
 		}

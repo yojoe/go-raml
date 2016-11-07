@@ -19,6 +19,17 @@ type Server struct {
 	APIDocsDir   string
 }
 
+// NewServer creates a new python server
+func NewServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) Server {
+	return Server{
+		APIDef:     apiDef,
+		Title:      apiDef.Title,
+		APIDocsDir: apiDocsDir,
+		WithMain:   withMain,
+	}
+
+}
+
 // Generate generates all python server files
 func (ps Server) Generate(dir string) error {
 
