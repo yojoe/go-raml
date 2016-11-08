@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -21,8 +22,9 @@ type CapnpCommand struct {
 func (command *CapnpCommand) Execute() error {
 	var apiDef raml.APIDefinition
 
-	if command.Language != "go" {
-		return fmt.Errorf("canpnp generator only support Go")
+	command.Language = strings.ToLower(command.Language)
+	if command.Language != "go" && command.Language != "nim" && command.Language != "python" {
+		return fmt.Errorf("canpnp generator only support Go, Python, and Nim")
 	}
 
 	log.Debug("Generating capnp models")

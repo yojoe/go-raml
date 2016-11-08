@@ -42,7 +42,7 @@ func (e *enum) generate(dir string) error {
 func (e *enum) Imports() string {
 	switch e.lang {
 	case "go":
-		return `using Go = import "/go.capnp"`
+		return `using Go = import "/go.capnp";`
 	default:
 		return ""
 	}

@@ -3,6 +3,7 @@ package capnp
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -67,14 +68,32 @@ func (s *Struct) generateEnums(dir string) error {
 }
 
 func (s *Struct) Imports() []string {
+	imports := s.importsNonBuiltin()
 	switch s.lang {
 	case "go":
-		return s.goImports()
+		imports = append(imports, s.goImports()...)
 	default:
-		return []string{}
 	}
+	sort.Strings(imports)
+	return imports
 }
 
+func (s *Struct) importsNonBuiltin() []string {
+	imports := []string{}
+	// import non buitin types
+	for _, f := range s.Fields {
+		if typesRegistered(f.Type) {
+			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Type, f.Type))
+		}
+	}
+	// import enum
+	for _, f := range s.Fields {
+		if f.Enum != nil {
+			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
+		}
+	}
+	return imports
+}
 func (s *Struct) Annotations() []string {
 	switch s.lang {
 	case "go":

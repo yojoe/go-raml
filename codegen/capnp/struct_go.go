@@ -2,29 +2,19 @@ package capnp
 
 import (
 	"fmt"
+	"sort"
 )
 
+// schema for Go need additional data needed by Go compiler
+// go compilation : capnp compile -I$GOPATH/src/zombiezen.com/go/capnproto2/std   -ogo *.capnp
+
 func (s *Struct) goImports() []string {
-	imports := []string{`using Go = import "/go.capnp"`}
-
-	// import enum
-	for _, f := range s.Fields {
-		if f.Enum != nil {
-			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
-		}
-	}
-
-	// import non buitin types
-	for _, f := range s.Fields {
-		if typesRegistered(f.Type) {
-			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Type, f.Type))
-		}
-	}
-	return imports
+	return []string{`using Go = import "/go.capnp"`}
 }
 
 func (s *Struct) goAnnotations() []string {
-	annos := []string{fmt.Sprintf(`$Go.package("%v")`, s.pkg)}
+	pkg := []string{fmt.Sprintf(`$Go.package("%v")`, s.pkg)}
+	annos := []string{}
 	// import enums
 	for _, f := range s.Fields {
 		if f.Enum != nil {
@@ -33,5 +23,6 @@ func (s *Struct) goAnnotations() []string {
 	}
 	// import our own package
 	annos = append(annos, fmt.Sprintf(`$Go.import("%v")`, s.pkg))
-	return annos
+	sort.Strings(annos)
+	return append(pkg, annos...)
 }
