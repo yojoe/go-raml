@@ -1,0 +1,10 @@
+{{define "enum_capnp" -}}
+{{.Imports}};
+{{.ID}};
+{{range $k, $v := .Annotations}}
+{{$v}};{{end}}
+enum {{.Name}} {
+{{- range $k, $v := .Fields}}
+  {{$v.Name}} @{{$v.Num}};{{end}}
+}
+{{end}}

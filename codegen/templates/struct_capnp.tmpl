@@ -1,5 +1,6 @@
 {{define "struct_capnp" -}}
-{{.ImportLang}}
+{{- range $k, $v := .Imports}}
+{{$v}};{{end}}
 {{.ID}};
 {{range $k, $v := .Annotations}}
 {{$v}};{{end}}

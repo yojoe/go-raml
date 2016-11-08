@@ -9,12 +9,6 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-type field struct {
-	Name string
-	Type string
-	Num  int
-}
-
 type Struct struct {
 	ID            string
 	Name          string
@@ -31,25 +25,16 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	fields := make(map[string]field)
 
 	for k, v := range t.Properties {
-		prop := raml.ToProperty(k, v)
-		fd := field{
-			Name: prop.Name,
-			Type: toCapnpType(prop.Type, prop.CapnpType),
-			Num:  prop.CapnpFieldNumber,
-		}
-		fields[prop.Name] = fd
+		fd := newField(raml.ToProperty(k, v), lang, pkg)
+		fields[fd.Name] = fd
 	}
 
-	ID, err := getID()
-	if err != nil {
-		return Struct{}, err
-	}
 	s := Struct{
+		ID:          getID(),
 		Name:        name,
 		Fields:      fields,
 		Description: commons.ParseDescription(t.Description),
 		T:           t,
-		ID:          ID,
 		pkg:         pkg,
 		lang:        lang,
 	}
@@ -59,19 +44,45 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	return s, s.orderFields()
 }
 
+// Generate generates struct code
 func (s *Struct) Generate(dir string) error {
+	if err := s.generateEnums(dir); err != nil {
+		return err
+	}
 	filename := filepath.Join(dir, s.Name+".capnp")
 	return commons.GenerateFile(s, "./templates/struct_capnp.tmpl", "struct_capnp", filename, true)
-
 }
 
-func (s *Struct) ImportLang() string {
+// generate all enums contained in this struct
+func (s *Struct) generateEnums(dir string) error {
+	for _, f := range s.Fields {
+		if f.Enum == nil {
+			continue
+		}
+		if err := f.Enum.generate(dir); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Struct) Imports() []string {
 	switch s.lang {
 	case "go":
-		return `using Go = import "/go.capnp";`
+		return s.goImports()
 	default:
-		return ""
+		return []string{}
 	}
+}
+
+func (s *Struct) goImports() []string {
+	imports := []string{`using Go = import "/go.capnp"`}
+	for _, f := range s.Fields {
+		if f.Enum != nil {
+			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
+		}
+	}
+	return imports
 }
 
 func (s *Struct) Annotations() []string {
@@ -91,8 +102,13 @@ func (s *Struct) checkValidCapnp() error {
 }
 
 func (s *Struct) goAnnotations() []string {
-	pkg := fmt.Sprintf(`$Go.package("%v")`, s.pkg)
-	return []string{pkg}
+	annos := []string{fmt.Sprintf(`$Go.package("%v")`, s.pkg)}
+	for _, f := range s.Fields {
+		if f.Enum != nil {
+			annos = append(annos, fmt.Sprintf(`$Go.import("%v")`, f.Enum.pkg))
+		}
+	}
+	return annos
 }
 
 func (s *Struct) orderFields() error {
