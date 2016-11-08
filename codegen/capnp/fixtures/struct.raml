@@ -21,3 +21,12 @@ types:
       clearanceLevel:
         capnpFieldNumber: 0
         enum: [ low, high ]
+  Cage:
+    type: object
+    properties:
+      animal:
+        type: Animal
+        capnpFieldNumber: 0
+      admin:
+        type: Admin
+        capnpFieldNumber: 1

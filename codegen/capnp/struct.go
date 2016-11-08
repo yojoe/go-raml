@@ -75,16 +75,6 @@ func (s *Struct) Imports() []string {
 	}
 }
 
-func (s *Struct) goImports() []string {
-	imports := []string{`using Go = import "/go.capnp"`}
-	for _, f := range s.Fields {
-		if f.Enum != nil {
-			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
-		}
-	}
-	return imports
-}
-
 func (s *Struct) Annotations() []string {
 	switch s.lang {
 	case "go":
@@ -99,16 +89,6 @@ func (s *Struct) checkValidCapnp() error {
 		return fmt.Errorf("invalid type name:%v. Type names must begin with a capital letter", s.Name)
 	}
 	return nil
-}
-
-func (s *Struct) goAnnotations() []string {
-	annos := []string{fmt.Sprintf(`$Go.package("%v")`, s.pkg)}
-	for _, f := range s.Fields {
-		if f.Enum != nil {
-			annos = append(annos, fmt.Sprintf(`$Go.import("%v")`, f.Enum.pkg))
-		}
-	}
-	return annos
 }
 
 func (s *Struct) orderFields() error {
