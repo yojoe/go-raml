@@ -1,6 +1,8 @@
+sudo: required
 language: go
 
 install:
+  - sudo apt-get install capnproto
   - go get -u github.com/jteeuwen/go-bindata/...
 
 go:
