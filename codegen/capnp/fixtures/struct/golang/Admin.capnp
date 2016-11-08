@@ -5,7 +5,6 @@ using import "EnumClearanceLevel.capnp".EnumClearanceLevel;
 
 $Go.package("main");
 $Go.import("main");
-$Go.import("main");
 struct Admin {
   clearanceLevel @0 :EnumClearanceLevel;
 }

@@ -2,7 +2,8 @@ package capnp
 
 import (
 	"fmt"
-	"sort"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 // schema for Go need additional data needed by Go compiler
@@ -14,15 +15,15 @@ func (s *Struct) goImports() []string {
 
 func (s *Struct) goAnnotations() []string {
 	pkg := []string{fmt.Sprintf(`$Go.package("%v")`, s.pkg)}
-	annos := []string{}
+	annosMap := map[string]struct{}{}
 	// import enums
 	for _, f := range s.Fields {
 		if f.Enum != nil {
-			annos = append(annos, fmt.Sprintf(`$Go.import("%v")`, f.Enum.pkg))
+			annosMap[fmt.Sprintf(`$Go.import("%v")`, f.Enum.pkg)] = struct{}{}
 		}
 	}
 	// import our own package
-	annos = append(annos, fmt.Sprintf(`$Go.import("%v")`, s.pkg))
-	sort.Strings(annos)
+	annosMap[fmt.Sprintf(`$Go.import("%v")`, s.pkg)] = struct{}{}
+	annos := commons.MapToSortedStrings(annosMap)
 	return append(pkg, annos...)
 }
