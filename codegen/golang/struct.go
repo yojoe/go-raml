@@ -2,7 +2,6 @@ package golang
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -15,67 +14,6 @@ const (
 	inputValidatorTemplateLocation = "./templates/struct_input_validator.tmpl"
 	inputValidatorFileResult       = "struct_input_validator.go"
 )
-
-// FieldDef defines a field of a struct
-type fieldDef struct {
-	Name          string // field name
-	Type          string // field type
-	IsComposition bool   // composition type
-	IsOmitted     bool   // omitted empty
-	UniqueItems   bool
-
-	Validators string
-}
-
-func (fd *fieldDef) buildValidators(p raml.Property) {
-	validators := ""
-	// string
-	if p.MinLength != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinLength)
-	}
-	if p.MaxLength != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxLength)
-	}
-	if p.Pattern != nil {
-		validators += fmt.Sprintf(",regexp=%v", *p.Pattern)
-	}
-
-	// Number
-	if p.Minimum != nil {
-		validators += fmt.Sprintf(",min=%v", *p.Minimum)
-	}
-
-	if p.Maximum != nil {
-		validators += fmt.Sprintf(",max=%v", *p.Maximum)
-	}
-
-	if p.MultipleOf != nil {
-		validators += fmt.Sprintf(",multipleOf=%v", *p.MultipleOf)
-	}
-
-	//if p.Format != nil {
-	//}
-
-	// Array & Map
-	if p.MinItems != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinItems)
-	}
-	if p.MaxItems != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
-	}
-	if p.UniqueItems {
-		fd.UniqueItems = true
-	}
-
-	// Required
-	if !fd.IsOmitted {
-		validators += ",nonzero"
-	}
-
-	if validators != "" {
-		fd.Validators = validators[1:]
-	}
-}
 
 // StructDef defines a struct
 type structDef struct {
@@ -100,14 +38,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 	fields := make(map[string]fieldDef)
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
-		fd := fieldDef{
-			Name:      strings.Title(prop.Name),
-			Type:      convertToGoType(prop.Type),
-			IsOmitted: !prop.Required,
-		}
-
-		fd.buildValidators(prop)
-		fields[prop.Name] = fd
+		fields[prop.Name] = newFieldDef(name, prop, packageName)
 	}
 	return structDef{
 		Name:        name,
@@ -160,6 +91,14 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 
 // generate Go struct
 func (sd structDef) generate(dir string) error {
+	// generate enums
+	for _, f := range sd.Fields {
+		if f.Enum != nil {
+			if err := f.Enum.generate(dir); err != nil {
+				return err
+			}
+		}
+	}
 	fileName := filepath.Join(dir, sd.Name+".go")
 	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
 }
