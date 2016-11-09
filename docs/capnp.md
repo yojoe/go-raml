@@ -1,5 +1,14 @@
 #capnp
 
+Table of Contents
+=================
+
+* [Install Capnp Tools](#install-capnp-tools)
+* [Schema Generation](#schema-generation)
+  * [Plain Schema](#plain-schema)
+  * [Go-compatible schema](#go-compatible-schema)
+* [Schema Compilation](#schema-compilation)
+
 Other than source code, go-raml able to produce [canpnp schema](https://capnproto.org/language.html). 
 
 go-raml can produce two kind of schemas:
@@ -51,21 +60,37 @@ At the time of this writing, the compiler still has issue, please check https://
 Or simply use `nimble-fix` branch of https://github.com/iwanbk/capnp.nim
 
 
-## Capnp Schema Generation
+## Schema Generation
 
-Plain schema
+To generate capnp schema, go-raml needs two additional fields of an RAML property:
+
+- capnpFieldNumber : it is capnp field number. Capnp docs at https://capnproto.org/language.html calls it `@N` annotations. It is a **mandatory** field
+
+- capnpType: if you want to specify [built-in types](https://capnproto.org/language.html#built-in-types) to use, you can use this field. It is **not mandatory** field.
+
+Unless specified otherwise using `capnpType` field described above, go-raml use this type mapping
+
+ RAML Type   | Capnp Type
+ ----------- | -----------
+ string      |  Text 
+ number      | Float64
+ integer     | Int64
+ boolean     | Bool
+ array       | List
+
+### Plain schema
 
 ```
 go-raml capnp --dir /result_dir --ramlfile api_file.raml -l plain
 ```
 
-Go-compatible schema
+### Go-compatible schema
 
 ```
 go-raml capnp --dir /tmp/wodaw/ --ramlfile codegen/capnp/fixtures/struct.raml -l go
 ```
 
-## Compile the schema to your languages of choice
+## Schema Compilation
 
 **Go**
 ```
@@ -80,3 +105,4 @@ capnp compile -onim *.capnp > file_result.nim
 **Python**
 
 We can use it directly, see this [quickstart guide](https://jparyani.github.io/pycapnp/quickstart.html).
+
