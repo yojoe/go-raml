@@ -1,9 +1,8 @@
-{{- define "client_python" -}}
 import requests
-{{ range $k, $v := .Services }}
-from .{{$v.FilenameNoExt}} import  {{$v.Name}} {{end}}
 
-BASE_URI = "{{.BaseURI}}"
+from .users_service import  UsersService 
+
+BASE_URI = "http://api.jumpscale.com/v3"
 
 
 class Client:
@@ -11,8 +10,8 @@ class Client:
         self.base_url = BASE_URI
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})
-        {{ range $k, $v := .Services }}
-        self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
+        
+        self.users = UsersService(self)
     
     def set_auth_header(self, val):
         ''' set authorization header value'''
@@ -35,5 +34,3 @@ class Client:
             return self.session.patch(uri, data=data, headers=headers, params=params)
         else:
             return self.session.patch(uri, json=data, headers=headers, params=params)
-
-{{- end -}}

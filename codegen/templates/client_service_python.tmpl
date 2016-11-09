@@ -12,6 +12,6 @@ class {{.Name}}:
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
         uri = self.client.base_url + {{$v.ResourcePath}}
-        return self.client.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers, params=query_params)
+        return {{$v.PRCall}}({{$v.PRArgs}})
 {{ end }}
 {{- end -}}
