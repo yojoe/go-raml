@@ -166,7 +166,7 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:        "language, l",
-					Value:       "go",
+					Value:       "plain",
 					Usage:       "Language to construct capnpn models for",
 					Destination: &capnpCommand.Language,
 				},

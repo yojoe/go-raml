@@ -23,8 +23,8 @@ func (command *CapnpCommand) Execute() error {
 	var apiDef raml.APIDefinition
 
 	command.Language = strings.ToLower(command.Language)
-	if command.Language != "go" && command.Language != "nim" && command.Language != "python" {
-		return fmt.Errorf("canpnp generator only support Go, Python, and Nim")
+	if command.Language != "go" && command.Language != "plain" {
+		return fmt.Errorf("canpnp generator only support plain & Go-compatible schema")
 	}
 
 	log.Debug("Generating capnp models")
