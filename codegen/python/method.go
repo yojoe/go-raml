@@ -1,6 +1,7 @@
 package python
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -48,6 +49,7 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 type clientMethod struct {
 	resource.Method
 	PRArgs string // python requests's args
+	PRCall string // the way we call python request
 }
 
 func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
@@ -65,18 +67,33 @@ func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, me
 }
 
 func (pcm *clientMethod) setup() {
-	var prArgs string
-	params := []string{"self"}
+	prArgs := []string{"uri"}  // prArgs are arguments we supply to python request
+	params := []string{"self"} // params are method signature params
 
 	// for method with request body, we add `data` argument
 	if pcm.Verb() == "PUT" || pcm.Verb() == "POST" || pcm.Verb() == "PATCH" {
 		params = append(params, "data")
-		prArgs = ", data"
+		prArgs = append(prArgs, "data")
 	}
-	pcm.PRArgs = prArgs
 
+	// construct prArgs string from the array
+	prArgs = append(prArgs, "headers=headers", "params=query_params")
+	pcm.PRArgs = strings.Join(prArgs, ", ")
+
+	// construct method signature
 	params = append(params, resource.GetResourceParams(pcm.Resource())...)
-	pcm.Params = strings.Join(append(params, "headers=None, query_params=None"), ", ")
+	params = append(params, "headers=None", "query_params=None")
+	pcm.Params = strings.Join(params, ", ")
+
+	// python request call
+	// we encapsulate the call to put, post, and patch.
+	// To be able to accept plain string or dict.
+	// if it is a dict, we encode it to json
+	if pcm.Verb() == "PUT" || pcm.Verb() == "POST" || pcm.Verb() == "PATCH" {
+		pcm.PRCall = fmt.Sprintf("self.client.%v", strings.ToLower(pcm.Verb()))
+	} else {
+		pcm.PRCall = fmt.Sprintf("self.client.session.%v", strings.ToLower(pcm.Verb()))
+	}
 
 	if len(pcm.DisplayName) > 0 {
 		pcm.MethodName = commons.DisplayNameToFuncName(pcm.DisplayName)
