@@ -13,7 +13,7 @@ import (
 func TestGeneratePythonClientFromRaml(t *testing.T) {
 	Convey("generate python client", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("../fixtures/python_client/client.raml", apiDef)
+		err := raml.ParseFile("./fixtures/client/client.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		targetDir, err := ioutil.TempDir("", "")
@@ -24,7 +24,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "../fixtures/python_client"
+			rootFixture := "./fixtures/client"
 			// cek with generated with fixtures
 			checks := []struct {
 				Result   string
