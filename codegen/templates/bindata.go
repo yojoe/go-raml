@@ -11,6 +11,7 @@
 // codegen/templates/client_utils_go.tmpl
 // codegen/templates/client_utils_python.tmpl
 // codegen/templates/date.tmpl
+// codegen/templates/enum_capnp.tmpl
 // codegen/templates/generic_main.tmpl
 // codegen/templates/index.html.tmpl
 // codegen/templates/init_py.tmpl
@@ -27,6 +28,7 @@
 // codegen/templates/server_resources_api_nim.tmpl
 // codegen/templates/server_resources_interface.tmpl
 // codegen/templates/struct.tmpl
+// codegen/templates/struct_capnp.tmpl
 // codegen/templates/struct_input_validator.tmpl
 // DO NOT EDIT!
 
@@ -311,6 +313,26 @@ func templatesDateTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/date.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _templatesEnum_capnpTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x64\x8d\x41\xaa\x02\x31\x10\x05\xf7\x39\x45\x33\x64\xf9\x27\x07\xf8\x83\xa0\x20\x82\x1b\xaf\x20\xc1\xb4\x12\x34\x9d\x30\x66\x66\xf3\xe8\xbb\x4b\x88\x82\xe0\xae\x1f\x54\x55\x03\x81\xaf\x51\x98\x06\x96\x25\x9d\x2f\xbe\x48\x19\x68\x54\x35\x80\x3b\xa6\x92\xe7\xfa\x7c\x8f\xbd\xea\x64\x80\xd9\xcb\x8d\xc9\xde\xff\xc8\xae\xf4\xbf\x21\xb7\x13\xc9\xd5\xd7\x98\xa5\x93\x76\x55\x9d\x00\x96\xa0\x6a\x5a\x95\x00\x77\xf2\x89\x55\x09\x06\x18\xe9\x27\x71\x88\xfc\x08\xcd\x26\x6a\xfe\x87\xde\xf6\xb1\xa4\xaf\x60\xfb\xd0\xaf\x57\x00\x00\x00\xff\xff\x10\xab\xd6\x7f\xbb\x00\x00\x00")
+
+func templatesEnum_capnpTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesEnum_capnpTmpl,
+		"templates/enum_capnp.tmpl",
+	)
+}
+
+func templatesEnum_capnpTmpl() (*asset, error) {
+	bytes, err := templatesEnum_capnpTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/enum_capnp.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -635,6 +657,26 @@ func templatesStructTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _templatesStruct_capnpTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x6c\x8d\xcd\xaa\xc2\x30\x10\x85\xf7\x7d\x8a\x43\xe9\xf2\xb6\x0f\xd0\x72\x41\x41\x84\x6e\x74\xe3\x5e\x42\x33\x4a\xd1\x4e\x43\x9a\x16\x64\x98\x77\x97\x26\x08\x8a\xee\xce\xfc\x7c\xe7\x13\xb1\x74\xe9\x99\x90\x4f\xc1\xcf\x5d\x38\x77\xc6\xb1\xcb\x51\xaa\x66\x22\x25\xbc\xe1\x2b\xa1\xb8\xfd\xa1\x58\x50\xff\xa3\x6a\x07\x37\xfa\x30\xc5\x73\xb1\xa8\x36\xeb\x17\xb1\x8d\x8b\xaa\xdd\xa9\x36\x99\xc8\x17\xb6\x65\x1e\x83\x09\xfd\xc8\x1f\x68\x02\x93\x1a\x22\xd5\xc1\x0c\xa4\x0a\xf9\xed\x3e\x7a\x4b\x9e\xec\xbe\xa7\xbb\x9d\xa0\x9a\x01\x6b\xd3\x8b\xda\xa4\x61\x1e\x54\x51\xc7\x7c\x7a\x38\x7a\xf3\xac\xe2\x94\x9e\x01\x00\x00\xff\xff\x63\x4d\x17\x93\xf7\x00\x00\x00")
+
+func templatesStruct_capnpTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesStruct_capnpTmpl,
+		"templates/struct_capnp.tmpl",
+	)
+}
+
+func templatesStruct_capnpTmpl() (*asset, error) {
+	bytes, err := templatesStruct_capnpTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/struct_capnp.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _templatesStruct_input_validatorTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x5c\x91\x41\x6b\xdc\x30\x10\x85\xcf\x9e\x5f\x31\x15\x84\x5a\x60\x9c\x16\x42\x0e\x81\x3d\xb6\xb7\xb6\xf9\x07\x8b\x2a\x8f\x12\x51\x49\x36\xd2\x48\xa1\x08\xfd\xf7\x22\xaf\x77\x1b\x72\x31\x66\xe6\xbd\x37\xef\xb3\x6b\x5d\xc8\xd8\x40\x28\x12\xc7\xac\xf9\x6c\xc3\x96\xf9\x5c\x94\xb3\x8b\xe2\x35\x9e\x99\xfc\xe6\x14\x93\x68\x0d\x36\xa5\xff\xa8\x17\xc2\x5a\xe7\xe7\xcb\xeb\x4f\xe5\xa9\x35\x00\xeb\xb7\x35\x32\x8e\x30\x08\xe3\x59\xc0\xd0\xe3\xf4\x1a\x8a\x00\x09\x60\x72\xd0\xf8\x23\x3b\xb6\x9b\xa3\x5f\x66\x0c\xd9\xa3\x0d\x4c\xd1\x28\x4d\xb5\x4d\x58\x94\xcb\x84\x89\xa3\x0d\x2f\x12\x29\xc6\x35\x62\x85\xa1\xa8\x88\x21\xfb\xef\x6e\x55\x8c\xa6\x3f\x1f\x1f\x00\x86\xf4\x66\x59\xbf\x62\xc1\xa7\x53\x5f\xcf\x23\xff\xdd\x48\x76\x83\x56\x89\x7a\xf2\x13\x0c\xc3\xcd\x78\xba\x5a\xc7\x22\x0f\xc9\x31\xf8\x20\x2b\x30\x2c\x64\x54\x76\xbb\x3f\x12\xe7\x18\xd0\x78\x9e\xbf\xf5\x42\x66\x14\x77\x05\xb5\x0a\x9f\x19\x7f\x13\xe6\x44\x0b\xbe\x59\x7e\x45\x7f\x03\x13\x13\xf6\x13\x0d\x7a\x75\x97\x69\x0f\x9e\x3a\x4f\xaf\x7a\x7c\x91\xf9\x59\xc5\x74\x59\x8d\xbb\x6a\xc2\xc7\x07\x09\x83\x35\xbb\xf0\xd3\x09\x83\x75\x1d\xe6\xda\x80\x62\xbc\x64\x46\x4a\x07\xf2\xa5\xf1\x3d\xfe\xbf\xb2\xfb\xc7\xae\xb8\xbf\xe1\xda\xc0\x7d\x22\xa5\xec\xa9\x5f\xe7\x2f\xef\x53\x3f\x70\xd9\x84\x61\xe5\x77\x2c\x78\x57\xc4\xd4\x6f\x1d\x7f\x47\x5e\x3b\xec\xee\x60\x1d\x34\xa8\x95\xc2\xd2\x1a\xfc\x0b\x00\x00\xff\xff\x16\xec\x5e\x2d\x45\x02\x00\x00")
 
 func templatesStruct_input_validatorTmplBytes() ([]byte, error) {
@@ -718,6 +760,7 @@ var _bindata = map[string]func() (*asset, error){
 	"templates/client_utils_go.tmpl": templatesClient_utils_goTmpl,
 	"templates/client_utils_python.tmpl": templatesClient_utils_pythonTmpl,
 	"templates/date.tmpl": templatesDateTmpl,
+	"templates/enum_capnp.tmpl": templatesEnum_capnpTmpl,
 	"templates/generic_main.tmpl": templatesGeneric_mainTmpl,
 	"templates/index.html.tmpl": templatesIndexHtmlTmpl,
 	"templates/init_py.tmpl": templatesInit_pyTmpl,
@@ -734,6 +777,7 @@ var _bindata = map[string]func() (*asset, error){
 	"templates/server_resources_api_nim.tmpl": templatesServer_resources_api_nimTmpl,
 	"templates/server_resources_interface.tmpl": templatesServer_resources_interfaceTmpl,
 	"templates/struct.tmpl": templatesStructTmpl,
+	"templates/struct_capnp.tmpl": templatesStruct_capnpTmpl,
 	"templates/struct_input_validator.tmpl": templatesStruct_input_validatorTmpl,
 }
 
@@ -789,6 +833,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"client_utils_go.tmpl": &bintree{templatesClient_utils_goTmpl, map[string]*bintree{}},
 		"client_utils_python.tmpl": &bintree{templatesClient_utils_pythonTmpl, map[string]*bintree{}},
 		"date.tmpl": &bintree{templatesDateTmpl, map[string]*bintree{}},
+		"enum_capnp.tmpl": &bintree{templatesEnum_capnpTmpl, map[string]*bintree{}},
 		"generic_main.tmpl": &bintree{templatesGeneric_mainTmpl, map[string]*bintree{}},
 		"index.html.tmpl": &bintree{templatesIndexHtmlTmpl, map[string]*bintree{}},
 		"init_py.tmpl": &bintree{templatesInit_pyTmpl, map[string]*bintree{}},
@@ -805,6 +850,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"server_resources_api_nim.tmpl": &bintree{templatesServer_resources_api_nimTmpl, map[string]*bintree{}},
 		"server_resources_interface.tmpl": &bintree{templatesServer_resources_interfaceTmpl, map[string]*bintree{}},
 		"struct.tmpl": &bintree{templatesStructTmpl, map[string]*bintree{}},
+		"struct_capnp.tmpl": &bintree{templatesStruct_capnpTmpl, map[string]*bintree{}},
 		"struct_input_validator.tmpl": &bintree{templatesStruct_input_validatorTmpl, map[string]*bintree{}},
 	}},
 }}
