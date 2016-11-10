@@ -17,10 +17,10 @@ type enum struct {
 	pkg    string
 }
 
-func newEnum(prop raml.Property, lang, pkg string) *enum {
+func newEnum(structName string, prop raml.Property, lang, pkg string) *enum {
 	e := enum{
 		ID:   getID(),
-		Name: "Enum" + strings.Title(prop.Name),
+		Name: "Enum" + strings.Title(structName) + strings.Title(prop.Name),
 		lang: lang,
 		pkg:  pkg,
 	}

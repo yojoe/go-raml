@@ -11,14 +11,14 @@ type field struct {
 	Enum *enum
 }
 
-func newField(prop raml.Property, lang, pkg string) field {
+func newField(structName string, prop raml.Property, lang, pkg string) field {
 	fd := field{
 		Name: prop.Name,
 		Type: toCapnpType(prop.Type, prop.CapnpType),
 		Num:  prop.CapnpFieldNumber,
 	}
 	if isEnum(prop) {
-		fd.Enum = newEnum(prop, lang, pkg)
+		fd.Enum = newEnum(structName, prop, lang, pkg)
 		fd.Type = fd.Enum.Name
 	}
 	return fd

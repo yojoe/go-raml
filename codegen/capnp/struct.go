@@ -26,7 +26,7 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	fields := make(map[string]field)
 
 	for k, v := range t.Properties {
-		fd := newField(raml.ToProperty(k, v), lang, pkg)
+		fd := newField(name, raml.ToProperty(k, v), lang, pkg)
 		fields[fd.Name] = fd
 	}
 

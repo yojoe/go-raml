@@ -32,7 +32,7 @@ func TestGenerateCapnpSchema(t *testing.T) {
 				{"Animal.capnp", "Animal.capnp"},
 				{"Cage.capnp", "Cage.capnp"},
 				{"Admin.capnp", "Admin.capnp"},
-				{"EnumClearanceLevel.capnp", "EnumClearanceLevel.capnp"},
+				{"EnumAdminClearanceLevel.capnp", "EnumAdminClearanceLevel.capnp"},
 			}
 
 			for _, check := range checks {
@@ -59,7 +59,7 @@ func TestGenerateCapnpSchema(t *testing.T) {
 				{"Animal.capnp", "Animal.capnp"},
 				{"Cage.capnp", "Cage.capnp"},
 				{"Admin.capnp", "Admin.capnp"},
-				{"EnumClearanceLevel.capnp", "EnumClearanceLevel.capnp"},
+				{"EnumAdminClearanceLevel.capnp", "EnumAdminClearanceLevel.capnp"},
 			}
 
 			for _, check := range checks {
