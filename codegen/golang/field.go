@@ -27,7 +27,7 @@ func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
 	}
 	fd.buildValidators(prop)
 	if isEnum(prop) {
-		fd.Enum = newEnum(structName, prop, pkg)
+		fd.Enum = newEnum(structName, prop, pkg, false)
 		fd.Type = fd.Enum.Name
 	}
 

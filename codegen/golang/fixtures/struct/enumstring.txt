@@ -1,0 +1,8 @@
+package main
+
+type EnumString string
+
+const (
+	EnumStringstr_a EnumString = "str_a"
+	EnumStringstr_b EnumString = "str_b"
+)

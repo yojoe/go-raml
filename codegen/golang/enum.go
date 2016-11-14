@@ -21,11 +21,14 @@ type enum struct {
 	Pkg    string
 }
 
-func newEnum(structName string, prop raml.Property, pkg string) *enum {
+func newEnum(structName string, prop raml.Property, pkg string, fromStruct bool) *enum {
 	e := enum{
-		Name: "Enum" + strings.Title(prop.Name) + strings.Title(structName),
+		Name: strings.Title(structName) + strings.Title(prop.Name),
 		Type: convertToGoType(prop.Type),
 		Pkg:  pkg,
+	}
+	if !fromStruct {
+		e.Name = "Enum" + e.Name
 	}
 	for _, v := range prop.Enum.([]interface{}) {
 		e.Fields = append(e.Fields, newEnumField(v, e))
@@ -33,15 +36,22 @@ func newEnum(structName string, prop raml.Property, pkg string) *enum {
 	return &e
 }
 
+func newEnumFromStruct(sd *structDef) *enum {
+	prop := raml.Property{
+		Type: fmt.Sprint(sd.T.Type),
+		Name: "",
+		Enum: sd.T.Enum,
+	}
+	return newEnum(sd.Name, prop, sd.PackageName, true)
+}
 func newEnumField(f interface{}, e enum) enumField {
 	var val string
-	var name string
+
+	name := fmt.Sprintf("%v%v", e.Name, f)
 	switch v := f.(type) {
 	case string:
-		name = v
 		val = fmt.Sprintf(`"%v"`, v)
 	case int:
-		name = fmt.Sprintf("%v_%v", e.Name, v)
 		val = fmt.Sprintf("%v", v)
 	}
 	return enumField{

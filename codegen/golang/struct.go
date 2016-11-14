@@ -23,6 +23,7 @@ type structDef struct {
 	PackageName string              // package name
 	Fields      map[string]fieldDef // all struct's fields
 	OneLineDef  string              // not empty if this struct can be defined in one line
+	Enum        *enum
 
 	Validators []string
 }
@@ -98,6 +99,9 @@ func (sd structDef) generate(dir string) error {
 				return err
 			}
 		}
+	}
+	if sd.Enum != nil {
+		return sd.Enum.generate(dir)
 	}
 	fileName := filepath.Join(dir, sd.Name+".go")
 	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
@@ -204,11 +208,7 @@ func (sd *structDef) addMultipleInheritance(strType string) {
 // buildEnum based on http://docs.raml.org/specs/1.0/#raml-10-spec-enums
 // example result  `type TypeName []data_type`
 func (sd *structDef) buildEnum() {
-	if _, ok := sd.T.Type.(string); !ok {
-		return
-	}
-
-	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
+	sd.Enum = newEnumFromStruct(sd)
 }
 
 // build array type
