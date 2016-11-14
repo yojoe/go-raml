@@ -11,6 +11,7 @@ Results summary:
 - Nim is generally faster than Go if both use 1 CPU core
   Sometimes Go faster.
 - Go faster if allowed to use all cores
+- Python is the slowest
 - `hey` give more request per seconds, it seems `hey` is better tool `boom`
   in term of concurency
 - Nim doesn't support chunked transfer encoding which is used by `hey` and `ab`
