@@ -29,6 +29,8 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				Expected string
 			}{
 				{"EnumCity.nim", "EnumCity.nim"},
+				{"EnumEnumCityEnum_homeNum.nim", "EnumEnumCityEnum_homeNum.nim"},
+				{"EnumEnumCityEnum_parks.nim", "EnumEnumCityEnum_parks.nim"},
 				{"animal.nim", "animal.nim"},
 				{"Cage.nim", "Cage.nim"},
 				{"Cat.nim", "Cat.nim"},

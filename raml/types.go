@@ -205,6 +205,11 @@ func ToProperty(name string, p interface{}) Property {
 
 }
 
+// IsEnum returns true if a property is an enum
+func (p Property) IsEnum() bool {
+	return p.Enum != nil
+}
+
 // Type defines an RAML data type
 type Type struct {
 	// A default value for a type

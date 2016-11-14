@@ -21,6 +21,12 @@ type enum struct {
 	Pkg    string
 }
 
+// creates new enum representation.
+//
+// structName : name of the struct on which this enum reside
+// prop : ramlProperty that describe this enum
+// pkg : package name
+// fromStruct: true if this enum come from struct, false if come from struct's field
 func newEnum(structName string, prop raml.Property, pkg string, fromStruct bool) *enum {
 	e := enum{
 		Name: strings.Title(structName) + strings.Title(prop.Name),
@@ -44,9 +50,14 @@ func newEnumFromStruct(sd *structDef) *enum {
 	}
 	return newEnum(sd.Name, prop, sd.PackageName, true)
 }
+
+// creates new enum field
+// f : enum's member
+// e : the enum representation
 func newEnumField(f interface{}, e enum) enumField {
 	var val string
 
+	// field name = enum name + field name
 	name := fmt.Sprintf("%v%v", e.Name, f)
 	switch v := f.(type) {
 	case string:
@@ -64,9 +75,4 @@ func newEnumField(f interface{}, e enum) enumField {
 func (e *enum) generate(dir string) error {
 	filename := filepath.Join(dir, e.Name+".go")
 	return commons.GenerateFile(e, "./templates/enum_go.tmpl", "enum_go", filename, true)
-
-}
-
-func isEnum(prop raml.Property) bool {
-	return prop.Enum != nil
 }
