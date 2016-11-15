@@ -121,6 +121,10 @@ type Property struct {
 	MinItems    *int
 	MaxItems    *int
 	UniqueItems bool
+
+	// Capnp extension
+	CapnpFieldNumber int
+	CapnpType        string
 }
 
 // ToProperty creates a property from an interface
@@ -175,6 +179,10 @@ func ToProperty(name string, p interface{}) Property {
 				*p.MaxItems = v.(int)
 			case "uniqueItems":
 				p.UniqueItems = v.(bool)
+			case "capnpFieldNumber":
+				p.CapnpFieldNumber = v.(int)
+			case "capnpType":
+				p.CapnpType = v.(string)
 			}
 		}
 		return p

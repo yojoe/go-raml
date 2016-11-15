@@ -20,7 +20,7 @@ class UsersService:
         It is method for POST /users
         """
         uri = self.client.base_url + "/users"
-        return self.client.session.post(uri, data, headers=headers, params=query_params)
+        return self.client.post(uri, data, headers=headers, params=query_params)
 
 
     def option_users(self, headers=None, query_params=None):

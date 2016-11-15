@@ -42,6 +42,12 @@ When creating and maintaining api's, there are two approaches:
 This tool supports both (or at least, this is on the roadmap).
 As a specification format, it uses [RAML 1.0](http://raml.org) .
 
+It currently has these features:
+
+- generate server stub in Go, Python, and Nim from an raml file.
+- generate complete client library in Go, Python, and Nim from an RAML file.
+- generate [capnp](https://capnproto.org) schema. See [capnp docs](./docs/capnp.md) for details.
+
 ## RAML versions
 Only RAML version 1.0 RC is supported.
 
