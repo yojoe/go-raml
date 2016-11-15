@@ -29,6 +29,7 @@ type object struct {
 	T           raml.Type
 	OneLineDef  string
 	Parents     []string
+	Enum        *enum
 }
 
 // generates Nim objects from RAML types
@@ -163,11 +164,13 @@ func (o *object) generate(dir string) error {
 		}
 	}
 
+	if o.Enum != nil {
+		return o.Enum.generate(dir)
+	}
 	filename := filepath.Join(dir, o.Name+".nim")
 	if err := commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true); err != nil {
 		return err
 	}
-	registerObject(o.Name)
 	return nil
 }
 
@@ -202,12 +205,17 @@ func (o *object) handleAdvancedType() {
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
 		// TODO
+	case o.T.IsEnum():
+		o.makeEnum()
 	case strings.ToLower(strType) == "object": // plain type
 	case o.T.IsArray():
 		o.makeArray(strType)
 	}
 }
 
+func (o *object) makeEnum() {
+	o.Enum = newEnumFromObject(o)
+}
 func (o *object) makeArray(t string) {
 	o.Parents = append(o.Parents, t[:len(t)-2])
 	o.buildOneLine(toNimType(t))

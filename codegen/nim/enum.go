@@ -31,6 +31,14 @@ func newEnum(objName string, prop raml.Property, fromObj bool) *enum {
 	return &e
 }
 
+func newEnumFromObject(o *object) *enum {
+	prop := raml.Property{
+		Type: fmt.Sprint(o.T.Type),
+		Name: "",
+		Enum: o.T.Enum,
+	}
+	return newEnum(o.Name, prop, true)
+}
 func newEnumField(f interface{}, e enum) enumField {
 	var name string
 
