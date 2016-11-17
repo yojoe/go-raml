@@ -107,15 +107,7 @@ func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.
 	methodName string) resource.MethodInterface {
 
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-
-	// security scheme
-	if len(m.SecuredBy) > 0 {
-		method.SecuredBy = m.SecuredBy
-	} else if sb := security.FindResourceSecuredBy(r); len(sb) > 0 {
-		method.SecuredBy = sb
-	} else {
-		method.SecuredBy = apiDef.SecuredBy // use secured by from root document
-	}
+	method.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
 
 	pm := serverMethod{
 		Method: &method,

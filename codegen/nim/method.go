@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	cr "github.com/Jumpscale/go-raml/codegen/resource"
+	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -15,7 +16,8 @@ type method struct {
 	*cr.Method
 }
 
-func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
+// creates new Nim method
+func newMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
 	methodName string) (cr.MethodInterface, error) {
 
 	rm := cr.NewMethod(r, rd, m, methodName, setBodyName)
@@ -27,15 +29,28 @@ func newMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
 		rm.MethodName = commons.NormalizeURI(formatProcName(r.FullURI())) + methodName
 	}
 	rm.ResourcePath = commons.ParamizingURI(rm.Endpoint, "&")
+	if apiDef != nil {
+		rm.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
+	}
 	return method{Method: &rm}, nil
 }
 
+// creates new client method
+func newClientMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
+	methodName string) (cr.MethodInterface, error) {
+	return newMethod(nil, r, rd, m, methodName)
+}
+
+// creates new server method
 func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
 	methodName string) cr.MethodInterface {
-	mi, err := newMethod(r, rd, m, methodName)
+
+	// creates generic method
+	mi, err := newMethod(apiDef, r, rd, m, methodName)
 	if err != nil {
-		log.Errorf("newServerMethod unexpected error:%v", err)
+		log.Fatalf("newServerMethod unexpected error:%v", err)
 	}
+
 	return mi
 }
 
@@ -106,6 +121,18 @@ func (m method) ContentRetval() string {
 		retval = "string"
 	}
 	return retval
+}
+
+// SecurityScopes retuns security scopes of a method as single string
+func (m method) SecurityScopes() string {
+	if len(m.SecuredBy) == 0 {
+		return ""
+	}
+	s, err := security.GetQuotedScopes(m.SecuredBy[0])
+	if err != nil {
+		log.Fatalf("failed to get security scopes of method `%v %v` err = %v", m.Verb(), m.ResourcePath, err)
+	}
+	return strings.Join(s, ", ")
 }
 
 // setBodyName set name of method's request/response body.

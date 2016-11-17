@@ -31,7 +31,7 @@ func TestGenerateClient(t *testing.T) {
 			Result   string
 			Expected string
 		}{
-			{"client.nim", "client.nim"},
+			{"client_struct.nim", "client_struct.nim"},
 			{"Users_service.nim", "Users_service.nim"},
 		}
 

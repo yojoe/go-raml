@@ -1,4 +1,3 @@
-{{- define "client_nim" -}}
 import httpclient, strutils
 
 type
@@ -6,7 +5,7 @@ type
     baseURI*: string
     hc: HttpClient
 
-const defaultBaseURI = "{{.APIDef.BaseURI}}"
+const defaultBaseURI = "http://localhost:8080"
 
 proc newClient*(baseURI = defaultBaseURI): Client =
   # creates new client
@@ -23,4 +22,3 @@ proc request*(c: Client, endpoint: string, httpMethod = "GET", body = ""): httpc
   if not uri.startsWith("http"):
     uri = c.baseURI & uri
   return c.hc.request(uri, httpMethod, body)
-{{- end -}}

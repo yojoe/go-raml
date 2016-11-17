@@ -2,6 +2,7 @@ package nim
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -48,7 +49,7 @@ func (c *Client) Generate() error {
 }
 
 func (c *Client) generateMain() error {
-	filename := filepath.Join(c.Dir, "client.nim")
+	filename := filepath.Join(c.Dir, clientName(c.APIDef)+".nim")
 	return commons.GenerateFile(c, "./templates/client_nim.tmpl", "client_nim", filename, true)
 }
 
@@ -60,4 +61,9 @@ func (c *Client) generateServices(rs []resource) error {
 		}
 	}
 	return nil
+}
+
+func clientName(apiDef *raml.APIDefinition) string {
+	splt := strings.Split(apiDef.Title, " ")
+	return "client_" + strings.ToLower(splt[0])
 }

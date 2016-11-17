@@ -1,5 +1,5 @@
 import marshal
-import client
+import client_struct
 
 import City
 

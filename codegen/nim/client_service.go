@@ -24,3 +24,7 @@ func (cs *clientService) generate(dir string) error {
 func (cs *clientService) Imports() []string {
 	return cs.resource.Imports()
 }
+
+func (cs *clientService) ClientName() string {
+	return clientName(cs.APIDef)
+}
