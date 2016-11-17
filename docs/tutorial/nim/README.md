@@ -13,7 +13,7 @@ go-raml server -l nim --ramlfile ../api.raml  --dir server
 ### Compile and Run it
 
 ```
-nim c -r main.nim users_api.nim User.nim 
+./run.sh
 ```
 
 You can see the server by pointing your browser to `http://localhost:5000/`
@@ -22,12 +22,21 @@ API Docs can be seen by clicking `API Docs` link on that page.
 
 ## Client
 
-Generate client code by using this command
+Generate goraml client code by using this command
 
 ```
-go-raml client --ramlfile ../api.raml --dir client -l nim
+go-raml client --ramlfile ../api.raml --dir client/goraml -l nim
 ```
-Then you can find client code in client directory.
+Then you can find goraml client code in `client/goraml` directory.
+
+
+Generate itsyouonline client lib by using this command
+
+```
+go-raml client -l nim --ramlfile ../itsyouonline-raml/itsyouonline.raml --dir client/iyo 
+```
+It will generate itsyouonline client library in `client/iyo' directory
+
 
 ### Simple usage
 
@@ -35,6 +44,9 @@ Then you can find client code in client directory.
 
 There is `main.nim` in `client` directory. It serves as an example on 
 how to use generated client lib.
+
+You need to modify it by supply your itsyouonline client-id and client-secret
+when calling `createJWTToken` proc
 
 **server**
 
@@ -46,5 +58,5 @@ Added lines has `added line` comment in the end of line.
 **run the client example**
 
 ```
-nim c -r main.nim client.nim Users_service.nim User.nim 
+./run.sh
 ```
