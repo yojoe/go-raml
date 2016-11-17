@@ -50,6 +50,11 @@ func (s *Server) Generate() error {
 		return err
 	}
 
+	// security related files
+	if err := s.generateSecurity(); err != nil {
+		return err
+	}
+
 	// HTML front page
 	if err := commons.GenerateFile(s, "./templates/index.html.tmpl", "index.html", filepath.Join(s.Dir, "index.html"), false); err != nil {
 		return err
@@ -62,6 +67,23 @@ func (s *Server) Generate() error {
 func (s *Server) generateMain() error {
 	filename := filepath.Join(s.Dir, "main.nim")
 	return commons.GenerateFile(s, "./templates/server_main_nim.tmpl", "server_main_nim", filename, true)
+}
+
+// generates all needed security files
+// we currently only support itsyou.online oauth2 jwt token
+func (s *Server) generateSecurity() error {
+	// libjwt
+	if err := commons.GenerateFile(s, "./templates/libjwt_nim.tmpl", "libjwt_nim", filepath.Join(s.Dir, "libjwt.nim"), true); err != nil {
+		return err
+	}
+
+	// itsyouonline public key
+	if err := commons.GenerateFile(s, "./templates/pubkey_itsyouonline.tmpl", "pubkey_itsyouonline", filepath.Join(s.Dir, "itsyouonline.pub"), true); err != nil {
+		return err
+	}
+
+	// itsyouonline integration
+	return commons.GenerateFile(s, "./templates/oauth2_jwt_nim.tmpl", "oauth2_jwt_nim", filepath.Join(s.Dir, "oauth2_jwt.nim"), true)
 }
 
 // Imports returns array of modules that need to be imported by server's main file

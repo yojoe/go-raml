@@ -35,6 +35,9 @@ func TestGenerateServer(t *testing.T) {
 		}{
 			{"main.nim", "main.nim"},
 			{"deliveries_api.nim", "deliveries_api.nim"},
+			{"oauth2_jwt.nim", "oauth2_jwt.nim"},
+			{"libjwt.nim", "libjwt.nim"},
+			{"itsyouonline.pub", "itsyouonline.pub"},
 		}
 
 		for _, check := range checks {

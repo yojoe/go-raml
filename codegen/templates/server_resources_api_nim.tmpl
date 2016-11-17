@@ -1,20 +1,24 @@
 {{- define "server_resources_api_nim" -}}
-import jester, marshal
+import jester, marshal, system
+import oauth2_jwt
 {{ range $k, $v := .Imports }}
 import {{$v}}{{end}}
+
+let ojwt = Oauth2JWT(pubKey:readFile("itsyouonline.pub"))
 
 {{ range $k, $v := .Methods}}
 proc {{$v.MethodName}}*({{$v.ServerProcParams}}) : tuple[code: HttpCode, content: {{$v.ContentRetval}}] =
   {{- range $kc, $vc := $v.FuncComments}}
   # {{$vc}}{{end}}
-  {{if .ReqBody -}}
-  let reqBody = to[{{.ReqBody}}](req.body)
-  {{- end }}
-  
+
   {{- if .RespBody }}
   var respBody: {{.RespBody}}
   {{- else}}
   let respBody = ""
+  {{- end }}
+  {{if $v.SecurityScopes }}if not ojwt.checkJWTToken(req, @[{{$v.SecurityScopes}}]): return (code: Http403, content: respBody){{end}}
+  {{if .ReqBody -}}
+  let reqBody = to[{{.ReqBody}}](req.body)
   {{- end }}
   result = (code: Http200, content: respBody)
 {{ end }}

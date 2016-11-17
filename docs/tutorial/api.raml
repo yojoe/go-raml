@@ -4,15 +4,8 @@ description: goraml developers directory
 baseUri: http://localhost:5000
 mediaType: application/json
 securitySchemes:
-  itsyouonline:
-    description: |
-      Itsyouonline supports OAuth 2.0 for authenticating all API requests.
-    type: OAuth 2.0
-    describedBy:
-      headers:
-        Authorization:
-          description: jwt token
-          type: string
+  itsyouonline: !include itsyouonline-raml/itsyouonline.raml
+
 types:
   User:
     properties:

@@ -21,7 +21,7 @@ func newResource(name string, apiDef *raml.APIDefinition, isServer bool) resourc
 		Resource: rd,
 	}
 	res := apiDef.Resources[name]
-	r.GenerateMethods(&res, "nim", newServerMethod, newMethod)
+	r.GenerateMethods(&res, "nim", newServerMethod, newClientMethod)
 	return r
 }
 
@@ -41,11 +41,13 @@ func (r *resource) Imports() []string {
 	return commons.MapToSortedStrings(ip)
 }
 
+// generate server resource API implementation
 func (r *resource) generate(dir string) error {
 	filename := filepath.Join(dir, r.apiName()+".nim")
 	return commons.GenerateFile(r, "./templates/server_resources_api_nim.tmpl", "server_resources_api_nim", filename, true)
 }
 
+// returns server's API name
 func (r *resource) apiName() string {
 	return strings.ToLower(r.Name) + "_api"
 }

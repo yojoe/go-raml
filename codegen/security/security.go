@@ -48,6 +48,17 @@ func New(ss *raml.SecurityScheme, name, packageName string) Security {
 	return sd
 }
 
+// GetMethodSecuredBy get SecuredBy field of a method
+func GetMethodSecuredBy(apiDef *raml.APIDefinition, r *raml.Resource, m *raml.Method) []raml.DefinitionChoice {
+	if len(m.SecuredBy) > 0 {
+		return m.SecuredBy
+	} else if sb := FindResourceSecuredBy(r); len(sb) > 0 {
+		return sb
+	}
+
+	return apiDef.SecuredBy
+}
+
 // get array of security scopes in the form of quoted string
 func GetQuotedScopes(ss raml.DefinitionChoice) ([]string, error) {
 	var quoted []string

@@ -5,7 +5,7 @@ In this tutorial, we will show you how to:
 * [getting started with RAML and it's editor](#getting-started)
 * [Setting up itsyou.online for oauth2 integration](#itsyouonline-oauth2-integration)
 * [Generate Go, Python, and Nim server and client from an RAML file](#generate-server--client-code)
-     * integrate Go & Python server with oauth2 server, we use [itsyou.online](https://www.itsyou.online/) as example.
+     * integrate all servers with oauth2 server, we use [itsyou.online](https://www.itsyou.online/) as example.
      * accessing auto generated API Docs
 
 We will call the generated application as `goramldir`.
