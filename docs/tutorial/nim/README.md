@@ -9,6 +9,15 @@ Generate server code by using this command
 ```
 go-raml server -l nim --ramlfile ../api.raml  --dir server
 ```
+### install libjwt
+
+The server needs [libjwt](https://github.com/benmcollins/libjwt) for JWT decoding.
+
+Install it using provided script (for Debian/Ubuntu)
+
+```
+./install_libjwt.sh
+```
 
 ### Compile and Run it
 
