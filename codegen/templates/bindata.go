@@ -12,6 +12,8 @@
 // codegen/templates/client_utils_python.tmpl
 // codegen/templates/date.tmpl
 // codegen/templates/enum_capnp.tmpl
+// codegen/templates/enum_go.tmpl
+// codegen/templates/enum_nim.tmpl
 // codegen/templates/generic_main.tmpl
 // codegen/templates/index.html.tmpl
 // codegen/templates/init_py.tmpl
@@ -333,6 +335,46 @@ func templatesEnum_capnpTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/enum_capnp.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _templatesEnum_goTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x64\xcc\xbd\xaa\xc2\x40\x14\xc4\xf1\xfe\x3c\xc5\x10\xb6\xb8\x17\x34\x0f\x20\xa4\xb5\x14\x0b\xb1\x95\x25\x7b\x5c\xc2\x26\x9b\xc5\x7c\x40\x38\xcc\xbb\x8b\x8a\x95\xdd\x6f\xa6\xf8\x9b\x05\xbd\x77\x59\x51\x69\x5e\x86\x5b\x1c\x2b\x52\x8a\x6f\x93\x8f\x0a\xb3\xfa\x9c\x22\x29\xf3\x56\xde\xeb\xe4\x07\x25\x5f\xba\x6c\x45\x49\x91\x76\xcc\xd3\x8c\x3f\x31\xdb\xe3\xe1\x73\x54\xb8\xb4\x83\x5b\x71\x68\x50\x1f\x3b\xed\xc3\x44\x0a\x00\x98\xb9\xf5\x27\x80\xe6\xf3\x5f\x7d\xbf\x28\x69\xa6\x39\x90\xf2\x2f\x5f\x3d\x03\x00\x00\xff\xff\x7e\x16\x9a\x45\xa0\x00\x00\x00")
+
+func templatesEnum_goTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesEnum_goTmpl,
+		"templates/enum_go.tmpl",
+	)
+}
+
+func templatesEnum_goTmpl() (*asset, error) {
+	bytes, err := templatesEnum_goTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/enum_go.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _templatesEnum_nimTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xaa\xae\x4e\x49\x4d\xcb\xcc\x4b\x55\x50\x4a\xcd\x2b\xcd\x8d\xcf\xcb\xcc\x55\xaa\xad\xe5\x2a\xa9\x2c\x48\xe5\x52\x50\xa8\xae\xd6\xf3\x4b\xcc\x4d\xad\xad\xd5\x52\xb0\x55\x00\xc9\x73\x29\x28\x80\x45\xdd\x32\x53\x73\x52\x8a\x83\x4b\x8a\x6a\x6b\xb9\xaa\xab\x53\xf3\x52\x6a\x6b\xb9\x00\x01\x00\x00\xff\xff\x71\xbd\xd9\xea\x4a\x00\x00\x00")
+
+func templatesEnum_nimTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesEnum_nimTmpl,
+		"templates/enum_nim.tmpl",
+	)
+}
+
+func templatesEnum_nimTmpl() (*asset, error) {
+	bytes, err := templatesEnum_nimTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/enum_nim.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -761,6 +803,8 @@ var _bindata = map[string]func() (*asset, error){
 	"templates/client_utils_python.tmpl": templatesClient_utils_pythonTmpl,
 	"templates/date.tmpl": templatesDateTmpl,
 	"templates/enum_capnp.tmpl": templatesEnum_capnpTmpl,
+	"templates/enum_go.tmpl": templatesEnum_goTmpl,
+	"templates/enum_nim.tmpl": templatesEnum_nimTmpl,
 	"templates/generic_main.tmpl": templatesGeneric_mainTmpl,
 	"templates/index.html.tmpl": templatesIndexHtmlTmpl,
 	"templates/init_py.tmpl": templatesInit_pyTmpl,
@@ -834,6 +878,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"client_utils_python.tmpl": &bintree{templatesClient_utils_pythonTmpl, map[string]*bintree{}},
 		"date.tmpl": &bintree{templatesDateTmpl, map[string]*bintree{}},
 		"enum_capnp.tmpl": &bintree{templatesEnum_capnpTmpl, map[string]*bintree{}},
+		"enum_go.tmpl": &bintree{templatesEnum_goTmpl, map[string]*bintree{}},
+		"enum_nim.tmpl": &bintree{templatesEnum_nimTmpl, map[string]*bintree{}},
 		"generic_main.tmpl": &bintree{templatesGeneric_mainTmpl, map[string]*bintree{}},
 		"index.html.tmpl": &bintree{templatesIndexHtmlTmpl, map[string]*bintree{}},
 		"init_py.tmpl": &bintree{templatesInit_pyTmpl, map[string]*bintree{}},

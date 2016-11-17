@@ -29,12 +29,7 @@ type object struct {
 	T           raml.Type
 	OneLineDef  string
 	Parents     []string
-}
-
-// field represents a Nim object field
-type field struct {
-	Name string // field name
-	Type string // field type
+	Enum        *enum
 }
 
 // generates Nim objects from RAML types
@@ -49,7 +44,12 @@ func generateObjects(types map[string]raml.Type, dir string) error {
 	}
 
 	for _, obj := range objs {
-		registerObject(&obj)
+		registerObject(obj.Name)
+		for _, f := range obj.Fields {
+			if f.Enum != nil {
+				registerObject(f.Enum.Name)
+			}
+		}
 	}
 
 	for _, obj := range objs {
@@ -108,15 +108,6 @@ func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, di
 	return obj.Name, obj.generate(dir)
 }
 
-// generates Nim object from an RAML type
-/*func generateObject(t raml.Type, name, dir string) error {
-	obj, err := newObjectFromType(t, name)
-	if err != nil {
-		return err
-	}
-	return obj.generate(dir)
-}*/
-
 // create new object from a method body
 func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
 	name := methodName + "RespBody"
@@ -148,14 +139,11 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
-		fd := field{
-			Name: prop.Name,
-			Type: toNimType(prop.Type),
-		}
+		fd := newField(name, prop)
 		if fd.Type == "" {
 			return object{}, fmt.Errorf("unsupported type in nim:%v", prop.Type)
 		}
-		fields[prop.Name] = fd
+		fields[fd.Name] = fd
 	}
 
 	return object{
@@ -167,11 +155,22 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 
 // generate nim object representation
 func (o *object) generate(dir string) error {
+	// generate enums
+	for _, f := range o.Fields {
+		if f.Enum != nil {
+			if err := f.Enum.generate(dir); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Enum != nil {
+		return o.Enum.generate(dir)
+	}
 	filename := filepath.Join(dir, o.Name+".nim")
 	if err := commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true); err != nil {
 		return err
 	}
-	registerObject(o)
 	return nil
 }
 
@@ -206,12 +205,17 @@ func (o *object) handleAdvancedType() {
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
 		// TODO
+	case o.T.IsEnum():
+		o.makeEnum()
 	case strings.ToLower(strType) == "object": // plain type
 	case o.T.IsArray():
 		o.makeArray(strType)
 	}
 }
 
+func (o *object) makeEnum() {
+	o.Enum = newEnumFromObject(o)
+}
 func (o *object) makeArray(t string) {
 	o.Parents = append(o.Parents, t[:len(t)-2])
 	o.buildOneLine(toNimType(t))
@@ -221,8 +225,8 @@ func (o *object) buildOneLine(tipe string) {
 	o.OneLineDef = fmt.Sprintf("%v* = %v", o.Name, tipe)
 }
 
-func registerObject(obj *object) {
-	objectsRegister[obj.Name] = struct{}{}
+func registerObject(name string) {
+	objectsRegister[name] = struct{}{}
 }
 
 // check if an object named `obj` has been generated

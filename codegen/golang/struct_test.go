@@ -15,125 +15,46 @@ func TestGenerateStructFromRaml(t *testing.T) {
 		apiDef := new(raml.APIDefinition)
 		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 		So(err, ShouldBeNil)
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("Simple struct from raml", func() {
-			err = generateStructs(apiDef.Types, targetdir, "main")
+			err = generateStructs(apiDef.Types, targetDir, "main")
 			So(err, ShouldBeNil)
 
-			//first test
-			s, err := testLoadFile(filepath.Join(targetdir, "EnumCity.go"))
-			So(err, ShouldBeNil)
+			rootFixture := "./fixtures/struct"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"SingleInheritance.go", "singleinheritance.txt"},
+				{"MultipleInheritance.go", "multipleinheritance.txt"},
+				{"ArrayOfCats.go", "arrayofcats.txt"},
+				{"BidimensionalArrayOfCats.go", "bidimensionalarrayofcats.txt"},
+				{"petshop.go", "petshop.txt"},                   // using map type & testing case sensitive type name
+				{"Pet.go", "Pet.txt"},                           // Union
+				{"ArrayOfPets.go", "ArrayOfPets.txt"},           // Array of union
+				{"Specialization.go", "Specialization.txt"},     // Specialization
+				{"EnumCity.go", "enumcity.txt"},                 // Enum Field
+				{"animal.go", "animal.txt"},                     // using enum
+				{"EnumString.go", "enumstring.txt"},             // Enum type
+				{"ValidationString.go", "ValidationString.txt"}, // validation
+			}
 
-			tmpl, err := testLoadFile("../fixtures/struct/enumcity.txt")
-			So(err, ShouldBeNil)
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
 
-			//second test
-			s, err = testLoadFile(filepath.Join(targetdir, "animal.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/animal.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			//third test, single inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "SingleInheritance.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/singleinheritance.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			//fourth test, multiple inheritance
-			s, err = testLoadFile(filepath.Join(targetdir, "MultipleInheritance.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/multipleinheritance.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			//fifth test, array of object
-			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfCats.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/arrayofcats.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// bidimensional array
-			s, err = testLoadFile(filepath.Join(targetdir, "BidimensionalArrayOfCats.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/bidimensionalarrayofcats.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// using map type & testing case sensitive type name
-			s, err = testLoadFile(filepath.Join(targetdir, "petshop.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/petshop.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// Union
-			s, err = testLoadFile(filepath.Join(targetdir, "Pet.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/Pet.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// Array of union
-			s, err = testLoadFile(filepath.Join(targetdir, "ArrayOfPets.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/ArrayOfPets.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// Specialization
-			s, err = testLoadFile(filepath.Join(targetdir, "Specialization.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/Specialization.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// Enum type
-			s, err = testLoadFile(filepath.Join(targetdir, "EnumString.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/enumstring.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// With validation
-			s, err = testLoadFile(filepath.Join(targetdir, "ValidationString.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/ValidationString.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
+				So(s, ShouldEqual, tmpl)
+			}
 
 		})
 
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
 }

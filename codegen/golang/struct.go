@@ -2,7 +2,6 @@ package golang
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -16,67 +15,6 @@ const (
 	inputValidatorFileResult       = "struct_input_validator.go"
 )
 
-// FieldDef defines a field of a struct
-type fieldDef struct {
-	Name          string // field name
-	Type          string // field type
-	IsComposition bool   // composition type
-	IsOmitted     bool   // omitted empty
-	UniqueItems   bool
-
-	Validators string
-}
-
-func (fd *fieldDef) buildValidators(p raml.Property) {
-	validators := ""
-	// string
-	if p.MinLength != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinLength)
-	}
-	if p.MaxLength != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxLength)
-	}
-	if p.Pattern != nil {
-		validators += fmt.Sprintf(",regexp=%v", *p.Pattern)
-	}
-
-	// Number
-	if p.Minimum != nil {
-		validators += fmt.Sprintf(",min=%v", *p.Minimum)
-	}
-
-	if p.Maximum != nil {
-		validators += fmt.Sprintf(",max=%v", *p.Maximum)
-	}
-
-	if p.MultipleOf != nil {
-		validators += fmt.Sprintf(",multipleOf=%v", *p.MultipleOf)
-	}
-
-	//if p.Format != nil {
-	//}
-
-	// Array & Map
-	if p.MinItems != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinItems)
-	}
-	if p.MaxItems != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
-	}
-	if p.UniqueItems {
-		fd.UniqueItems = true
-	}
-
-	// Required
-	if !fd.IsOmitted {
-		validators += ",nonzero"
-	}
-
-	if validators != "" {
-		fd.Validators = validators[1:]
-	}
-}
-
 // StructDef defines a struct
 type structDef struct {
 	T           raml.Type           // raml.Type of this struct
@@ -85,6 +23,7 @@ type structDef struct {
 	PackageName string              // package name
 	Fields      map[string]fieldDef // all struct's fields
 	OneLineDef  string              // not empty if this struct can be defined in one line
+	Enum        *enum
 
 	Validators []string
 }
@@ -100,14 +39,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 	fields := make(map[string]fieldDef)
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
-		fd := fieldDef{
-			Name:      strings.Title(prop.Name),
-			Type:      convertToGoType(prop.Type),
-			IsOmitted: !prop.Required,
-		}
-
-		fd.buildValidators(prop)
-		fields[prop.Name] = fd
+		fields[prop.Name] = newFieldDef(name, prop, packageName)
 	}
 	return structDef{
 		Name:        name,
@@ -160,6 +92,17 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 
 // generate Go struct
 func (sd structDef) generate(dir string) error {
+	// generate enums
+	for _, f := range sd.Fields {
+		if f.Enum != nil {
+			if err := f.Enum.generate(dir); err != nil {
+				return err
+			}
+		}
+	}
+	if sd.Enum != nil {
+		return sd.Enum.generate(dir)
+	}
 	fileName := filepath.Join(dir, sd.Name+".go")
 	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
 }
@@ -265,11 +208,7 @@ func (sd *structDef) addMultipleInheritance(strType string) {
 // buildEnum based on http://docs.raml.org/specs/1.0/#raml-10-spec-enums
 // example result  `type TypeName []data_type`
 func (sd *structDef) buildEnum() {
-	if _, ok := sd.T.Type.(string); !ok {
-		return
-	}
-
-	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
+	sd.Enum = newEnumFromStruct(sd)
 }
 
 // build array type

@@ -29,11 +29,14 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				Expected string
 			}{
 				{"EnumCity.nim", "EnumCity.nim"},
+				{"EnumEnumCityEnum_homeNum.nim", "EnumEnumCityEnum_homeNum.nim"},
+				{"EnumEnumCityEnum_parks.nim", "EnumEnumCityEnum_parks.nim"},
 				{"animal.nim", "animal.nim"},
 				{"Cage.nim", "Cage.nim"},
 				{"Cat.nim", "Cat.nim"},
 				{"ArrayOfCats.nim", "ArrayOfCats.nim"},
 				{"BidimensionalArrayOfCats.nim", "BidimensionalArrayOfCats.nim"},
+				{"EnumString.nim", "EnumString.nim"}, // object is enum type
 			}
 
 			for _, check := range checks {

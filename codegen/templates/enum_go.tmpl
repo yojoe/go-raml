@@ -1,0 +1,9 @@
+{{define "enum_go"}}
+package {{.Pkg}}
+type {{.Name}} {{.Type}}
+
+const (
+{{- range $k, $v := .Fields}}
+    {{$v.Name}} {{.Type}} = {{$v.Value}}{{end}}
+)
+{{end}}
