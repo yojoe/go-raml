@@ -70,10 +70,14 @@ func (c *Client) generateServices(rs []resource) error {
 // generate security related files
 // it currently only supports itsyou.online oauth2
 func (c *Client) generateSecurity() error {
-	for _, ss := range c.APIDef.SecuritySchemes {
-		if v, ok := ss.Settings["accessTokenUri"]; ok && fmt.Sprintf("%v", v) == "https://itsyou.online/v1/oauth/access_token" {
-			filename := filepath.Join(c.Dir, "oauth2_client_itsyouonline.nim")
-			if err := commons.GenerateFile(ss, "./templates/oauth2_client_itsyouonline.tmpl", "oauth2_client_itsyouonline", filename, true); err != nil {
+	for name, ss := range c.APIDef.SecuritySchemes {
+		if v, ok := ss.Settings["accessTokenUri"]; ok {
+			ctx := map[string]string{
+				"ClientName": clientName(c.APIDef),
+				"BaseURI":    fmt.Sprintf("%v", v),
+			}
+			filename := filepath.Join(c.Dir, "oauth2_client_"+name+".nim")
+			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_nim.tmpl", "oauth2_client_nim", filename, true); err != nil {
 				return err
 			}
 		}

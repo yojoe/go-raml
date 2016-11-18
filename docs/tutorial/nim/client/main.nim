@@ -1,18 +1,15 @@
-import ./iyo/client_itsyouonline as iyoClient
-import iyo/oauth2_client_itsyouonline
-import ./goraml/client_goraml, ./goraml/Users_service
+import ./goraml/client_goraml, ./goraml/Users_service, ./goraml/oauth2_client_itsyouonline
+
+# create the client
+let c = client_goraml.newClient()
 
 # get JWT token from itsyou.online
-let iyo = iyoClient.newClient()
+let jwtToken = c.getTokenByClientCrendentials("client-id", "client-secret", @["user:memberof:goraml"], @["external1"])
 
-let token = iyo.getAccessToken("client-id", "client-secret")
-echo "token=", token
-
-let jwtToken = iyo.createJWTToken(@["user:memberof:goraml"], @["external1"])
-
-# make request to goraml server
-let c = client_goraml.newClient()
+# set token as Authorization header
+echo "jwt token=", jwtToken
 c.setAuthHeader("token " & jwtToken)
 
+# make request to goraml server
 let resp = c.UsersSrv.usersGet()
 echo "resp=", $resp
