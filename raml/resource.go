@@ -3,7 +3,7 @@ package raml
 import (
 	"fmt"
 	"log"
-	"path/filepath"
+	"path"
 	"strings"
 )
 
@@ -309,7 +309,7 @@ func (r *Resource) FullURI() string {
 }
 
 func doFullURI(r *Resource, completeURI string) string {
-	completeURI = filepath.Join(r.URI, completeURI)
+	completeURI = path.Join(r.URI, completeURI, "/")
 	if r.Parent == nil {
 		return completeURI
 	}
