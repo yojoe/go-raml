@@ -47,8 +47,14 @@ There is `main.nim` in `client` directory. It serves as an example on
 how to use generated client lib.
 
 You need to modify these:
-- itsyouonline client-id and client-secret when calling `getTokenByClientCredentials` proc
-- "user:memberof:goraml" to your organization
+- itsyouonline clientId and clientSecret variables
+
+The example call an endpoint which doesn't need any scope.
+So, as long as you have valid itsyouonline token, you can call it.
+
+There are commented lines of code, which call endpoint that need scopes. 
+You need to uncomment thoselines and modify these:
+- "user:memberof:goraml" to your organization/scope
 - "external1" to your audience
 
 **server**

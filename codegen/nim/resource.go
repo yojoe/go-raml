@@ -56,7 +56,7 @@ func (r *resource) apiName() string {
 func (r *resource) NeedJWT() bool {
 	for _, mi := range r.Methods {
 		m := mi.(method)
-		if m.SecurityScopes() != "" {
+		if m.Secured() {
 			return true
 		}
 	}

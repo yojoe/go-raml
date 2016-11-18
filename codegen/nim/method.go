@@ -123,6 +123,10 @@ func (m method) ContentRetval() string {
 	return retval
 }
 
+func (m method) Secured() bool {
+	return len(m.SecuredBy) > 0
+}
+
 // SecurityScopes retuns security scopes of a method as single string
 func (m method) SecurityScopes() string {
 	if len(m.SecuredBy) == 0 {

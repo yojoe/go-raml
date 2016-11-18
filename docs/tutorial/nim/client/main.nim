@@ -1,15 +1,22 @@
 import ./goraml/client_goraml, ./goraml/Users_service, ./goraml/oauth2_client_itsyouonline
 
+let clientId = ""
+let clientSecret = ""
+
 # create the client
 let c = client_goraml.newClient()
 
-# get JWT token from itsyou.online
-let jwtToken = c.getTokenByClientCrendentials("client-id", "client-secret", @["user:memberof:goraml"], @["external1"])
-
-# set token as Authorization header
-echo "jwt token=", jwtToken
+# Example of calling endpoint which doesn't need scope
+# get JWT token from itsyou.online and set it as authorization header
+let jwtToken = c.getTokenByClientCrendentials(clientSecret, clientId, @[], @[])
 c.setAuthHeader("token " & jwtToken)
 
-# make request to goraml server
 let resp = c.UsersSrv.usersGet()
 echo "resp=", $resp
+
+# Example of calling endpoint which need scope
+# get JWT token from itsyou.online and set it as authorization header
+#let jwtToken = c.getTokenByClientCrendentials(clientId, clientSecret, @["user:memberof:goraml"], @["external1"])
+#c.setAuthHeader("token " & jwtToken)
+#let resp2 = c.UsersSrv.usersByUsernameGet("john")
+#echo "resp2=", $resp2
