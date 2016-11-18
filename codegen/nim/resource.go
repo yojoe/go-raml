@@ -52,6 +52,16 @@ func (r *resource) apiName() string {
 	return strings.ToLower(r.Name) + "_api"
 }
 
+// NeedJWT returns true if this resource need JWT Library
+func (r *resource) NeedJWT() bool {
+	for _, mi := range r.Methods {
+		m := mi.(method)
+		if m.Secured() {
+			return true
+		}
+	}
+	return false
+}
 func getAllResources(apiDef *raml.APIDefinition, isServer bool) []resource {
 	rs := []resource{}
 

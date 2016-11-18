@@ -73,6 +73,9 @@ func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
 			names = append(names, ns...)
 		}
 	}
+	for _, name := range names {
+		registerObject(name)
+	}
 	return names, nil
 }
 

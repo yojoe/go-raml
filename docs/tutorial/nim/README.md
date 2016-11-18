@@ -39,14 +39,6 @@ go-raml client --ramlfile ../api.raml --dir client/goraml -l nim
 Then you can find goraml client code in `client/goraml` directory.
 
 
-Generate itsyouonline client lib by using this command
-
-```
-go-raml client -l nim --ramlfile ../itsyouonline-raml/itsyouonline.raml --dir client/iyo 
-```
-It will generate itsyouonline client library in `client/iyo' directory
-
-
 ### Simple usage
 
 **client**
@@ -54,8 +46,16 @@ It will generate itsyouonline client library in `client/iyo' directory
 There is `main.nim` in `client` directory. It serves as an example on 
 how to use generated client lib.
 
-You need to modify it by supply your itsyouonline client-id and client-secret
-when calling `createJWTToken` proc
+You need to modify these:
+- itsyouonline clientId and clientSecret variables
+
+The example call an endpoint which doesn't need any scope.
+So, as long as you have valid itsyouonline token, you can call it.
+
+There are commented lines of code, which call endpoint that need scopes. 
+You need to uncomment thoselines and modify these:
+- "user:memberof:goraml" to your organization/scope
+- "external1" to your audience
 
 **server**
 

@@ -72,6 +72,9 @@ func (s *Server) generateMain() error {
 // generates all needed security files
 // we currently only support itsyou.online oauth2 jwt token
 func (s *Server) generateSecurity() error {
+	if !s.needJWT() {
+		return nil
+	}
 	// libjwt
 	if err := commons.GenerateFile(s, "./templates/libjwt_nim.tmpl", "libjwt_nim", filepath.Join(s.Dir, "libjwt.nim"), true); err != nil {
 		return err
@@ -96,6 +99,15 @@ func (s *Server) Imports() []string {
 	return commons.MapToSortedStrings(imports)
 }
 
+// check if this server need to have jwt lib
+func (s *Server) needJWT() bool {
+	for _, r := range s.Resources {
+		if r.NeedJWT() {
+			return true
+		}
+	}
+	return false
+}
 func generateResourceAPIs(rs []resource, dir string) error {
 	for _, r := range rs {
 		if err := r.generate(dir); err != nil {
