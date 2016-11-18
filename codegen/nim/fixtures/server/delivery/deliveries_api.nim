@@ -1,8 +1,8 @@
 import jester, marshal, system
-import oauth2_jwt
 
 
-let ojwt = Oauth2JWT(pubKey:readFile("itsyouonline.pub"))
+
+
 
 
 proc deliveriesGet*(req: Request) : tuple[code: HttpCode, content: string] =
