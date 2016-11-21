@@ -72,6 +72,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			}{
 				{"PersonInclude.go", "PersonInclude.txt"},
 				{"PersonPostReqBody.go", "PersonPostReqBody.txt"},
+				{"PersonGetRespBody.go", "PersonGetRespBody.txt"},
 			}
 
 			for _, check := range checks {
