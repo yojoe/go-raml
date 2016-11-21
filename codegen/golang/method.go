@@ -76,14 +76,18 @@ func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, 
 	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
 
 	gcm := clientMethod{Method: &method}
-	err := gcm.setup(methodName)
-	return gcm, err
+	gcm.setup(methodName)
+	return gcm, nil
 }
 
-func (gcm *clientMethod) setup(methodName string) error {
+func (gcm *clientMethod) setup(methodName string) {
 	// build func/method params
-	buildParams := func(r *raml.Resource, bodyType string) (string, error) {
+	buildParams := func(r *raml.Resource, bodyType string) string {
 		paramsStr := strings.Join(resource.GetResourceParams(r), ",")
+		params := resource.GetResourceParams(r)
+		if len(params) > 0 {
+			params[len(params)-1] = params[len(params)-1] + " string"
+		}
 		if len(paramsStr) > 0 {
 			paramsStr += " string"
 		}
@@ -93,16 +97,16 @@ func (gcm *clientMethod) setup(methodName string) error {
 			if len(paramsStr) > 0 {
 				paramsStr += ", "
 			}
-			paramsStr += strings.ToLower(bodyType) + " " + bodyType
+			params = append(params, strings.ToLower(bodyType)+" "+bodyType)
 		}
 
 		// append header
 		if len(paramsStr) > 0 {
 			paramsStr += ","
 		}
-		paramsStr += "headers,queryParams map[string]interface{}"
+		params = append(params, "headers,queryParams map[string]interface{}")
 
-		return paramsStr, nil
+		return strings.Join(params, ", ")
 	}
 
 	// method name
@@ -115,13 +119,7 @@ func (gcm *clientMethod) setup(methodName string) error {
 	}
 
 	// method param
-	methodParam, err := buildParams(gcm.RAMLResource, gcm.ReqBody)
-	if err != nil {
-		return err
-	}
-	gcm.Params = methodParam
-
-	return nil
+	gcm.Params = buildParams(gcm.RAMLResource, gcm.ReqBody)
 }
 
 // ReturnTypes returns all types returned by this method
