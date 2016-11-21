@@ -1,0 +1,29 @@
+#%RAML 1.0
+title: Using JSON Schema
+
+types:
+  PersonInclude: !include person.json
+
+/person:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            type: PersonInclude
+  post:
+    body:
+      application/json:
+        type: |
+          {
+            "title": "Body Declaration Schema",
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              }
+            }
+          }
