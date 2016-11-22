@@ -13,43 +13,63 @@ import (
 func TestGeneratePythonClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
-		So(err, ShouldBeNil)
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("python class from raml Types", func() {
+			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
+			So(err, ShouldBeNil)
+
 			err = generateClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			// strings validator
-			s, err := testLoadFile(filepath.Join(targetDir, "ValidationString.py"))
+			rootFixture := "./fixtures/class/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"ValidationString.py", "ValidationString.py"}, // strings validator
+				{"Cage.py", "Cage.py"},                         // with form field
+				{"animal.py", "animal.py"},                     // FieldList of FormField
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
+		Convey("python class from raml with JSON", func() {
+			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/struct/ValidationString.py")
+			err = generateClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
+			rootFixture := "./fixtures/class/json/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"PersonInclude.py", "PersonInclude.py"},
+			}
 
-			// with form field
-			s, err = testLoadFile(filepath.Join(targetDir, "Cage.py"))
-			So(err, ShouldBeNil)
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../fixtures/struct/Cage.py")
-			So(err, ShouldBeNil)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
+				So(s, ShouldEqual, tmpl)
+			}
 
-			// FieldList of FormField
-			s, err = testLoadFile(filepath.Join(targetDir, "animal.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/struct/animal.py")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-			// another test could be seen at body_test.go
 		})
 
 		Reset(func() {
