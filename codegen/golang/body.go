@@ -6,10 +6,10 @@ import (
 )
 
 // generate all body struct from an RAML definition
-func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName, lang string) error {
+func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName string) error {
 	// generate
 	for _, v := range apiDef.Resources {
-		if err := generateStructsFromResourceBody("", dir, packageName, lang, &v); err != nil {
+		if err := generateStructsFromResourceBody("", dir, packageName, &v); err != nil {
 			return err
 		}
 	}
@@ -18,7 +18,7 @@ func generateBodyStructs(apiDef *raml.APIDefinition, dir, packageName, lang stri
 }
 
 // generate all structs from resource's method's request & response body
-func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string, r *raml.Resource) error {
+func generateStructsFromResourceBody(resourcePath, dir, packageName string, r *raml.Resource) error {
 	if r == nil {
 		return nil
 	}
@@ -40,14 +40,14 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 	normalizedPath := commons.NormalizeURITitle(resourcePath + r.URI)
 
 	for _, v := range methods {
-		if err := buildBodyFromMethod(normalizedPath, v.Name, dir, packageName, lang, v.Method); err != nil {
+		if err := buildBodyFromMethod(normalizedPath, v.Name, dir, packageName, v.Method); err != nil {
 			return err
 		}
 	}
 
 	// build request/response body of child resources
 	for _, v := range r.Nested {
-		if err := generateStructsFromResourceBody(resourcePath+r.URI, dir, packageName, lang, v); err != nil {
+		if err := generateStructsFromResourceBody(resourcePath+r.URI, dir, packageName, v); err != nil {
 			return err
 		}
 	}
@@ -57,7 +57,7 @@ func generateStructsFromResourceBody(resourcePath, dir, packageName, lang string
 
 // build request and reponse body of a method.
 // in python case, we only need to build it for request body because we only need it for validator
-func buildBodyFromMethod(normalizedPath, methodName, dir, packageName, lang string, method *raml.Method) error {
+func buildBodyFromMethod(normalizedPath, methodName, dir, packageName string, method *raml.Method) error {
 	if method == nil {
 		return nil
 	}

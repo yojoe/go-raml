@@ -65,7 +65,7 @@ func (gs Server) Generate(dir string) error {
 	}
 
 	// generate all request & response body
-	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName, langGo); err != nil {
+	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName); err != nil {
 		return err
 	}
 

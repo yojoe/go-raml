@@ -11,27 +11,64 @@ import (
 )
 
 func TestGenerateClassFromBody(t *testing.T) {
-	Convey("generate struct body from raml", t, func() {
+	Convey("Class from method body", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
-		So(err, ShouldBeNil)
 
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("python class from request/response bodies", func() {
-			rs := getAllResources(apiDef, true)
-			err = generateClassesFromBodies(rs, targetDir)
+		Convey("from RAML", func() {
+			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			// req body
-			s, err := testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.py"))
+			err = generateClassesFromBodies(getAllResources(apiDef, true), targetDir)
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/struct/UsersPostReqBody.py")
+			rootFixture := "./fixtures/class/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"UsersPostReqBody.py", "UsersPostReqBody.py"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
+		Convey("from RAML with JSON", func() {
+			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
+			err = generateClassesFromBodies(getAllResources(apiDef, true), targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/class/json/"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"PersonGetRespBody.py", "PersonGetRespBody.py"},
+				{"PersonPostReqBody.py", "PersonPostReqBody.py"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
 
 		})
 

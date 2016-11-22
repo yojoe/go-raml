@@ -11,15 +11,16 @@ import (
 )
 
 func TestGenerateObjectFromRaml(t *testing.T) {
-	Convey("generate object from raml", t, func() {
+	Convey("generate object", t, func() {
 		var apiDef raml.APIDefinition
-		err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
-		So(err, ShouldBeNil)
 
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("Simple struct from raml", func() {
+		Convey("From raml", func() {
+			err = raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
+			So(err, ShouldBeNil)
+
 			err = generateObjects(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
@@ -51,6 +52,33 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 
 		})
 
+		Convey("From raml with JSON", func() {
+			err = raml.ParseFile("../fixtures/struct/json/api.raml", &apiDef)
+			So(err, ShouldBeNil)
+
+			err = generateObjects(apiDef.Types, targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/object/json"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"PersonInclude.nim", "PersonInclude.nim"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
@@ -61,7 +89,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("generate request body", func() {
+		Convey("From data structure", func() {
 			var body raml.Bodies
 			properties := map[string]interface{}{
 				"age": map[interface{}]interface{}{
@@ -92,7 +120,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 
 		})
 
-		Convey("Simple object from raml", func() {
+		Convey("From raml", func() {
 			var apiDef raml.APIDefinition
 			err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 			So(err, ShouldBeNil)
@@ -107,6 +135,36 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 			}{
 				{"usersPostReqBody.nim", "usersPostReqBody.nim"},
 				{"usersByIdGetRespBody.nim", "usersByIdGetRespBody.nim"},
+			}
+
+			for _, check := range checks {
+				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
+		Convey("From raml with included JSON", func() {
+			var apiDef raml.APIDefinition
+			err := raml.ParseFile("../fixtures/struct/json/api.raml", &apiDef)
+			So(err, ShouldBeNil)
+
+			_, err = generateObjectsFromBodies(getAllResources(&apiDef, true), targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/object/json"
+			checks := []struct {
+				Result   string
+				Expected string
+			}{
+				{"personPostReqBody.nim", "personPostReqBody.nim"},
+				{"personPostReqBody.nim", "personPostReqBody.nim"},
+				{"personGetRespBody.nim", "personGetRespBody.nim"},
 			}
 
 			for _, check := range checks {
