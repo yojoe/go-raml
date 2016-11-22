@@ -1,0 +1,8 @@
+{{- define "enum_python" -}}
+from enum import Enum
+
+
+class {{.Name}}(Enum):
+	{{- range $k, $v := .Fields}}
+    {{$v.Name}} = {{$v.Value}}{{end}}
+{{end}}
