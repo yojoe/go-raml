@@ -7,9 +7,9 @@ let clientSecret = ""
 let c = client_goraml.newClient()
 
 # Example of calling endpoint which doesn't need scope
-# get JWT token from itsyou.online and set it as authorization header
-let jwtToken = c.getTokenByClientCrendentials(clientSecret, clientId, @[], @[])
-c.setAuthHeader("token " & jwtToken)
+# get JWT token from itsyou.online and then set it as authorization header
+let jwtToken = c.getAccessToken(clientSecret, clientId, @[], @[])
+c.setAuthHeader("Bearer " & jwtToken)
 
 let resp = c.UsersSrv.usersGet()
 echo "resp=", $resp

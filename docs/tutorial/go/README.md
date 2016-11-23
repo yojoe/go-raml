@@ -74,23 +74,15 @@ generate client code by using this command
 
 Then you can find client code in `client` directory.
 
-**itsyou.online client library**
-
-We need the library to get oauth2 token and generate JWT token
-
-`go get -u -v github.com/itsyouonline/identityserver/clients/go/itsyouonline`
-
 
 **simple client main program**
 
 A simple example of the client program can be found in [main.go](client/main.go).
 
-Steps to use generated client lib & itsyou.online client lib:
+Steps to use generated client lib:
 
-- create itsyou.online client object
-- login to itsyou.online to create oauth2 token
-- create itsyou.online JWT token
 - create `goramldir` client object
+- create itsyou.online JWT token
 - set JWT token as authorization header
 
 after above steps, client are ready to make API call to `goramldir` server.

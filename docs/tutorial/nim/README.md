@@ -9,6 +9,11 @@ Generate server code by using this command
 ```
 go-raml server -l nim --ramlfile ../api.raml  --dir server
 ```
+Copy itsyou.online public key
+
+```
+cp ../itsyouonline.pub server/oauth2_server_key.pub
+```
 ### install libjwt
 
 The server needs [libjwt](https://github.com/benmcollins/libjwt) for JWT decoding.

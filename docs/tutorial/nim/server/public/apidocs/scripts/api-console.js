@@ -7499,3 +7499,12 @@ angular.module('ramlConsoleApp').run(['$templateCache', function($templateCache)
   );
 
 }]);
+ scopes\">\n" +
+    "        <input type=\"checkbox\" ng-model=\"credentials.scopes[scope]\"> {{scope}}\n" +
+    "      </li>\n" +
+    "    </ol>\n" +
+    "  </p>\n" +
+    "</div>\n"
+  );
+
+}]);

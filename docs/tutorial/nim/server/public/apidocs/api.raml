@@ -1,7 +1,7 @@
 #%RAML 1.0
 title: goraml dir
 description: goraml developers directory
-baseUri: http://localhost:5000
+baseUri: http://172.20.10.10:5000
 mediaType: application/json
 securitySchemes:
   itsyouonline: 
@@ -25,7 +25,7 @@ securitySchemes:
                       description: Unauthorized
                 settings:
                   authorizationUri: https://itsyou.online/v1/oauth/authorize
-                  accessTokenUri: https://itsyou.online/v1/oauth/access_token
+                  accessTokenUri: https://itsyou.online/v1/oauth/access_token?response_type=id_token
                   authorizationGrants: [ authorization_code, client_credentials ]
                   scopes:
                     - "user:admin"

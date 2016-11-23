@@ -92,6 +92,10 @@ func (gc Client) Generate(dir string) error {
 		return err
 	}
 
+	if err := gc.generateSecurity(dir); err != nil {
+		return err
+	}
+
 	if err := gc.generateServices(dir); err != nil {
 		return err
 	}
@@ -109,6 +113,24 @@ func (gc *Client) generateServices(dir string) error {
 		sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// generate security related files
+// it currently only supports itsyou.online oauth2
+func (c *Client) generateSecurity(dir string) error {
+	for name, ss := range c.apiDef.SecuritySchemes {
+		if v, ok := ss.Settings["accessTokenUri"]; ok {
+			ctx := map[string]string{
+				"ClientName":     c.Name,
+				"AccessTokenURI": fmt.Sprintf("%v", v),
+			}
+			filename := filepath.Join(dir, "oauth2_client_"+name+".go")
+			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_go.tmpl", "oauth2_client_go", filename, true); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

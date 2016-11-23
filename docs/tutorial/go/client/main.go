@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-
-	"github.com/itsyouonline/identityserver/clients/go/itsyouonline"
 )
 
 var (
@@ -18,37 +16,28 @@ func main() {
 		log.Fatalf("please specify itsyou.online application ID & API Key")
 	}
 
-	// create itsyou.online client
-	ioc := itsyouonline.NewItsyouonline()
-
-	// get oauth2 token
-	_, err := ioc.LoginWithClientCredentials(*appID, *appSecret)
-	if err != nil {
-		log.Fatalf("failed to get itsyou.online token:%v\n", err)
-	}
+	gr := Newgoramldir()
 
 	// create itsyou.online JWT token
-	jwtToken, err := ioc.CreateJWTToken([]string{"user:memberof:goraml"}, []string{"external1"})
+	jwtToken, err := gr.GetOauth2AccessToken(*appID, *appSecret, []string{}, []string{})
 	if err != nil {
 		log.Fatalf("failed to create itsyou.online JWT token:%v", err)
 	}
 
-	// create goramldir client
-	gr := Newgoramldir()
-
+	log.Printf("got JWT token = %v\n", jwtToken)
 	// set goramldir authorization header to use JWT token
-	gr.AuthHeader = "token " + jwtToken
+	gr.AuthHeader = "Bearer " + jwtToken
 
-	// calling GET /users/john
-	user, resp, err := gr.UsersUsernameGet("john", nil, nil)
+	// calling GET /users
+	users, resp, err := gr.Users.UsersGet(nil, nil)
 	if err != nil {
-		log.Fatalf("failed to GET /users:%v, resp code = %v", err, resp.StatusCode)
+		log.Fatalf("failed to GET /users. err = %v", err)
 	}
 
 	if resp.StatusCode != 200 {
 		log.Fatalf("GET /users failed. http status code = %v", resp.StatusCode)
 	}
 
-	log.Printf("user = %v\n", user)
+	log.Printf("users = %v\n", users)
 
 }

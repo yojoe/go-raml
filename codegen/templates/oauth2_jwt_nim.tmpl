@@ -42,11 +42,11 @@ proc checkJWTToken*(ojwt: Oauth2JWT, req: Request, scopes: openArray[string]): b
   if authHdr.len == 0:
     return false
   
-  if not authHdr.startsWith("token "):
+  if not authHdr.startsWith("Bearer "):
     return false
 
   var grants: JWTGrants
-  grants = ojwt.decodeJWT(authHdr[6..authHdr.len])
+  grants = ojwt.decodeJWT(authHdr[7..authHdr.len])
   if grants.scope.len == 0: grants.scope = @[]
   
   return checkScopes(grants.scope, scopes)

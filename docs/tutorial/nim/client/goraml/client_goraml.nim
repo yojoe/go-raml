@@ -5,7 +5,7 @@ type
     baseURI*: string
     hc: HttpClient
 
-const defaultBaseURI = "http://localhost:5000"
+const defaultBaseURI = "http://172.20.10.10:5000"
 
 proc newClient*(baseURI = defaultBaseURI): Client =
   # creates new client
