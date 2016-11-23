@@ -1,0 +1,16 @@
+package main
+
+import (
+	"gopkg.in/validator.v2"
+)
+
+type PersonGetRespBody struct {
+	Age       string `json:"age" validate:"nonzero"`
+	FirstName string `json:"firstName" validate:"nonzero"`
+	LastName  string `json:"lastName" validate:"nonzero"`
+}
+
+func (s PersonGetRespBody) Validate() error {
+
+	return validator.Validate(s)
+}

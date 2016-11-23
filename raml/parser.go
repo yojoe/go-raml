@@ -205,7 +205,13 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 			}
 
 			// add newline to included content
-			includedContents = append([]byte("\n"), includedContents...)
+			prepender := []byte("\n")
+
+			// if it is in response body, we prepend "|" to make it as string
+			if strings.HasPrefix(strings.TrimSpace(line), "type") { // in body
+				prepender = []byte("|\n")
+			}
+			includedContents = append(prepender, includedContents...)
 
 			// TODO: Check that you only insert .yaml, .raml, .txt and .md files
 			// In case of .raml or .yaml, remove the comments
@@ -246,7 +252,6 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("Error reading YAML file: %s", err.Error())
 	}
-
 	// Return the preprocessed contents
 	return preprocessedContents.Bytes(), nil
 }
