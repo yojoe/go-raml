@@ -23,7 +23,7 @@ type Security struct {
 	//apiDef      *raml.APIDefinition
 }
 
-// create security struct
+// New creates a security struct
 func New(ss *raml.SecurityScheme, name, packageName string) Security {
 	sd := Security{
 		SecurityScheme: ss,
@@ -46,6 +46,15 @@ func New(ss *raml.SecurityScheme, name, packageName string) Security {
 	}
 
 	return sd
+}
+
+// Supported returns true if the security scheme is supported by go-raml
+func Supported(ss raml.SecurityScheme) bool {
+	if ss.Type != Oauth2 {
+		return false
+	}
+	_, ok := ss.Settings["accessTokenUri"]
+	return ok
 }
 
 // GetMethodSecuredBy get SecuredBy field of a method

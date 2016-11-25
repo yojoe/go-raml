@@ -99,18 +99,6 @@ $ source env/bin/activate
 $ pip3 install requests
 ```
 
-**Install itsyou.online client library**
-
-We need it to authenticate using JWT token from itsyou.online.
-
-Because there is still no pypi package for itsyou.online client library,
-we need to copy it manually
-
-```
-$ git clone --depth=1 https://github.com/itsyouonline/identityserver.git
-$ cp -a identityserver/clients/python/itsyouonline .
-$ rm -rf identityserver
-```
 
 **simple client main code**
 
