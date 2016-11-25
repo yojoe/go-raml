@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	defaultBaseURI = "http://172.20.10.10:5000"
+	defaultBaseURI = "http://localhost:5000"
 )
 
 type goramldir struct {

@@ -28,7 +28,10 @@ You can find all server files in `$GOPATH/src/examples.com/goramldir` directory.
 ### Server side itsyou.online integration
 
 You only need to replace the value of `oauth2ServerPublicKey` variable in `oauth2_itsyouonline_middleware.go`
-to the content of [itsyouonline.pub](../itsyouonline.pub)
+to the content of [itsyouonline.pub](../itsyouonline.pub).
+
+
+**Build & Run the server**
 ```
 go build
 ./goramldir
