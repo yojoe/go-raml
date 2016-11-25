@@ -17,6 +17,7 @@
 // codegen/templates/enum_nim.tmpl
 // codegen/templates/generic_main.tmpl
 // codegen/templates/index.html.tmpl
+// codegen/templates/init_py.tmpl
 // codegen/templates/input_validators_python.tmpl
 // codegen/templates/libjwt_nim.tmpl
 // codegen/templates/oauth2_client_go.tmpl
@@ -440,6 +441,26 @@ func templatesIndexHtmlTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/index.html.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _templatesInit_pyTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
+
+func templatesInit_pyTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_templatesInit_pyTmpl,
+		"templates/init_py.tmpl",
+	)
+}
+
+func templatesInit_pyTmpl() (*asset, error) {
+	bytes, err := templatesInit_pyTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "templates/init_py.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -913,6 +934,7 @@ var _bindata = map[string]func() (*asset, error){
 	"templates/enum_nim.tmpl": templatesEnum_nimTmpl,
 	"templates/generic_main.tmpl": templatesGeneric_mainTmpl,
 	"templates/index.html.tmpl": templatesIndexHtmlTmpl,
+	"templates/init_py.tmpl": templatesInit_pyTmpl,
 	"templates/input_validators_python.tmpl": templatesInput_validators_pythonTmpl,
 	"templates/libjwt_nim.tmpl": templatesLibjwt_nimTmpl,
 	"templates/oauth2_client_go.tmpl": templatesOauth2_client_goTmpl,
@@ -993,6 +1015,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"enum_nim.tmpl": &bintree{templatesEnum_nimTmpl, map[string]*bintree{}},
 		"generic_main.tmpl": &bintree{templatesGeneric_mainTmpl, map[string]*bintree{}},
 		"index.html.tmpl": &bintree{templatesIndexHtmlTmpl, map[string]*bintree{}},
+		"init_py.tmpl": &bintree{templatesInit_pyTmpl, map[string]*bintree{}},
 		"input_validators_python.tmpl": &bintree{templatesInput_validators_pythonTmpl, map[string]*bintree{}},
 		"libjwt_nim.tmpl": &bintree{templatesLibjwt_nimTmpl, map[string]*bintree{}},
 		"oauth2_client_go.tmpl": &bintree{templatesOauth2_client_goTmpl, map[string]*bintree{}},
