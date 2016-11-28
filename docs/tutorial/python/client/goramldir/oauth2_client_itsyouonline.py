@@ -11,8 +11,8 @@ class Oauth2ClientItsyouonline():
             'client_secret': client_secret
         }
         if len(scopes) > 0:
-            params['scope'] = scopes.join(",")
+            params['scope'] = ",".join(scopes)
         if len(audiences) > 0:
-            params['aud'] = audiences.join(",")
+            params['aud'] = ",".join(audiences)
         
         return requests.post(self.access_token_uri, params=params)
