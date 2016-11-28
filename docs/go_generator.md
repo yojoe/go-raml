@@ -50,6 +50,7 @@ Enum type and file name is started by `Enum`
  array Type maxItems        |   v   |   x
  array Type uniqueItems     |   v   |   x
 
+
 ## Bodies
 Request  and response body are mapped into structs
 and following the same rules as types.
@@ -102,7 +103,14 @@ The generated code in the server is in the form of commented code:
 
 ## Resource Types and Traits
 
+[Resource Types and Traits](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#resource-types-and-traits) already parsed by the parser. So, the generator need to know nothing about it.
+
 ## Security Schemes
+
+go-raml only supports [OAuth2.0](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#oauth-20).
+
+- client : it currently able to get oauth2 token with client credentials.
+- server : it currently only support JWT token from itsyou.online
 
 ## Annotations
 
