@@ -84,7 +84,7 @@ You can find the modified file in [oauth2_itsyouonline.py](./server/oauth2_itsyo
 Generate client code by using this command
 
 ```
-go-raml client --ramlfile ../api.raml --dir client -l python
+go-raml client --ramlfile ../api.raml --dir client/goramldir -l python
 ```
 Then you can find client code in client directory.
 

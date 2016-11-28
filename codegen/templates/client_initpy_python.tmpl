@@ -3,7 +3,7 @@ import requests
 
 from .client import Client as APIClient
 {{ range $k, $v := .Securities}}
-from {{$v.ModuleName}} import {{$v.Name}}{{end}}
+from .{{$v.ModuleName}} import {{$v.Name}}{{end}}
 
 class Client:
     def __init__(self, base_uri="{{.BaseURI}}"):
