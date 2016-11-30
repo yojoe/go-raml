@@ -28,7 +28,7 @@ func TestLibrary(t *testing.T) {
 		err = server.Generate(targetDir)
 		So(err, ShouldBeNil)
 
-		rootFixture := "../fixtures/libraries/python_server"
+		rootFixture := "./fixtures/libraries/python_server"
 		checks := []struct {
 			Result   string
 			Expected string

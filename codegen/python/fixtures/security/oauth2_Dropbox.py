@@ -1,6 +1,19 @@
 from functools import wraps
 from flask import g, request, jsonify
 
+from jose import jwt
+
+oauth2_server_pub_key = """"""
+
+token_prefix = "Bearer "
+
+def get_jwt_scopes(token):
+    if token.startswith(token_prefix):
+        token = token[len(token_prefix):]
+        return jwt.decode(token, oauth2_server_pub_key)["scope"]
+    else:
+        raise Exception('invalid token')
+
 class oauth2_Dropbox:
     def __init__(self, scopes=None):
         
@@ -23,11 +36,10 @@ class oauth2_Dropbox:
 
             g.access_token = token
 
-            # provide code to check scopes of the access_token
-            scopes = []
-
-            if self.check_scopes(scopes) == False:
-                return jsonify(), 403
+            if len(oauth2_server_pub_key) > 0:
+                scopes = get_jwt_scopes(token)
+                if self.check_scopes(scopes) == False:
+                    return jsonify(), 403
             return f(*args, **kwargs)
         return decorated_function
 
