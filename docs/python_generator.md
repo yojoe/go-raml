@@ -1,4 +1,17 @@
-# Go Code Generator
+# Python Code Generator
+
+## Server
+
+Generated server code use these libraries:
+
+- Flask as web framework
+- Flask WTF for request body validation
+- [python-jose](https://github.com/mpdavis/python-jose) for JWT decoding
+
+## Client
+
+Generated client library use [requests](http://docs.python-requests.org/en/master/) as http library.
+
 
 ## Type
 
@@ -43,9 +56,26 @@ struct name = [Resource name][Method name][ReqBody|RespBody].
 
 ## Resources and Nested Resources
 
+### Server
+
 Resources in the server are mapped to:
 
 - a flask blueprint module
+
+### Client
+
+Resourcess in the client are implemented as services.
+
+Let's say we have two root resources:
+- /users
+- /network
+
+Client library is going to have two services:
+- users
+- network
+
+Each service will have it's own methods
+
 
 ## Methods
 

@@ -273,9 +273,9 @@ When you want to contribute to the development, follow the [contribution guideli
 
 Short descriptions about how the generator generates the code from raml file are available in these docs:
 
-- [Go][./docs/go_generator.md]
-- [Python][./docs/python_generator.md]
-- [Nim][./docs/nim_generator.md]
+- [Go](./docs/go_generator.md)
+- [Python](./docs/python_generator.md)
+- [Nim](./docs/nim_generator.md)
  
 ## Tutorial
  

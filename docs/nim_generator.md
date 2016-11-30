@@ -1,5 +1,13 @@
 # Nim Code Generator
 
+## Server
+
+Generated server code uses [jester](https://github.com/dom96/jester) as web framework.
+
+## Client
+
+Generated client library uses httpclient module from stdlib
+
 ## Type
 
 RAML Object usually become Nim Object
@@ -32,11 +40,27 @@ struct name = [Resource name][Method name][ReqBody|RespBody].
 
 ## Resources and Nested Resources
 
+### Server
+
 Resources in the server are mapped to:
 
 - routes in main file:
     
-- API implementation that implements the interface
+- API implementation that implements the resource. One file for each root resource
+
+### Client
+
+Resourcess in the client are implemented as services.
+
+Let's say we have two root resources:
+- /users
+- /network
+
+Client library is going to have two services:
+- Users
+- Network
+
+Each service will have it's own methods
 
 ## Methods
 

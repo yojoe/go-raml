@@ -1,5 +1,15 @@
 # Go Code Generator
 
+## Server
+
+Generated server code uses these libraries:
+- [gorilla mux](https://github.com/gorilla/mux) as router
+- [go-validator](https://github.com/go-validator/validator) for request body validation
+
+## Client
+
+Generated client library only use `http` package from stdlib.
+
 ## Type
 
 RAML Object usually become Go struct.
@@ -34,21 +44,21 @@ Enum type and file name is started by `Enum`
 ## Input Validation
 
 
-    Validation              |    Go | Python
---------------------------- | ------| -----------
- minLength                  |   v   |   v
- maxLength                  |   v   |   v
- pattern                    |   v   |   v
- minimum                    |   v   |   v
- maximum                    |   v   |   v
- format                     |   x   |   x
- multipleOf                 |   v   |   v
- array field minItems       |   v   |   v
- array field maxItems       |   v   |   v
- array field uniqueItems    |   v   |   x
- array Type minItems        |   v   |   x
- array Type maxItems        |   v   |   x
- array Type uniqueItems     |   v   |   x
+    Validation              |    Go 
+--------------------------- | ------
+ minLength                  |   v   
+ maxLength                  |   v   
+ pattern                    |   v   
+ minimum                    |   v   
+ maximum                    |   v  
+ format                     |   x  
+ multipleOf                 |   v 
+ array field minItems       |   v 
+ array field maxItems       |   v
+ array field uniqueItems    |   v
+ array Type minItems        |   v
+ array Type maxItems        |   v 
+ array Type uniqueItems     |   v
 
 
 ## Bodies
@@ -60,6 +70,7 @@ struct name = [Resource name][Method name][ReqBody|RespBody].
 
 ## Resources and Nested Resources
 
+### Server
 Resources in the server are mapped to:
 
 - interface:
@@ -75,6 +86,19 @@ Resources in the server are mapped to:
 - routes for all necessary routes:
     - func name = [Resource]InterfaceRoutes
 
+### Client
+
+Resourcess in the client are implemented as services.
+
+Let's say we have two root resources:
+- /users
+- /network
+
+Client library is going to have two services:
+- Users
+- Network
+
+Each service will have it's own methods
 
 ## Methods
 
