@@ -118,7 +118,12 @@ go-raml only supports [OAuth2.0](https://github.com/raml-org/raml-spec/blob/mast
 
 ### Includes
 
+Includes should work properly
+
 ### Libraries
+
+Libraries should work properly except the apidocs web page (REST UI).
+
 
 ### Overlays and Extensions
 
