@@ -1,5 +1,5 @@
 {{- define "client_service_nim" -}}
-import marshal
+import marshal, tables
 import {{.ClientName}}
 {{ range $k, $v := .Imports }}
 import {{$v}}{{end}}
