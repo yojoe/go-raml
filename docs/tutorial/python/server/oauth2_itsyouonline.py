@@ -1,24 +1,18 @@
 from functools import wraps
 from flask import g, request, jsonify
 
-import jwt
+from jose import jwt
 
-iyo_pub_key = """
------BEGIN PUBLIC KEY-----
-MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAES5X8XrfKdx9gYayFITc89wad4usrk0n2
-7MjiGYvqalizeSWTHEpnd7oea9IQ8T5oJjMVH5cc0H5tFSKilFFeh//wngxIyny6
-6+Vq5t5B0V0Ehy01+2ceEon2Y0XDkIKv
------END PUBLIC KEY-----"""
+oauth2_server_pub_key = """"""
 
-token_prefix = "token "
+token_prefix = "Bearer "
 
 def get_jwt_scopes(token):
     if token.startswith(token_prefix):
         token = token[len(token_prefix):]
-        return jwt.decode(token, iyo_pub_key, verify=False)["scope"]
+        return jwt.decode(token, oauth2_server_pub_key)["scope"]
     else:
         raise Exception('invalid token')
-
 
 class oauth2_itsyouonline:
     def __init__(self, scopes=None):
@@ -42,11 +36,10 @@ class oauth2_itsyouonline:
 
             g.access_token = token
 
-            # provide code to check scopes of the access_token
-            scopes = get_jwt_scopes(token)
-
-            if self.check_scopes(scopes) == False:
-                return jsonify(), 403
+            if len(oauth2_server_pub_key) > 0:
+                scopes = get_jwt_scopes(token)
+                if self.check_scopes(scopes) == False:
+                    return jsonify(), 403
             return f(*args, **kwargs)
         return decorated_function
 
