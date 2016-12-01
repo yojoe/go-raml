@@ -13,6 +13,7 @@ type
     username: string
     exp: int
     scope: seq[string]
+    azp: string
 
 const
   tokenPrefix = "Bearer "
