@@ -14,17 +14,22 @@ type
     exp: int
     scope: seq[string]
 
-proc decodeJWT*(ojwt: Oauth2JWT, token: string): JWTGrants =
+const
+  tokenPrefix = "Bearer "
+
+proc decodeJWT*(ojwt: Oauth2JWT, token: string): tuple[grants: JWTGrants, status: int] =
   # decode JWT token and extracts it's grants
   var j: ptr jwt_t
   
   let ret = jwt_decode(addr j, token, ojwt.pubKey, cint(ojwt.pubKey.len))
-  if ret > 0:
-    return
-  result = to[JWTGrants]($(json_dumps(j.grants,0)))
+  if ret != 0:
+    return (grants: JWTGrants(), status: int(ret))
+  
+  result = (grants: to[JWTGrants]($(json_dumps(j.grants,0))), status: 0)
 
 proc checkScopes(s1: openArray[string], s2: openArray[string]):bool =
   #check if at least one element of 1 is member of s2
+  # TODO : find a better way to do this
   if s2.len == 0:
     return true
   for v1 in s1:
@@ -35,17 +40,18 @@ proc checkScopes(s1: openArray[string], s2: openArray[string]):bool =
 
 
 proc checkJWTToken*(ojwt: Oauth2JWT, req: Request, scopes: openArray[string]): bool =
-  # check if a JWT token has the supplied scopes
+  # verify check jwt token
+  # and check it's scopes
   let authHdr = req.headers.getOrDefault("Authorization")
   
   if authHdr.len == 0:
     return false
   
-  if not authHdr.startsWith("Bearer "):
+  if not authHdr.startsWith(tokenPrefix):
     return false
 
-  var grants: JWTGrants
-  grants = ojwt.decodeJWT(authHdr[7..authHdr.len])
-  if grants.scope.len == 0: grants.scope = @[]
-  
+  let (grants, status) = ojwt.decodeJWT(authHdr[len(tokenPrefix)..authHdr.len])
+  if status != 0:
+    return false
+
   return checkScopes(grants.scope, scopes)
