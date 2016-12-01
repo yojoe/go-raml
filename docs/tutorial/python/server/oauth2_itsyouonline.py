@@ -7,20 +7,24 @@ oauth2_server_pub_key = """"""
 
 token_prefix = "Bearer "
 
-def get_jwt_scopes(token):
+def get_jwt_scopes(token, audience):
     if token.startswith(token_prefix):
         token = token[len(token_prefix):]
-        return jwt.decode(token, oauth2_server_pub_key)["scope"]
+        return jwt.decode(token, oauth2_server_pub_key, audience=audience)["scope"]
     else:
         raise Exception('invalid token')
 
 class oauth2_itsyouonline:
-    def __init__(self, scopes=None):
+    def __init__(self, scopes=None, audience= None):
         
         self.described_by = "headers"
         self.field = "Authorization"
         
         self.allowed_scopes = scopes
+        if audience is None:
+            self.audience = ''
+        else:
+            self.audience = ",".join(audience)
 
     def __call__(self, f):
         @wraps(f)
@@ -37,7 +41,7 @@ class oauth2_itsyouonline:
             g.access_token = token
 
             if len(oauth2_server_pub_key) > 0:
-                scopes = get_jwt_scopes(token)
+                scopes = get_jwt_scopes(token, self.audience)
                 if self.check_scopes(scopes) == False:
                     return jsonify(), 403
             return f(*args, **kwargs)
