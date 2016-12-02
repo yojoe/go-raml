@@ -2,9 +2,10 @@
 
 We benchmarked our generated code to test how fast it is.
 benchmark condition:
-- use `hey` and `boom` as benchmark tools
+- use [hey](https://github.com/rakyll/hey) and [boom](https://github.com/tarekziade/boom) as benchmark tools
 - both benchmark tools and server code in one machine
 - generated code needs some modification
+- benchmark tools and server are in different VMs, each VM has 2 GB of RAM and 2GB of CPU.
 
 
 Results summary:
