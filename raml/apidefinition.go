@@ -104,7 +104,7 @@ func (apiDef *APIDefinition) PostProcess(filename string) error {
 
 	for name, path := range apiDef.Uses {
 		lib := &Library{Filename: path}
-		if err := ParseFile(filepath.Join(ramlFileDir, path), lib); err != nil {
+		if err := ParseFile(filepath.Join(filepath.Dir(apiDef.Filename), path), lib); err != nil {
 			return fmt.Errorf("apiDef.PostProcess() failed to parse library	name=%v, path=%v\n\terr=%v",
 				name, path, err)
 		}
