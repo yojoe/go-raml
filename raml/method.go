@@ -61,6 +61,13 @@ func newMethod(name string) *Method {
 	}
 }
 
+// doing post processing that can't be done by YAML parser
+func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trait) {
+	m.Name = name
+	m.inheritFromTraits(r, append(r.Is, m.Is...), traitsMap)
+	r.Methods = append(r.Methods, m)
+}
+
 // inherit from resource type
 // fields need to be inherited:
 // - description
@@ -268,17 +275,6 @@ type Body struct {
 	// Example attribute to generate example invocations
 	Example string `yaml:"example"`
 
-	// Web forms REQUIRE special encoding and custom declaration.
-	// If the API's media type is either application/x-www-form-urlencoded or
-	// multipart/form-data, the formParameters property MUST specify the
-	// name-value pairs that the API is expecting.
-	// The formParameters property is a map in which the key is the name of
-	// the web form parameter, and the value is itself a map the specifies
-	// the web form parameter's attributes
-	FormParameters map[string]NamedParameter `yaml:"formParameters"`
-	// TODO: This doesn't make sense in response bodies.. separate types for
-	// request and response body?
-
 	Headers map[HTTPHeader]Header `yaml:"headers"`
 }
 
@@ -315,9 +311,6 @@ type Bodies struct {
 
 	// As in the Body type.
 	Example string `yaml:"example"`
-
-	// As in the Body type.
-	FormParameters map[string]NamedParameter `yaml:"formParameters"`
 
 	// Resources CAN have alternate representations. For example, an API
 	// might support both JSON and XML representations. This is the map

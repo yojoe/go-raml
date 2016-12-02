@@ -2,6 +2,8 @@ package codegen
 
 import (
 	"fmt"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -38,5 +40,5 @@ func (d *markdownDocs) generate() error {
 		"Property":  raml.ToProperty,
 	}
 
-	return generateFile(ctx, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
+	return commons.GenerateFile(ctx, "./templates/docs_markdown.tmpl", "docs_markdown", d.output, true)
 }

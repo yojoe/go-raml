@@ -1,0 +1,42 @@
+#%RAML 1.0
+title: goraml dir
+description: goraml developers directory
+baseUri: http://localhost:5000
+mediaType: application/json
+securitySchemes:
+  itsyouonline: !include itsyouonline-raml/securitySchemes/oauth_2_0.raml
+
+types:
+  User:
+    properties:
+        username:
+          type: string
+        name:
+/users:
+  get:
+    securedBy: [itsyouonline]
+    description: Get list of all developers
+    responses:
+      200:
+        body:
+          application/json:
+            type: User[]
+  post:
+    securedBy: [itsyouonline: { scopes: [ "user:memberof:goraml-admin" ] }]
+    description: Add user
+    body:
+      type: User
+    responses:
+      201:
+        body:
+          application/json:
+            type: User
+  /{username}:
+    get:
+      securedBy: [itsyouonline: { scopes: [ "user:memberof:goraml" ] }]
+      description: Get information on a specific user
+      responses:
+        200:
+          body:
+            application/json:
+              type: User

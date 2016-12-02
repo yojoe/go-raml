@@ -26,6 +26,7 @@ Table of Contents
 * [Contribute](#contribute)
 * [Roadmap](#roadmap)
 * [RAML to Code Translation](#raml-to-code-translation)
+* [Tutorial](#tutorial)
 
 
 ## What is go-raml
@@ -41,6 +42,12 @@ When creating and maintaining api's, there are two approaches:
 
 This tool supports both (or at least, this is on the roadmap).
 As a specification format, it uses [RAML 1.0](http://raml.org) .
+
+It currently has these features:
+
+- generate server stub in Go, Python, and Nim from an raml file.
+- generate complete client library in Go, Python, and Nim from an RAML file.
+- generate [capnp](https://capnproto.org) schema. See [capnp docs](./docs/capnp.md) for details.
 
 ## RAML versions
 Only RAML version 1.0 RC is supported.
@@ -93,7 +100,7 @@ go-raml needs to be on the path for this to work off course.
 
 ## Generating Server
 
-`go-raml` able to generate Go & Python server.
+`go-raml` able to generate Go & Python server. Nim server is under development.
 
 Generated server will listen on port 5000
 
@@ -363,3 +370,8 @@ The generated code in the server is in the form of commented code:
  array Type minItems        |   v   |   x
  array Type maxItems        |   v   |   x
  array Type uniqueItems     |   v   |   x
+ 
+ 
+ ## Tutorial
+ 
+ Tutorial for Go, Python, and Nim is available at [docs/tutorial directory](./docs/tutorial)

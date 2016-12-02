@@ -1,154 +1,34 @@
 package theclient
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 const (
-	rootURL = "http://localhost:8080"
+	defaultBaseURI = "http://localhost:8080"
 )
 
 type StructAPITest struct {
 	client     http.Client
 	AuthHeader string // Authorization header, will be sent on each request if not empty
+	BaseURI    string
+	common     service // Reuse a single struct instead of allocating one for each service on the heap.
+
+	Users *UsersService
+}
+
+type service struct {
+	client *StructAPITest
 }
 
 func NewStructAPITest() *StructAPITest {
-	c := new(StructAPITest)
-	c.client = http.Client{}
+	c := &StructAPITest{
+		BaseURI: defaultBaseURI,
+		client:  http.Client{},
+	}
+	c.common.client = c
+
+	c.Users = (*UsersService)(&c.common)
+
 	return c
-}
-
-// get users.
-// This method will be return list user.
-// Use it wisely.
-func (c *StructAPITest) GetUsers(headers, queryParams map[string]interface{}) (UsersGetRespBody, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u UsersGetRespBody
-
-	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users"+qsParam, nil)
-	if err != nil {
-		return u, nil, err
-	}
-
-	if c.AuthHeader != "" {
-		req.Header.Set("Authorization", c.AuthHeader)
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-// create users
-func (c *StructAPITest) UsersPost(city City, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u City
-
-	resp, err := c.doReqWithBody("POST", rootURL+"/users", &city, headers, qsParam)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-// get id
-func (c *StructAPITest) GetUserByID(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u City
-
-	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+qsParam, nil)
-	if err != nil {
-		return u, nil, err
-	}
-
-	if c.AuthHeader != "" {
-		req.Header.Set("Authorization", c.AuthHeader)
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-func (c *StructAPITest) UsersUserIdDelete(userId string, headers, queryParams map[string]interface{}) (*http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	// create request object
-	req, err := http.NewRequest("DELETE", rootURL+"/users/"+userId+qsParam, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	return c.client.Do(req)
-}
-
-func (c *StructAPITest) UsersUserIdAddressPost(userId string, usersuseridaddresspostreqbody UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u UsersUserIdAddressPostRespBody
-
-	resp, err := c.doReqWithBody("POST", rootURL+"/users/"+userId+"/address", &usersuseridaddresspostreqbody, headers, qsParam)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-// get address id
-func (c *StructAPITest) UsersUserIdAddressFolderaddressIdtestaddressId2Get(addressId, addressId2, userId string, headers, queryParams map[string]interface{}) ([]address, *http.Response, error) {
-	qsParam := buildQueryString(queryParams)
-	var u []address
-
-	// create request object
-	req, err := http.NewRequest("GET", rootURL+"/users/"+userId+"/address/folder"+addressId+"test"+addressId2+qsParam, nil)
-	if err != nil {
-		return u, nil, err
-	}
-
-	if c.AuthHeader != "" {
-		req.Header.Set("Authorization", c.AuthHeader)
-	}
-
-	for k, v := range headers {
-		req.Header.Set(k, fmt.Sprintf("%v", v))
-	}
-
-	//do the request
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
 }

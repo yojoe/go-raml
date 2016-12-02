@@ -1,7 +1,7 @@
 package theclient
 
 import (
-	"examples.com/client/libraries/files"
+	"examples.com/theclient/libraries/files"
 	"gopkg.in/validator.v2"
 )
 

@@ -12,6 +12,8 @@ type UsersAPI struct {
 // Get is the handler for GET /users
 // Get a list of test
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
+	var respBody UsersGetRespBody
+	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header
 	// w.Header().Set("key","value")
 }

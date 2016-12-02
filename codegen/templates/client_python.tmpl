@@ -1,34 +1,39 @@
 {{- define "client_python" -}}
 import requests
-from client_utils import build_query_string
+{{ range $k, $v := .Services }}
+from .{{$v.FilenameNoExt}} import  {{$v.Name}} {{end}}
 
 BASE_URI = "{{.BaseURI}}"
 
 
 class Client:
     def __init__(self):
-        self.url = BASE_URI
+        self.base_url = BASE_URI
         self.session = requests.Session()
-        self.auth_header = ''
+        self.session.headers.update({"Content-Type": "application/json"})
+        {{ range $k, $v := .Services }}
+        self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
     
-    def set_auth_header(val):
+    def set_auth_header(self, val):
         ''' set authorization header value'''
-        self.auth_header = val
-{{ range $k, $v := .Methods }}
+        self.session.headers.update({"Authorization":val})
 
-    def {{$v.MethodName}}({{$v.Params}}):
-        """{{ range $kf, $vf := $v.FuncComments }}
-        {{$vf}}{{end}}
-        It is method for {{$v.Verb}} {{$v.Endpoint}}
-        """
-        if self.auth_header:
-            if not headers:
-                headers = {'Authorization': self.auth_header}
-            else:
-                headers['Authorization'] = self.auth_header
+    def post(self, uri, data, headers, params):
+        if type(data) is str:
+            return self.session.post(uri, data=data, headers=headers, params=params)
+        else:
+            return self.session.post(uri, json=data, headers=headers, params=params)
 
-        uri = self.url + {{$v.ResourcePath}}
-        uri = uri + build_query_string(query_params)
-        return self.session.{{$v.Verb | ToLower}}(uri{{$v.PRArgs}}, headers=headers)
-{{ end }}
+    def put(self, uri, data, headers, params):
+        if type(data) is str:
+            return self.session.put(uri, data=data, headers=headers, params=params)
+        else:
+            self.session.put(uri, json=data, headers=headers, params=params)
+
+    def patch(self, uri, data, headers, params):
+        if type(data) is str:
+            return self.session.patch(uri, data=data, headers=headers, params=params)
+        else:
+            return self.session.patch(uri, json=data, headers=headers, params=params)
+
 {{- end -}}

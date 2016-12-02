@@ -3,7 +3,7 @@ package raml
 import (
 	"fmt"
 	"log"
-	"path/filepath"
+	"path"
 	"strings"
 )
 
@@ -168,34 +168,25 @@ func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) (*Reso
 // and add it to Methods slice
 func (r *Resource) setMethods(traitsMap map[string]Trait) {
 	if r.Get != nil {
-		r.Get.Name = "GET"
-		r.Get.inheritFromTraits(r, append(r.Is, r.Get.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Get)
+		r.Get.postProcess(r, "GET", traitsMap)
 	}
 	if r.Post != nil {
-		r.Post.Name = "POST"
-		r.Post.inheritFromTraits(r, append(r.Is, r.Post.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Post)
+		r.Post.postProcess(r, "POST", traitsMap)
 	}
 	if r.Put != nil {
-		r.Put.Name = "PUT"
-		r.Put.inheritFromTraits(r, append(r.Is, r.Put.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Put)
+		r.Put.postProcess(r, "PUT", traitsMap)
 	}
 	if r.Patch != nil {
-		r.Patch.Name = "PATCH"
-		r.Patch.inheritFromTraits(r, append(r.Is, r.Patch.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Patch)
+		r.Patch.postProcess(r, "PATCH", traitsMap)
 	}
 	if r.Head != nil {
-		r.Head.Name = "HEAD"
-		r.Head.inheritFromTraits(r, append(r.Is, r.Head.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Head)
+		r.Head.postProcess(r, "HEAD", traitsMap)
 	}
 	if r.Delete != nil {
-		r.Delete.Name = "DELETE"
-		r.Delete.inheritFromTraits(r, append(r.Is, r.Delete.Is...), traitsMap)
-		r.Methods = append(r.Methods, r.Delete)
+		r.Delete.postProcess(r, "DELETE", traitsMap)
+	}
+	if r.Options != nil {
+		r.Options.postProcess(r, "OPTIONS", traitsMap)
 	}
 }
 
@@ -214,6 +205,8 @@ func (r *Resource) MethodByName(name string) *Method {
 		return r.Head
 	case "DELETE":
 		return r.Delete
+	case "OPTIONS":
+		return r.Options
 	default:
 		return nil
 	}
@@ -233,6 +226,8 @@ func (r *Resource) assignMethod(m *Method, name string) {
 		r.Head = m
 	case "DELETE":
 		r.Delete = m
+	case "OPTIONS":
+		r.Options = m
 	default:
 		log.Fatalf("assignMethod fatal error, invalid method name:%v", name)
 	}
@@ -314,7 +309,7 @@ func (r *Resource) FullURI() string {
 }
 
 func doFullURI(r *Resource, completeURI string) string {
-	completeURI = filepath.Join(r.URI, completeURI)
+	completeURI = path.Join(r.URI, completeURI, "/")
 	if r.Parent == nil {
 		return completeURI
 	}
