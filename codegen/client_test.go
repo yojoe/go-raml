@@ -16,24 +16,37 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		err := raml.ParseFile("./fixtures/client_resources/client.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("Simple client from raml", func() {
-			err = GenerateClient(apiDef, targetdir, "theclient", "go", "client")
+		err = GenerateClient(apiDef, targetDir, "theclient", "go", "client")
+		So(err, ShouldBeNil)
+		rootFixture := "./fixtures/client_resources"
+		checks := []struct {
+			Result   string
+			Expected string
+		}{
+			{"client_structapitest.go", "client_structapitest.txt"},
+			{"users_service.go", "users_service.txt"},
+		}
+
+		for _, check := range checks {
+			s, err := testLoadFile(filepath.Join(targetDir, check.Result))
 			So(err, ShouldBeNil)
 
-			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
+			tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/client_resources/client_structapitest.txt")
-			So(err, ShouldBeNil)
-
-			So(tmpl, ShouldEqual, s)
-		})
+			So(s, ShouldEqual, tmpl)
+		}
 
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
+}
+
+func testLoadFile(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	return string(b), err
 }

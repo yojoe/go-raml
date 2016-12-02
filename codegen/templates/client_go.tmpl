@@ -3,99 +3,35 @@ package {{.PackageName}}
 
 import (
 	"net/http"
-	"encoding/json"
-	"fmt"
-
-    {{ range $k, $v := .LibImportPaths -}}
-    "{{$k}}"
-    {{end -}}
 )
 
 const (
-	rootURL = "{{.BaseURI}}"
+	defaultBaseURI = "{{.BaseURI}}"
 )
 
 {{$apiName := .Name}}
 type {{.Name}} struct {
 	client http.Client
     AuthHeader string // Authorization header, will be sent on each request if not empty
+    BaseURI string
+    common service // Reuse a single struct instead of allocating one for each service on the heap.
+    {{ range $k, $v := .Services }} 
+    {{$v.EndpointName}} *{{$v.Name}}{{end}}
 }
 
+type service struct {
+    client *{{.Name}}
+}
 func New{{.Name}}() *{{.Name}} {
-	c := new({{.Name}})
-	c.client = http.Client{}
-	return c
-}
-
-{{ range $k, $v := .Methods }}
-{{ range $kf, $vf := $v.FuncComments }}
-// {{$vf}} {{end}}
-func(c *{{$apiName}}) {{$v.MethodName}}({{$v.Params}})({{$v.RespBody}} {{if ne $v.RespBody "" }}, {{end}}*http.Response,error) {
-	qsParam := buildQueryString(queryParams)
-	{{- if eq $v.Verb "GET" }}
-		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
-
-		// create request object
-		req, err := http.NewRequest("GET", rootURL {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
-		if err != nil {
-			{{if ne $v.RespBody "" }} return u, nil, err
-			{{else}} return nil, err
-			{{- end -}}
-		}
-
-        if c.AuthHeader != "" {
-            req.Header.Set("Authorization", c.AuthHeader)
-        }
-
-		for k, v := range headers {
-         req.Header.Set(k, fmt.Sprintf("%v", v))
-        }
-
-		//do the request
-		resp, err := c.client.Do(req)
-		if err != nil {
-			{{if ne $v.RespBody "" }} return u, nil, err
-			{{else}} return nil, err
-			{{- end -}}
-		}
-		defer resp.Body.Close()
-
-		{{if ne $v.RespBody "" }}
-			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-		{{else}}
-			return resp, nil
-		{{- end -}}
-	{{else if eq $v.Verb "DELETE"}}
-		// create request object
-		req, err := http.NewRequest("DELETE", rootURL{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}} + qsParam, nil)
-		if err != nil {
-			return nil, err
-		}
-
-		for k, v := range headers {
-         req.Header.Set(k, fmt.Sprintf("%v", v))
+    c := &{{.Name}}{
+        BaseURI: defaultBaseURI,
+        client: http.Client{},
     }
-
-		//do the request
-		return c.client.Do(req)
-	{{else}}
-		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
-
-        resp, err := c.doReqWithBody("{{$v.Verb}}", rootURL{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&{{$v.ReqBody | ToLower}}{{else}}nil{{end}}, headers, qsParam)
-		if err != nil {
-			{{if ne $v.RespBody "" }} return u, nil, err
-			{{else}} return nil, err
-			{{- end -}}
-		}
-		defer resp.Body.Close()
-
-		{{if ne $v.RespBody "" }}
-			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-		{{else}}
-			return resp, nil
-		{{- end -}}
-	{{- end -}}
+    c.common.client = c
+    {{ range $k, $v := .Services }} 
+    c.{{$v.EndpointName}} =  (*{{$v.Name}})(&c.common) {{end}}
+	
+    return c
 }
-{{- end -}}
 
 {{- end -}}

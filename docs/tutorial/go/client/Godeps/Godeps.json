@@ -1,0 +1,18 @@
+{
+	"ImportPath": "github.com/Jumpscale/go-raml/docs/tutorial/go/client",
+	"GoVersion": "go1.6",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/itsyouonline/identityserver/clients/go/itsyouonline",
+			"Comment": "0.9-beta-3-6-gdd56da6",
+			"Rev": "dd56da69999a8ef738052c4bd117880922101ef0"
+		},
+		{
+			"ImportPath": "gopkg.in/validator.v2",
+			"Rev": "3e4f037f12a1221a0864cf0dd2e81c452ab22448"
+		}
+	]
+}

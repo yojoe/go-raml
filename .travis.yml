@@ -1,10 +1,14 @@
+sudo: required
+dist: trusty
 language: go
 
 install:
+  - sudo apt-get install capnproto
   - go get -u github.com/jteeuwen/go-bindata/...
 
 go:
   - 1.6
+  - 1.7
 
 script:
   - ./build_apidocs.sh

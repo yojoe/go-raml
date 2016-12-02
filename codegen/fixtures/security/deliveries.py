@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
+
 import oauth2_Facebook as oauth2_Facebook
 import oauth2_Dropbox as oauth2_Dropbox
-
 
 
 deliveries_api = Blueprint('deliveries_api', __name__)

@@ -3,9 +3,6 @@ from flask import Blueprint, jsonify, request
 
 from User import User
 
-from User import User
-
-
 drones_api = Blueprint('drones_api', __name__)
 
 

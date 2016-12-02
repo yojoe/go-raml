@@ -1,0 +1,15 @@
+package types_lib
+
+import (
+	"gopkg.in/validator.v2"
+)
+
+type Person struct {
+	Age  int    `json:"age" validate:"nonzero"`
+	Name string `json:"name" validate:"nonzero"`
+}
+
+func (s Person) Validate() error {
+
+	return validator.Validate(s)
+}
