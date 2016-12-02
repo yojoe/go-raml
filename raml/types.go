@@ -101,10 +101,11 @@ func (dc *DefinitionChoice) UnmarshalYAML(unmarshaler func(interface{}) error) e
 
 // Property defines a Type property
 type Property struct {
-	Name     string
-	Type     string      `yaml:"type"`
-	Required bool        `yaml:"required"`
-	Enum     interface{} `yaml:"enum"`
+	Name        string
+	Type        string      `yaml:"type"`
+	Required    bool        `yaml:"required"`
+	Enum        interface{} `yaml:"enum"`
+	Description string      `yaml:"description"`
 
 	// string
 	Pattern   *string
@@ -153,6 +154,8 @@ func ToProperty(name string, p interface{}) Property {
 				p.Required = v.(bool)
 			case "enum":
 				p.Enum = v
+			case "description":
+				p.Description = v.(string)
 			case "minLength":
 				p.MinLength = new(int)
 				*p.MinLength = v.(int)
