@@ -32,7 +32,6 @@ func Generate(apiDef *raml.APIDefinition, ramlFile string, ramlBytes []byte, dir
 // copy all library files to apidocs directory
 func copyLibrariesFiles(uses map[string]string, libraries map[string]*raml.Library, ramlFile, dir string) error {
 	baseDir := filepath.Dir(ramlFile)
-
 	// copy library files
 	for _, path := range uses {
 		if err := copyFile(filepath.Join(baseDir, path), filepath.Join(dir, path)); err != nil {
@@ -42,7 +41,7 @@ func copyLibrariesFiles(uses map[string]string, libraries map[string]*raml.Libra
 
 	// do it recursively
 	for _, l := range libraries {
-		if err := copyLibrariesFiles(l.Uses, l.Libraries, ramlFile, dir); err != nil {
+		if err := copyLibrariesFiles(l.Uses, l.Libraries, filepath.Join(baseDir, l.Filename), filepath.Join(dir, filepath.Dir(l.Filename))); err != nil {
 			return err
 		}
 	}
