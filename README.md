@@ -276,102 +276,12 @@ When you want to contribute to the development, follow the [contribution guideli
 
 ## RAML to Code Translation
 
-Below are incomplete description about how we translate .raml file into code.
+Short descriptions about how the generator generates the code from raml file are available in these docs:
 
-### Type
-
-[types](http://docs.raml.org/specs/1.0/#raml-10-spec-types) is mapped to struct.
-
-Some rules about properties naming:
-
-- capitalizing first character of the properties.
-- json tag is the same as property name
-
-File name is the same as types name with lowercase letter.
-struct name = types name.
-
-#### Type Mapping
-    Raml        |  Go   
-    ----------- | -----------
-    string      | string
-    number      | float
-    integer     | int
-    boolean     | bool
-    date        | Date
-    enum        | []string
-    file        | string
-    sometype[]  | []sometype
-    sometype[][]| [][]sometype
-    Union       | interface{}
-
-### Bodies
-[Request Body](http://docs.raml.org/specs/1.0/#raml-10-spec-bodies) and response body are mapped into structs
-and following the same rules as types.
-
-struct name = [Resource name][Method name][ReqBody|RespBody].
-
-RequestBody generated from body node below method.
-
-ResponseBody generated from body node below responses.
-
-### Resource
-[Resource](http://docs.raml.org/specs/1.0/#raml-10-spec-resources-and-nested-resources) in the server is mapped to:
-- interface:
-
-    - file name = [resource]_if.go
-    - always be regenerated
-    - interface name = [resource]Interface
-
-- API implementation that implements the interface
-    - file name = [resource]_api.go
-    - only generated when the file is not present
-    - struct name = [resource]API
-
-- routes for all necessary routes:
-    - func name = [Resource]InterfaceRoutes
-
-
-### Header
-
-Code related to requests [headers](http://docs.raml.org/specs/1.0/#raml-10-spec-headers) are only generated in the Client lib. All functions have arguments to send any request header, the current client lib will not check the headers against the RAML specifications.
-
-
-Response headers related code is only generated in the server in the form of commented code, example:
-```
-// uncomment below line to add header
-// w.Header.Set("key","value")
-```
-
-### Query Strings and Query Parameters
-
-All client library functions have arguments to send [Query Strings and Query Parameters](http://docs.raml.org/specs/1.0/#raml-10-spec-query-strings-and-query-parameters), the current client lib will not check it against the RAML specifications.
-
-The generated code in the server is in the form of commented code:
-
-```
-// name := req.FormValue("name")
-```
-
-### Input Validation
-
-
-    Validation      |    Go     | Python
-------------------------------- | ------------- | -----------
- minLength                      |   v   |   v
- maxLength          |   v   |   v
- pattern            |   v   |   v
- minimum            |   v   |   v
- maximum            |   v   |   v
- format             |       x   |   x
- multipleOf         |   v   |   v
- array field minItems       |   v   |   v
- array field maxItems       |   v   |   v
- array field uniqueItems    |   v   |   x
- array Type minItems        |   v   |   x
- array Type maxItems        |   v   |   x
- array Type uniqueItems     |   v   |   x
+- [Go](./docs/go_generator.md)
+- [Python](./docs/python_generator.md)
+- [Nim](./docs/nim_generator.md)
  
- 
- ## Tutorial
+## Tutorial
  
  Tutorial for Go, Python, and Nim is available at [docs/tutorial directory](./docs/tutorial)
