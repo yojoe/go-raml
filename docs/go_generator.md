@@ -115,7 +115,7 @@ Response headers related code are only generated in the server in the form of co
 
 ### Query Strings and Query Parameters
 
-All client library functions have arguments to send [query strings and query Parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#query-strings-and-query-parameters), the current client lib will not check it against the RAML specifications.
+All client library functions have arguments to send [query strings and query Parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#query-strings-and-query-parameters).
 
 The generated code in the server is in the form of commented code:
 
@@ -146,7 +146,7 @@ Includes should work properly
 
 ### Libraries
 
-Libraries should work properly except the apidocs web page (REST UI).
+Libraries should work properly, a library will be generated into a package.
 
 
 ### Overlays and Extensions

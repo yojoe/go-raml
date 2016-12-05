@@ -71,7 +71,8 @@ TBD
 
 ### Query Strings and Query Parameters
 
-TBD
+All client library functions have arguments to send [query strings and query Parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#query-strings-and-query-parameters).
+
 
 ## Responses
 
@@ -96,7 +97,7 @@ Includes should work properly
 
 ### Libraries
 
-Libraries should work properly except the apidocs web page (REST UI).
+-
 
 ### Overlays and Extensions
 
