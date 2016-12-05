@@ -1,0 +1,64 @@
+# {{ .Api.Title }}
+
+<a name="overview"></a>
+## Overview
+
+### Version information
+*Version* : {{ .Api.Version }}
+
+### URI scheme
+*BasePath* : {{ .Api.BaseURI }}
+
+<a name="paths"></a>
+## Paths
+
+{{ range $resourceName, $resource := .Resources -}}
+{{ range $_, $method := $resource.Methods -}}
+
+<a name="{{ $method.DisplayName}}"></a>
+### {{ or $method.Description $method.DisplayName $resourceName }}
+
+```
+{{ $method.Name }} {{ $resourceName }}
+```
+#### Description
+{{ $method.Description }}
+
+#### Parameters
+|Type|Name|Description|Default|
+|---|---|---|---|
+{{ range $paramName, $param := $resource.URIParameters -}}
+|**{{ $param.Type }}**|**{{ $paramName }}** {{ if $param.Required }}  <br>*required* {{ end }}| {{ $param.Description }}| {{ $param.Default }}|
+{{ end -}}
+{{ range $paramName, $param := $method.QueryParameters -}}
+|**{{ $param.Type }}**|**{{ $paramName }}** {{ if $param.Required }}  <br>*required* {{ end }}| {{ $param.Description }}| {{ $param.Default }}|
+{{ end -}}
+
+#### Responses
+
+|HTTP Code|Description|Schema|
+|---|---|---|
+{{ range $respCode, $resp := $method.Responses -}}
+|**{{ $respCode }}**| {{ $resp.Description }} | {{ $resp.Bodies.Schema }}|
+{{ end -}}
+
+{{ end }}
+{{ end }}
+
+<a name="types"></a>
+## Types
+{{ range $typeName, $type := .Api.Types }}
+
+<a name="{{ $typeName }}"></a>
+### {{ $typeName }}
+{{ $type.Description }}
+
+|Name|Description|Type|
+|---|---|---|
+{{ range $propName, $prop := $type.Properties -}}
+{{ with $property := call $.Property $propName $prop -}}
+|**{{ $propName }}**| {{ $property.Description }}|{{ $property.Type }}|
+{{ end -}}
+{{ end -}}
+
+{{ end -}}

@@ -21,6 +21,7 @@ var (
 	clientCommand = &commands.ClientCommand{}
 	capnpCommand  = &commands.CapnpCommand{}
 	specCommand   = &commands.SpecCommand{}
+	docsCommand   = &commands.DocsCommand{}
 )
 
 func main() {
@@ -139,7 +140,36 @@ func main() {
 					log.Error(err)
 				}
 			},
-		}, {
+		},
+		{
+			Name:  "docs",
+			Usage: "Generate API docs for a RAML specifications",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "format",
+					Value:       "markdown",
+					Usage:       "API documentation format, only markdown is supported at the moment.",
+					Destination: &docsCommand.Format,
+				},
+				cli.StringFlag{
+					Name:        "ramlfile",
+					Value:       ".",
+					Usage:       "Source raml file",
+					Destination: &docsCommand.RamlFile,
+				},
+				cli.StringFlag{
+					Name:        "output",
+					Usage:       "Destination doc file",
+					Destination: &docsCommand.OutputFile,
+				},
+			},
+			Action: func(c *cli.Context) {
+				if err := docsCommand.Execute(); err != nil {
+					log.Error(err)
+				}
+			},
+		},
+		{
 			Name:  "spec",
 			Usage: "Generate a RAML specification from a go server",
 			Action: func(c *cli.Context) {

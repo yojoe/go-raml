@@ -112,8 +112,6 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 	}
 
 	// Unmarshal into an APIDefinition value
-	//apiDefinition := new(APIDefinition)
-	//apiDefinition.RAMLVersion = ramlVersion
 
 	// Go!
 	err = yaml.Unmarshal(preprocessedContentsBytes, root)
