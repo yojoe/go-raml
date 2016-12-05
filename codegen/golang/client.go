@@ -126,6 +126,7 @@ func (c *Client) generateSecurity(dir string) error {
 			ctx := map[string]string{
 				"ClientName":     c.Name,
 				"AccessTokenURI": fmt.Sprintf("%v", v),
+				"PackageName":    c.PackageName,
 			}
 			filename := filepath.Join(dir, "oauth2_client_"+name+".go")
 			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_go.tmpl", "oauth2_client_go", filename, true); err != nil {
