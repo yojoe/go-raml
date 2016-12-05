@@ -28,7 +28,7 @@ func TestOauth2Middleware(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_Dropbox.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/security/oauth2_Dropbox.py")
+			tmpl, err := testLoadFile("./fixtures/security/oauth2_Dropbox.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -37,7 +37,7 @@ func TestOauth2Middleware(t *testing.T) {
 			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Facebook.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../fixtures/security/oauth2_Facebook.py")
+			tmpl, err = testLoadFile("./fixtures/security/oauth2_Facebook.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -55,7 +55,7 @@ func TestOauth2Middleware(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/security/deliveries.py")
+			tmpl, err := testLoadFile("./fixtures/security/deliveries.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

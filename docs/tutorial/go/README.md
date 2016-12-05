@@ -27,40 +27,11 @@ You can find all server files in `$GOPATH/src/examples.com/goramldir` directory.
 
 ### Server side itsyou.online integration
 
-We need to write/modify some code for this integration
+You only need to replace the value of `oauth2ServerPublicKey` variable in `oauth2_itsyouonline_middleware.go`
+to the content of [itsyouonline.pub](../itsyouonline.pub).
 
-**JWT decoder**
 
-You can find JWT decoder code in [iyo.go](server/iyo.go) and do these:
-
-- modify the package from `iyo` to `main`
-- copy `iyo.go` to `$GOPATH/src/examples.com/goramldir` directory
-
-**Oauth2 middleware**
-
-Need to modify ` oauth2_itsyouonline_middleware.go` in `$GOPATH/src/examples.com/goramldir` directory.
-
-Find this line in `func (om *Oauth2itsyouonlineMiddleware) Handler(next http.Handler) http.Handler {`
-```
-var scopes []string
-```
-replace it with
-```
-scopes, err := getIyoUserScope(accessToken)
-if err != nil {
-    w.WriteHeader(403)
-    return
-}
-```
-
-In `getIyoUserScope` function, you can find code to:
-
-- decode itsyou.online JWT token which require itsyou.online public key
-- check if the token issued by itsyou.online
-- get the `scopes`
-
-**execute the server**
-
+**Build & Run the server**
 ```
 go build
 ./goramldir
@@ -74,23 +45,15 @@ generate client code by using this command
 
 Then you can find client code in `client` directory.
 
-**itsyou.online client library**
-
-We need the library to get oauth2 token and generate JWT token
-
-`go get -u -v github.com/itsyouonline/identityserver/clients/go/itsyouonline`
-
 
 **simple client main program**
 
 A simple example of the client program can be found in [main.go](client/main.go).
 
-Steps to use generated client lib & itsyou.online client lib:
+Steps to use generated client lib:
 
-- create itsyou.online client object
-- login to itsyou.online to create oauth2 token
-- create itsyou.online JWT token
 - create `goramldir` client object
+- create itsyou.online JWT token
 - set JWT token as authorization header
 
 after above steps, client are ready to make API call to `goramldir` server.

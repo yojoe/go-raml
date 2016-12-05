@@ -14,7 +14,7 @@ def get_jwt_scopes(token, audience):
     else:
         raise Exception('invalid token')
 
-class oauth2_itsyouonline:
+class oauth2_Facebook:
     def __init__(self, scopes=None, audience= None):
         
         self.described_by = "headers"

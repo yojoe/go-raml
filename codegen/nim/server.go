@@ -80,11 +80,6 @@ func (s *Server) generateSecurity() error {
 		return err
 	}
 
-	// itsyouonline public key
-	if err := commons.GenerateFile(s, "./templates/pubkey_itsyouonline.tmpl", "pubkey_itsyouonline", filepath.Join(s.Dir, "itsyouonline.pub"), true); err != nil {
-		return err
-	}
-
 	// itsyouonline integration
 	return commons.GenerateFile(s, "./templates/oauth2_jwt_nim.tmpl", "oauth2_jwt_nim", filepath.Join(s.Dir, "oauth2_jwt.nim"), true)
 }

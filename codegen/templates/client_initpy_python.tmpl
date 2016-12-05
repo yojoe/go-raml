@@ -1,0 +1,14 @@
+{{- define "client_initpy_python" -}}
+import requests
+
+from .client import Client as APIClient
+{{ range $k, $v := .Securities}}
+from .{{$v.ModuleName}} import {{$v.Name}}{{end}}
+
+class Client:
+    def __init__(self, base_uri="{{.BaseURI}}"):
+        self.api = APIClient(base_uri)
+        {{ range $k, $v := .Securities}}
+        self.{{$v.ModuleName}} = {{$v.Name}}(){{end}}
+
+{{- end -}}

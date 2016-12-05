@@ -1,0 +1,16 @@
+#%RAML 1.0
+title: httpbin
+description: goraml developers directory
+baseUri: http://httpbin.org
+mediaType: application/json
+
+/post:
+  post:
+    description: test post request
+    body:
+      type: string
+    responses:
+      200:
+        body:
+          application/json:
+            type: string

@@ -17,17 +17,27 @@ func encodeBody(data interface{}) (io.Reader, error) {
 	return bytes.NewReader(b), nil
 }
 
-func (c goramldir) doReqWithBody(method, urlStr string, data interface{}, headers map[string]interface{}, qsParam string) (*http.Response, error) {
+// do HTTP request with request body
+func (c goramldir) doReqWithBody(method, urlStr string, data interface{}, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	body, err := encodeBody(data)
 	if err != nil {
 		return nil, err
 	}
+	return c.doReq(method, urlStr, body, headers, queryParams)
+}
 
+// do http request without request body
+func (c goramldir) doReqNoBody(method, urlStr string, headers, queryParams map[string]interface{}) (*http.Response, error) {
+	return c.doReq(method, urlStr, nil, headers, queryParams)
+}
+
+func (c goramldir) doReq(method, urlStr string, body io.Reader, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	// create the request
-	req, err := http.NewRequest(method, urlStr+qsParam, body)
+	req, err := http.NewRequest(method, urlStr, body)
 	if err != nil {
 		return nil, err
 	}
+	req.URL.RawQuery = buildQueryString(req, queryParams)
 
 	if c.AuthHeader != "" {
 		req.Header.Set("Authorization", c.AuthHeader)
@@ -39,17 +49,13 @@ func (c goramldir) doReqWithBody(method, urlStr string, data interface{}, header
 	return c.client.Do(req)
 }
 
-func buildQueryString(data map[string]interface{}) string {
-	if len(data) == 0 {
-		return ""
-	}
+func buildQueryString(req *http.Request, qs map[string]interface{}) string {
+	q := req.URL.Query()
 
-	baseQuery := "?"
-	for k, v := range data {
-		baseQuery += k + "=" + fmt.Sprint(v) + "&"
+	for k, v := range qs {
+		q.Add(k, fmt.Sprintf("%v", v))
 	}
-
-	return baseQuery[:len(baseQuery)-1]
+	return q.Encode()
 }
 
 //Date represent RFC3399 date

@@ -1,35 +1,20 @@
 import sys
 
-from client import Client
-import itsyouonline
-
-# itsyou.online client
-iyo_client = itsyouonline.Client()
+import goramldir
 
 # goramldir client
-client = Client()
+client = goramldir.Client()
 
 def main(app_id, app_secret):
-    '''
-    Login to itsyou.online server
-    If succeed, next request will use `Authorization` header
-    acquired from this login process
-    '''
-    iyo_client.oauth.LoginViaClientCredentials(app_id, app_secret)
-
-    '''
-    create JWT token with specified 'scopes'.
-    You need to change 'user:memberof:goraml' to match with your
-    organization scopes
-    '''
-    jwt_token = iyo_client.oauth.CreateJWTToken(["user:memberof:goraml"])
+    # get JWT token from itsyouonline
+    jwt_token = client.oauth2_client_itsyouonline.get_access_token(app_id, app_secret).text
 
     # Set our goramldir client to use JWT token from itsyou.online
-    client.set_auth_header("token " + jwt_token)
+    client.api.set_auth_header("Bearer " + jwt_token)
 
     # try to make simple GET call to goramldir server
-    resp = client.users_byUsername_get("john")
-    print(resp.json())
+    resp = client.api.users.users_get()
+    print("resp body =",resp.text)
 
 if __name__ == "__main__":
     '''

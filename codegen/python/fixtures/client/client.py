@@ -2,12 +2,10 @@ import requests
 
 from .users_service import  UsersService 
 
-BASE_URI = "http://api.jumpscale.com/v3"
-
 
 class Client:
-    def __init__(self):
-        self.base_url = BASE_URI
+    def __init__(self, base_uri = "http://api.jumpscale.com/v3"):
+        self.base_url = base_uri
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})
         

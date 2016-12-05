@@ -66,3 +66,11 @@ func newPythonOauth2Middleware(ss raml.DefinitionChoice) (middleware, error) {
 func pythonOauth2libImportPath(typ string) (string, string) {
 	return libImportPath(security.SecuritySchemeName(typ), "oauth2_")
 }
+
+func oauth2ClientName(schemeName string) string {
+	return "Oauth2Client" + strings.Title(schemeName)
+}
+
+func oauth2ClientFilename(schemeName string) string {
+	return "oauth2_client_" + schemeName + ".py"
+}

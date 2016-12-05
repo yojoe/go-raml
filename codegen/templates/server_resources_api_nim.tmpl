@@ -4,7 +4,7 @@ import jester, marshal, system
 {{ range $k, $v := .Imports }}
 import {{$v}}{{end}}
 
-{{if .NeedJWT}}let ojwt = Oauth2JWT(pubKey:readFile("itsyouonline.pub")){{end}}
+{{if .NeedJWT}}let ojwt = Oauth2JWT(pubKey:readFile("oauth2_server_key.pub")){{end}}
 
 {{ range $k, $v := .Methods}}
 proc {{$v.MethodName}}*({{$v.ServerProcParams}}) : tuple[code: HttpCode, content: {{$v.ContentRetval}}] =

@@ -3,7 +3,7 @@ import oauth2_jwt
 
 import User
 
-let ojwt = Oauth2JWT(pubKey:readFile("itsyouonline.pub"))
+let ojwt = Oauth2JWT(pubKey:readFile("oauth2_server_key.pub"))
 
 
 proc usersGet*(req: Request) : tuple[code: HttpCode, content: seq[User]] =

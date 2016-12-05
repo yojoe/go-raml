@@ -87,13 +87,18 @@ func (m method) ServerCallParams() string {
 func (m method) ClientProcParams() string {
 	params := []string{}
 
+	// request body
 	if m.ReqBody != "" {
 		params = append(params, fmt.Sprintf("reqBody: %v", m.ReqBody))
 	}
 
+	// resource params
 	for _, p := range cr.GetResourceParams(m.Resource()) {
 		params = append(params, fmt.Sprintf("%v: string", p))
 	}
+
+	// query params
+	params = append(params, `queryParams: Table[string, string] = initTable[string, string]()`)
 
 	str := strings.Join(params, ", ")
 	if str != "" {
@@ -111,6 +116,7 @@ func (m method) ClientCallParams() string {
 	if m.ReqBody != "" {
 		params = append(params, "$$reqBody")
 	}
+	params = append(params, "queryParams=queryParams")
 
 	return strings.Join(params, ", ")
 }
