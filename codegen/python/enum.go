@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"regexp"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -54,8 +55,21 @@ func newEnumField(f interface{}, e enum) enumField {
 		name = fmt.Sprintf("e%v", v)
 		val = fmt.Sprintf("%v", v)
 	}
+	// ensure name is a valid python variable name
+	// 1. the first character must match [a-zA-Z_]
+	// 2. all remaining characters must match [a-zA-Z0-9_]
+
+	// first, any characters that don't match any valid variable character are replaced with '_'
+	always_invalid := regexp.MustCompile("[^a-zA-Z0-9_]")
+	valid_name := always_invalid.ReplaceAllLiteralString(name, "_")
+
+	// next, if the first character is a number, prepend a '_'
+	matched, _ := regexp.MatchString("^[0-9]", valid_name)
+	if matched {
+		valid_name = "_" + valid_name
+	}
 	return enumField{
-		Name:  name,
+		Name:  valid_name,
 		Value: val,
 	}
 }
