@@ -60,16 +60,16 @@ func newEnumField(f interface{}, e enum) enumField {
 	// 2. all remaining characters must match [a-zA-Z0-9_]
 
 	// first, any characters that don't match any valid variable character are replaced with '_'
-	always_invalid := regexp.MustCompile("[^a-zA-Z0-9_]")
-	valid_name := always_invalid.ReplaceAllLiteralString(name, "_")
+	alwaysInvalid := regexp.MustCompile("[^a-zA-Z0-9_]")
+	validName := alwaysInvalid.ReplaceAllLiteralString(name, "_")
 
 	// next, if the first character is a number, prepend a '_'
-	matched, _ := regexp.MatchString("^[0-9]", valid_name)
-	if matched {
-		valid_name = "_" + valid_name
+	matched, err := regexp.MatchString("^[0-9]", validName)
+	if matched && err == nil {
+		validName = "_" + validName
 	}
 	return enumField{
-		Name:  valid_name,
+		Name:  validName,
 		Value: val,
 	}
 }
