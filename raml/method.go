@@ -358,7 +358,9 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
 				case strings.HasSuffix(k, "?"): // if only ended with `?`, we can ignore it
 					continue
 				}
-				b.ApplicationJSON.Properties[k] = p
+				k = substituteParams(k, k, dicts)
+				prop := ToProperty(k, p)
+				b.ApplicationJSON.Properties[k] = substituteParams(prop.Type, prop.Type, dicts)
 			}
 		}
 	}
