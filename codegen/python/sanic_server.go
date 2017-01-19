@@ -26,6 +26,9 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 }
 
 func (s *SanicServer) Generate(dir string) error {
+	if err := s.generateOauth2(s.APIDef.SecuritySchemes, dir); err != nil {
+		return err
+	}
 	return s.generateMain(dir)
 }
 
@@ -42,10 +45,6 @@ func (s *SanicServer) generateMain(dir string) error {
 
 	return commons.GenerateFile(s, "./templates/server_main_python_sanic.tmpl", "server_main_python_sanic",
 		filepath.Join(dir, "app.py"), true)
-}
-
-func (s *SanicServer) generateOauth2(schemes map[string]raml.SecurityScheme, dir string) error {
-	return nil
 }
 
 func (s *SanicServer) generateResources(dir string) error {
