@@ -20,11 +20,7 @@ func TestLibrary(t *testing.T) {
 		_, err = raml.ParseReadFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		server := FlaskServer{
-			APIDef:   apiDef,
-			Title:    apiDef.Title,
-			WithMain: true,
-		}
+		server := NewFlaskServer(apiDef, "apidocs", true)
 		err = server.Generate(targetDir)
 		So(err, ShouldBeNil)
 

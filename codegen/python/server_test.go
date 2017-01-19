@@ -21,12 +21,7 @@ func TestServer(t *testing.T) {
 			_, err = raml.ParseReadFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := FlaskServer{
-				APIDef:     apiDef,
-				Title:      apiDef.Title,
-				APIDocsDir: "apidocs",
-				WithMain:   true,
-			}
+			server := NewFlaskServer(apiDef, "apidocs", true)
 			err = server.Generate(targetdir)
 			So(err, ShouldBeNil)
 

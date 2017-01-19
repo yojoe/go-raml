@@ -20,11 +20,16 @@ type FlaskServer struct {
 }
 
 func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *FlaskServer {
+	var rds []resource.ResourceInterface
+	for _, rd := range getServerResourcesDefs(apiDef) {
+		rds = append(rds, rd)
+	}
 	return &FlaskServer{
-		APIDef:     apiDef,
-		Title:      apiDef.Title,
-		APIDocsDir: apiDocsDir,
-		WithMain:   withMain,
+		APIDef:       apiDef,
+		Title:        apiDef.Title,
+		APIDocsDir:   apiDocsDir,
+		WithMain:     withMain,
+		ResourcesDef: rds,
 	}
 }
 
@@ -56,11 +61,9 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(ps.APIDef, dir)
-	if err != nil {
+	if err := ps.generateResources(dir); err != nil {
 		return err
 	}
-	ps.ResourcesDef = rds
 
 	// libraries
 	if err := generateLibraries(ps.APIDef.Libraries, dir); err != nil {
