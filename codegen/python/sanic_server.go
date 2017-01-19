@@ -17,15 +17,24 @@ type SanicServer struct {
 }
 
 func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *SanicServer {
+	var rds []resource.ResourceInterface
+	for _, rd := range getServerResourcesDefs(apiDef) {
+		rds = append(rds, rd)
+	}
+
 	return &SanicServer{
-		APIDef:     apiDef,
-		Title:      apiDef.Title,
-		APIDocsDir: apiDocsDir,
-		withMain:   withMain,
+		APIDef:       apiDef,
+		Title:        apiDef.Title,
+		APIDocsDir:   apiDocsDir,
+		withMain:     withMain,
+		ResourcesDef: rds,
 	}
 }
 
 func (s *SanicServer) Generate(dir string) error {
+	if err := s.generateResources(dir); err != nil {
+		return err
+	}
 	if err := s.generateOauth2(s.APIDef.SecuritySchemes, dir); err != nil {
 		return err
 	}
@@ -45,8 +54,4 @@ func (s *SanicServer) generateMain(dir string) error {
 
 	return commons.GenerateFile(s, "./templates/server_main_python_sanic.tmpl", "server_main_python_sanic",
 		filepath.Join(dir, "app.py"), true)
-}
-
-func (s *SanicServer) generateResources(dir string) error {
-	return nil
 }

@@ -13,6 +13,7 @@ func (fs FlaskServer) generateResources(dir string) error {
 		pr := newResourceFromDef(rdi.(resource.Resource), fs.APIDef)
 
 		filename := filepath.Join(dir, strings.ToLower(pr.Name)+".py")
+
 		if err := pr.generate(filename, "./templates/python_server_resource.tmpl", "resource_python_template", dir); err != nil {
 			return err
 		}

@@ -1,0 +1,15 @@
+{{- define "server_resources_api_python_sanic" -}}
+from sanic.response import json
+
+{{ range $k, $v := .Methods }}
+async def {{$v.MethodName}}({{$v.Params}}):
+    '''
+    {{range $kf, $vf := $v.FuncComments -}}
+    {{$vf}}
+    {{end -}}
+    It is handler for {{$v.Verb}} {{$v.Endpoint}}
+    '''
+    {{ if .ReqBody }}inputs = request.json{{ end }}
+    return json({})
+{{ end }}
+{{ end }}
