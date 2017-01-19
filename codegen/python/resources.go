@@ -2,15 +2,10 @@ package python
 
 import (
 	"sort"
-	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
-)
-
-const (
-	resourcePyTemplate = "./templates/python_server_resource.tmpl"
 )
 
 type pythonResource struct {
@@ -31,11 +26,16 @@ func (pr *pythonResource) addMiddleware(mwr middleware) {
 func newResource(name string, apiDef *raml.APIDefinition, isServer bool) pythonResource {
 	rd := resource.New(apiDef, name, "")
 	rd.IsServer = isServer
+	return newResourceFromDef(rd, apiDef)
+}
+
+func newResourceFromDef(rd resource.Resource, apiDef *raml.APIDefinition) pythonResource {
 	r := pythonResource{
 		Resource: &rd,
 	}
-	res := apiDef.Resources[name]
+	res := apiDef.Resources[rd.Endpoint]
 	r.GenerateMethods(&res, "python", newServerMethod, newClientMethod)
+	r.setMiddlewares()
 	return r
 }
 
@@ -51,11 +51,8 @@ func (pr *pythonResource) setMiddlewares() {
 
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
-func (pr *pythonResource) generate(r *raml.Resource, URI, dir string) error {
-	pr.GenerateMethods(r, "python", newServerMethod, newClientMethod)
-	pr.setMiddlewares()
-	filename := dir + "/" + strings.ToLower(pr.Name) + ".py"
-	return commons.GenerateFile(pr, resourcePyTemplate, "resource_python_template", filename, true)
+func (pr *pythonResource) generate(fileName, tmplFile, tmplName, dir string) error {
+	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, true)
 }
 
 // return array of request body in this resource
