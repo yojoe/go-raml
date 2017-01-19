@@ -1,0 +1,24 @@
+{{- define "server_resources_if_python_sanic" -}}
+from sanic import Blueprint
+from sanic.views import HTTPMethodView
+from sanic.response import text
+import {{.Name}}_api
+
+{{ range $k, $v := .PR.MiddlewaresArr}}
+from {{$v.ImportPath}} import {{$v.Name}}{{ end }}
+
+{{.Name}}_if = Blueprint('{{.Name}}_if')
+{{$resName := .Name}}
+{{ range $k, $v := .RouteView}}
+class {{$v.Name}}View(HTTPMethodView):
+    {{ range $km, $vm := $v.Methods }}
+    async def {{$vm.Verb| ToLower}}(self, {{$vm.Params}}):
+        {{range $kmw, $vmw := $vm.MiddlewaresArr -}}
+        if not await {{$vmw.Name}}([{{$vmw.Args}}]).check_token(request):
+            return text('', 401)
+        {{end}}
+        return await {{$resName}}_api.{{$vm.MethodName}}({{$vm.Params}})
+    {{end}}
+{{$resName}}_if.add_route({{$v.Name}}View.as_view(), '{{$v.Endpoint}}')
+{{end}}
+{{end}}

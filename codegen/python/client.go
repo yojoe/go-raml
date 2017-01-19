@@ -29,7 +29,7 @@ func NewClient(apiDef *raml.APIDefinition) Client {
 	services := map[string]*service{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
-		rd.GenerateMethods(&v, "python", newServerMethod, newClientMethod)
+		rd.GenerateMethods(&v, "python", newServerMethodFlask, newClientMethod)
 		services[k] = &service{
 			rootEndpoint: k,
 			Methods:      rd.Methods,

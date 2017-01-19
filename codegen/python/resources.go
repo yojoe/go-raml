@@ -26,15 +26,15 @@ func (pr *pythonResource) addMiddleware(mwr middleware) {
 func newResource(name string, apiDef *raml.APIDefinition, isServer bool) pythonResource {
 	rd := resource.New(apiDef, name, "")
 	rd.IsServer = isServer
-	return newResourceFromDef(rd, apiDef)
+	return newResourceFromDef(rd, apiDef, newServerMethodFlask)
 }
 
-func newResourceFromDef(rd resource.Resource, apiDef *raml.APIDefinition) pythonResource {
+func newResourceFromDef(rd resource.Resource, apiDef *raml.APIDefinition, smc resource.ServerMethodConstructor) pythonResource {
 	r := pythonResource{
 		Resource: &rd,
 	}
 	res := apiDef.Resources[rd.Endpoint]
-	r.GenerateMethods(&res, "python", newServerMethod, newClientMethod)
+	r.GenerateMethods(&res, "python", smc, newClientMethod)
 	r.setMiddlewares()
 	return r
 }
