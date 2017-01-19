@@ -1,0 +1,20 @@
+{{- define "server_main_python_sanic" -}}
+from sanic import Sanic
+from sanic.response import json
+
+{{ range $k, $v := .ResourcesDef -}}
+from {{.Name | ToLower}}_if import {{.Name | ToLower}}_if
+{{end }}
+
+app = Sanic(__name__)
+
+{{range $k, $v := .ResourcesDef -}}
+app.blueprint({{.Name | ToLower }}_if)
+{{end}}
+
+app.static('/apidocs', './apidocs')
+app.static('/', './index.html')
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
+{{end -}}

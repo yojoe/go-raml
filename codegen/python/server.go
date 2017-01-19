@@ -10,6 +10,10 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+type PythonServer interface {
+	Generate(dir string) error
+}
+
 // Server represents a python server
 type Server struct {
 	APIDef       *raml.APIDefinition
@@ -20,14 +24,21 @@ type Server struct {
 }
 
 // NewServer creates a new python server
-func NewServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) Server {
-	return Server{
-		APIDef:     apiDef,
-		Title:      apiDef.Title,
-		APIDocsDir: apiDocsDir,
-		WithMain:   withMain,
+func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) PythonServer {
+	switch kind {
+	case "":
+		return &Server{
+			APIDef:     apiDef,
+			Title:      apiDef.Title,
+			APIDocsDir: apiDocsDir,
+			WithMain:   withMain,
+		}
+	case "sanic":
+		return NewSanicServer(apiDef, apiDocsDir, withMain)
+	default:
+		log.Fatalf("Invalid kind of python server : %", kind)
+		return nil
 	}
-
 }
 
 // Generate generates all python server files

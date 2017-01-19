@@ -9,6 +9,7 @@ import (
 // ServerCommand is executed to generate a go server from a RAML specification
 type ServerCommand struct {
 	Language         string // target language
+	Kind             string
 	Dir              string //target dir
 	RamlFile         string //raml file
 	PackageName      string //package name in the generated go source files
@@ -27,6 +28,6 @@ func (command *ServerCommand) Execute() error {
 		apiDocsDir = "apidocs"
 	}
 
-	return codegen.GenerateServer(command.RamlFile, command.Dir, command.PackageName,
+	return codegen.GenerateServer(command.RamlFile, command.Kind, command.Dir, command.PackageName,
 		command.Language, apiDocsDir, command.ImportPath, !command.NoMainGeneration)
 }

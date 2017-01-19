@@ -59,6 +59,12 @@ func main() {
 					Destination: &serverCommand.Language,
 				},
 				cli.StringFlag{
+					Name:        "kind",
+					Value:       "",
+					Usage:       "Kind of server to generate (, sanic)",
+					Destination: &serverCommand.Kind,
+				},
+				cli.StringFlag{
 					Name:        "dir",
 					Value:       ".",
 					Usage:       "target directory",

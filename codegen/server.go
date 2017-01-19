@@ -20,7 +20,7 @@ var (
 )
 
 // GenerateServer generates API server files
-func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
+func GenerateServer(ramlFile, kind, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
 	apiDef := new(raml.APIDefinition)
 	// parse the raml file
 	ramlBytes, err := raml.ParseReadFile(ramlFile, apiDef)
@@ -41,7 +41,7 @@ func GenerateServer(ramlFile, dir, packageName, lang, apiDocsDir, rootImportPath
 		gs := golang.NewServer(apiDef, packageName, apiDocsDir, rootImportPath, generateMain)
 		err = gs.Generate(dir)
 	case langPython:
-		ps := python.NewServer(apiDef, apiDocsDir, generateMain)
+		ps := python.NewServer(kind, apiDef, apiDocsDir, generateMain)
 		err = ps.Generate(dir)
 	case langNim:
 		ns := nim.NewServer(apiDef, apiDocsDir, dir)
