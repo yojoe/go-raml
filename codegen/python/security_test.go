@@ -21,7 +21,8 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef.SecuritySchemes, targetdir)
+			fs := NewFlaskServer(apiDef, "", true)
+			err = fs.generateOauth2(fs.APIDef.SecuritySchemes, targetdir)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in dropbox
