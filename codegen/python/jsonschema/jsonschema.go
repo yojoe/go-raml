@@ -7,40 +7,49 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-type jsonSchema struct {
-	T          raml.Type           `json:"-"`
+type JSONSchema struct {
 	Name       string              `json:"-"`
 	Type       string              `json:"type"`
 	Properties map[string]property `json:"properties"`
+	Required   []string            `json:"required,omitempty"`
 }
 
-func NewJSONSchema(t raml.Type, name string) jsonSchema {
-	props := make(map[string]property, len(t.Properties))
+func NewJSONSchema(t raml.Type, name string) JSONSchema {
+	typ := fmt.Sprintf("%v", t.Type)
+	if typ == "" || t.Type == nil {
+		typ = "object"
+	}
 
-	for k, v := range t.Properties {
+	return NewJSONSchemaFromProps(t.Properties, typ, name)
+}
+
+func NewJSONSchemaFromProps(properties map[string]interface{}, typ, name string) JSONSchema {
+	var required []string
+
+	props := make(map[string]property, len(properties))
+	for k, v := range properties {
 		p := newProperty(raml.ToProperty(k, v))
 		if !isPropTypeSupported(p.Type) {
 			continue
 		}
 		props[p.Name] = p
+		if p.Required {
+			required = append(required, p.Name)
+		}
 	}
 
-	typ := fmt.Sprintf("%v", t.Type)
-	if typ == "" || t.Type == nil {
-		typ = "object"
-	}
-	return jsonSchema{
-		T:          t,
+	return JSONSchema{
 		Name:       name,
 		Type:       typ,
 		Properties: props,
+		Required:   required,
 	}
 }
 
-func (js jsonSchema) Supported() bool {
+func (js JSONSchema) Supported() bool {
 	return js.Type == "object"
 }
-func (js jsonSchema) String() string {
+func (js JSONSchema) String() []byte {
 	// force the type to `object` type
 	// we do it because we can only support `object` type now
 	// TODO: fix it
@@ -50,15 +59,15 @@ func (js jsonSchema) String() string {
 
 	b, err := json.MarshalIndent(&js, "", "\t")
 	if err != nil {
-		return "{}"
+		return []byte("{}")
 	}
-	return string(b)
+	return b
 }
 
 type property struct {
 	Name     string `json:"-"`
 	Type     string `json:"type,omitempty"`
-	Required bool   `json:"required"`
+	Required bool   `json:"-"`
 
 	// string
 	MinLength *int `json:"minLength,omitempty"`

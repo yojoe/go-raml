@@ -1,5 +1,11 @@
 {{- define "server_resources_api_python_sanic" -}}
-from sanic.response import json
+import json as JSON
+
+from sanic.response import json, text
+import jsonschema
+from jsonschema import Draft4Validator
+{{ range $k, $v := .ReqBodies }}
+{{$v}}_schema =  JSON.load(open('{{$v}}_schema.json')){{ end }}
 
 {{ range $k, $v := .Methods }}
 async def {{$v.MethodName}}({{$v.Params}}):
@@ -9,7 +15,13 @@ async def {{$v.MethodName}}({{$v.Params}}):
     {{end -}}
     It is handler for {{$v.Verb}} {{$v.Endpoint}}
     '''
-    {{ if .ReqBody }}inputs = request.json{{ end }}
+    {{ if .ReqBody }}
+    inputs = request.json
+    try:
+        Draft4Validator({{.ReqBody}}_schema).validate(inputs)
+    except jsonschema.ValidationError as e:
+        return text('Bad Request Body', 400)
+    {{ end }}
     return json({})
 {{ end }}
 {{ end }}

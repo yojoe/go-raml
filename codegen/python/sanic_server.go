@@ -32,6 +32,9 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 }
 
 func (s *SanicServer) Generate(dir string) error {
+	if err := s.generateJSONSchema(dir); err != nil {
+		return err
+	}
 	if err := s.generateResources(dir); err != nil {
 		return err
 	}
