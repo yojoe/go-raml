@@ -8,6 +8,7 @@ import (
 )
 
 type JSONSchema struct {
+	Schema     string              `json:"$schema"`
 	Name       string              `json:"-"`
 	Type       string              `json:"type"`
 	Properties map[string]property `json:"properties"`
@@ -39,6 +40,7 @@ func NewJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 	}
 
 	return JSONSchema{
+		Schema:     "http://json-schema.org/schema#",
 		Name:       name,
 		Type:       typ,
 		Properties: props,
@@ -65,13 +67,15 @@ func (js JSONSchema) String() []byte {
 }
 
 type property struct {
-	Name     string `json:"-"`
-	Type     string `json:"type,omitempty"`
-	Required bool   `json:"-"`
+	Name     string      `json:"-"`
+	Type     string      `json:"type,omitempty"`
+	Required bool        `json:"-"`
+	Enum     interface{} `json:"enum,omitempty"`
 
 	// string
-	MinLength *int `json:"minLength,omitempty"`
-	MaxLength *int `json:"maxLength,omitempty"`
+	MinLength *int    `json:"minLength,omitempty"`
+	MaxLength *int    `json:"maxLength,omitempty"`
+	Pattern   *string `json:"pattern,omitempty"`
 
 	// number
 	Minimum    *float64 `json:"minimum,omitempty"`
@@ -79,16 +83,26 @@ type property struct {
 	MultipleOf *float64 `json:"multipleOf,omitempty"`
 
 	// array
-	MinItems    *int  `json:"minItems,omitempty"`
-	MaxItems    *int  `json:"maxItems,omitempty"`
-	UniqueItems *bool `json:"uniqueItems,omitempty"`
+	MinItems    *int `json:"minItems,omitempty"`
+	MaxItems    *int `json:"maxItems,omitempty"`
+	UniqueItems bool `json:"uniqueItems,omitempty"`
 }
 
 func newProperty(rp raml.Property) property {
 	return property{
-		Name:      rp.Name,
-		Type:      rp.Type,
-		MinLength: rp.MinLength,
+		Name:        rp.Name,
+		Type:        rp.Type,
+		Required:    rp.Required,
+		Enum:        rp.Enum,
+		MinLength:   rp.MinLength,
+		MaxLength:   rp.MaxLength,
+		Pattern:     rp.Pattern,
+		Minimum:     rp.Minimum,
+		Maximum:     rp.Maximum,
+		MultipleOf:  rp.MultipleOf,
+		MinItems:    rp.MinItems,
+		MaxItems:    rp.MaxItems,
+		UniqueItems: rp.UniqueItems,
 	}
 }
 
@@ -97,6 +111,7 @@ var (
 		"string":  true,
 		"number":  true,
 		"boolean": true,
+		"integer": true,
 	}
 )
 
