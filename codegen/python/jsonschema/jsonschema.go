@@ -29,10 +29,12 @@ func NewJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 
 	props := make(map[string]property, len(properties))
 	for k, v := range properties {
-		p := newProperty(raml.ToProperty(k, v))
-		if !isPropTypeSupported(p.Type) {
+		rp := raml.ToProperty(k, v)
+		if !isPropTypeSupported(rp) {
 			continue
 		}
+
+		p := newProperty(rp)
 		props[p.Name] = p
 		if p.Required {
 			required = append(required, p.Name)
@@ -83,13 +85,18 @@ type property struct {
 	MultipleOf *float64 `json:"multipleOf,omitempty"`
 
 	// array
-	MinItems    *int `json:"minItems,omitempty"`
-	MaxItems    *int `json:"maxItems,omitempty"`
-	UniqueItems bool `json:"uniqueItems,omitempty"`
+	MinItems    *int       `json:"minItems,omitempty"`
+	MaxItems    *int       `json:"maxItems,omitempty"`
+	UniqueItems bool       `json:"uniqueItems,omitempty"`
+	Items       *arrayItem `json:"items,omitempty"`
+}
+
+type arrayItem struct {
+	Type string `json:"type"`
 }
 
 func newProperty(rp raml.Property) property {
-	return property{
+	p := property{
 		Name:        rp.Name,
 		Type:        rp.Type,
 		Required:    rp.Required,
@@ -104,6 +111,14 @@ func newProperty(rp raml.Property) property {
 		MaxItems:    rp.MaxItems,
 		UniqueItems: rp.UniqueItems,
 	}
+
+	if rp.IsArray() && !rp.IsBidimensiArray() && isPropTypeSupported(rp) {
+		p.Type = "array"
+		p.Items = &arrayItem{
+			Type: rp.ArrayType(),
+		}
+	}
+	return p
 }
 
 var (
@@ -115,7 +130,11 @@ var (
 	}
 )
 
-func isPropTypeSupported(typ string) bool {
+func isPropTypeSupported(p raml.Property) bool {
+	typ := p.Type
+	if p.IsArray() && !p.IsBidimensiArray() {
+		typ = p.ArrayType()
+	}
 	_, ok := supportedPropTypes[typ]
 	return ok
 }

@@ -221,6 +221,22 @@ func (p Property) IsEnum() bool {
 	return p.Enum != nil
 }
 
+func (p Property) IsBidimensiArray() bool {
+	return strings.HasSuffix(p.Type, "[][]")
+}
+
+func (p Property) IsArray() bool {
+	return strings.HasSuffix(p.Type, "[]")
+}
+
+func (p Property) BidimensiArrayType() string {
+	return strings.TrimSuffix(p.Type, "[][]")
+}
+
+func (p Property) ArrayType() string {
+	return strings.TrimSuffix(p.Type, "[]")
+}
+
 // Type defines an RAML data type
 type Type struct {
 	// A default value for a type
