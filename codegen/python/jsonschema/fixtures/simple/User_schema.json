@@ -13,8 +13,8 @@
 		}
 	},
 	"required": [
+		"age",
 		"firstName",
-		"lastName",
-		"age"
+		"lastName"
 	]
 }

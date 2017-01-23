@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"sort"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -59,6 +60,8 @@ func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 		}
 	}
 
+	// we need it to be sorted for testing purpose
+	sort.Strings(required)
 	return JSONSchema{
 		Schema:     "http://json-schema.org/schema#",
 		Name:       name,
