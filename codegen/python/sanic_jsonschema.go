@@ -1,6 +1,8 @@
 package python
 
 import (
+	"path/filepath"
+
 	"github.com/chuckpreslar/inflect"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -8,11 +10,17 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
+const (
+	schemaDir = "schema"
+)
+
 func (s SanicServer) generateJSONSchema(dir string) error {
-	if err := s.genJSONSchemaFromTypes(dir); err != nil {
+	sDir := filepath.Join(dir, schemaDir)
+	commons.CheckCreateDir(sDir)
+	if err := s.genJSONSchemaFromTypes(sDir); err != nil {
 		return err
 	}
-	if err := s.genJSONSchemaFromMethods(dir); err != nil {
+	if err := s.genJSONSchemaFromMethods(sDir); err != nil {
 		return err
 	}
 	return nil

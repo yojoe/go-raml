@@ -65,7 +65,7 @@ func TestSanicServer(t *testing.T) {
 				"deliveries_if.py",
 				"drones_api.py",
 				"drones_if.py",
-				"User_schema.json",
+				"schema/User_schema.json",
 			}
 
 			for _, filename := range files {

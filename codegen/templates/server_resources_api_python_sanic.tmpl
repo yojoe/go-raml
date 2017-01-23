@@ -5,7 +5,7 @@ from sanic.response import json, text
 import jsonschema
 from jsonschema import Draft4Validator
 {{ range $k, $v := .ReqBodies }}
-{{$v}}_schema =  JSON.load(open('{{$v}}_schema.json')){{ end }}
+{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json')){{ end }}
 
 {{ range $k, $v := .Methods }}
 async def {{$v.MethodName}}({{$v.Params}}):

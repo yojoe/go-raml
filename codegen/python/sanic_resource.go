@@ -70,14 +70,6 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 		if err := commons.GenerateFile(ctx, "./templates/server_resources_if_python_sanic.tmpl", "server_resources_if_python_sanic", filename, true); err != nil {
 			return err
 		}
-		/*
-			for endpoint, srv := range srvMap {
-				log.Printf("-- endpoint = %v name=%v\n", endpoint, srv.Name)
-				for _, m := range srv.Methods {
-					log.Printf("%v %#v\n", m.Verb(), m.MiddlewaresArr)
-				}
-			}*/
-
 	}
 
 	return nil

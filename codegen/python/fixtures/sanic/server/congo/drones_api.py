@@ -4,7 +4,7 @@ from sanic.response import json, text
 import jsonschema
 from jsonschema import Draft4Validator
 
-User_schema =  JSON.load(open('User_schema.json'))
+User_schema =  JSON.load(open('./schema/User_schema.json'))
 
 
 async def drones_get(request):
