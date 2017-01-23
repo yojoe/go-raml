@@ -48,6 +48,38 @@ func TestSanicServer(t *testing.T) {
 
 		})
 
+		Convey("Congo", func() {
+			apiDef := new(raml.APIDefinition)
+			_, err = raml.ParseReadFile("../fixtures/congo/api.raml", apiDef)
+			So(err, ShouldBeNil)
+
+			server := NewSanicServer(apiDef, "apidocs", true)
+			err = server.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			// check drones API implementation
+			rootFixture := "./fixtures/sanic/server/congo"
+			files := []string{
+				"app.py",
+				"deliveries_api.py",
+				"deliveries_if.py",
+				"drones_api.py",
+				"drones_if.py",
+				"User_schema.json",
+			}
+
+			for _, filename := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, filename))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, filename))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
