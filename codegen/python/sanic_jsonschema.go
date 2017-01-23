@@ -33,29 +33,22 @@ func (s SanicServer) genJSONSchemaFromTypes(dir string) error {
 }
 
 func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
+
+	// creates JSON schema from an raml method
+	// TODO : merge this code with the flask version
+	// to avoid code duplication
+	// request body
 	jsonSchemaFromMethod := func(m serverMethod) error {
-		// TODO : merge this code with the flask version
-		// to avoid code duplication
-		// request body
 		if commons.HasJSONBody(&m.Bodies) {
 			name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-			js := jsonschema.NewJSONSchemaFromProps(m.Bodies.ApplicationJSON.Properties, "object", name)
+			js := jsonschema.NewJSONSchemaFromBodies(m.Bodies, name)
 			if err := s.genSchemaFile(js, dir); err != nil {
 				return err
 			}
 		}
 
-		// response body
-		for _, r := range m.Responses {
-			if !commons.HasJSONBody(&r.Bodies) {
-				continue
-			}
-			name := inflect.UpperCamelCase(m.MethodName + "RespBody")
-			js := jsonschema.NewJSONSchemaFromProps(r.Bodies.ApplicationJSON.Properties, "object", name)
-			if err := s.genSchemaFile(js, dir); err != nil {
-				return err
-			}
-		}
+		// no need to generate schema for response body
+		// because we never need to validate it first
 		return nil
 	}
 	for _, rdi := range s.ResourcesDef {

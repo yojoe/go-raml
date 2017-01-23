@@ -15,16 +15,30 @@ type JSONSchema struct {
 	Required   []string            `json:"required,omitempty"`
 }
 
+// NewJSONSchema creates JSON schema from an raml type
 func NewJSONSchema(t raml.Type, name string) JSONSchema {
 	typ := fmt.Sprintf("%v", t.Type)
 	if typ == "" || t.Type == nil {
 		typ = "object"
 	}
 
-	return NewJSONSchemaFromProps(t.Properties, typ, name)
+	return newJSONSchemaFromProps(t.Properties, typ, name)
 }
 
-func NewJSONSchemaFromProps(properties map[string]interface{}, typ, name string) JSONSchema {
+// NewJSONSchemaFromBodies creates JSON schema from raml bodies
+func NewJSONSchemaFromBodies(b raml.Bodies, name string) JSONSchema {
+	if b.ApplicationJSON.Type != "" {
+		var t raml.Type
+		if err := json.Unmarshal([]byte(b.ApplicationJSON.Type), &t); err == nil {
+			return NewJSONSchema(t, name)
+		}
+	}
+	return newJSONSchemaFromProps(b.ApplicationJSON.Properties, "object", name)
+}
+
+// newJSONSchemaFromProps creates json schmema
+// from a map of properties
+func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string) JSONSchema {
 	var required []string
 
 	props := make(map[string]property, len(properties))
