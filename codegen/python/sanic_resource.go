@@ -22,6 +22,8 @@ func newSanicRouteView(endpoint string) sanicRouteView {
 	name = strings.TrimSuffix(name, ">")
 	name = strings.Replace(name, "/<", "_by", -1)
 	name = strings.Replace(name, ">/", "_", -1)
+	name = strings.Replace(name, "/", "_", -1)
+	name = strings.Replace(name, ">", "", -1)
 
 	return sanicRouteView{
 		Name:     name,
