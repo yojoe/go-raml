@@ -3,6 +3,10 @@ package jsonschema
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -80,6 +84,12 @@ func (js JSONSchema) String() []byte {
 		return []byte("{}")
 	}
 	return b
+}
+
+func (js JSONSchema) Generate(dir string) error {
+	filename := filepath.Join(dir, js.Name+"_schema.json")
+	log.Infof("generating file %v", filename)
+	return ioutil.WriteFile(filename, js.String(), 0755)
 }
 
 type property struct {

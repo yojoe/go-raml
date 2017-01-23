@@ -1,10 +1,6 @@
 package python
 
 import (
-	"io/ioutil"
-	"path/filepath"
-
-	log "github.com/Sirupsen/logrus"
 	"github.com/chuckpreslar/inflect"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -25,7 +21,7 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 func (s SanicServer) genJSONSchemaFromTypes(dir string) error {
 	for name, t := range s.APIDef.Types {
 		js := jsonschema.NewJSONSchema(t, name)
-		if err := s.genSchemaFile(js, dir); err != nil {
+		if err := js.Generate(dir); err != nil {
 			return err
 		}
 	}
@@ -42,7 +38,7 @@ func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
 		if commons.HasJSONBody(&m.Bodies) {
 			name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
 			js := jsonschema.NewJSONSchemaFromBodies(m.Bodies, name)
-			if err := s.genSchemaFile(js, dir); err != nil {
+			if err := js.Generate(dir); err != nil {
 				return err
 			}
 		}
@@ -61,10 +57,4 @@ func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
 		}
 	}
 	return nil
-}
-
-func (s SanicServer) genSchemaFile(js jsonschema.JSONSchema, dir string) error {
-	fileName := filepath.Join(dir, js.Name+"_schema.json")
-	log.Infof("generating file %v", fileName)
-	return ioutil.WriteFile(fileName, js.String(), 0755)
 }
