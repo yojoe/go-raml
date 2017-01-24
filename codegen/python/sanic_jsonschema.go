@@ -36,11 +36,7 @@ func (s SanicServer) genJSONSchemaFromTypes(dir string) error {
 }
 
 func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
-
 	// creates JSON schema from an raml method
-	// TODO : merge this code with the flask version
-	// to avoid code duplication
-	// request body
 	jsonSchemaFromMethod := func(m serverMethod) error {
 		if commons.HasJSONBody(&m.Bodies) {
 			name := inflect.UpperCamelCase(m.MethodName + "ReqBody")

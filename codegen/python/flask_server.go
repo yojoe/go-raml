@@ -6,7 +6,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -14,22 +13,26 @@ import (
 type FlaskServer struct {
 	APIDef       *raml.APIDefinition
 	Title        string
-	ResourcesDef []resource.ResourceInterface
+	ResourcesDef []pythonResource
 	WithMain     bool
 	APIDocsDir   string
 }
 
 func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *FlaskServer {
-	var rds []resource.ResourceInterface
+	globAPIDef = apiDef
+
+	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
-		rds = append(rds, rd)
+		pr := newResource(rd, apiDef, newServerMethodFlask)
+		prs = append(prs, pr)
 	}
+
 	return &FlaskServer{
 		APIDef:       apiDef,
 		Title:        apiDef.Title,
 		APIDocsDir:   apiDocsDir,
 		WithMain:     withMain,
-		ResourcesDef: rds,
+		ResourcesDef: prs,
 	}
 }
 
@@ -44,7 +47,7 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// generate request body
-	if err := generateClassesFromBodies(getAllResources(ps.APIDef, true), dir); err != nil {
+	if err := ps.generateClassesFromBodies(dir); err != nil {
 		return err
 	}
 

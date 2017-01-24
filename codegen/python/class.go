@@ -76,8 +76,8 @@ func (pc *class) handleAdvancedType() {
 }
 
 // generate all classes from all  methods request/response bodies
-func generateClassesFromBodies(rs []pythonResource, dir string) error {
-	for _, r := range rs {
+func (fs FlaskServer) generateClassesFromBodies(dir string) error {
+	for _, r := range fs.ResourcesDef {
 		for _, mi := range r.Methods {
 			m := mi.(serverMethod)
 			if err := generateClassesFromMethod(m, dir); err != nil {

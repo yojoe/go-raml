@@ -8,6 +8,10 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+const (
+	middlewareTypeOauth2 = "oauth2"
+)
+
 // python representation of a security scheme
 type pythonSecurity struct {
 	*security.Security
@@ -38,6 +42,7 @@ type middleware struct {
 	ImportPath string
 	Name       string
 	Args       string
+	Type       string
 }
 
 func newPythonOauth2Middleware(ss raml.DefinitionChoice) (middleware, error) {
@@ -51,6 +56,7 @@ func newPythonOauth2Middleware(ss raml.DefinitionChoice) (middleware, error) {
 		ImportPath: importPath,
 		Name:       name,
 		Args:       strings.Join(quotedScopes, ", "),
+		Type:       middlewareTypeOauth2,
 	}, nil
 }
 

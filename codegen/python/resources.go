@@ -23,13 +23,7 @@ func (pr *pythonResource) addMiddleware(mwr middleware) {
 	pr.MiddlewaresArr = append(pr.MiddlewaresArr, mwr)
 }
 
-func newResource(name string, apiDef *raml.APIDefinition, isServer bool) pythonResource {
-	rd := resource.New(apiDef, name, "")
-	rd.IsServer = isServer
-	return newResourceFromDef(rd, apiDef, newServerMethodFlask)
-}
-
-func newResourceFromDef(rd resource.Resource, apiDef *raml.APIDefinition, smc resource.ServerMethodConstructor) pythonResource {
+func newResource(rd resource.Resource, apiDef *raml.APIDefinition, smc resource.ServerMethodConstructor) pythonResource {
 	r := pythonResource{
 		Resource: &rd,
 	}
@@ -66,22 +60,4 @@ func (pr pythonResource) ReqBodies() []string {
 	}
 	sort.Strings(reqs)
 	return reqs
-}
-
-func getAllResources(apiDef *raml.APIDefinition, isServer bool) []pythonResource {
-	rs := []pythonResource{}
-
-	// sort the keys, so we have resource sorted by keys.
-	// the generated code actually don't need it to be sorted.
-	// but test fixture need it
-	var keys []string
-	for k := range apiDef.Resources {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		rs = append(rs, newResource(k, apiDef, isServer))
-	}
-	return rs
 }

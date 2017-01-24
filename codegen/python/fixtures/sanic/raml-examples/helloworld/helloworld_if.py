@@ -11,7 +11,7 @@ helloworld_if = Blueprint('helloworld_if')
 class helloworldView(HTTPMethodView):
     
     async def get(self, request):
-        
+     
         return await helloworld_api.helloworld_get(request)
     
 helloworld_if.add_route(helloworldView.as_view(), '/helloworld')

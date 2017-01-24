@@ -56,7 +56,6 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 		}
 
 		// generate
-		// TODO : we don't really have middleware in Sanic yet
 		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_if.py")
 		ctx := map[string]interface{}{
 			"Name":      strings.ToLower(pr.Name),
