@@ -19,7 +19,7 @@ func TestGenerateClientFromRaml(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		err = GenerateClient(apiDef, targetDir, "theclient", "go", "client")
+		err = GenerateClient(apiDef, targetDir, "theclient", "go", "client", "")
 		So(err, ShouldBeNil)
 		rootFixture := "./fixtures/client_resources"
 		checks := []struct {
