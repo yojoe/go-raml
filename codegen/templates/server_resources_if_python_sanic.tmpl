@@ -13,7 +13,7 @@ from {{$v.ImportPath}} import {{$v.Name}}{{ end }}
 class {{$v.Name}}View(HTTPMethodView):
     {{ range $km, $vm := $v.Methods }}
     async def {{$vm.Verb| ToLower}}(self, {{$vm.Params}}):
-     {{range $kmw, $vmw := $vm.MiddlewaresArr -}}{{if eq $vmw.Type "oauth2" -}}
+     {{range $kmw, $vmw := $vm.MiddlewaresArr -}}{{if eq $vmw.Type "oauth2"}}
         if not await {{$vmw.Name}}([{{$vmw.Args}}]).check_token(request):
             return text('', 401)
         {{end}}{{end}}
