@@ -20,7 +20,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("Simple client", func() {
-			client := NewClient(apiDef)
+			client := NewClient(apiDef, "")
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 

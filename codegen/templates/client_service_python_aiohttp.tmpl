@@ -1,0 +1,17 @@
+{{- define "client_service_python_aiohttp" -}}
+
+class {{.Name}}:
+    def __init__(self, client):
+        self.client = client
+
+{{ range $k, $v := .Methods }}
+
+    async def {{$v.MethodName}}({{$v.Params}}):
+        """{{ range $kf, $vf := $v.FuncComments }}
+        {{$vf}}{{end}}
+        It is method for {{$v.Verb}} {{$v.Endpoint}}
+        """
+        uri = self.client.base_url + {{$v.ResourcePath}}
+        return await self.client.{{$v.Verb | ToLower }}({{$v.PRArgs}})
+{{ end }}
+{{- end -}}

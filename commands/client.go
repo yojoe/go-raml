@@ -14,6 +14,7 @@ type ClientCommand struct {
 	RamlFile    string //raml file
 	PackageName string //package name in the generated go source files
 	ImportPath  string
+	Kind        string
 }
 
 //Execute generates a client from a RAML specification
@@ -24,5 +25,5 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language, command.ImportPath)
+	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language, command.ImportPath, command.Kind)
 }

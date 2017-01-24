@@ -140,6 +140,12 @@ func main() {
 					Usage:       "import path of the generated code",
 					Destination: &clientCommand.ImportPath,
 				},
+				cli.StringFlag{
+					Name:        "kind",
+					Value:       "requests",
+					Usage:       "Kind of client to generate (requests,aiohttp)",
+					Destination: &clientCommand.Kind,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := clientCommand.Execute(); err != nil {
