@@ -7,6 +7,7 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+// SanicServer represents a sanic asyncio server
 type SanicServer struct {
 	APIDef       *raml.APIDefinition
 	Title        string
@@ -15,6 +16,7 @@ type SanicServer struct {
 	APIDocsDir   string
 }
 
+// NewSanicServer creates new sanic server from an RAML file
 func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *SanicServer {
 	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
@@ -31,6 +33,7 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 	}
 }
 
+// Generate generates sanic server code
 func (s *SanicServer) Generate(dir string) error {
 	if err := s.generateJSONSchema(dir); err != nil {
 		return err

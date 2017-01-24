@@ -18,6 +18,7 @@ type FlaskServer struct {
 	APIDocsDir   string
 }
 
+// NewFlaskServer creates new flask server from an RAML file
 func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *FlaskServer {
 	globAPIDef = apiDef
 
@@ -38,8 +39,6 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 
 // Generate generates all python server files
 func (ps FlaskServer) Generate(dir string) error {
-
-	globAPIDef = ps.APIDef
 	// generate input validators helper
 	if err := commons.GenerateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
 		filepath.Join(dir, "input_validators.py"), false); err != nil {
