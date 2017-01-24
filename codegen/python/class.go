@@ -102,18 +102,6 @@ func generateClassesFromMethod(m serverMethod, dir string) error {
 			return err
 		}
 	}
-
-	// response body
-	for _, r := range m.Responses {
-		if !commons.HasJSONBody(&r.Bodies) {
-			continue
-		}
-		name := inflect.UpperCamelCase(m.MethodName + "RespBody")
-		class := newClass(name, "", r.Bodies.ApplicationJSON.Properties)
-		if err := class.generate(dir); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 

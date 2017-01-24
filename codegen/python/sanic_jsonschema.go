@@ -7,7 +7,6 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/python/jsonschema"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 const (
@@ -55,8 +54,7 @@ func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
 		// because we never need to validate it first
 		return nil
 	}
-	for _, rdi := range s.ResourcesDef {
-		pr := newResourceFromDef(rdi.(resource.Resource), s.APIDef, newServerMethodSanic)
+	for _, pr := range s.ResourcesDef {
 		for _, mi := range pr.Methods {
 			m := mi.(serverMethod)
 			if err := jsonSchemaFromMethod(m); err != nil {

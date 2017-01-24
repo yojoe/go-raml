@@ -1,12 +1,10 @@
 package python
 
 import (
-	//"log"
 	"path/filepath"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 type sanicRouteView struct {
@@ -42,9 +40,7 @@ func (s SanicServer) generateResources(dir string) error {
 
 func (s SanicServer) generateResourcesAPIIface(dir string) error {
 	// routing & middlewares
-	for _, rdi := range s.ResourcesDef {
-		pr := newResourceFromDef(rdi.(resource.Resource), s.APIDef, newServerMethodSanic)
-
+	for _, pr := range s.ResourcesDef {
 		// create sanicRouteView objects
 		srvMap := map[string]sanicRouteView{}
 		for _, m := range pr.Methods {
@@ -76,9 +72,7 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 }
 
 func (s SanicServer) generateResourcesAPIImpl(dir string) error {
-	for _, rdi := range s.ResourcesDef {
-		pr := newResourceFromDef(rdi.(resource.Resource), s.APIDef, newServerMethodSanic)
-
+	for _, pr := range s.ResourcesDef {
 		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_api.py")
 		if err := pr.generate(filename, "./templates/server_resources_api_python_sanic.tmpl", "server_resources_api_python_sanic", dir); err != nil {
 			return err

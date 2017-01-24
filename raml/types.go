@@ -221,10 +221,13 @@ func (p Property) IsEnum() bool {
 	return p.Enum != nil
 }
 
+// IsBidimensiArray returns true if
+// this property is a bidimensional array
 func (p Property) IsBidimensiArray() bool {
 	return strings.HasSuffix(p.Type, "[][]")
 }
 
+// IsArray returns true if it is an array
 func (p Property) IsArray() bool {
 	return strings.HasSuffix(p.Type, "[]")
 }

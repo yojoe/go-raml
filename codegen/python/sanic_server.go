@@ -4,22 +4,22 @@ import (
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 type SanicServer struct {
 	APIDef       *raml.APIDefinition
 	Title        string
-	ResourcesDef []resource.ResourceInterface
+	ResourcesDef []pythonResource
 	withMain     bool
 	APIDocsDir   string
 }
 
 func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *SanicServer {
-	var rds []resource.ResourceInterface
+	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
-		rds = append(rds, rd)
+		pr := newResourceFromDef(rd, apiDef, newServerMethodSanic)
+		prs = append(prs, pr)
 	}
 
 	return &SanicServer{
@@ -27,7 +27,7 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 		Title:        apiDef.Title,
 		APIDocsDir:   apiDocsDir,
 		withMain:     withMain,
-		ResourcesDef: rds,
+		ResourcesDef: prs,
 	}
 }
 

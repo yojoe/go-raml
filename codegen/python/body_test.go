@@ -56,7 +56,6 @@ func TestGenerateClassFromBody(t *testing.T) {
 				Result   string
 				Expected string
 			}{
-				{"PersonGetRespBody.py", "PersonGetRespBody.py"},
 				{"PersonPostReqBody.py", "PersonPostReqBody.py"},
 			}
 
