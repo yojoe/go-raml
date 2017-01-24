@@ -6,13 +6,22 @@ with [itsyou.online](https://www.itsyou.online/) authorization server.
 
 ## Server
 
-Generate server code by using this command
+Generate Flask server code by using this command
 
 ```
-go-raml server -l python --ramlfile ../api.raml  --dir server
+go-raml server -l python --ramlfile ../api.raml  --dir flask
 ```
 
-You can find all server files in `server` directory.
+You can find all Flask files in `flask` directory.
+
+Generate Sanic code by using this command
+
+```
+go-raml server -l python --ramlfile ../api.raml  --dir sanic --kind sanic
+```
+
+You can find all Sanic files in `sanic` directory.
+
 
 ### Install required packages
 
