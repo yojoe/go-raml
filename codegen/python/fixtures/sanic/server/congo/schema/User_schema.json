@@ -5,6 +5,9 @@
 		"age": {
 			"type": "integer"
 		},
+		"dob": {
+			"$ref": "datetime_schema.json"
+		},
 		"firstName": {
 			"type": "string"
 		},
@@ -20,6 +23,7 @@
 	},
 	"required": [
 		"age",
+		"dob",
 		"firstName",
 		"height",
 		"iscrazy",

@@ -10,6 +10,15 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+var (
+	scalarTypes = map[string]bool{
+		"string":  true,
+		"number":  true,
+		"boolean": true,
+		"integer": true,
+	}
+)
+
 type JSONSchema struct {
 	Schema     string              `json:"$schema"`
 	Name       string              `json:"-"`
@@ -97,6 +106,7 @@ func (js JSONSchema) Generate(dir string) error {
 
 type property struct {
 	Name     string      `json:"-"`
+	Ref      string      `json:"$ref,omitempty"`
 	Type     string      `json:"type,omitempty"`
 	Required bool        `json:"-"`
 	Enum     interface{} `json:"enum,omitempty"`
@@ -123,6 +133,14 @@ type arrayItem struct {
 }
 
 func newProperty(rp raml.Property) property {
+	_, isScalar := scalarTypes[rp.Type]
+	if rp.Type != "" && !isScalar && !rp.IsArray() && !rp.IsBidimensiArray() {
+		return property{
+			Name:     rp.Name,
+			Ref:      rp.Type + "_schema.json",
+			Required: rp.Required,
+		}
+	}
 	p := property{
 		Name:        rp.Name,
 		Type:        rp.Type,
@@ -158,10 +176,16 @@ var (
 )
 
 func isPropTypeSupported(p raml.Property) bool {
-	typ := p.Type
-	if p.IsArray() && !p.IsBidimensiArray() {
-		typ = p.ArrayType()
+	if p.IsBidimensiArray() {
+		return false
 	}
-	_, ok := supportedPropTypes[typ]
-	return ok
+	/*
+		typ := p.Type
+		if p.IsArray() {
+			typ = p.ArrayType()
+		}
+		_, ok := supportedPropTypes[typ]
+		return ok
+	*/
+	return true
 }

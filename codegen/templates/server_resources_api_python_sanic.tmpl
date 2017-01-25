@@ -4,8 +4,14 @@ import json as JSON
 from sanic.response import json, text
 import jsonschema
 from jsonschema import Draft4Validator
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 {{ range $k, $v := .ReqBodies }}
-{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json')){{ end }}
+{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json'))
+{{$v}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$v}}_schema)
+{{$v}}_schema_validator = Draft4Validator({{$v}}_schema, resolver={{$v}}_schema_resolver)
+{{ end }}
 
 {{ range $k, $v := .Methods }}
 async def {{$v.MethodName}}({{$v.Params}}):
@@ -18,7 +24,7 @@ async def {{$v.MethodName}}({{$v.Params}}):
     {{ if .ReqBody }}
     inputs = request.json
     try:
-        Draft4Validator({{.ReqBody}}_schema).validate(inputs)
+        {{.ReqBody}}_schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:
         return text('Bad Request Body', 400)
     {{ end }}
