@@ -46,7 +46,7 @@ func (pr *pythonResource) setMiddlewares() {
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(fileName, tmplFile, tmplName, dir string) error {
-	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, true)
+	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, false)
 }
 
 // return array of request body in this resource

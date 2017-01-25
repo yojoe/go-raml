@@ -3,12 +3,10 @@ package jsonschema
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"path/filepath"
 	"sort"
 
-	log "github.com/Sirupsen/logrus"
-
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -74,7 +72,7 @@ func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 func (js JSONSchema) Supported() bool {
 	return js.Type == "object"
 }
-func (js JSONSchema) String() []byte {
+func (js JSONSchema) String() string {
 	// force the type to `object` type
 	// we do it because we can only support `object` type now
 	// TODO: fix it
@@ -84,15 +82,17 @@ func (js JSONSchema) String() []byte {
 
 	b, err := json.MarshalIndent(&js, "", "\t")
 	if err != nil {
-		return []byte("{}")
+		return "{}"
 	}
-	return b
+	return string(b)
 }
 
 func (js JSONSchema) Generate(dir string) error {
 	filename := filepath.Join(dir, js.Name+"_schema.json")
-	log.Infof("generating file %v", filename)
-	return ioutil.WriteFile(filename, js.String(), 0755)
+	ctx := map[string]interface{}{
+		"Content": js.String(),
+	}
+	return commons.GenerateFile(ctx, "./templates/json_schema.tmpl", "json_schema", filename, false)
 }
 
 type property struct {
