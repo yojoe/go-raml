@@ -46,28 +46,28 @@ Fill `oauth2_server_pub_key` variable with content [itsyouonline.pub](../itsyouo
 
 ## Client
 
-Generate client code by using this command
+Generate `requests` based client code by using this command
 
 ```
-go-raml client --ramlfile ../api.raml --dir client/goramldir -l python
+go-raml client --ramlfile ../api.raml --dir requests_client/goramldir -l python
 ```
-Then you can find client code in client directory.
+Then you can find client code in `requests_client` directory.
+You will need to install `requests` library to use the client.
 
-**Install python requests library**
 
-We need it to make HTTP request to server
+You can also generate `aiohttp` asyncio based client code by using this command
 
 ```
-$ cd client
-$ virtualenv -p python3 env
-$ source env/bin/activate
-$ pip3 install requests
+go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python
 ```
+
+Then you can find client code in `aiohttp_client` directory.
+You will need to install `aiohttp` and `aiodns` library to use the client.
 
 
 **simple client main code**
 
-A simple example of the client program can be found in [main.py](main.py).
+A simple example of the client program can be found in main.py.
 
 The code is well commented to give you idea about what happens in the code.
 

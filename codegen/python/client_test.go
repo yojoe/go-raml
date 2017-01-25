@@ -11,7 +11,7 @@ import (
 )
 
 func TestGeneratePythonClientFromRaml(t *testing.T) {
-	Convey("generate python client", t, func() {
+	Convey("Python client", t, func() {
 		apiDef := new(raml.APIDefinition)
 		err := raml.ParseFile("./fixtures/client/client.raml", apiDef)
 		So(err, ShouldBeNil)
@@ -19,12 +19,12 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("Simple client", func() {
+		Convey("requests client", func() {
 			client := NewClient(apiDef, "")
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/client"
+			rootFixture := "./fixtures/client/requests_client"
 			// cek with generated with fixtures
 			checks := []struct {
 				Result   string
@@ -41,6 +41,31 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
+		Convey("aiohttp client", func() {
+			client := NewClient(apiDef, clientNameAiohttp)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/aiohttp_client"
+			// cek with generated with fixtures
+			files := []string{
+				"client.py",
+				"__init__.py",
+				"client_utils.py",
+				"users_service.py",
+			}
+
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

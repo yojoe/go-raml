@@ -149,7 +149,9 @@ Executes this command to generates Sanic server
 
 A go 1.5.x compatible client is generated in result_directory directory.
 
-`go-raml client --language python --dir ./result_directory --ramlfile api.raml`
+`go-raml client --language python --dir ./result_directory --ramlfile api.raml` or
+
+`go-raml client --language python --dir ./result_directory --ramlfile api.raml --kind aiohttp`
 
 A python 3.5 compatible client is generated in result_directory directory.
 
@@ -232,7 +234,10 @@ It has `AuthHeader` field, which if not empty will be used as value of `Authoriz
 
 ### Using Python Client library
 
-Generated python client library only need python-requests as dependency.
+We provide two kind of clients:
+
+- sync client using popular `requests` http library
+- async client using `aiohttp` library, this client will give more performance
 
 It has `set_auth_header` method to set `Authorization` header value on each request.
 
