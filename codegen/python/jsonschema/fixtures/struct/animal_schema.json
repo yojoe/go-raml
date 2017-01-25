@@ -7,7 +7,7 @@
 			"minItems": 1,
 			"maxItems": 10,
 			"items": {
-				"type": "EnumCity"
+				"$ref": "EnumCity_schema.json"
 			}
 		},
 		"colours": {

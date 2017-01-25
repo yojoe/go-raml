@@ -93,6 +93,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 				{"EnumCity_schema.json", "EnumCity_schema.json"},
 				{"EnumString_schema.json", "EnumString_schema.json"},
 				{"animal_schema.json", "animal_schema.json"},
+				{"Cage_schema.json", "Cage_schema.json"},
 			}
 
 			for _, check := range checks {

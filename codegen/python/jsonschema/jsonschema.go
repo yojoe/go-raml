@@ -129,7 +129,19 @@ type property struct {
 }
 
 type arrayItem struct {
-	Type string `json:"type"`
+	Type string `json:"type,omitempty"`
+	Ref  string `json:"$ref,omitempty"`
+}
+
+func newArrayItem(typ string) *arrayItem {
+	if _, isScalar := scalarTypes[typ]; isScalar {
+		return &arrayItem{
+			Type: typ,
+		}
+	}
+	return &arrayItem{
+		Ref: typ + "_schema.json",
+	}
 }
 
 func newProperty(rp raml.Property) property {
@@ -159,33 +171,11 @@ func newProperty(rp raml.Property) property {
 
 	if rp.IsArray() && !rp.IsBidimensiArray() && isPropTypeSupported(rp) {
 		p.Type = "array"
-		p.Items = &arrayItem{
-			Type: rp.ArrayType(),
-		}
+		p.Items = newArrayItem(rp.ArrayType())
 	}
 	return p
 }
 
-var (
-	supportedPropTypes = map[string]bool{
-		"string":  true,
-		"number":  true,
-		"boolean": true,
-		"integer": true,
-	}
-)
-
 func isPropTypeSupported(p raml.Property) bool {
-	if p.IsBidimensiArray() {
-		return false
-	}
-	/*
-		typ := p.Type
-		if p.IsArray() {
-			typ = p.ArrayType()
-		}
-		_, ok := supportedPropTypes[typ]
-		return ok
-	*/
-	return true
+	return !p.IsBidimensiArray()
 }
