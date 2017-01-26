@@ -10,6 +10,11 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+const (
+	schemaVer  = "http://json-schema.org/schema#"
+	fileSuffix = "_schema.json"
+)
+
 var (
 	scalarTypes = map[string]bool{
 		"string":  true,
@@ -19,12 +24,19 @@ var (
 	}
 )
 
+// JSONSchema represents a json-schema json file
 type JSONSchema struct {
 	Schema     string              `json:"$schema"`
 	Name       string              `json:"-"`
 	Type       string              `json:"type"`
-	Properties map[string]property `json:"properties"`
+	Items      *arrayItem          `json:"items,omitempty"`
+	Properties map[string]property `json:"properties,omitempty"`
 	Required   []string            `json:"required,omitempty"`
+
+	// Array properties
+	MinItems    int  `json:"minItems,omitempty"`
+	MaxItems    int  `json:"maxItems,omitempty"`
+	UniqueItems bool `json:"uniqueItems,omitempty"`
 }
 
 // NewJSONSchema creates JSON schema from an raml type
@@ -34,7 +46,7 @@ func NewJSONSchema(t raml.Type, name string) JSONSchema {
 		typ = "object"
 	}
 
-	return newJSONSchemaFromProps(t.Properties, typ, name)
+	return newJSONSchemaFromProps(&t, t.Properties, typ, name)
 }
 
 // NewJSONSchemaFromBodies creates JSON schema from raml bodies
@@ -45,13 +57,17 @@ func NewJSONSchemaFromBodies(b raml.Bodies, name string) JSONSchema {
 			return NewJSONSchema(t, name)
 		}
 	}
-	return newJSONSchemaFromProps(b.ApplicationJSON.Properties, "object", name)
+	return newJSONSchemaFromProps(nil, b.ApplicationJSON.Properties, "object", name)
 }
 
 // newJSONSchemaFromProps creates json schmema
 // from a map of properties
-func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string) JSONSchema {
+func newJSONSchemaFromProps(t *raml.Type, properties map[string]interface{}, typ, name string) JSONSchema {
 	var required []string
+
+	if isTypeArray(typ) {
+		return newArraySchema(t, typ, name)
+	}
 
 	props := make(map[string]property, len(properties))
 	for k, v := range properties {
@@ -70,7 +86,7 @@ func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 	// we need it to be sorted for testing purpose
 	sort.Strings(required)
 	return JSONSchema{
-		Schema:     "http://json-schema.org/schema#",
+		Schema:     schemaVer,
 		Name:       name,
 		Type:       typ,
 		Properties: props,
@@ -78,14 +94,13 @@ func newJSONSchemaFromProps(properties map[string]interface{}, typ, name string)
 	}
 }
 
+// Supported returns true if the type is supported
 func (js JSONSchema) Supported() bool {
-	return js.Type == "object"
+	return js.Type == "object" || js.Type == "array"
 }
 func (js JSONSchema) String() string {
-	// force the type to `object` type
-	// we do it because we can only support `object` type now
-	// TODO: fix it
-	if js.Type != "object" {
+	// for unsupported type, force the type to `object` type
+	if !js.Supported() {
 		js.Type = "object"
 	}
 
@@ -96,8 +111,9 @@ func (js JSONSchema) String() string {
 	return string(b)
 }
 
+// Generate generates a json file of this schema
 func (js JSONSchema) Generate(dir string) error {
-	filename := filepath.Join(dir, js.Name+"_schema.json")
+	filename := filepath.Join(dir, js.Name+fileSuffix)
 	ctx := map[string]interface{}{
 		"Content": js.String(),
 	}
@@ -128,31 +144,18 @@ type property struct {
 	Items       *arrayItem `json:"items,omitempty"`
 }
 
-type arrayItem struct {
-	Type string `json:"type,omitempty"`
-	Ref  string `json:"$ref,omitempty"`
-}
-
-func newArrayItem(typ string) *arrayItem {
-	if _, isScalar := scalarTypes[typ]; isScalar {
-		return &arrayItem{
-			Type: typ,
-		}
-	}
-	return &arrayItem{
-		Ref: typ + "_schema.json",
-	}
-}
-
 func newProperty(rp raml.Property) property {
 	_, isScalar := scalarTypes[rp.Type]
+
+	// complex type
 	if rp.Type != "" && !isScalar && !rp.IsArray() && !rp.IsBidimensiArray() {
 		return property{
 			Name:     rp.Name,
-			Ref:      rp.Type + "_schema.json",
+			Ref:      rp.Type + fileSuffix,
 			Required: rp.Required,
 		}
 	}
+
 	p := property{
 		Name:        rp.Name,
 		Type:        rp.Type,
@@ -169,7 +172,8 @@ func newProperty(rp raml.Property) property {
 		UniqueItems: rp.UniqueItems,
 	}
 
-	if rp.IsArray() && !rp.IsBidimensiArray() && isPropTypeSupported(rp) {
+	// array
+	if rp.IsArray() && !rp.IsBidimensiArray() {
 		p.Type = "array"
 		p.Items = newArrayItem(rp.ArrayType())
 	}
@@ -177,5 +181,5 @@ func newProperty(rp raml.Property) property {
 }
 
 func isPropTypeSupported(p raml.Property) bool {
-	return !p.IsBidimensiArray()
+	return !p.IsBidimensiArray() && !p.IsUnion()
 }

@@ -33,6 +33,8 @@ func TestGenerateStructFromRaml(t *testing.T) {
 				Expected string
 			}{
 				{"Email_schema.json", "Email_schema.json"},
+				{"EmailsLong_schema.json", "EmailsLong_schema.json"},
+				{"EmailsShort_schema.json", "EmailsShort_schema.json"},
 			}
 
 			for _, check := range checks {

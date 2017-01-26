@@ -232,6 +232,11 @@ func (p Property) IsArray() bool {
 	return strings.HasSuffix(p.Type, "[]")
 }
 
+// IsUnion returns true if a property is a union
+func (p Property) IsUnion() bool {
+	return strings.Index(p.Type, "|") > 0
+}
+
 func (p Property) BidimensiArrayType() string {
 	return strings.TrimSuffix(p.Type, "[][]")
 }
