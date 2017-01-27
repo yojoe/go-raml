@@ -21,7 +21,8 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateClassesFromBodies(getAllResources(apiDef, true), targetDir)
+			fs := NewFlaskServer(apiDef, "apidocs", true)
+			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/class/"
@@ -48,7 +49,8 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateClassesFromBodies(getAllResources(apiDef, true), targetDir)
+			fs := NewFlaskServer(apiDef, "apidocs", true)
+			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/class/json/"
@@ -56,7 +58,6 @@ func TestGenerateClassFromBody(t *testing.T) {
 				Result   string
 				Expected string
 			}{
-				{"PersonGetRespBody.py", "PersonGetRespBody.py"},
 				{"PersonPostReqBody.py", "PersonPostReqBody.py"},
 			}
 

@@ -18,14 +18,14 @@ type serverMethod struct {
 }
 
 // setup sets all needed variables
-func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource) error {
+func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, resourceParams []string) error {
 	// method name
 	if len(sm.DisplayName) > 0 {
 		sm.MethodName = commons.DisplayNameToFuncName(sm.DisplayName)
 	} else {
 		sm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(sm.Verb())
 	}
-	sm.Params = strings.Join(resource.GetResourceParams(r), ", ")
+	sm.Params = strings.Join(resourceParams, ", ")
 	sm.Endpoint = strings.Replace(sm.Endpoint, "{", "<", -1)
 	sm.Endpoint = strings.Replace(sm.Endpoint, "}", ">", -1)
 
@@ -43,6 +43,34 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 		sm.MiddlewaresArr = append(sm.MiddlewaresArr, m)
 	}
 	return nil
+}
+
+// create server resource's method
+func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName, kind string) resource.MethodInterface {
+
+	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
+	method.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
+
+	pm := serverMethod{
+		Method: &method,
+	}
+	params := resource.GetResourceParams(r)
+	if kind == "sanic" {
+		params = append([]string{"request"}, params...)
+	}
+	pm.setup(apiDef, r, rd, params)
+	return pm
+}
+
+func newServerMethodFlask(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName string) resource.MethodInterface {
+	return newServerMethod(apiDef, r, rd, m, methodName, "flask")
+}
+
+func newServerMethodSanic(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName string) resource.MethodInterface {
+	return newServerMethod(apiDef, r, rd, m, methodName, "sanic")
 }
 
 // defines a python client lib method
@@ -100,20 +128,6 @@ func (pcm *clientMethod) setup() {
 	} else {
 		pcm.MethodName = snakeCaseResourceURI(pcm.Resource()) + "_" + strings.ToLower(pcm.Verb())
 	}
-}
-
-// create server resource's method
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName string) resource.MethodInterface {
-
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-	method.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
-
-	pm := serverMethod{
-		Method: &method,
-	}
-	pm.setup(apiDef, r, rd)
-	return pm
 }
 
 // create snake case function name from a resource URI

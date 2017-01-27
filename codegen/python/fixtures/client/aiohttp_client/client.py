@@ -1,0 +1,53 @@
+import json
+import aiohttp
+
+from .users_service import  UsersService 
+
+
+class Client:
+    def __init__(self, loop, base_uri = "http://api.jumpscale.com/v3"):
+        self.base_url = base_uri
+        self.session = aiohttp.ClientSession(loop=loop)
+        self.headers = {"Content-Type": "application/json"}
+        
+        self.users = UsersService(self)
+    
+    def set_auth_header(self, val):
+        ''' set authorization header value'''
+        self.headers["Authorization"] = val
+
+    def close(self):
+        self.session.close()
+
+    def build_header(self, headers):
+        hdrs = self.headers
+        if headers is None:
+            return hdrs
+
+        for key in headers:
+            hdrs[key] = headers[key]
+        return hdrs
+    
+    async def get(self, uri, headers, params):
+        return await self.session.get(uri, headers=self.build_header(headers), params=params)
+
+    async def post(self, uri, data, headers, params):
+        hdrs = self.build_header(headers)
+        if type(data) is not str:
+            data = json.dumps(data)
+
+        return await self.session.post(uri, data=data, headers=hdrs, params=params)
+
+    async def put(self, uri, data, headers, params):
+        hdrs = self.build_header(headers)
+        if type(data) is not str:
+            data = json.dumps(data)
+
+        return await self.session.put(uri, data=data, headers=hdrs, params=params)
+
+    async def patch(self, uri, data, headers, params):
+        hdrs = self.build_header(headers)
+        if type(data) is not str:
+            data = json.dumps(data)
+        
+        return await self.session.patch(uri, data=data, headers=hdrs, params=params)

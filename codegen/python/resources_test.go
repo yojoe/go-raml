@@ -20,7 +20,9 @@ func TestPythonResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir)
+			fs := NewFlaskServer(apiDef, "apidocs", true)
+
+			err = fs.generateResources(targetdir)
 			So(err, ShouldBeNil)
 
 			// check  api implementation

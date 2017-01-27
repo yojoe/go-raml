@@ -221,6 +221,30 @@ func (p Property) IsEnum() bool {
 	return p.Enum != nil
 }
 
+// IsBidimensiArray returns true if
+// this property is a bidimensional array
+func (p Property) IsBidimensiArray() bool {
+	return strings.HasSuffix(p.Type, "[][]")
+}
+
+// IsArray returns true if it is an array
+func (p Property) IsArray() bool {
+	return strings.HasSuffix(p.Type, "[]")
+}
+
+// IsUnion returns true if a property is a union
+func (p Property) IsUnion() bool {
+	return strings.Index(p.Type, "|") > 0
+}
+
+func (p Property) BidimensiArrayType() string {
+	return strings.TrimSuffix(p.Type, "[][]")
+}
+
+func (p Property) ArrayType() string {
+	return strings.TrimSuffix(p.Type, "[]")
+}
+
 // Type defines an RAML data type
 type Type struct {
 	// A default value for a type

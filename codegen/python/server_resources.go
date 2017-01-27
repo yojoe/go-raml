@@ -7,9 +7,8 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// generate Server's Go representation of RAML resources
-func generateServerResources(apiDef *raml.APIDefinition, directory string) ([]resource.ResourceInterface, error) {
-	var rds []resource.ResourceInterface
+func getServerResourcesDefs(apiDef *raml.APIDefinition) []resource.Resource {
+	var rds []resource.Resource
 
 	rs := apiDef.Resources
 
@@ -23,17 +22,10 @@ func generateServerResources(apiDef *raml.APIDefinition, directory string) ([]re
 	sort.Strings(keys)
 
 	// create resource def
-	var err error
 	for _, k := range keys {
-		r := rs[k]
 		rd := resource.New(apiDef, k, "")
 		rd.IsServer = true
-		pr := pythonResource{Resource: &rd}
-		err = pr.generate(&r, k, directory)
-		if err != nil {
-			return rds, err
-		}
 		rds = append(rds, rd)
 	}
-	return rds, nil
+	return rds
 }

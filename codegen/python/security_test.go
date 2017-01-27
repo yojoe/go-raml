@@ -21,7 +21,8 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateSecurity(apiDef.SecuritySchemes, targetdir)
+			fs := NewFlaskServer(apiDef, "", true)
+			err = fs.generateOauth2(fs.APIDef.SecuritySchemes, targetdir)
 			So(err, ShouldBeNil)
 
 			// oauth 2 in dropbox
@@ -48,7 +49,8 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir)
+			fs := NewFlaskServer(apiDef, "apidocs", true)
+			err = fs.generateResources(targetdir)
 			So(err, ShouldBeNil)
 
 			// check route

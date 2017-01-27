@@ -76,8 +76,8 @@ func (pc *class) handleAdvancedType() {
 }
 
 // generate all classes from all  methods request/response bodies
-func generateClassesFromBodies(rs []pythonResource, dir string) error {
-	for _, r := range rs {
+func (fs FlaskServer) generateClassesFromBodies(dir string) error {
+	for _, r := range fs.ResourcesDef {
 		for _, mi := range r.Methods {
 			m := mi.(serverMethod)
 			if err := generateClassesFromMethod(m, dir); err != nil {
@@ -98,18 +98,6 @@ func generateClassesFromMethod(m serverMethod, dir string) error {
 	if commons.HasJSONBody(&m.Bodies) {
 		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
 		class := newClass(name, "", m.Bodies.ApplicationJSON.Properties)
-		if err := class.generate(dir); err != nil {
-			return err
-		}
-	}
-
-	// response body
-	for _, r := range m.Responses {
-		if !commons.HasJSONBody(&r.Bodies) {
-			continue
-		}
-		name := inflect.UpperCamelCase(m.MethodName + "RespBody")
-		class := newClass(name, "", r.Bodies.ApplicationJSON.Properties)
 		if err := class.generate(dir); err != nil {
 			return err
 		}

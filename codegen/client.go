@@ -9,7 +9,7 @@ import (
 )
 
 // GenerateClient generates client library
-func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath, kind string) error {
 	//check create dir
 	if err := commons.CheckCreateDir(dir); err != nil {
 		return err
@@ -23,7 +23,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 		}
 		return gc.Generate(dir)
 	case langPython:
-		pc := python.NewClient(apiDef)
+		pc := python.NewClient(apiDef, kind)
 		return pc.Generate(dir)
 	case langNim:
 		nc := nim.NewClient(apiDef, dir)

@@ -12,7 +12,7 @@ Table of Contents
 * [Usage](#usage)
 * [Generating Server](#generating-server)
   * [Go Server](#go-server)
-  * [Flask / Python Server](#flaskpython-server)
+  * [Python Server](#python-server)
 * [Generating Client](#generating-client)
 * [Generating Docs](#generating-docs)
 * [Using Generated Code](#using-generated-code)
@@ -120,11 +120,15 @@ To generate the Go code for implementing the server in first design approach, ex
 
 
 
-### Flask/Python Server
+### Python Server
 
-To generate the Flask/Python code for implementing the server, execute
+Executes this command to generates Flask server
 
 `go-raml server -l python --dir ./result_directory --ramlfile api.raml`
+
+Executes this command to generates Sanic server
+
+`go-raml server -l python --dir ./result_directory --ramlfile api.raml --kind sanic`
 
 ### Code Generator Options
 
@@ -136,6 +140,7 @@ To generate the Flask/Python code for implementing the server, execute
    --no-main        Do not generate a main.go file
    --no-apidocs     Do not generate API Docs in /apidocs/?raml=api.raml endpoint
    --import-path    "examples.com/ramlcode"	import path of the generated code
+   --kind           Kind of server to generate. Sanic/Flask. default is flask
 ```
 
 ## Generating Client
@@ -144,7 +149,9 @@ To generate the Flask/Python code for implementing the server, execute
 
 A go 1.5.x compatible client is generated in result_directory directory.
 
-`go-raml client --language python --dir ./result_directory --ramlfile api.raml`
+`go-raml client --language python --dir ./result_directory --ramlfile api.raml` or
+
+`go-raml client --language python --dir ./result_directory --ramlfile api.raml --kind aiohttp`
 
 A python 3.5 compatible client is generated in result_directory directory.
 
@@ -196,6 +203,7 @@ The server will then run in port 5000, you can go to http://localhost:5000 to se
 ### Using Python Server
 
 The generated code is utilizing [Flask Blueprint](http://flask.pocoo.org/docs/0.11/blueprints/) to give you modular flask code.
+The Sanic version also use Sanic Blueprint.
 
 Generated code details:
 
@@ -226,7 +234,10 @@ It has `AuthHeader` field, which if not empty will be used as value of `Authoriz
 
 ### Using Python Client library
 
-Generated python client library only need python-requests as dependency.
+We provide two kind of clients:
+
+- sync client using popular `requests` http library
+- async client using `aiohttp` library, this client will give more performance
 
 It has `set_auth_header` method to set `Authorization` header value on each request.
 

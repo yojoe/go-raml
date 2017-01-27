@@ -59,6 +59,12 @@ func main() {
 					Destination: &serverCommand.Language,
 				},
 				cli.StringFlag{
+					Name:        "kind",
+					Value:       "",
+					Usage:       "Kind of server to generate (, sanic)",
+					Destination: &serverCommand.Kind,
+				},
+				cli.StringFlag{
 					Name:        "dir",
 					Value:       ".",
 					Usage:       "target directory",
@@ -133,6 +139,12 @@ func main() {
 					Value:       "examples.com/client",
 					Usage:       "import path of the generated code",
 					Destination: &clientCommand.ImportPath,
+				},
+				cli.StringFlag{
+					Name:        "kind",
+					Value:       "requests",
+					Usage:       "Kind of client to generate (requests,aiohttp)",
+					Destination: &clientCommand.Kind,
 				},
 			},
 			Action: func(c *cli.Context) {

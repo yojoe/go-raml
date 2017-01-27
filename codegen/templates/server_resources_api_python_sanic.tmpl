@@ -1,0 +1,33 @@
+{{- define "server_resources_api_python_sanic" -}}
+import json as JSON
+
+from sanic.response import json, text
+import jsonschema
+from jsonschema import Draft4Validator
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+{{ range $k, $v := .ReqBodies }}
+{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json'))
+{{$v}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$v}}_schema)
+{{$v}}_schema_validator = Draft4Validator({{$v}}_schema, resolver={{$v}}_schema_resolver)
+{{ end }}
+
+{{ range $k, $v := .Methods }}
+async def {{$v.MethodName}}({{$v.Params}}):
+    '''
+    {{range $kf, $vf := $v.FuncComments -}}
+    {{$vf}}
+    {{end -}}
+    It is handler for {{$v.Verb}} {{$v.Endpoint}}
+    '''
+    {{ if .ReqBody }}
+    inputs = request.json
+    try:
+        {{.ReqBody}}_schema_validator.validate(inputs)
+    except jsonschema.ValidationError as e:
+        return text('Bad Request Body', 400)
+    {{ end }}
+    return json({})
+{{ end }}
+{{ end }}

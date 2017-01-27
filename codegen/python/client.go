@@ -6,10 +6,17 @@ import (
 	"sort"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
+)
+
+const (
+	clientNameRequests = "requests"
+	clientNameAiohttp  = "aiohttp"
 )
 
 var (
@@ -22,28 +29,40 @@ type Client struct {
 	APIDef   *raml.APIDefinition
 	BaseURI  string
 	Services map[string]*service
+	Kind     string
+	Template clientTemplate
 }
 
 // NewClient creates a python Client
-func NewClient(apiDef *raml.APIDefinition) Client {
+func NewClient(apiDef *raml.APIDefinition, kind string) Client {
 	services := map[string]*service{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
-		rd.GenerateMethods(&v, "python", newServerMethod, newClientMethod)
+		rd.GenerateMethods(&v, "python", newServerMethodFlask, newClientMethod)
 		services[k] = &service{
 			rootEndpoint: k,
 			Methods:      rd.Methods,
 		}
 	}
+	switch kind {
+	case "":
+		kind = clientNameRequests
+	case clientNameRequests, clientNameAiohttp:
+	default:
+		log.Fatalf("invalid client kind:%v", kind)
+	}
+
 	c := Client{
 		Name:     commons.NormalizeURI(apiDef.Title),
 		APIDef:   apiDef,
 		BaseURI:  apiDef.BaseURI,
 		Services: services,
+		Kind:     kind,
 	}
 	if strings.Index(c.BaseURI, "{version}") > 0 {
 		c.BaseURI = strings.Replace(c.BaseURI, "{version}", apiDef.Version, -1)
 	}
+	c.initTemplates()
 	return c
 }
 
@@ -73,13 +92,13 @@ func (c Client) Generate(dir string) error {
 		return err
 	}
 	// generate main client lib file
-	return commons.GenerateFile(c, "./templates/client_python.tmpl", "client_python", filepath.Join(dir, "client.py"), true)
+	return commons.GenerateFile(c, c.Template.mainFile, c.Template.mainName, filepath.Join(dir, "client.py"), true)
 }
 
 func (c Client) generateServices(dir string) error {
 	for _, s := range c.Services {
 		sort.Sort(resource.ByEndpoint(s.Methods))
-		if err := commons.GenerateFile(s, "./templates/client_service_python.tmpl", "client_service_python", s.filename(dir), false); err != nil {
+		if err := commons.GenerateFile(s, c.Template.serviceFile, c.Template.serviceName, s.filename(dir), false); err != nil {
 			return err
 		}
 	}
@@ -96,7 +115,7 @@ func (c Client) generateSecurity(dir string) error {
 			"AccessTokenURI": fmt.Sprintf("%v", ss.Settings["accessTokenUri"]),
 		}
 		filename := filepath.Join(dir, oauth2ClientFilename(name))
-		if err := commons.GenerateFile(ctx, "./templates/oauth2_client_python.tmpl", "oauth2_client_python", filename, true); err != nil {
+		if err := commons.GenerateFile(ctx, c.Template.oauth2File, c.Template.oauth2Name, filename, true); err != nil {
 			return err
 		}
 	}
@@ -128,5 +147,5 @@ func (c Client) generateInitPy(dir string) error {
 		"Securities": securities,
 	}
 	filename := filepath.Join(dir, "__init__.py")
-	return commons.GenerateFile(ctx, "./templates/client_initpy_python.tmpl", "client_initpy_python", filename, false)
+	return commons.GenerateFile(ctx, c.Template.initFile, c.Template.initName, filename, false)
 }

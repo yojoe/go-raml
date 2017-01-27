@@ -48,13 +48,11 @@ func convertToGoType(tip string) string {
 
 	// other types that need some processing
 	switch {
-	case strings.HasSuffix(tip, "[][]"): // bidimensional array
-		return "[][]" + convertToGoType(tip[:len(tip)-4])
-	case strings.HasSuffix(tip, "[]"): // array
-		return "[]" + convertToGoType(tip[:len(tip)-2])
-	case strings.HasSuffix(tip, "{}"): // map
-		return "map[string]" + convertToGoType(tip[:len(tip)-2])
-	case strings.Index(tip, "|") > 0:
+	case commons.IsBidimensiArray(tip):
+		return "[][]" + commons.BidimensiArrayType(tip)
+	case commons.IsArray(tip):
+		return "[]" + convertToGoType(commons.ArrayType(tip))
+	case commons.IsUnion(tip):
 		return convertUnion(tip)
 	}
 	return commons.NormalizePkgName(tip)
