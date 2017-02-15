@@ -50,7 +50,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:  "server",
-			Usage: "Generate a go server according to a RAML specification",
+			Usage: "Generate a server according to a RAML specification",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "language, l",
