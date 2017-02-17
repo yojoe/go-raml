@@ -194,6 +194,10 @@ func (o object) Imports() []string {
 			ip[name] = struct{}{}
 		}
 	}
+	// del reference to our self
+	if _, ok := ip[o.Name]; ok {
+		delete(ip, o.Name)
+	}
 	return commons.MapToSortedStrings(ip)
 }
 

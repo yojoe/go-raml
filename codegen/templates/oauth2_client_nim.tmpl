@@ -1,7 +1,7 @@
 {{- define "oauth2_client_nim" -}}
 import strutils, tables
 
-import client_goraml
+import {{.ClientName}}
 
 let baseUri = "{{.BaseURI}}"
 proc getAccessToken*(c: Client, clientID: string, clientSecret: string, scopes: openArray[string], auds: openArray[string]):string =

@@ -7,7 +7,7 @@ type
 {{- else }}
   {{ .Name }}* = object
     {{- range $k, $v := .Fields }}
-    {{ $v.Name }}*: {{$v.Type}}
+    {{ $v.EscapedName }}*: {{$v.Type}}
     {{- end }}
 {{- end }}
 {{end}}
