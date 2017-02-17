@@ -84,14 +84,14 @@ func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
 func generateObjectFromMethod(r resource, m method, dir string) ([]string, error) {
 	names := []string{}
 
-	name, err := generateObjectFromBody(m.MethodName, &m.Bodies, true, dir)
+	name, err := generateObjectFromBody(m.ReqBody, &m.Bodies, true, dir)
 	if err != nil {
 		return names, err
 	}
 	names = append(names, name)
 
 	for _, v := range m.Responses {
-		name, err := generateObjectFromBody(m.MethodName, &v.Bodies, false, dir)
+		name, err := generateObjectFromBody(m.RespBody, &v.Bodies, false, dir)
 		if err != nil {
 			return names, err
 		}
@@ -114,19 +114,14 @@ func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, di
 
 // create new object from a method body
 func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
-	name := methodName + "RespBody"
-	if isReq {
-		name = methodName + "ReqBody"
-	}
-
 	if body.ApplicationJSON.Type != "" {
 		var t raml.Type
 		if err := json.Unmarshal([]byte(body.ApplicationJSON.Type), &t); err == nil {
-			return newObjectFromType(t, name)
+			return newObjectFromType(t, methodName)
 		}
 	}
 
-	return newObject(name, "", body.ApplicationJSON.Properties)
+	return newObject(methodName, "", body.ApplicationJSON.Properties)
 }
 
 // create new object from an RAML type

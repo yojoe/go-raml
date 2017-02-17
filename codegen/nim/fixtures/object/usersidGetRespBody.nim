@@ -1,5 +1,5 @@
 
 type
-  usersByIdGetRespBody* = object
+  usersidGetRespBody* = object
     ID*: string
     age*: int

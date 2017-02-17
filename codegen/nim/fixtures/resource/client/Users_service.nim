@@ -3,6 +3,9 @@ import client_struct
 
 import City
 import address
+import usersGetRespBody
+import usersuserIdaddressPostReqBody
+import usersuserIdaddressPostRespBody
 
 
 type
