@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -177,13 +178,16 @@ func (o *object) generate(dir string) error {
 	return nil
 }
 
-// get array of all imported modules
+// get array of all imported modules:
+// - `times` module if it use Time
+// - other generated modules that used as field
+// - parent object
 func (o object) Imports() []string {
 	ip := map[string]struct{}{}
 
 	for _, f := range o.Fields {
-		if objectRegistered(f.Type) {
-			ip[f.Type] = struct{}{}
+		if name, ok := objectRegistered(f.Type); ok {
+			ip[name] = struct{}{}
 		}
 		if f.Type == "Time" {
 			ip["times"] = struct{}{}
@@ -191,8 +195,8 @@ func (o object) Imports() []string {
 	}
 
 	for _, p := range o.Parents {
-		if objectRegistered(p) {
-			ip[p] = struct{}{}
+		if name, ok := objectRegistered(p); ok {
+			ip[name] = struct{}{}
 		}
 	}
 	return commons.MapToSortedStrings(ip)
@@ -220,7 +224,7 @@ func (o *object) makeEnum() {
 	o.Enum = newEnumFromObject(o)
 }
 func (o *object) makeArray(t string) {
-	o.Parents = append(o.Parents, t[:len(t)-2])
+	o.Parents = append(o.Parents, toNimType(t))
 	o.buildOneLine(toNimType(t))
 }
 
@@ -229,11 +233,36 @@ func (o *object) buildOneLine(tipe string) {
 }
 
 func registerObject(name string) {
+	name = strings.TrimSpace(name)
 	objectsRegister[name] = struct{}{}
 }
 
-// check if an object named `obj` has been generated
-func objectRegistered(objName string) bool {
+// regex to find string inside a square bracket
+var reSquareBracket = regexp.MustCompile(`\[(.*?)\]`)
+
+// check if an object named `objName` has been generated
+func objectRegistered(objName string) (string, bool) {
+	objName = extractTypeName(objName)
 	_, ok := objectsRegister[objName]
-	return ok
+	return objName, ok
+}
+
+// extract type name from potentially complex type declaration
+func extractTypeName(tip string) string {
+	// trim all spaces
+	tip = strings.TrimSpace(tip)
+
+	// detect array
+	if strings.Index(tip, "]") < 0 {
+		return tip
+	}
+
+	// find type inside square bracket
+	inBracket := reSquareBracket.FindString(tip)
+	if inBracket == "" {
+		return tip
+	}
+	last := strings.LastIndex(inBracket, "[")
+	inBracket = inBracket[last+1:]
+	return strings.TrimSuffix(inBracket, "]")
 }

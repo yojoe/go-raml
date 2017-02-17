@@ -2,6 +2,7 @@ import marshal, tables
 import client_struct
 
 import City
+import address
 
 
 type

@@ -1,4 +1,5 @@
 
+import EnumCity
 type
   animal* = object
     cities*: seq[EnumCity]
