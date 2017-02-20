@@ -15,6 +15,10 @@ proc {{.Name}}Srv*(c : Client) : {{.Name}}_service  =
 
 {{ range $km, $vm := .Methods}}
 proc {{$vm.MethodName}}*(srv: {{$serviceName}}_service{{$vm.ClientProcParams}}) : {{$vm.ContentRetval}} =
+  {{ range $kf, $vf := $vm.FuncComments -}}# {{$vf}}
+  {{- end }}
+  # It calls {{$vm.Verb}} {{$vm.Endpoint}} endpoint.
+
   let resp = srv.client.request({{$vm.ClientCallParams}})
   return to[{{$vm.ContentRetval}}](resp.body)
 {{end}}
