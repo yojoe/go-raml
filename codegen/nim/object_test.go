@@ -107,7 +107,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 				Properties: properties,
 			}
 
-			_, err := generateObjectFromBody("usersPost", &body, true, targetDir)
+			_, err := generateObjectFromBody("usersPostReqBody", &body, true, targetDir)
 			So(err, ShouldBeNil)
 
 			s, err := testLoadFile(filepath.Join(targetDir, "usersPostReqBody.nim"))
@@ -134,7 +134,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 				Expected string
 			}{
 				{"usersPostReqBody.nim", "usersPostReqBody.nim"},
-				{"usersByIdGetRespBody.nim", "usersByIdGetRespBody.nim"},
+				{"usersidGetRespBody.nim", "usersidGetRespBody.nim"},
 			}
 
 			for _, check := range checks {

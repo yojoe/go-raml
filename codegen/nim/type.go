@@ -1,7 +1,7 @@
 package nim
 
 import (
-	"strings"
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 var (
@@ -23,9 +23,10 @@ func toNimType(t string) string {
 	}
 	// other types that need some processing
 	switch {
-	case strings.HasSuffix(t, "[]"): // array
-		return "seq[" + toNimType(t[:len(t)-2]) + "]"
+	case commons.IsBidimensiArray(t):
+		return "seq[seq[" + toNimType(commons.BidimensiArrayType(t)) + "]]"
+	case commons.IsArray(t):
+		return "seq[" + toNimType(commons.ArrayType(t)) + "]"
 	}
-
 	return t
 }

@@ -31,11 +31,17 @@ func (r *resource) Imports() []string {
 
 	for _, mi := range r.Methods {
 		m := mi.(method)
-		if m.ReqBody != "" && objectRegistered(m.ReqBody) {
-			ip[m.ReqBody] = struct{}{}
+		var names []string
+		if m.ReqBody != "" {
+			names = append(names, m.ReqBody)
 		}
-		if m.RespBody != "" && objectRegistered(m.RespBody) {
-			ip[m.RespBody] = struct{}{}
+		if m.RespBody != "" {
+			names = append(names, m.RespBody)
+		}
+		for _, name := range names {
+			if tipe, ok := objectRegistered(name); ok {
+				ip[tipe] = struct{}{}
+			}
 		}
 	}
 	return commons.MapToSortedStrings(ip)
