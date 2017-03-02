@@ -17,7 +17,7 @@ proc UsersSrv*(c : Client) : Users_service  =
   return Users_service(client:c, name:c.baseURI)
 
 
-proc GetUsers*(srv: Users_service, queryParams: Table[string, string] = initTable[string, string]()) : usersGetRespBody =
+proc getUsers*(srv: Users_service, queryParams: Table[string, string] = initTable[string, string]()) : usersGetRespBody =
   # get users.# This method will be return list user.# Use it wisely.
   # It calls GET /users endpoint.
 
