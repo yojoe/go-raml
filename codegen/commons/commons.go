@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -61,6 +62,34 @@ func ParseDescription(desc string) []string {
 	}
 
 	return strings.Split(desc, "\n")
+}
+
+// Restore a whole directory structure
+func RestoreDir(name, loc string, override bool) error {
+	if !override && isDirExist(loc) {
+		log.Infof("dir %v already exist", loc)
+		return nil
+	}
+	reserved := "!reserved"
+	rloc := filepath.Join(loc, reserved)
+	err := templates.RestoreAssets(rloc, name)
+	defer os.RemoveAll(rloc)
+	dir := filepath.Join(rloc, name)
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	files, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, fname := range files {
+		if err = os.Rename(filepath.Join(dir, fname), filepath.Join(loc, fname)); err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 // GenerateFile generates file from a template.
@@ -139,6 +168,15 @@ func MapToSortedStrings(m map[string]struct{}) []string {
 	}
 	sort.Strings(ss)
 	return ss
+}
+
+// check if dir exist
+// TODO: make id different than isFileExist
+func isDirExist(dirPath string) bool {
+	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
 
 // cek if a file exist

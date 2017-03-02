@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"github.com/Jumpscale/go-raml/codegen/angular"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/golang"
 	"github.com/Jumpscale/go-raml/codegen/nim"
@@ -25,6 +26,9 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 	case langPython:
 		pc := python.NewClient(apiDef, kind)
 		return pc.Generate(dir)
+	case langAngular:
+		ac := angular.NewClient(apiDef)
+		return ac.Generate(dir)
 	case langNim:
 		nc := nim.NewClient(apiDef, dir)
 		return nc.Generate()

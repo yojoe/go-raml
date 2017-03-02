@@ -1,0 +1,27 @@
+{{- define "app_module_angular" -}}
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+
+import { AppComponent } from './app.component';
+{{ range $k, $v := .Services }}
+import { {{$v.Name}} } from './{{$v.FilenameNoExt}}';{{end}}
+
+@NgModule({
+  declarations: [
+    AppComponent,
+  ],  
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpModule
+  ],  
+  providers: [
+{{ range $k, $v := .Services }}    {{$v.Name}},{{end}}
+  ]
+  bootstrap: [AppComponent]
+})
+export class AppModule { } 
+
+{{- end -}}
