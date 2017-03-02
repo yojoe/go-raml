@@ -115,8 +115,9 @@ func (gcm *clientMethod) setup(methodName string) {
 	if len(gcm.DisplayName) > 0 {
 		gcm.MethodName = commons.DisplayNameToFuncName(gcm.DisplayName)
 	} else {
-		gcm.MethodName = strings.Title(name + methodName)
+		gcm.MethodName = name + methodName
 	}
+	gcm.MethodName = strings.Title(gcm.MethodName)
 
 	// method param
 	gcm.Params = buildParams(gcm.RAMLResource, gcm.ReqBody)

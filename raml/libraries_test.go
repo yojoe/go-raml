@@ -9,11 +9,10 @@ import (
 func TestLibraries(t *testing.T) {
 	Convey("Libraries", t, func() {
 		apiDef := new(APIDefinition)
+		err := ParseFile("./samples/simple_with_lib.raml", apiDef)
+		So(err, ShouldBeNil)
 
 		Convey("two level library", func() {
-			err := ParseFile("./samples/simple_with_lib.raml", apiDef)
-			So(err, ShouldBeNil)
-
 			// check Uses
 			So(apiDef.Uses, ShouldContainKey, "files")
 			So(apiDef.Uses["files"], ShouldEqual, "libraries/files.raml")
@@ -39,6 +38,13 @@ func TestLibraries(t *testing.T) {
 			So(fileType.Types, ShouldContainKey, "File")
 			File := fileType.Types["File"]
 			So(len(File.Properties), ShouldEqual, 2)
+		})
+
+		Convey("using library's trait in root's definition", func() {
+			files := apiDef.Resources["/files"]
+			So(files.Get, ShouldNotBeNil)
+			So(files.Get.Headers, ShouldContainKey, HTTPHeader("drm-key"))
+			So(files.Get.Headers["drm-key"].Required, ShouldBeFalse)
 		})
 
 	})
