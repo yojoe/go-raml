@@ -1,25 +1,29 @@
 {{- define "app_module_angular" -}}
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 {{ range $k, $v := .Services }}
 import { {{$v.Name}} } from './{{$v.FilenameNoExt}}';{{end}}
+{{ range $k, $v := .Classes }}
+import { {{$v.Name}}FormComponent } from './{{$v.Name}}/{{$v.LName}}-form.component';{{end}}
 
 @NgModule({
   declarations: [
     AppComponent,
+{{ range $k, $v := .Classes }}
+    {{$v.Name}}FormComponent,{{end}}
   ],  
   imports: [
     BrowserModule,
-    FormsModule,
+    ReactiveFormsModule,
     HttpModule
   ],  
   providers: [
 {{ range $k, $v := .Services }}    {{$v.Name}},{{end}}
-  ]
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { } 

@@ -21,6 +21,8 @@ type Client struct {
 	BaseURI  string
 	Services map[string]*service
 	Template clientTemplate
+	Types    map[string]raml.Type
+	Classes  map[string]class
 }
 
 // NewClient creates a angular Client
@@ -40,11 +42,16 @@ func NewClient(apiDef *raml.APIDefinition) Client {
 		APIDef:   apiDef,
 		BaseURI:  apiDef.BaseURI,
 		Services: services,
+		Classes:  map[string]class{},
 	}
 	if strings.Index(c.BaseURI, "{version}") > 0 {
 		c.BaseURI = strings.Replace(c.BaseURI, "{version}", apiDef.Version, -1)
 	}
 	c.initTemplates()
+	for k, t := range apiDef.Types {
+		pc := newClassFromType(t, k)
+		c.Classes[k] = pc
+	}
 	return c
 }
 
@@ -61,8 +68,17 @@ func (c Client) Generate(dir string) error {
 		return err
 	}
 
-	// generate main client lib file
-	return commons.GenerateFile(c, c.Template.mainFile, c.Template.mainName, filepath.Join(appdir, "app.module.ts"), true)
+	if err := GenerateClasses(c.Classes, appdir); err != nil {
+		return err
+	}
+	// generate main app module
+	if err := commons.GenerateFile(c, c.Template.mainFile, c.Template.mainName, filepath.Join(appdir, "app.module.ts"), true); err != nil {
+		return err
+	}
+	if err := commons.GenerateFile(c, c.Template.compHTMLFile, c.Template.compHTMLName, filepath.Join(appdir, "app.component.html"), true); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c Client) generateServices(dir string) error {

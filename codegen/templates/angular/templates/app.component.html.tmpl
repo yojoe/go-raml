@@ -1,0 +1,7 @@
+{{- define "app_compontent_html" -}}
+<h1>
+  {{`{{title}}`}}
+{{ range $k, $v := .Classes }}
+  <{{$v.LName}}-form></{{$v.LName}}-form>{{end}}
+</h1>
+{{- end -}}

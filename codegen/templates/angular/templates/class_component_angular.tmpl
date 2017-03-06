@@ -1,0 +1,28 @@
+{{define "class_component_angular"}}
+
+import { Component, Input, OnChanges }       from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { {{.Name}} } from './{{.LName}}';
+
+@Component({
+  // moduleId: module.id, // TODO: doesn't work, don't know why
+  selector: '{{.LName}}-form',
+  templateUrl: './{{.LName}}-form.component.html'
+})
+export class {{.Name}}FormComponent {
+  @Input() {{.LName}}: {{.Name}};
+  {{.LName}}Form: FormGroup;
+  constructor(
+    private fb: FormBuilder) {
+    this.createForm();
+  }
+  createForm() {
+    this.{{.LName}}Form = this.fb.group({
+{{ range $key, $val := .Fields}}
+        {{$key}}: {{$val.FormBuilder}},
+{{- end }}
+    });
+  }
+}
+
+{{end}}

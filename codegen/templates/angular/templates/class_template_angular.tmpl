@@ -1,0 +1,11 @@
+{{define "class_template_angular"}}
+
+<h2>{{.Name}} Detail</h2>
+<h3><i>A FormGroup with multiple FormControls</i></h3>
+<form [formGroup]="{{.LName}}Form" novalidate>
+{{ range $key, $val := .Fields}}
+  {{$val.Form}}
+{{- end }}
+</form>
+
+{{end}}
