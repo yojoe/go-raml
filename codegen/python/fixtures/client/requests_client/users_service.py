@@ -11,7 +11,7 @@ class UsersService:
         It is method for GET /users
         """
         uri = self.client.base_url + "/users"
-        return self.client.session.get(uri, headers=headers, params=query_params)
+        return self.client.get(uri, headers=headers, params=query_params)
 
 
     def create_users(self, data, headers=None, query_params=None):
@@ -37,7 +37,7 @@ class UsersService:
         It is method for GET /users/{userId}
         """
         uri = self.client.base_url + "/users/"+userId
-        return self.client.session.get(uri, headers=headers, params=query_params)
+        return self.client.get(uri, headers=headers, params=query_params)
 
 
     def users_byUserId_delete(self, userId, headers=None, query_params=None):
@@ -55,4 +55,4 @@ class UsersService:
         It is method for GET /users/{userId}/address/{addressId}
         """
         uri = self.client.base_url + "/users/"+userId+"/address/"+addressId
-        return self.client.session.get(uri, headers=headers, params=query_params)
+        return self.client.get(uri, headers=headers, params=query_params)

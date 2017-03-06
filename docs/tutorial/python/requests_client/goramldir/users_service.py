@@ -10,7 +10,7 @@ class UsersService:
         It is method for GET /users
         """
         uri = self.client.base_url + "/users"
-        return self.client.session.get(uri, headers=headers, params=query_params)
+        return self.client.get(uri, headers=headers, params=query_params)
 
 
     def users_post(self, data, headers=None, query_params=None):
@@ -28,4 +28,4 @@ class UsersService:
         It is method for GET /users/{username}
         """
         uri = self.client.base_url + "/users/"+username
-        return self.client.session.get(uri, headers=headers, params=query_params)
+        return self.client.get(uri, headers=headers, params=query_params)
