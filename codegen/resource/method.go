@@ -11,6 +11,7 @@ type MethodInterface interface {
 	Verb() string
 	Resource() *raml.Resource
 	EndpointStr() string
+	GetMethod() *raml.Method
 }
 
 // Method defines base Method struct
@@ -34,6 +35,10 @@ func (m Method) Verb() string {
 
 func (m Method) Resource() *raml.Resource {
 	return m.RAMLResource
+}
+
+func (m Method) GetMethod() *raml.Method {
+	return m.Method
 }
 
 func (m Method) EndpointStr() string {

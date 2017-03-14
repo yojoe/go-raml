@@ -1,0 +1,29 @@
+{{- define "method_component_ts" -}}
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class {{.Name}}Component {
+
+{{ range $k, $v := .Methods }}
+
+   /* {{ range $kf, $vf := $v.FuncComments }}
+   {{$vf}}{{end}}
+   It is method for {{$v.Verb}} {{$v.Endpoint}}
+   */
+   {{$v.MethodName}}({{$v.Params}}) {
+      let params: URLSearchParams = new URLSearchParams();
+      for (var key in query_params) {
+         params.set(key, query_params[key]);
+      }
+      let _headers = new Headers(headers);
+      let options = new RequestOptions({ headers: _headers, search: params });
+      let uri = `${this.base}{{$v.ResourcePath}}`;
+      return {{$v.PRCall}}({{$v.PRArgs}}).toPromise();
+   }
+{{ end }}
+}
+{{- end -}}

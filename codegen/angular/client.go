@@ -1,6 +1,8 @@
 package angular
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -85,6 +87,22 @@ func (c Client) generateServices(dir string) error {
 	for _, s := range c.Services {
 		sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, c.Template.serviceFile, c.Template.serviceName, s.filename(dir), false); err != nil {
+			return err
+		}
+		for _, v := range s.Methods {
+			qs := map[string]interface{}{}
+			m := v.GetMethod()
+			for a, b := range m.QueryParameters {
+				qs[a] = b
+			}
+			fmt.Println(m)
+			os.MkdirAll(dir+"/tmp/_/", 0755)
+			// c := newClass("_"+m., "Anonymous", qs)
+			// if err := c.generate(dir + "/tmp"); err != nil {
+			// 	fmt.Println(err)
+			// }
+		}
+		if err := commons.GenerateFile(s, c.Template.compMethodsFile, c.Template.compMethodsName, filepath.Join(dir, s.EndpointName()+".component.ts"), false); err != nil {
 			return err
 		}
 	}

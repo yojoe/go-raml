@@ -1,9 +1,9 @@
 package angular
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
-	"os"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,7 +13,7 @@ import (
 type class struct {
 	T           raml.Type
 	Name        string
-	LName        string
+	LName       string
 	Description []string
 	Fields      map[string]field
 }
@@ -73,11 +73,15 @@ func (pc *class) handleAdvancedType() {
 // generate all angular classes from an RAML document
 func GenerateClasses(classes map[string]class, dir string) error {
 	for k, pc := range classes {
-		classdir := filepath.Join(dir, k)
-		os.Mkdir(classdir, 0755)
-		if err := pc.generate(classdir); err != nil {
+		if err := GenerateClass(k, pc, dir); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func GenerateClass(name string, pc class, dir string) error {
+	classdir := filepath.Join(dir, name)
+	os.Mkdir(classdir, 0755)
+	return pc.generate(classdir)
 }
