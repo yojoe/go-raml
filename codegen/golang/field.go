@@ -21,7 +21,7 @@ type fieldDef struct {
 
 func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
 	fd := fieldDef{
-		Name:      strings.Title(prop.Name),
+		Name:      formatFieldName(prop.Name),
 		Type:      convertToGoType(prop.Type),
 		IsOmitted: !prop.Required,
 	}
@@ -82,4 +82,12 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	if validators != "" {
 		fd.Validators = validators[1:]
 	}
+}
+
+// format struct's field name
+// - Title it
+// - replace '-' with '_'
+func formatFieldName(name string) string {
+	formatted := strings.Replace(name, "-", "_", -1)
+	return strings.Title(formatted)
 }

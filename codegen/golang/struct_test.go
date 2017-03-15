@@ -41,6 +41,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 				{"animal.go", "animal.txt"},                     // using enum
 				{"EnumString.go", "enumstring.txt"},             // Enum type
 				{"ValidationString.go", "ValidationString.txt"}, // validation
+				{"Dashed.go", "Dashed.txt"},                     // field with dash
 			}
 
 			for _, check := range checks {

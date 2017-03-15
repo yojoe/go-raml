@@ -1,0 +1,14 @@
+package main
+
+import (
+	"gopkg.in/validator.v2"
+)
+
+type Dashed struct {
+	Dashed_Field string `json:"Dashed-Field" validate:"nonzero"`
+}
+
+func (s Dashed) Validate() error {
+
+	return validator.Validate(s)
+}
