@@ -12,4 +12,5 @@ class {{.Name}}(Form):
     {{ range $key, $val := .Fields}}
     {{$val.Name}} = {{$val.WTFType}}
     {{- end }}
+	{{- if .EmptyField}}pass{{end}}
 {{end}}

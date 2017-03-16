@@ -66,6 +66,10 @@ func (pc *class) generate(dir string) error {
 	return commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
 }
 
+func (pc *class) EmptyField() bool {
+	return len(pc.Fields) == 0
+}
+
 func (pc *class) handleAdvancedType() {
 	if pc.T.Type == nil {
 		pc.T.Type = "object"

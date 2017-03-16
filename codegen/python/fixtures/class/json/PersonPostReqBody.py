@@ -7,4 +7,4 @@ from input_validators import multiple_of
 
 
 class PersonPostReqBody(Form):
-    
+    pass
