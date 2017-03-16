@@ -86,8 +86,11 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 
 // format struct's field name
 // - Title it
-// - replace '-' with '_'
+// - replace '-' with camel case version
 func formatFieldName(name string) string {
-	formatted := strings.Replace(name, "-", "_", -1)
-	return strings.Title(formatted)
+	var formatted string
+	for _, v := range strings.Split(name, "-") {
+		formatted += strings.Title(v)
+	}
+	return formatted
 }
