@@ -5,7 +5,7 @@ import (
 )
 
 type Dashed struct {
-	Dashed_Field string `json:"Dashed-Field" validate:"nonzero"`
+	DashedField string `json:"Dashed-field" validate:"nonzero"`
 }
 
 func (s Dashed) Validate() error {
