@@ -16,7 +16,7 @@ type wtfClass struct {
 	T           raml.Type
 	Name        string
 	Description []string
-	Fields      map[string]field
+	Fields      map[string]wtfField
 	Enum        *enum
 }
 
@@ -25,12 +25,12 @@ func newWtfClass(name, description string, properties map[string]interface{}) wt
 	pc := wtfClass{
 		Name:        name,
 		Description: commons.ParseDescription(description),
-		Fields:      map[string]field{},
+		Fields:      map[string]wtfField{},
 	}
 
 	// generate fields
 	for k, v := range properties {
-		field, err := newField(name, raml.ToProperty(k, v))
+		field, err := newWtfField(name, raml.ToProperty(k, v))
 		if err != nil {
 			continue
 		}

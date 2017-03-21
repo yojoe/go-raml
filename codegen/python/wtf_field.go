@@ -10,8 +10,8 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// pythons class's field
-type field struct {
+// pythons wtf class's field
+type wtfField struct {
 	Name        string
 	Type        string
 	Required    bool
@@ -23,8 +23,8 @@ type field struct {
 	validators  map[string][]string // array of validators, only used to build `Validators` field
 }
 
-func newField(className string, prop raml.Property) (field, error) {
-	f := field{
+func newWtfField(className string, prop raml.Property) (wtfField, error) {
+	f := wtfField{
 		Name:     prop.Name,
 		Required: prop.Required,
 	}
@@ -44,7 +44,7 @@ func newField(className string, prop raml.Property) (field, error) {
 }
 
 // convert from raml Type to python wtforms type
-func (pf *field) setType(t string) {
+func (pf *wtfField) setType(t string) {
 	pf.ramlType = t
 	switch t {
 	case "string":
@@ -86,12 +86,12 @@ func (pf *field) setType(t string) {
 
 }
 
-func (pf *field) addValidator(name, arg string, val interface{}) {
+func (pf *wtfField) addValidator(name, arg string, val interface{}) {
 	pf.validators[name] = append(pf.validators[name], fmt.Sprintf("%v=%v", arg, val))
 }
 
 // build validators string
-func (pf *field) buildValidators(p raml.Property) {
+func (pf *wtfField) buildValidators(p raml.Property) {
 	pf.validators = map[string][]string{}
 	// string
 	if p.MinLength != nil {
@@ -133,7 +133,7 @@ func (pf *field) buildValidators(p raml.Property) {
 	pf.buildValidatorsString()
 }
 
-func (pf *field) buildValidatorsString() {
+func (pf *wtfField) buildValidatorsString() {
 	var v []string
 	if pf.Validators != "" {
 		return
@@ -148,8 +148,8 @@ func (pf *field) buildValidatorsString() {
 	pf.Validators = strings.Join(v, ", ")
 }
 
-// WTFType return wtforms type of a field
-func (pf field) WTFType() string {
+// WTFType return wtforms type of a wtfField
+func (pf wtfField) WTFType() string {
 	switch {
 	case pf.isList && pf.isFormField:
 		return fmt.Sprintf("FieldList(FormField(%v))", pf.Type)
