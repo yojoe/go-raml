@@ -6,7 +6,8 @@ import (
 
 type SingleInheritance struct {
 	animal
-	Name string `json:"name" validate:"nonzero"`
+	Name   string `json:"name" validate:"nonzero"`
+	Single bool   `json:"single" validate:"nonzero"`
 }
 
 func (s SingleInheritance) Validate() error {
