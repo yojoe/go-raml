@@ -10,7 +10,16 @@ class Client:
         self.session.headers.update({"Content-Type": "application/json"})
         
         self.users = UsersService(self)
-    
+
+    def is_goraml_class(self, data):
+        # check if a data is go-raml generated class
+        # we currently only check the existence
+        # of as_json method
+        op = getattr(data, "as_json", None)
+        if callable(op):
+            return True
+        return False
+
     def set_auth_header(self, val):
         ''' set authorization header value'''
         self.session.headers.update({"Authorization":val})
@@ -21,7 +30,9 @@ class Client:
         return res
 
     def post(self, uri, data, headers, params):
-        if type(data) is str:
+        if self.is_goraml_class(data):
+            res = self.session.post(uri, data=data.as_json(), headers=headers, params=params)
+        elif type(data) is str:
             res = self.session.post(uri, data=data, headers=headers, params=params)
         else:
             res = self.session.post(uri, json=data, headers=headers, params=params)
@@ -29,7 +40,9 @@ class Client:
         return res
 
     def put(self, uri, data, headers, params):
-        if type(data) is str:
+        if self.is_goraml_class(data):
+            res = self.session.put(uri, data=data.as_json(), headers=headers, params=params)
+        elif type(data) is str:
             res = self.session.put(uri, data=data, headers=headers, params=params)
         else:
             res = self.session.put(uri, json=data, headers=headers, params=params)
@@ -37,7 +50,9 @@ class Client:
         return res
 
     def patch(self, uri, data, headers, params):
-        if type(data) is str:
+        if self.is_goraml_class(data):
+            res = self.session.patch(uri, data=data.as_json(), headers=headers, params=params)
+        elif type(data) is str:
             res = self.session.patch(uri, data=data, headers=headers, params=params)
         else:
             res = self.session.patch(uri, json=data, headers=headers, params=params)
