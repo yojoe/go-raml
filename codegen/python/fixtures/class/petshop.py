@@ -1,28 +1,26 @@
 """
-Auto-generated class for animal
+Auto-generated class for petshop
 """
-from .EnumCity import EnumCity
+from .Cat import Cat
 
 from . import client_support
 
 
-class animal(object):
+class petshop(object):
     """
     auto-generated. don't touch.
     """
 
     @staticmethod
-    def create(cities, colours, name=None):
+    def create(cats, name):
         """
-        :type cities: list[EnumCity]
-        :type colours: list[str]
+        :type cats: list[Cat]
         :type name: str
-        :rtype: animal
+        :rtype: petshop
         """
 
-        return animal(
-            cities=cities,
-            colours=colours,
+        return petshop(
+            cats=cats,
             name=name,
         )
 
@@ -30,29 +28,18 @@ class animal(object):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'animal'
+        class_name = 'petshop'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
         data = json or kwargs
 
-        property_name = 'cities'
+        property_name = 'cats'
         val = data.get(property_name)
         if val is not None:
-            datatypes = [EnumCity]
+            datatypes = [Cat]
             try:
-                self.cities = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'colours'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.colours = client_support.list_factory(val, datatypes)
+                self.cats = client_support.list_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -66,6 +53,8 @@ class animal(object):
                 self.name = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
 
     def __str__(self):
         return self.as_json(indent=4)

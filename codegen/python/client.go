@@ -100,6 +100,7 @@ func (c Client) Generate(dir string) error {
 		return err
 	}
 
+	sort.Strings(classes)
 	if err := c.generateInitPy(classes, dir); err != nil {
 		return err
 	}

@@ -1,26 +1,26 @@
 """
-Auto-generated class for animal
+Auto-generated class for SingleInheritance
 """
 from .EnumCity import EnumCity
 
 from . import client_support
 
 
-class animal(object):
+class SingleInheritance(object):
     """
     auto-generated. don't touch.
     """
 
     @staticmethod
-    def create(cities, colours, name=None):
+    def create(cities, colours, name):
         """
         :type cities: list[EnumCity]
         :type colours: list[str]
         :type name: str
-        :rtype: animal
+        :rtype: SingleInheritance
         """
 
-        return animal(
+        return SingleInheritance(
             cities=cities,
             colours=colours,
             name=name,
@@ -30,7 +30,7 @@ class animal(object):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'animal'
+        class_name = 'SingleInheritance'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
@@ -66,6 +66,8 @@ class animal(object):
                 self.name = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -10,20 +10,20 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGeneratePythonClass(t *testing.T) {
+func TestGenerateWtfClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("python class from raml Types", func() {
+		Convey("wtf class from raml Types", func() {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			err = generateWtfClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/class/"
+			rootFixture := "./fixtures/wtf_class/"
 			checks := []struct {
 				Result   string
 				Expected string
@@ -45,14 +45,14 @@ func TestGeneratePythonClass(t *testing.T) {
 
 		})
 
-		Convey("python class from raml with JSON", func() {
+		Convey("python wtf class from raml with JSON", func() {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			err = generateWtfClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/class/json/"
+			rootFixture := "./fixtures/wtf_class/json/"
 			checks := []struct {
 				Result   string
 				Expected string

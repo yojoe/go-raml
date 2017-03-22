@@ -25,7 +25,7 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/class/"
+			rootFixture := "./fixtures/wtf_class/"
 			checks := []struct {
 				Result   string
 				Expected string
@@ -53,7 +53,7 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/class/json/"
+			rootFixture := "./fixtures/wtf_class/json/"
 			checks := []struct {
 				Result   string
 				Expected string

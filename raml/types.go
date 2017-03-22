@@ -32,7 +32,10 @@ package raml
 
 // This file contains all of the RAML types.
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // TODO: We don't support !include of non-text files. RAML supports including
 //       of many file types.
@@ -376,7 +379,7 @@ func (t Type) TypeString() string {
 	if t.Type == nil {
 		return "object"
 	}
-	return t.Type.(string)
+	return fmt.Sprintf("%s", t.Type)
 }
 
 // IsArray checks if this type is an Array
