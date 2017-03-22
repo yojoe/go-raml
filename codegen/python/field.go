@@ -88,6 +88,10 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 
 	f.DataType, f.HasChildProperties = buildDataType(f, childProperties)
 
+	// I don't really understand why we need childRequired and mainRequired here.
+	// it is from the original code written by @razor-1
+	// TODO: remove it if possible
+
 	// see if there are different required properties for this instance of a type vs. the type's main declaration
 	mainRequired := make([]string, 0)
 	childRequired := make([]string, 0)

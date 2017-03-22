@@ -47,11 +47,10 @@ func newClass(name string, description string, properties map[string]interface{}
 			ramlTypes = append(ramlTypes, iv)
 		}
 	}
-	properties = getTypeProperties(ramlTypes)
+	mergedProps := getTypeProperties(ramlTypes)
 
-	for propName, propInterface := range properties {
+	for propName, propInterface := range mergedProps {
 		op := objectProperties(propName, propInterface)
-		// field, err := newField(name, T, raml.ToProperty(k, v), types, op, typeHierarchy)
 		field, err := newField(name, T, propName, propInterface, types, op, typeHierarchy)
 		if err != nil {
 			continue
@@ -74,19 +73,7 @@ func newClass(name string, description string, properties map[string]interface{}
 	// sort them so we have some stability in param order (important for requiredFields)
 	sort.Strings(requiredFields)
 	sort.Strings(optionalFields)
-	requiredString := strings.Join(requiredFields, ", ")
-	optionalString := strings.Join(optionalFields, ", ")
-
-	if len(requiredFields) > 0 && len(optionalFields) > 0 {
-		combinedString := []string{requiredString, optionalString}
-		pc.CreateParamString = strings.Join(combinedString, ", ")
-	} else {
-		if len(requiredFields) > 0 {
-			pc.CreateParamString = requiredString
-		} else if len(optionalFields) > 0 {
-			pc.CreateParamString = optionalString
-		}
-	}
+	pc.CreateParamString = strings.Join(append(requiredFields, optionalFields...), ", ")
 
 	return pc
 }
@@ -144,13 +131,17 @@ func getTypeHierarchy(name string, T raml.Type, types map[string]raml.Type) []ma
 	return typelist
 }
 
-func getTypeProperties(typelist []raml.Type) map[string]interface{} {
+func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 	// get a list of the types in the inheritance chain for T
 	// walk it from the top down and add the properties
-	properties := make(map[string]interface{})
+	properties := map[string]raml.Property{}
 	for i := len(typelist) - 1; i >= 0; i-- {
 		for k, v := range typelist[i].Properties {
-			properties[k] = v
+			prop := raml.ToProperty(k, v)
+			// we convert it to property here
+			// because we need the proper name, sometimes the name has "?" suffix
+			//   which mean optional properties
+			properties[prop.Name] = prop
 		}
 	}
 
