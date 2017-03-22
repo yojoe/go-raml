@@ -165,26 +165,26 @@ func newClassFromType(T raml.Type, name string) class {
 }
 
 // generate a python class file
-func (pc *class) generate(dir string) (error, []string) {
+func (pc *class) generate(dir string) ([]string, error) {
 	// generate enums
 	typeNames := make([]string, 0)
 	for _, f := range pc.Fields {
 		if f.Enum != nil {
 			typeNames = append(typeNames, f.Enum.Name)
 			if err := f.Enum.generate(dir); err != nil {
-				return err, typeNames
+				return typeNames, err
 			}
 		}
 	}
 
 	if pc.Enum != nil {
 		typeNames = append(typeNames, pc.Enum.Name)
-		return pc.Enum.generate(dir), typeNames
+		return typeNames, pc.Enum.generate(dir)
 	}
 
 	fileName := filepath.Join(dir, pc.Name+".py")
 	typeNames = append(typeNames, pc.Name)
-	return commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false), typeNames
+	return typeNames, commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
 }
 
 func (pc *class) handleAdvancedType() {
@@ -219,7 +219,7 @@ func generateClassesFromMethod(m serverMethod, dir string) error {
 	if commons.HasJSONBody(&m.Bodies) {
 		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
 		class := newClass(name, "", m.Bodies.ApplicationJSON.Properties)
-		if err, _ := class.generate(dir); err != nil {
+		if _, err := class.generate(dir); err != nil {
 			return err
 		}
 	}
@@ -246,19 +246,20 @@ func (pc class) Imports() []string {
 }
 
 // generate all python classes from an RAML document
-func generateClasses(types map[string]raml.Type, dir string) (error, []string) {
+func generateClasses(types map[string]raml.Type, dir string) ([]string, error) {
 	typeNames := make([]string, 0)
 	for k, t := range types {
 		// this is special; ignore it, Python has a native module for this
 		if k == "UUID" {
 			continue
 		}
+
 		pc := newClassFromType(t, k)
-		err, types := pc.generate(dir)
-		typeNames = append(typeNames, types...)
+		types, err := pc.generate(dir)
 		if err != nil {
-			return err, typeNames
+			return typeNames, err
 		}
+		typeNames = append(typeNames, types...)
 	}
-	return nil, typeNames
+	return typeNames, nil
 }

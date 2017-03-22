@@ -18,43 +18,32 @@ type pyimport struct {
 
 // pythons class's field
 type field struct {
-	Name        string
-	Type        string
-	Required    bool 				// if the field itself is required
-	DataType    string 				// the python datatype (objmap) used in the template
-	HasChildProperties bool
+	Name                    string
+	Type                    string
+	Required                bool   // if the field itself is required
+	DataType                string // the python datatype (objmap) used in the template
+	HasChildProperties      bool
 	RequiredChildProperties []string
-	Validators  string
-	Enum        *enum
-	isFormField bool
-	imports     []pyimport
-	UnionTypes  []string
+	Validators              string
+	Enum                    *enum
+	isFormField             bool
+	imports                 []pyimport
+	UnionTypes              []string
 	// Initializer string
-	IsList      bool                // it is a list field
-	validators  map[string][]string // array of validators, only used to build `Validators` field
+	IsList     bool                // it is a list field
+	validators map[string][]string // array of validators, only used to build `Validators` field
 }
 
 func newField(className string, T raml.Type, propName string, propInterface interface{},
 	types map[string]raml.Type, childProperties []objectProperty,
 	typeHierarchy []map[string]raml.Type) (field, error) {
-	
-	// if className == "ClientEvent" {
-	// 	// debug TODO remove
-	// 	fmt.Println(className, propName, propInterface)
-	// 	fmt.Println(childProperties)
-	// 	fmt.Println("----")
-	// }
 
 	prop := raml.ToProperty(propName, propInterface)
 
-	f := field {
+	f := field{
 		Name:     prop.Name,
 		Required: prop.Required,
 	}
-
-	// for _, childProp := range childProperties {
-	// 	f.RequiredProperties = append(f.RequiredProperties, childProp.Name)
-	// }
 
 	if prop.IsEnum() {
 		// see if T actually has this property. if not, it's inherited, and we want to only define an Enum once
@@ -78,17 +67,15 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 			// thus, we'll use the parent type's enum
 
 			f.Enum = newEnum(typeDefiningProp, prop, false)
-			// fmt.Println("*** typeDefining skip enum", typeDefiningProp, className, prop.Name)
-			// fmt.Printf("full type: %+v\n", T)
 		}
 		if f.Enum == nil {
 			f.Enum = newEnum(className, prop, false)
 		}
 		f.Type = f.Enum.Name
-		f.imports = []pyimport {
-			pyimport {
-				Module: "."+f.Type,
-				Name: f.Type,
+		f.imports = []pyimport{
+			pyimport{
+				Module: "." + f.Type,
+				Name:   f.Type,
 			},
 		}
 	} else {
@@ -106,27 +93,27 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 	childRequired := make([]string, 0)
 	if mainType, ok := types[f.Type]; ok {
 		switch thisProp := propInterface.(type) {
-			case map[interface{}]interface{}:
-				if myChildProperties, ok := thisProp["properties"].(map[interface{}]interface{}); ok {
-					for _, typeProp := range ChildProperties(mainType.Properties) {
-						if typeProp.Required {
-							mainRequired = append(mainRequired, typeProp.Name)
-						}
-					}
-
-					myChildPropertyMap := make(map[string]interface{})
-					for k, v := range myChildProperties {
-						if childPropName, ok := k.(string); ok {
-							myChildPropertyMap[childPropName] = v
-						}
-					}
-
-					for _, myProp := range ChildProperties(myChildPropertyMap) {
-						if myProp.Required {
-							childRequired = append(childRequired, myProp.Name)
-						}
+		case map[interface{}]interface{}:
+			if myChildProperties, ok := thisProp["properties"].(map[interface{}]interface{}); ok {
+				for _, typeProp := range ChildProperties(mainType.Properties) {
+					if typeProp.Required {
+						mainRequired = append(mainRequired, typeProp.Name)
 					}
 				}
+
+				myChildPropertyMap := make(map[string]interface{})
+				for k, v := range myChildProperties {
+					if childPropName, ok := k.(string); ok {
+						myChildPropertyMap[childPropName] = v
+					}
+				}
+
+				for _, myProp := range ChildProperties(myChildPropertyMap) {
+					if myProp.Required {
+						childRequired = append(childRequired, myProp.Name)
+					}
+				}
+			}
 		}
 	}
 	if len(childRequired) > len(mainRequired) {
@@ -141,27 +128,26 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 	return f, nil
 }
 
-
 func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	/*
-	build a string for the 'datatype' key of an objmap for this property
-	a complete objmap looks like:
-	{'attrname': {'datatype': [type], 'required': bool}}
+		build a string for the 'datatype' key of an objmap for this property
+		a complete objmap looks like:
+		{'attrname': {'datatype': [type], 'required': bool}}
 
-	the type values in the 'datatype' list can be any type, but if they are a dict, it's in objmap format
+		the type values in the 'datatype' list can be any type, but if they are a dict, it's in objmap format
 
-	there can be many levels of nesting, but here is an example of one:
-	{
-		'sipSessionId': {
-			'datatype': [
-				{
-					'local': {'datatype': [str], 'required': False},
-					'remote': {'datatype': [str], 'required': False},
-				},
-			],
-			'required': False
+		there can be many levels of nesting, but here is an example of one:
+		{
+			'sipSessionId': {
+				'datatype': [
+					{
+						'local': {'datatype': [str], 'required': False},
+						'remote': {'datatype': [str], 'required': False},
+					},
+				],
+				'required': False
+			}
 		}
-	}
 	*/
 
 	if len(f.UnionTypes) > 0 {
@@ -180,7 +166,7 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 		if !objProp.required {
 			reqstr = "False"
 		}
-		childField := field {
+		childField := field{
 			Name: objProp.name,
 		}
 		childField.setType(objProp.datatype)
@@ -195,7 +181,6 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	return strings.Join(datatypes, ", "), true
 }
 
-
 // convert from raml Type to python type
 func (pf *field) setType(t string) {
 	// base RAML types we can directly map:
@@ -209,10 +194,10 @@ func (pf *field) setType(t string) {
 		pf.Type = "bool"
 	case "datetime":
 		pf.Type = t
-		pf.imports = []pyimport {
-			pyimport {
+		pf.imports = []pyimport{
+			pyimport{
 				Module: "datetime",
-				Name: "datetime",
+				Name:   "datetime",
 			},
 		}
 		// pf.Initializer = "timestamp_to_datetime"
@@ -222,12 +207,12 @@ func (pf *field) setType(t string) {
 
 	// special types we want to hard code
 	switch t {
-		case "UUID":
+	case "UUID":
 		pf.Type = t
-		pf.imports = []pyimport {
-			pyimport {
+		pf.imports = []pyimport{
+			pyimport{
 				Module: "uuid",
-				Name: "UUID",
+				Name:   "UUID",
 			},
 		}
 	}
@@ -235,11 +220,6 @@ func (pf *field) setType(t string) {
 	if pf.Type != "" { // type already set, no need to go down
 		return
 	}
-
-	// rt, found := pf.ramlType.(raml.Type)
-	// if !found {
-	// 	return
-	// }
 
 	// other types that need some processing
 	switch {
@@ -255,20 +235,20 @@ func (pf *field) setType(t string) {
 		for _, ut := range strings.Split(t, "|") {
 			typename := strings.TrimSpace(ut)
 			pf.UnionTypes = append(pf.UnionTypes, typename)
-			pf.imports = append(pf.imports, pyimport {
-				Module: "."+typename,
-				Name: typename,
-				})
+			pf.imports = append(pf.imports, pyimport{
+				Module: "." + typename,
+				Name:   typename,
+			})
 			pf.Type = t
 		}
 	case strings.Index(t, ".") > 1:
 		pf.Type = t[strings.Index(t, ".")+1:]
 	default:
 		pf.Type = t
-		pf.imports = []pyimport {
-			pyimport {
-				Module: "."+t,
-				Name: t,
+		pf.imports = []pyimport{
+			pyimport{
+				Module: "." + t,
+				Name:   t,
 			},
 		}
 	}

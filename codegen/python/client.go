@@ -89,7 +89,7 @@ func (c Client) Generate(dir string) error {
 	}
 
 	// python classes
-	err, classes := generateClasses(c.APIDef.Types, dir)
+	classes, err := generateClasses(c.APIDef.Types, dir)
 	if err != nil {
 		return err
 	}

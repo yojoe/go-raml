@@ -1,5 +1,8 @@
 import requests
 
+
+from .User import User
+
 from .client import Client as APIClient
 
 from .oauth2_client_itsyouonline import Oauth2ClientItsyouonline
