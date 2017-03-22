@@ -5,8 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/chuckpreslar/inflect"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -100,8 +98,7 @@ func (fs FlaskServer) generateClassesFromBodies(dir string) error {
 func generateClassesFromMethod(m serverMethod, dir string) error {
 	// request body
 	if commons.HasJSONBody(&m.Bodies) {
-		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-		class := newClass(name, "", m.Bodies.ApplicationJSON.Properties)
+		class := newClass(m.ReqBody, "", m.Bodies.ApplicationJSON.Properties)
 		if err := class.generate(dir); err != nil {
 			return err
 		}

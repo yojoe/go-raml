@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: coolness
+version: v0.1.0
+mediaType:  application/json
+
+types:
+  rob:
+    properties:
+      secret: string
+
+/coolness:
+    post:
+      displayName: Create Something Cool
+      body:
+        application/json:
+          properties:
+            robprop: rob
