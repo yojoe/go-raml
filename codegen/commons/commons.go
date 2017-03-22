@@ -108,29 +108,6 @@ func GenerateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	return nil
 }
 
-// InterfaceToString converts interface type to string.
-//
-// We can't simply do this using type casting.
-// example :
-// 1. string type, result would be string
-// 2. []interface{} type, result would be array of string. ex: a,b,c
-// Please add other type as needed.
-func InterfaceToString(data interface{}) string {
-	switch data.(type) {
-	case string:
-		return data.(string)
-	case []interface{}:
-		interfaceArr := data.([]interface{})
-		results := []string{}
-		for _, v := range interfaceArr {
-			results = append(results, InterfaceToString(v))
-		}
-		return strings.Join(results, ",")
-	default:
-		return ""
-	}
-}
-
 // MapToSortedStrings returns sorted string arrays from a map
 func MapToSortedStrings(m map[string]struct{}) []string {
 	ss := []string{}

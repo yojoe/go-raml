@@ -36,7 +36,6 @@ func newClass(name string, description string, properties map[string]interface{}
 		Description: commons.ParseDescription(description),
 		Fields:      map[string]field{},
 	}
-
 	types := globAPIDef.Types
 	T := types[name]
 
@@ -121,10 +120,12 @@ func ChildProperties(Properties map[string]interface{}) []raml.Property {
 func getTypeHierarchy(name string, T raml.Type, types map[string]raml.Type) []map[string]raml.Type {
 	typelist := []map[string]raml.Type{map[string]raml.Type{name: T}}
 
-	parentType, inherited := types[T.TypeString()]
-	if inherited {
-		for _, pt := range getTypeHierarchy(T.Type.(string), parentType, types) {
-			typelist = append(typelist, pt)
+	for _, parent := range T.Parents() {
+		parentType, inherited := types[parent]
+		if inherited {
+			for _, pt := range getTypeHierarchy(parent, parentType, types) {
+				typelist = append(typelist, pt)
+			}
 		}
 	}
 

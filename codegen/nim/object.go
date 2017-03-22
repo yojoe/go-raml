@@ -206,7 +206,7 @@ func (o *object) handleAdvancedType() {
 	if o.T.Type == nil {
 		o.T.Type = "object"
 	}
-	strType := commons.InterfaceToString(o.T.Type)
+	strType := o.T.TypeString()
 
 	switch {
 	case len(strings.Split(strType, ",")) > 1: //multiple inheritance

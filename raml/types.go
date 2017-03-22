@@ -37,6 +37,20 @@ import (
 	"strings"
 )
 
+var (
+	scalarTypes = map[string]bool{
+		"string":        true,
+		"number":        true,
+		"integer":       true,
+		"boolean":       true,
+		"date-only":     true,
+		"time-only":     true,
+		"datetime-only": true,
+		"datetime":      true,
+		"file":          true,
+	}
+)
+
 // TODO: We don't support !include of non-text files. RAML supports including
 //       of many file types.
 
@@ -375,11 +389,72 @@ type Type struct {
 	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
 }
 
+// Parents returns parents of this Type.
+// "object" is not considered a parent
+func (t Type) Parents() []string {
+	if parents, ok := t.MultipleInheritance(); ok {
+		return parents
+	}
+
+	if parent, ok := t.SingleInheritance(); ok {
+		return []string{parent}
+	}
+	return []string{}
+}
+
+// SingleInheritance returns true if it
+// inherit from single object which is not:
+// - basic/scalar type
+// - object
+func (t Type) SingleInheritance() (string, bool) {
+	tStr := t.TypeString()
+	if tStr == "object" {
+		return "", false
+	}
+	_, ok := scalarTypes[tStr]
+	if ok {
+		return "", false
+	}
+	_, isMultiple := t.MultipleInheritance()
+	return tStr, !isMultiple
+}
+
+func (t Type) MultipleInheritance() ([]string, bool) {
+	tStr := t.TypeString()
+	splitted := strings.Split(tStr, ",")
+	return splitted, len(splitted) > 1
+}
+
+// interfaceToString converts interface type to string.
+//
+// We can't simply do this using type casting.
+// example :
+// 1. string type, result would be string
+// 2. []interface{} type, result would be array of string. ex: a,b,c
+// Please add other type as needed.
+func interfaceToString(data interface{}) string {
+	switch data.(type) {
+	case string:
+		return data.(string)
+	case []interface{}:
+		interfaceArr := data.([]interface{})
+		results := []string{}
+		for _, v := range interfaceArr {
+			results = append(results, interfaceToString(v))
+		}
+		return strings.Join(results, ",")
+	default:
+		return fmt.Sprintf("%v", data)
+	}
+}
+
+// TypeString returns string representation
+// of this Type field
 func (t Type) TypeString() string {
 	if t.Type == nil {
 		return "object"
 	}
-	return fmt.Sprintf("%s", t.Type)
+	return interfaceToString(t.Type)
 }
 
 // IsArray checks if this type is an Array
