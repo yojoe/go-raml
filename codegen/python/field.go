@@ -7,6 +7,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -83,7 +84,6 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 		if f.Type == "" {
 			return f, fmt.Errorf("unsupported type:%v", prop.Type)
 		}
-		f.buildValidators(prop)
 	}
 
 	f.DataType, f.HasChildProperties = buildDataType(f, childProperties)
@@ -223,9 +223,9 @@ func (pf *field) setType(t string) {
 
 	// other types that need some processing
 	switch {
-	case strings.HasSuffix(t, "[][]"): // bidimensional array
+	case commons.IsBidimensiArray(t): // bidimensional array
 		log.Info("validator has no support for bidimensional array, ignore it")
-	case strings.HasSuffix(t, "[]"): // array
+	case commons.IsArray(t): // array
 		pf.IsList = true
 		pf.setType(t[:len(t)-2])
 	case strings.HasSuffix(t, "{}"): // map
@@ -253,80 +253,4 @@ func (pf *field) setType(t string) {
 		}
 	}
 
-}
-
-func (pf *field) addValidator(name, arg string, val interface{}) {
-	pf.validators[name] = append(pf.validators[name], fmt.Sprintf("%v=%v", arg, val))
-}
-
-// build validators string
-func (pf *field) buildValidators(p raml.Property) {
-	pf.validators = map[string][]string{}
-	// string
-	if p.MinLength != nil {
-		pf.addValidator("Length", "min", *p.MinLength)
-	}
-	if p.MaxLength != nil {
-		pf.addValidator("Length", "max", *p.MaxLength)
-	}
-	if p.Pattern != nil {
-		pf.addValidator("Regexp", "regex", `"`+*p.Pattern+`"`)
-	}
-
-	// number
-	if p.Minimum != nil {
-		pf.addValidator("NumberRange", "min", *p.Minimum)
-	}
-	if p.Maximum != nil {
-		pf.addValidator("NumberRange", "max", *p.Maximum)
-	}
-	if p.MultipleOf != nil {
-		pf.addValidator("multiple_of", "mult", *p.MultipleOf)
-	}
-
-	// required
-	if p.Required {
-		pf.addValidator("DataRequired", "message", `""`)
-	}
-
-	if p.MinItems != nil {
-		pf.Validators += fmt.Sprintf(",min_entries=%v", *p.MinItems)
-	}
-	if p.MaxItems != nil {
-		pf.Validators += fmt.Sprintf(",max_entries=%v", *p.MaxItems)
-	}
-	if len(pf.Validators) > 0 {
-		pf.Validators = pf.Validators[1:]
-	}
-
-	pf.buildValidatorsString()
-}
-
-func (pf *field) buildValidatorsString() {
-	var v []string
-	if pf.Validators != "" {
-		return
-	}
-	for name, args := range pf.validators {
-		v = append(v, fmt.Sprintf("%v(%v)", name, strings.Join(args, ", ")))
-	}
-
-	// we actually don't need to sort it to generate correct validators
-	// we need to sort it to generate predictable order which needed during the test
-	sort.Strings(v)
-	pf.Validators = strings.Join(v, ", ")
-}
-
-// WTFType return wtforms type of a field
-func (pf field) WTFType() string {
-	switch {
-	case pf.IsList && pf.isFormField:
-		return fmt.Sprintf("FieldList(FormField(%v))", pf.Type)
-	case pf.IsList:
-		return fmt.Sprintf("FieldList(%v('%v', [required()]), %v)", pf.Type, pf.Name, pf.Validators)
-	case pf.isFormField:
-		return fmt.Sprintf("FormField(%v)", pf.Type)
-	default:
-		return fmt.Sprintf("%v(validators=[%v])", pf.Type, pf.Validators)
-	}
 }
