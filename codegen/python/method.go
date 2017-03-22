@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
+	"github.com/chuckpreslar/inflect"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
-	log "github.com/Sirupsen/logrus"
 )
 
 // python server method
@@ -25,6 +27,10 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	} else {
 		sm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(sm.Verb())
 	}
+	if commons.HasJSONBody(&(sm.Bodies)) {
+		sm.ReqBody = inflect.UpperCamelCase(sm.MethodName + "ReqBody")
+	}
+
 	sm.Params = strings.Join(resourceParams, ", ")
 	sm.Endpoint = strings.Replace(sm.Endpoint, "{", "<", -1)
 	sm.Endpoint = strings.Replace(sm.Endpoint, "}", ">", -1)

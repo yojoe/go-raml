@@ -5,8 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/chuckpreslar/inflect"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -100,8 +98,7 @@ func (fs FlaskServer) generateWtfClassesFromBodies(dir string) error {
 func generateWtfClassesFromMethod(m serverMethod, dir string) error {
 	// request body
 	if commons.HasJSONBody(&m.Bodies) {
-		name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-		wtfClass := newWtfClass(name, "", m.Bodies.ApplicationJSON.Properties)
+		wtfClass := newWtfClass(m.ReqBody, "", m.Bodies.ApplicationJSON.Properties)
 		if err := wtfClass.generate(dir); err != nil {
 			return err
 		}
