@@ -1,5 +1,9 @@
 import requests
 
+
+from .City import City
+from .Address import Address
+
 from .client import Client as APIClient
 
 

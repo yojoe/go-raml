@@ -44,6 +44,15 @@ func newEnumFromWtfClass(pc *wtfClass) *enum {
 	return newEnum(pc.Name, prop, true)
 }
 
+func newEnumFromClass(pc *class) *enum {
+	prop := raml.Property{
+		Type: fmt.Sprint(pc.T.Type),
+		Name: "",
+		Enum: pc.T.Enum,
+	}
+	return newEnum(pc.Name, prop, true)
+}
+
 func newEnumField(f interface{}, e enum) enumField {
 	var name, val string
 

@@ -372,10 +372,17 @@ type Type struct {
 	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
 }
 
+func (t Type) TypeString() string {
+	if t.Type == nil {
+		return "object"
+	}
+	return t.Type.(string)
+}
+
 // IsArray checks if this type is an Array
 // see specs at http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 func (t Type) IsArray() bool {
-	return strings.HasSuffix(t.Type.(string), "[]")
+	return strings.HasSuffix(t.TypeString(), "[]")
 }
 
 // IsEnum type check if this type is an enum
@@ -387,7 +394,7 @@ func (t Type) IsEnum() bool {
 // IsUnion checks if a type is Union type
 // see http://docs.raml.org/specs/1.0/#raml-10-spec-union-types
 func (t Type) IsUnion() bool {
-	return strings.Index(t.Type.(string), "|") > 0
+	return strings.Index(t.TypeString(), "|") > 0
 }
 
 // BodiesProperty defines a Body's property
