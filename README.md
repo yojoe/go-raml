@@ -296,3 +296,8 @@ Short descriptions about how the generator generates the code from raml file are
 ## Tutorial
  
  Tutorial for Go, Python, and Nim is available at [docs/tutorial directory](./docs/tutorial)
+
+## CREDITS
+
+- [go-raml/raml](https://github.com/go-raml/raml) for the original parser used by go-raml.
+- [razor-1](https://github.com/razor-1) for the python class support.

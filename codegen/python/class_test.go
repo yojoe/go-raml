@@ -20,51 +20,27 @@ func TestGeneratePythonClass(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateClasses(apiDef.Types, targetDir)
+			globAPIDef = apiDef
+
+			_, err = generateClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/class/"
-			checks := []struct {
-				Result   string
-				Expected string
-			}{
-				{"ValidationString.py", "ValidationString.py"}, // strings validator
-				{"Cage.py", "Cage.py"},                         // with form field
-				{"animal.py", "animal.py"},                     // FieldList of FormField
+			files := []string{
+				"Cage.py",
+				"EnumCity.py",
+				"EnumString.py",
+				"SingleInheritance.py",
+				"MultipleInheritance.py",
+				"animal.py",
+				"petshop.py",
 			}
 
-			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
-				So(err, ShouldBeNil)
-
-				So(s, ShouldEqual, tmpl)
-			}
-
-		})
-
-		Convey("python class from raml with JSON", func() {
-			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
-			So(err, ShouldBeNil)
-
-			err = generateClasses(apiDef.Types, targetDir)
-			So(err, ShouldBeNil)
-
-			rootFixture := "./fixtures/class/json/"
-			checks := []struct {
-				Result   string
-				Expected string
-			}{
-				{"PersonInclude.py", "PersonInclude.py"},
-			}
-
-			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
-				So(err, ShouldBeNil)
-
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

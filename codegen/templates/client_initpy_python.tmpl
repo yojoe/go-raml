@@ -1,6 +1,10 @@
 {{- define "client_initpy_python" -}}
 import requests
 
+{{ range $class := .Classes}}
+from .{{$class}} import {{$class}}
+{{- end}}
+
 from .client import Client as APIClient
 {{ range $k, $v := .Securities}}
 from .{{$v.ModuleName}} import {{$v.Name}}{{end}}

@@ -15,7 +15,7 @@ Generated client library use [requests](http://docs.python-requests.org/en/maste
 
 ## Type
 
-RAML Object still not mapped to python class
+RAML Object is mapped to python class
 
 
 #### Scalar Type Mapping

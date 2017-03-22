@@ -3,8 +3,8 @@ package python
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -33,6 +33,15 @@ func newEnum(name string, prop raml.Property, fromClass bool) *enum {
 		e.Fields = append(e.Fields, newEnumField(v, e))
 	}
 	return &e
+}
+
+func newEnumFromWtfClass(pc *wtfClass) *enum {
+	prop := raml.Property{
+		Type: fmt.Sprint(pc.T.Type),
+		Name: "",
+		Enum: pc.T.Enum,
+	}
+	return newEnum(pc.Name, prop, true)
 }
 
 func newEnumFromClass(pc *class) *enum {

@@ -1,6 +1,8 @@
 import sys
+import json
 
 import goramldir
+import goramldir.User as User
 
 # goramldir client
 client = goramldir.Client()
@@ -16,6 +18,14 @@ def main(app_id, app_secret):
     resp = client.api.users.users_get()
     print("resp body =",resp.text)
 
+    # example on how to create object and encode it to json
+    user = User(name="iwan", username="ibk")
+    json_str = user.as_json()
+    print(json_str)
+
+    # example on how to create object from json object
+    user2 = User(json = json.loads(json_str))
+    print(user2.as_json())
 if __name__ == "__main__":
     '''
     usage : python3 main.py application_id application_secret

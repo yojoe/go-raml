@@ -1,12 +1,80 @@
+"""
+Auto-generated class for EnumCity
+"""
+from .EnumEnumCityEnum_homeNum import EnumEnumCityEnum_homeNum
+from .EnumEnumCityEnum_parks import EnumEnumCityEnum_parks
 
-from flask_wtf import Form
-from wtforms.validators import DataRequired, Length, Regexp, NumberRange, required
-from wtforms import TextField, FormField, IntegerField, FloatField, FileField, BooleanField, DateField, FieldList
-from input_validators import multiple_of
+from . import client_support
 
 
-class EnumCity(Form):
-    
-    enum_homeNum = IntegerField(validators=[DataRequired(message="")])
-    enum_parks = TextField(validators=[DataRequired(message="")])
-    name = TextField(validators=[DataRequired(message="")])
+class EnumCity(object):
+    """
+    auto-generated. don't touch.
+    """
+
+    @staticmethod
+    def create(enum_homeNum, enum_parks, name):
+        """
+        :type enum_homeNum: EnumEnumCityEnum_homeNum
+        :type enum_parks: EnumEnumCityEnum_parks
+        :type name: str
+        :rtype: EnumCity
+        """
+
+        return EnumCity(
+            enum_homeNum=enum_homeNum,
+            enum_parks=enum_parks,
+            name=name,
+        )
+
+    def __init__(self, json=None, **kwargs):
+        if not json and not kwargs:
+            raise ValueError('No data or kwargs present')
+
+        class_name = 'EnumCity'
+        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
+        required_error = '{cls}: missing required property {prop}'
+
+        data = json or kwargs
+
+        property_name = 'enum_homeNum'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [EnumEnumCityEnum_homeNum]
+            try:
+                self.enum_homeNum = client_support.val_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
+        property_name = 'enum_parks'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [EnumEnumCityEnum_parks]
+            try:
+                self.enum_parks = client_support.val_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
+        property_name = 'name'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [str]
+            try:
+                self.name = client_support.val_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
+    def __str__(self):
+        return self.as_json(indent=4)
+
+    def as_json(self, indent=0):
+        return client_support.to_json(self, indent=indent)
+
+    def as_dict(self):
+        return client_support.to_dict(self)

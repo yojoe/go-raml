@@ -88,7 +88,20 @@ func (c Client) Generate(dir string) error {
 		return err
 	}
 
-	if err := c.generateInitPy(dir); err != nil {
+	// python classes
+	classes, err := generateClasses(c.APIDef.Types, dir)
+	if err != nil {
+		return err
+	}
+
+	// helper for python classes
+	if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
+		"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
+		return err
+	}
+
+	sort.Strings(classes)
+	if err := c.generateInitPy(classes, dir); err != nil {
 		return err
 	}
 	// generate main client lib file
@@ -122,7 +135,7 @@ func (c Client) generateSecurity(dir string) error {
 	return nil
 }
 
-func (c Client) generateInitPy(dir string) error {
+func (c Client) generateInitPy(classes []string, dir string) error {
 	type oauth2Client struct {
 		Name       string
 		ModuleName string
@@ -145,6 +158,7 @@ func (c Client) generateInitPy(dir string) error {
 	ctx := map[string]interface{}{
 		"BaseURI":    c.APIDef.BaseURI,
 		"Securities": securities,
+		"Classes":    classes,
 	}
 	filename := filepath.Join(dir, "__init__.py")
 	return commons.GenerateFile(ctx, c.Template.initFile, c.Template.initName, filename, false)

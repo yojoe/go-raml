@@ -20,10 +20,10 @@ func TestEnum(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateClasses(apiDef.Types, targetDir)
+			err = generateWtfClasses(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/class/"
+			rootFixture := "./fixtures/wtf_class/"
 			checks := []struct {
 				Result   string
 				Expected string
