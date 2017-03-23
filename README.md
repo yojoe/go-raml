@@ -133,14 +133,15 @@ Executes this command to generates Sanic server
 ### Code Generator Options
 
 ```
-   --language, -l "go"  Language to construct a server for
-   --dir "."        target directory
-   --ramlfile "."   Source raml file
-   --package "main" package name
-   --no-main        Do not generate a main.go file
-   --no-apidocs     Do not generate API Docs in /apidocs/?raml=api.raml endpoint
-   --import-path    "examples.com/ramlcode"	import path of the generated code
-   --kind           Kind of server to generate. Sanic/Flask. default is flask
+   ----language, -l "go"                        Language to construct a server for
+   --kind                                       Kind of server to generate (, sanic) (only for python)
+   --dir "."                                    target directory
+   --ramlfile "."                               Source raml file
+   --package "main"                             package name
+   --no-main                                    Do not generate a main.go file
+   --no-apidocs                                 Do not generate API Docs in /apidocs/ endpoint
+   --import-path "examples.com/ramlcode"        import path of the generated code
+   --api-file-per-method                        Generate one API implementation file per method (only for Go)
 ```
 
 ## Generating Client
