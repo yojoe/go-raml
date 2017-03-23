@@ -2,7 +2,7 @@
 package {{.PackageName}}
 
 import (
-    {{ range $k, $v := .APILibImportPaths -}}
+    {{ range $k, $v := .Method.Imports -}}
         "{{$v}}"
     {{ end -}}
 )

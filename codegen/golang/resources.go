@@ -49,10 +49,9 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 	for _, mi := range gr.Methods {
 		sm := mi.(serverMethod)
 		ctx := map[string]interface{}{
-			"Method":            sm,
-			"APILibImportPaths": gr.APILibImportPaths(),
-			"APIName":           gr.Name,
-			"PackageName":       gr.PackageName,
+			"Method":      sm,
+			"APIName":     gr.Name,
+			"PackageName": gr.PackageName,
 		}
 		filename := mainFile + "_" + sm.MethodName + ".go"
 		if err := commons.GenerateFile(ctx, "./templates/server_resource_api_impl_go.tmpl",
@@ -114,18 +113,13 @@ func (gr goResource) InterfaceImportPaths() []string {
 // APIImportPaths returns all packages that need to be imported
 // by the API implementation
 func (gr goResource) APILibImportPaths() []string {
-	ip := map[string]struct{}{
-		"net/http": struct{}{},
-	}
+	ip := map[string]struct{}{}
 
 	// methods
 	for _, v := range gr.Methods {
 		gm := v.(serverMethod)
-		if gm.RespBody != "" || gm.ReqBody != "" {
-			ip["encoding/json"] = struct{}{}
-		}
-		for lib := range gm.libImported(globRootImportPath) {
-			ip[lib] = struct{}{}
+		for _, v := range gm.Imports() {
+			ip[v] = struct{}{}
 		}
 	}
 
