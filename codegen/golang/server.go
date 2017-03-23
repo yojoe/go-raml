@@ -40,12 +40,13 @@ func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPa
 	globRootImportPath = rootImportPath
 
 	return Server{
-		apiDef:         apiDef,
-		Title:          apiDef.Title,
-		PackageName:    packageName,
-		APIDocsDir:     apiDocsDir,
-		withMain:       withMain,
-		RootImportPath: rootImportPath,
+		apiDef:           apiDef,
+		Title:            apiDef.Title,
+		PackageName:      packageName,
+		APIDocsDir:       apiDocsDir,
+		withMain:         withMain,
+		RootImportPath:   rootImportPath,
+		APIFilePerMethod: apiFilePerMethod,
 	}
 }
 

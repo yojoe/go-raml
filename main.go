@@ -98,6 +98,11 @@ func main() {
 					Usage:       "import path of the generated code",
 					Destination: &serverCommand.ImportPath,
 				},
+				cli.BoolFlag{
+					Name:        "api-file-per-method",
+					Usage:       "Generate one API implementation file per method (only for Go)",
+					Destination: &serverCommand.APIFilePerMethod,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {

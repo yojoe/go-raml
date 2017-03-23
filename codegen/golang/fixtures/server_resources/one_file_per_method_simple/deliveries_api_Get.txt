@@ -1,0 +1,10 @@
+package main
+
+import (
+	"net/http"
+)
+
+// Get is the handler for GET /deliveries
+// Get a list of deliveries
+func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
+}

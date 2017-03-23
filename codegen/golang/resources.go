@@ -71,13 +71,17 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 // - API implementation
 //		implementation of the API interface.
 //		Don't generate if the file already exist
-func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
+func (gr *goResource) generate(r *raml.Resource, URI, dir string,
+	apiFilePerMethod bool) error {
 	gr.GenerateMethods(r, "go", newServerMethod, newGoClientMethod)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
-	//return gr.generateAPIFile(dir)
-	return gr.generateAPIFile(dir)
+	if !apiFilePerMethod {
+		return gr.generateAPIFile(dir)
+	} else {
+		return gr.generateAPIImplementations(dir)
+	}
 }
 
 // InterfaceImportPaths returns all packages imported by

@@ -16,6 +16,7 @@ type ServerCommand struct {
 	NoMainGeneration bool   //do not generate a main.go file
 	ImportPath       string // root import path of the code, such as : github.com/jumpscale/restapi
 	NoAPIDocs        bool   // do not generate API Docs in /apidocs/ endpoint
+	APIFilePerMethod bool
 }
 
 // Execute generates a Go server from an RAML specification
@@ -23,20 +24,22 @@ func (command *ServerCommand) Execute() error {
 	var apiDocsDir string
 
 	log.Infof("Generating a %v server", command.Language)
+	log.Infof("API file per method=%v", command.APIFilePerMethod)
 
 	if !command.NoAPIDocs {
 		apiDocsDir = "apidocs"
 	}
 
 	cs := codegen.Server{
-		RAMLFile:       command.RamlFile,
-		Kind:           command.Kind,
-		Dir:            command.Dir,
-		PackageName:    command.PackageName,
-		Lang:           command.Language,
-		APIDocsDir:     apiDocsDir,
-		RootImportPath: command.ImportPath,
-		WithMain:       !command.NoMainGeneration,
+		RAMLFile:         command.RamlFile,
+		Kind:             command.Kind,
+		Dir:              command.Dir,
+		PackageName:      command.PackageName,
+		Lang:             command.Language,
+		APIDocsDir:       apiDocsDir,
+		RootImportPath:   command.ImportPath,
+		WithMain:         !command.NoMainGeneration,
+		APIFilePerMethod: command.APIFilePerMethod,
 	}
 	return cs.Generate()
 }

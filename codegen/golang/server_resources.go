@@ -28,7 +28,7 @@ func (s *Server) generateServerResources(dir string) ([]resource.ResourceInterfa
 		rd := resource.New(s.apiDef, k, s.PackageName)
 		rd.IsServer = true
 		gr := goResource{Resource: &rd}
-		err = gr.generate(&r, k, dir)
+		err = gr.generate(&r, k, dir, s.APIFilePerMethod)
 		if err != nil {
 			return rds, err
 		}
