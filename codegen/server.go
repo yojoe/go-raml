@@ -31,8 +31,7 @@ type Server struct {
 	APIFilePerMethod bool   // true if we want to generate one API file per API method
 }
 
-// GenerateServer generates API server files
-//func (s *Server) Generate(ramlFile, kind, dir, packageName, lang, apiDocsDir, rootImportPath string, generateMain bool) error {
+// Generate generates API server files
 func (s *Server) Generate() error {
 	apiDef := new(raml.APIDefinition)
 	// parse the raml file
