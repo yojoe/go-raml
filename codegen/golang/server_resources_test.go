@@ -25,7 +25,8 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir, "main")
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false)
+			_, err = gs.generateServerResources(targetdir)
 			So(err, ShouldBeNil)
 
 			// check interface file
@@ -49,7 +50,8 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir, "main")
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false)
+			_, err = gs.generateServerResources(targetdir)
 			So(err, ShouldBeNil)
 
 			// check users api implementation

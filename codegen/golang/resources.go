@@ -77,7 +77,7 @@ func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
 		return err
 	}
 	//return gr.generateAPIFile(dir)
-	return gr.generateAPIImplementations(dir)
+	return gr.generateAPIFile(dir)
 }
 
 // InterfaceImportPaths returns all packages imported by

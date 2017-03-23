@@ -22,17 +22,19 @@ var (
 
 // Server represents a Go server
 type Server struct {
-	apiDef         *raml.APIDefinition
-	Title          string
-	ResourcesDef   []resource.ResourceInterface
-	PackageName    string // Name of the package this server resides in
-	APIDocsDir     string // apidocs directory. apidocs won't be generated if it is empty
-	withMain       bool
-	RootImportPath string
+	apiDef           *raml.APIDefinition
+	Title            string
+	ResourcesDef     []resource.ResourceInterface
+	PackageName      string // Name of the package this server resides in
+	APIDocsDir       string // apidocs directory. apidocs won't be generated if it is empty
+	withMain         bool
+	RootImportPath   string
+	APIFilePerMethod bool // true if we want to generate one API file per API method
 }
 
 // NewServer creates a new Golang server
-func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string, withMain bool) Server {
+func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string,
+	withMain, apiFilePerMethod bool) Server {
 	// global variables
 	globAPIDef = apiDef
 	globRootImportPath = rootImportPath
@@ -76,7 +78,7 @@ func (gs Server) Generate(dir string) error {
 	}
 
 	// genereate resources
-	rds, err := generateServerResources(gs.apiDef, dir, gs.PackageName)
+	rds, err := gs.generateServerResources(dir)
 	if err != nil {
 		return err
 	}

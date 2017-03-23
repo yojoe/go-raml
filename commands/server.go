@@ -28,6 +28,15 @@ func (command *ServerCommand) Execute() error {
 		apiDocsDir = "apidocs"
 	}
 
-	return codegen.GenerateServer(command.RamlFile, command.Kind, command.Dir, command.PackageName,
-		command.Language, apiDocsDir, command.ImportPath, !command.NoMainGeneration)
+	cs := codegen.Server{
+		RAMLFile:       command.RamlFile,
+		Kind:           command.Kind,
+		Dir:            command.Dir,
+		PackageName:    command.PackageName,
+		Lang:           command.Language,
+		APIDocsDir:     apiDocsDir,
+		RootImportPath: command.ImportPath,
+		WithMain:       !command.NoMainGeneration,
+	}
+	return cs.Generate()
 }
