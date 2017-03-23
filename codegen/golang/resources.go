@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -25,9 +26,41 @@ func (gr *goResource) generateInterfaceFile(directory string) error {
 }
 
 // generate API file of a resource
-func (gr *goResource) generateAPIFile(directory string) error {
-	filename := directory + "/" + strings.ToLower(gr.Name) + "_api.go"
+func (gr *goResource) generateAPIFile(dir string) error {
+	filename := filepath.Join(dir, strings.ToLower(gr.Name)+"_api.go")
 	return commons.GenerateFile(gr, resourceAPITemplate, "resource_api_template", filename, false)
+}
+
+func (gr *goResource) generateAPIImplementations(dir string) error {
+	// generate the main API impl file, which only contains struct
+	mainCtx := map[string]interface{}{
+		"PackageName": gr.PackageName,
+		"Name":        gr.Name,
+		"Endpoint":    gr.Endpoint,
+	}
+
+	mainFile := filepath.Join(dir, strings.ToLower(gr.Name)+"_api")
+	if err := commons.GenerateFile(mainCtx, "./templates/server_resource_api_main_go.tmpl",
+		"server_resource_api_main_go", mainFile+".go", false); err != nil {
+		return err
+	}
+
+	// generate per methods file
+	for _, mi := range gr.Methods {
+		sm := mi.(serverMethod)
+		ctx := map[string]interface{}{
+			"Method":            sm,
+			"APILibImportPaths": gr.APILibImportPaths(),
+			"APIName":           gr.Name,
+			"PackageName":       gr.PackageName,
+		}
+		filename := mainFile + "_" + sm.MethodName + ".go"
+		if err := commons.GenerateFile(ctx, "./templates/server_resource_api_impl_go.tmpl",
+			"server_resource_api_impl_go", filename, false); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // generate Go representation of server's resource.
@@ -43,7 +76,8 @@ func (gr *goResource) generate(r *raml.Resource, URI, dir string) error {
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
-	return gr.generateAPIFile(dir)
+	//return gr.generateAPIFile(dir)
+	return gr.generateAPIImplementations(dir)
 }
 
 // InterfaceImportPaths returns all packages imported by
