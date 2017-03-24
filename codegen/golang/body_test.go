@@ -20,9 +20,8 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			s := NewServer(apiDef, "main", "", "examples.com", false)
+			s := NewServer(apiDef, "main", "", "examples.com", false, false)
 			err := s.Generate(targetDir)
-			//err := generateBodyStructs(apiDef, targetDir, "main")
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct"
