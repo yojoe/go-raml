@@ -437,6 +437,9 @@ func (t Type) MultipleInheritance() ([]string, bool) {
 // 2. []interface{} type, result would be array of string. ex: a,b,c
 // Please add other type as needed.
 func interfaceToString(data interface{}) string {
+	if data == nil {
+		return ""
+	}
 	switch data.(type) {
 	case string:
 		return data.(string)
@@ -455,9 +458,6 @@ func interfaceToString(data interface{}) string {
 // TypeString returns string representation
 // of this Type field
 func (t Type) TypeString() string {
-	if t.Type == nil {
-		return "object"
-	}
 	return interfaceToString(t.Type)
 }
 
@@ -484,5 +484,9 @@ type BodiesProperty struct {
 	// we use `interface{}` as property type to support syntactic sugar & shortcut
 	Properties map[string]interface{} `yaml:"properties"`
 
-	Type string
+	Type interface{}
+}
+
+func (bp BodiesProperty) TypeString() string {
+	return interfaceToString(bp.Type)
 }

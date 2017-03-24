@@ -53,7 +53,7 @@ func NewJSONSchema(t raml.Type, name string) JSONSchema {
 func NewJSONSchemaFromBodies(b raml.Bodies, name string) JSONSchema {
 	if b.ApplicationJSON.Type != "" {
 		var t raml.Type
-		if err := json.Unmarshal([]byte(b.ApplicationJSON.Type), &t); err == nil {
+		if err := json.Unmarshal([]byte(b.ApplicationJSON.TypeString()), &t); err == nil {
 			return NewJSONSchema(t, name)
 		}
 	}
