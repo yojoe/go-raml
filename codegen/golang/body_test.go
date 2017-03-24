@@ -31,6 +31,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 				"UsersPostReqBody",
 				"Catanimal",
 				"users_api",
+				"UnionCatanimal",
 			}
 
 			for _, f := range files {

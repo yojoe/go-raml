@@ -2,7 +2,6 @@ package golang
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -221,10 +220,8 @@ func (sd *structDef) buildArray() {
 }
 
 // build union type
-// union type is implemented as `interface{}`
-// example result `type sometype interface{}`
+// union type is implemented as empty struct
 func (sd *structDef) buildUnion() {
-	sd.buildOneLine(convertUnion(sd.T.Type.(string)))
 }
 
 func (sd *structDef) buildTypeAlias() {
@@ -268,6 +265,14 @@ func multipleInheritanceNewName(parents []string) string {
 	return strings.Join(parents, "")
 }
 
+func unionNewName(tip string) string {
+	tipes := strings.Split(tip, "|")
+	for i, v := range tipes {
+		tipes[i] = strings.TrimSpace(v)
+	}
+	return "Union" + strings.Join(tipes, "")
+}
+
 // create struct and generate it if possible.
 // return:
 // - newType Name if we try to generate it
@@ -278,6 +283,15 @@ func createGenerateStruct(tip, dir, pkgName string) (string, error) {
 		sd := newStructDef(multipleInheritanceNewName(parents), pkgName, "", map[string]interface{}{})
 		sd.addMultipleInheritance(parents)
 		return sd.Name, sd.generate(dir)
+	}
+	if commons.IsUnion(tip) {
+		t := raml.Type{
+			Type: tip,
+		}
+		sd := newStructDef(unionNewName(tip), pkgName, "", map[string]interface{}{})
+		sd.T = t
+		sd.buildUnion()
+		sd.generate(dir)
 	}
 	return "", nil
 }

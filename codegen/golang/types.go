@@ -54,7 +54,7 @@ func convertToGoType(tip string) string {
 	case commons.IsArray(tip):
 		return "[]" + convertToGoType(commons.ArrayType(tip))
 	case commons.IsUnion(tip):
-		return convertUnion(tip)
+		return unionNewName(tip)
 	case isMultiple:
 		return multipleInheritanceNewName(parents)
 	}
