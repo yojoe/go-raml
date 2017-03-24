@@ -153,10 +153,11 @@ func (sd *structDef) handleAdvancedType() {
 	}
 
 	strType := sd.T.TypeString()
+	parents, isMultipleInherit := sd.T.MultipleInheritance()
 
 	switch {
-	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
-		sd.addMultipleInheritance(strType)
+	case isMultipleInherit: //multiple inheritance
+		sd.addMultipleInheritance(parents)
 	case sd.T.IsUnion():
 		sd.buildUnion()
 	case sd.T.IsArray(): // arary type
@@ -193,8 +194,8 @@ func (sd *structDef) addSingleInheritance(strType string) {
 //			type: string
 // The additional fielddef would be a composition of Animal & Cat
 // http://docs.raml.org/specs/1.0/#raml-10-spec-multiple-inheritance
-func (sd *structDef) addMultipleInheritance(strType string) {
-	for _, s := range strings.Split(strType, ",") {
+func (sd *structDef) addMultipleInheritance(parents []string) {
+	for _, s := range parents {
 		fieldType := strings.TrimSpace(s)
 		fd := fieldDef{
 			Name:          fieldType,

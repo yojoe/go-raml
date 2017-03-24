@@ -421,6 +421,10 @@ func (t Type) SingleInheritance() (string, bool) {
 
 func (t Type) MultipleInheritance() ([]string, bool) {
 	tStr := t.TypeString()
+	if !strings.HasPrefix(tStr, "[") || !strings.HasSuffix(tStr, "]") {
+		return nil, false
+	}
+	tStr = strings.TrimPrefix(strings.TrimSuffix(tStr, "]"), "[")
 	splitted := strings.Split(tStr, ",")
 	return splitted, len(splitted) > 1
 }
@@ -442,7 +446,7 @@ func interfaceToString(data interface{}) string {
 		for _, v := range interfaceArr {
 			results = append(results, interfaceToString(v))
 		}
-		return strings.Join(results, ",")
+		return "[" + strings.Join(results, ",") + "]"
 	default:
 		return fmt.Sprintf("%v", data)
 	}
