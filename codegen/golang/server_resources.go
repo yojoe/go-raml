@@ -4,14 +4,13 @@ import (
 	"sort"
 
 	"github.com/Jumpscale/go-raml/codegen/resource"
-	"github.com/Jumpscale/go-raml/raml"
 )
 
 // generate Server's Go representation of RAML resources
-func generateServerResources(apiDef *raml.APIDefinition, directory, packageName string) ([]resource.ResourceInterface, error) {
+func (s *Server) generateServerResources(dir string) ([]resource.ResourceInterface, error) {
 	var rds []resource.ResourceInterface
 
-	rs := apiDef.Resources
+	rs := s.apiDef.Resources
 
 	// sort the keys, so we have resource sorted by keys.
 	// the generated code actually don't need it to be sorted.
@@ -26,10 +25,10 @@ func generateServerResources(apiDef *raml.APIDefinition, directory, packageName 
 	var err error
 	for _, k := range keys {
 		r := rs[k]
-		rd := resource.New(apiDef, k, packageName)
+		rd := resource.New(s.apiDef, k, s.PackageName)
 		rd.IsServer = true
 		gr := goResource{Resource: &rd}
-		err = gr.generate(&r, k, directory)
+		err = gr.generate(&r, k, dir, s.APIFilePerMethod)
 		if err != nil {
 			return rds, err
 		}

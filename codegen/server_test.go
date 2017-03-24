@@ -14,8 +14,17 @@ func TestServer(t *testing.T) {
 		targetdir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 		Convey("simple Go server", func() {
-			err := GenerateServer("./fixtures/server/user_api/api.raml", "",
-				targetdir, "main", "go", "apidocs", "examples.com/ramlcode", true)
+			s := Server{
+				RAMLFile:       "./fixtures/server/user_api/api.raml",
+				Kind:           "",
+				Dir:            targetdir,
+				PackageName:    "main",
+				Lang:           "go",
+				APIDocsDir:     "apidocs",
+				RootImportPath: "examples.com/ramlcode",
+				WithMain:       true,
+			}
+			err := s.Generate()
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server/user_api/"
