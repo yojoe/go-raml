@@ -2,6 +2,7 @@ package golang
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -261,4 +262,23 @@ func (sd structDef) needFmt() bool {
 		}
 	}
 	return false
+}
+
+func multipleInheritanceNewName(parents []string) string {
+	return strings.Join(parents, "")
+}
+
+// create struct and generate it if possible.
+// return:
+// - newType Name if we try to generate it
+// - nil if no error happened during generation
+func createGenerateStruct(tip, dir, pkgName string) (string, error) {
+	fmt.Printf("tip=%v\n", tip)
+	parents, isMultiple := commons.MultipleInheritance(tip)
+	if isMultiple {
+		sd := newStructDef(multipleInheritanceNewName(parents), pkgName, "", map[string]interface{}{})
+		sd.addMultipleInheritance(parents)
+		return sd.Name, sd.generate(dir)
+	}
+	return "", nil
 }
