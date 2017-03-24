@@ -49,7 +49,8 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateServerResources(apiDef, targetdir, "main")
+			gs := NewServer(apiDef, "main", "", "examples.com/goraml", true, false)
+			_, err = gs.generateServerResources(targetdir)
 			So(err, ShouldBeNil)
 
 			// check route

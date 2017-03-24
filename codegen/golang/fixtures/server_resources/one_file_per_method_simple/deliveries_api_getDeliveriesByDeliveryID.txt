@@ -1,0 +1,10 @@
+package main
+
+import (
+	"net/http"
+)
+
+// getDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
+// Get information on a specific delivery
+func (api DeliveriesAPI) getDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
+}

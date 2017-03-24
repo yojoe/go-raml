@@ -1,0 +1,5 @@
+package main
+
+// DeliveriesAPI is API implementation of /deliveries root endpoint
+type DeliveriesAPI struct {
+}
