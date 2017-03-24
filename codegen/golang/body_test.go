@@ -20,26 +20,28 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, targetDir, "main")
+			s := NewServer(apiDef, "main", "", "examples.com", false)
+			err := s.Generate(targetDir)
+			//err := generateBodyStructs(apiDef, targetDir, "main")
 			So(err, ShouldBeNil)
 
-			//load and compare UsersIdGetRespBody
-			s, err := testLoadFile(filepath.Join(targetDir, "UsersIdGetRespBody.go"))
-			So(err, ShouldBeNil)
+			rootFixture := "./fixtures/struct"
+			files := []string{
+				"UsersIdGetRespBody",
+				"UsersPostReqBody",
+				"Catanimal",
+				"users_api",
+			}
 
-			tmpl, err := testLoadFile("./fixtures/struct/UsersIdGetRespBody.txt")
-			So(err, ShouldBeNil)
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
 
-			//load and compare usersgetreqbody
-			s, err = testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/struct/UsersPostReqBody.txt")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
+				So(s, ShouldEqual, tmpl)
+			}
 		})
 
 		Reset(func() {

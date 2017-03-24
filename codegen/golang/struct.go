@@ -273,7 +273,6 @@ func multipleInheritanceNewName(parents []string) string {
 // - newType Name if we try to generate it
 // - nil if no error happened during generation
 func createGenerateStruct(tip, dir, pkgName string) (string, error) {
-	fmt.Printf("tip=%v\n", tip)
 	parents, isMultiple := commons.MultipleInheritance(tip)
 	if isMultiple {
 		sd := newStructDef(multipleInheritanceNewName(parents), pkgName, "", map[string]interface{}{})

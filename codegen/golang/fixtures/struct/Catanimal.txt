@@ -1,0 +1,15 @@
+package main
+
+import (
+	"gopkg.in/validator.v2"
+)
+
+type Catanimal struct {
+	Cat
+	animal
+}
+
+func (s Catanimal) Validate() error {
+
+	return validator.Validate(s)
+}
