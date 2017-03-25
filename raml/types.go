@@ -402,11 +402,22 @@ func (t Type) Parents() []string {
 	return []string{}
 }
 
+// IsJSONType true if this Type
+// has JSON scheme that defines it's type
+func (t Type) IsJSONType() bool {
+	tStr := t.TypeString()
+	tStr = strings.TrimSpace(tStr)
+	return strings.HasPrefix(tStr, "{") && strings.HasSuffix(tStr, "}")
+}
+
 // SingleInheritance returns true if it
 // inherit from single object which is not:
 // - basic/scalar type
 // - object
 func (t Type) SingleInheritance() (string, bool) {
+	if t.IsJSONType() {
+		return "", false
+	}
 	tStr := t.TypeString()
 	if tStr == "object" {
 		return "", false
@@ -420,6 +431,9 @@ func (t Type) SingleInheritance() (string, bool) {
 }
 
 func (t Type) MultipleInheritance() ([]string, bool) {
+	if t.IsJSONType() {
+		return nil, false
+	}
 	tStr := t.TypeString()
 	if !strings.HasPrefix(tStr, "[") || !strings.HasSuffix(tStr, "]") {
 		return nil, false
@@ -464,7 +478,17 @@ func (t Type) TypeString() string {
 // IsArray checks if this type is an Array
 // see specs at http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 func (t Type) IsArray() bool {
+	if t.IsJSONType() {
+		return false
+	}
 	return strings.HasSuffix(t.TypeString(), "[]")
+}
+
+func (t Type) IsBidimensiArray() bool {
+	if t.IsJSONType() {
+		return false
+	}
+	return strings.HasSuffix(t.TypeString(), "[][]")
 }
 
 // IsEnum type check if this type is an enum
@@ -476,6 +500,9 @@ func (t Type) IsEnum() bool {
 // IsUnion checks if a type is Union type
 // see http://docs.raml.org/specs/1.0/#raml-10-spec-union-types
 func (t Type) IsUnion() bool {
+	if t.IsJSONType() {
+		return false
+	}
 	return strings.Index(t.TypeString(), "|") > 0
 }
 
