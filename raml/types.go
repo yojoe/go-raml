@@ -534,7 +534,6 @@ type jsonType struct {
 
 // see if the 'Type' field is a JSON schema
 func (t *Type) postProcess() error {
-	fmt.Printf("post procsess\n")
 	if !t.IsJSONType() {
 		return nil
 	}
