@@ -114,6 +114,15 @@ types:
             maxItems: 5
             uniqueItems: true
   /{id}:
+    put:
+      body:
+        application/json:
+          type: [Cat, animal]
+      responses:
+        200:
+          body:
+            application/json:
+              type: Cat | animal
     get:
       description: |
         get id of users.

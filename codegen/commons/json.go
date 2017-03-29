@@ -11,7 +11,7 @@ import (
 //	- not nil application/json
 //	- has properties or has tipe in JSON string
 func HasJSONBody(body *raml.Bodies) bool {
-	return body.ApplicationJSON != nil && (len(body.ApplicationJSON.Properties) > 0 || IsJSONString(body.ApplicationJSON.Type))
+	return body.ApplicationJSON != nil && (len(body.ApplicationJSON.Properties) > 0 || IsJSONString(body.ApplicationJSON.TypeString()))
 }
 
 // IsJSONString returns true if a string is a JSON string

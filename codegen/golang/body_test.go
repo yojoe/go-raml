@@ -13,33 +13,60 @@ import (
 func TestGenerateStructBodyFromRaml(t *testing.T) {
 	Convey("generate struct body from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
-		err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
-		So(err, ShouldBeNil)
 
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("simple body", func() {
-			err := generateBodyStructs(apiDef, targetDir, "main")
+			err = raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			//load and compare UsersIdGetRespBody
-			s, err := testLoadFile(filepath.Join(targetDir, "UsersIdGetRespBody.go"))
+			s := NewServer(apiDef, "main", "", "examples.com", false, false)
+			err := s.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/struct/UsersIdGetRespBody.txt")
+			rootFixture := "./fixtures/struct"
+			files := []string{
+				"UsersIdGetRespBody",
+				"UsersPostReqBody",
+				"Catanimal",
+				"users_api",
+				"UnionCatanimal",
+			}
+
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
+		Convey("builtin type doesn't need validation code", func() {
+			err = raml.ParseFile("../fixtures/struct/validation.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			So(s, ShouldEqual, tmpl)
-
-			//load and compare usersgetreqbody
-			s, err = testLoadFile(filepath.Join(targetDir, "UsersPostReqBody.go"))
+			s := NewServer(apiDef, "main", "", "examples.com", false, false)
+			err := s.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/struct/UsersPostReqBody.txt")
-			So(err, ShouldBeNil)
+			rootFixture := "./fixtures/struct/validation"
+			files := []string{
+				"builtin_api",
+			}
 
-			So(s, ShouldEqual, tmpl)
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
 		})
 
 		Reset(func() {

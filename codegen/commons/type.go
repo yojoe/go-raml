@@ -3,27 +3,29 @@ package commons
 import (
 	"fmt"
 	"strings"
+
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 func IsArray(t interface{}) bool {
-	if t == nil {
-		return false
+	tip := raml.Type{
+		Type: t,
 	}
-	return strings.HasSuffix(fmt.Sprint(t), "[]")
+	return tip.IsArray()
 }
 
 func IsBidimensiArray(t interface{}) bool {
-	if t == nil {
-		return false
+	tip := raml.Type{
+		Type: t,
 	}
-	return strings.HasSuffix(fmt.Sprint(t), "[][]")
+	return tip.IsBidimensiArray()
 }
 
 func IsUnion(t interface{}) bool {
-	if t == nil {
-		return false
+	tip := raml.Type{
+		Type: t,
 	}
-	return strings.Index(fmt.Sprint(t), "|") > 0
+	return tip.IsUnion()
 }
 
 func ArrayType(t interface{}) string {
@@ -32,4 +34,11 @@ func ArrayType(t interface{}) string {
 
 func BidimensiArrayType(t interface{}) string {
 	return strings.TrimSuffix(fmt.Sprint(t), "[][]")
+}
+
+func MultipleInheritance(t interface{}) ([]string, bool) {
+	tip := raml.Type{
+		Type: t,
+	}
+	return tip.MultipleInheritance()
 }

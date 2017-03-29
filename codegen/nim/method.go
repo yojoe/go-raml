@@ -161,8 +161,8 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	if len(bodies.Type) > 0 && bodies.Type != "object" {
 		tipe = toNimType(bodies.Type)
 	} else if bodies.ApplicationJSON != nil {
-		if bodies.ApplicationJSON.Type != "" && bodies.ApplicationJSON.Type != "object" {
-			tipe = toNimType(bodies.ApplicationJSON.Type)
+		if bodies.ApplicationJSON.TypeString() != "" && bodies.ApplicationJSON.TypeString() != "object" {
+			tipe = toNimType(bodies.ApplicationJSON.TypeString())
 		} else {
 			tipe = prefix + suffix
 		}

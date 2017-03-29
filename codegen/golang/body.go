@@ -80,6 +80,9 @@ func buildBodyFromMethod(normalizedPath, methodName, dir, packageName string, me
 
 // generate a struct from an RAML request/response body
 func generateStructFromBody(structNamePrefix, dir, packageName string, body *raml.Bodies, isGenerateRequest bool) error {
+	if body != nil && body.ApplicationJSON != nil {
+		createGenerateStruct(body.ApplicationJSON.TypeString(), dir, packageName)
+	}
 	if !commons.HasJSONBody(body) {
 		return nil
 	}

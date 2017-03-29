@@ -81,9 +81,9 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 	//						}
 	//					}
 	//				}
-	if body.ApplicationJSON.Type != "" {
+	if body.ApplicationJSON.TypeString() != "" {
 		var t raml.Type
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.Type), &t); err == nil {
+		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &t); err == nil {
 			return newStructDefFromType(t, structName, packageName)
 		}
 	}
@@ -153,10 +153,11 @@ func (sd *structDef) handleAdvancedType() {
 	}
 
 	strType := sd.T.TypeString()
+	parents, isMultipleInherit := sd.T.MultipleInheritance()
 
 	switch {
-	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
-		sd.addMultipleInheritance(strType)
+	case isMultipleInherit: //multiple inheritance
+		sd.addMultipleInheritance(parents)
 	case sd.T.IsUnion():
 		sd.buildUnion()
 	case sd.T.IsArray(): // arary type
@@ -193,8 +194,8 @@ func (sd *structDef) addSingleInheritance(strType string) {
 //			type: string
 // The additional fielddef would be a composition of Animal & Cat
 // http://docs.raml.org/specs/1.0/#raml-10-spec-multiple-inheritance
-func (sd *structDef) addMultipleInheritance(strType string) {
-	for _, s := range strings.Split(strType, ",") {
+func (sd *structDef) addMultipleInheritance(parents []string) {
+	for _, s := range parents {
 		fieldType := strings.TrimSpace(s)
 		fd := fieldDef{
 			Name:          fieldType,
@@ -219,10 +220,8 @@ func (sd *structDef) buildArray() {
 }
 
 // build union type
-// union type is implemented as `interface{}`
-// example result `type sometype interface{}`
+// union type is implemented as empty struct
 func (sd *structDef) buildUnion() {
-	sd.buildOneLine(convertUnion(sd.T.Type.(string)))
 }
 
 func (sd *structDef) buildTypeAlias() {
@@ -260,4 +259,39 @@ func (sd structDef) needFmt() bool {
 		}
 	}
 	return false
+}
+
+func multipleInheritanceNewName(parents []string) string {
+	return strings.Join(parents, "")
+}
+
+func unionNewName(tip string) string {
+	tipes := strings.Split(tip, "|")
+	for i, v := range tipes {
+		tipes[i] = strings.TrimSpace(v)
+	}
+	return "Union" + strings.Join(tipes, "")
+}
+
+// create struct and generate it if possible.
+// return:
+// - newType Name if we try to generate it
+// - nil if no error happened during generation
+func createGenerateStruct(tip, dir, pkgName string) (string, error) {
+	parents, isMultiple := commons.MultipleInheritance(tip)
+	if isMultiple {
+		sd := newStructDef(multipleInheritanceNewName(parents), pkgName, "", map[string]interface{}{})
+		sd.addMultipleInheritance(parents)
+		return sd.Name, sd.generate(dir)
+	}
+	if commons.IsUnion(tip) {
+		t := raml.Type{
+			Type: tip,
+		}
+		sd := newStructDef(unionNewName(tip), pkgName, "", map[string]interface{}{})
+		sd.T = t
+		sd.buildUnion()
+		sd.generate(dir)
+	}
+	return "", nil
 }

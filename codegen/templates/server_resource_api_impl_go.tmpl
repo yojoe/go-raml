@@ -24,12 +24,14 @@ func(api {{.APIName}}API) {{.Method.MethodName}}(w http.ResponseWriter, r *http.
 		return
 	}
 
+    {{ if .ReqBodyNeedValidation}}
     // validate request
     if err := reqBody.Validate(); err != nil {
         w.WriteHeader(400)
         w.Write([]byte(`{"error":"`+err.Error()+`"}`))
         return
     }
+	{{- end }}
 	{{- end }}
 
 	{{- if .Method.RespBody }}

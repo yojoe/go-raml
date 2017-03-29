@@ -345,7 +345,7 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
 			b.ApplicationJSON.Properties = map[string]interface{}{}
 		}
 
-		b.ApplicationJSON.Type = substituteParams(b.ApplicationJSON.Type, parent.ApplicationJSON.Type, dicts)
+		b.ApplicationJSON.Type = substituteParams(b.ApplicationJSON.TypeString(), parent.ApplicationJSON.TypeString(), dicts)
 
 		for k, p := range parent.ApplicationJSON.Properties {
 			if _, ok := b.ApplicationJSON.Properties[k]; !ok {

@@ -1,10 +1,13 @@
 package main
 
-import ()
+import (
+	"gopkg.in/validator.v2"
+)
 
-type ArrayOfPets []interface{}
+type ArrayOfPets struct {
+}
 
 func (s ArrayOfPets) Validate() error {
 
-	return nil
+	return validator.Validate(s)
 }

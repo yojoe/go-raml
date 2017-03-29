@@ -4,10 +4,10 @@ import (
 	"gopkg.in/validator.v2"
 )
 
-type Pet struct {
+type UnionCatanimal struct {
 }
 
-func (s Pet) Validate() error {
+func (s UnionCatanimal) Validate() error {
 
 	return validator.Validate(s)
 }

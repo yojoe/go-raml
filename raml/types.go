@@ -389,6 +389,25 @@ type Type struct {
 	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
 }
 
+// IsBuiltin if a type is an RAML builtin type.
+func (t Type) IsBuiltin() bool {
+	_, ok := scalarTypes[t.TypeString()]
+	return ok
+}
+
+func (t Type) GetBuiltinType() (string, bool) {
+	if t.IsBuiltin() {
+		return t.TypeString(), true
+	}
+	if t.IsArray() {
+		return strings.TrimSuffix(t.TypeString(), "[]"), true
+	}
+	if t.IsBidimensiArray() {
+		return strings.TrimSuffix(t.TypeString(), "[][]"), true
+	}
+	return "", false
+}
+
 // Parents returns parents of this Type.
 // "object" is not considered a parent
 func (t Type) Parents() []string {
@@ -402,11 +421,22 @@ func (t Type) Parents() []string {
 	return []string{}
 }
 
+// IsJSONType true if this Type
+// has JSON scheme that defines it's type
+func (t Type) IsJSONType() bool {
+	tStr := t.TypeString()
+	tStr = strings.TrimSpace(tStr)
+	return strings.HasPrefix(tStr, "{") && strings.HasSuffix(tStr, "}")
+}
+
 // SingleInheritance returns true if it
 // inherit from single object which is not:
 // - basic/scalar type
 // - object
 func (t Type) SingleInheritance() (string, bool) {
+	if t.IsJSONType() {
+		return "", false
+	}
 	tStr := t.TypeString()
 	if tStr == "object" {
 		return "", false
@@ -420,7 +450,14 @@ func (t Type) SingleInheritance() (string, bool) {
 }
 
 func (t Type) MultipleInheritance() ([]string, bool) {
+	if t.IsJSONType() {
+		return nil, false
+	}
 	tStr := t.TypeString()
+	if !strings.HasPrefix(tStr, "[") || !strings.HasSuffix(tStr, "]") {
+		return nil, false
+	}
+	tStr = strings.TrimPrefix(strings.TrimSuffix(tStr, "]"), "[")
 	splitted := strings.Split(tStr, ",")
 	return splitted, len(splitted) > 1
 }
@@ -433,6 +470,9 @@ func (t Type) MultipleInheritance() ([]string, bool) {
 // 2. []interface{} type, result would be array of string. ex: a,b,c
 // Please add other type as needed.
 func interfaceToString(data interface{}) string {
+	if data == nil {
+		return ""
+	}
 	switch data.(type) {
 	case string:
 		return data.(string)
@@ -442,7 +482,7 @@ func interfaceToString(data interface{}) string {
 		for _, v := range interfaceArr {
 			results = append(results, interfaceToString(v))
 		}
-		return strings.Join(results, ",")
+		return "[" + strings.Join(results, ",") + "]"
 	default:
 		return fmt.Sprintf("%v", data)
 	}
@@ -451,16 +491,23 @@ func interfaceToString(data interface{}) string {
 // TypeString returns string representation
 // of this Type field
 func (t Type) TypeString() string {
-	if t.Type == nil {
-		return "object"
-	}
 	return interfaceToString(t.Type)
 }
 
 // IsArray checks if this type is an Array
 // see specs at http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 func (t Type) IsArray() bool {
+	if t.IsJSONType() {
+		return false
+	}
 	return strings.HasSuffix(t.TypeString(), "[]")
+}
+
+func (t Type) IsBidimensiArray() bool {
+	if t.IsJSONType() {
+		return false
+	}
+	return strings.HasSuffix(t.TypeString(), "[][]")
 }
 
 // IsEnum type check if this type is an enum
@@ -472,6 +519,9 @@ func (t Type) IsEnum() bool {
 // IsUnion checks if a type is Union type
 // see http://docs.raml.org/specs/1.0/#raml-10-spec-union-types
 func (t Type) IsUnion() bool {
+	if t.IsJSONType() {
+		return false
+	}
 	return strings.Index(t.TypeString(), "|") > 0
 }
 
@@ -480,5 +530,9 @@ type BodiesProperty struct {
 	// we use `interface{}` as property type to support syntactic sugar & shortcut
 	Properties map[string]interface{} `yaml:"properties"`
 
-	Type string
+	Type interface{}
+}
+
+func (bp BodiesProperty) TypeString() string {
+	return interfaceToString(bp.Type)
 }

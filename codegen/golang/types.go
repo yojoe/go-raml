@@ -47,13 +47,16 @@ func convertToGoType(tip string) string {
 	}
 
 	// other types that need some processing
+	parents, isMultiple := commons.MultipleInheritance(tip)
 	switch {
 	case commons.IsBidimensiArray(tip):
 		return "[][]" + commons.BidimensiArrayType(tip)
 	case commons.IsArray(tip):
 		return "[]" + convertToGoType(commons.ArrayType(tip))
 	case commons.IsUnion(tip):
-		return convertUnion(tip)
+		return unionNewName(tip)
+	case isMultiple:
+		return multipleInheritanceNewName(parents)
 	}
 	return commons.NormalizePkgName(tip)
 }
