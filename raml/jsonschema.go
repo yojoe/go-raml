@@ -21,12 +21,13 @@ var (
 
 // JSONSchema represents a json-schema json file
 type JSONSchema struct {
-	Schema     string              `json:"$schema"`
-	Name       string              `json:"-"`
-	Type       string              `json:"type"`
-	Items      *arrayItem          `json:"items,omitempty"`
-	Properties map[string]property `json:"properties,omitempty"`
-	Required   []string            `json:"required,omitempty"`
+	Schema      string              `json:"$schema"`
+	Name        string              `json:"-"`
+	Description string              `json:"description"`
+	Type        string              `json:"type"`
+	Items       *arrayItem          `json:"items,omitempty"`
+	Properties  map[string]property `json:"properties,omitempty"`
+	Required    []string            `json:"required,omitempty"`
 
 	// Array properties
 	MinItems    int  `json:"minItems,omitempty"`
@@ -106,6 +107,35 @@ func (js JSONSchema) String() string {
 	return string(b)
 }
 
+// RAMLProperties returns all raml property
+// of this JSON schema
+func (js *JSONSchema) RAMLProperties() map[string]interface{} {
+	js.PostUnmarshal()
+	props := map[string]interface{}{}
+	for name, prop := range js.Properties {
+		props[name] = prop.toRAMLProperty()
+	}
+	return props
+}
+
+// PostUnmarshal must be called after
+// json.Unmarshal(byte, &jsonSchema)
+func (js *JSONSchema) PostUnmarshal() {
+	for name, prop := range js.Properties {
+		prop.Required = js.isRequired(name)
+		js.Properties[name] = prop
+	}
+}
+
+func (js *JSONSchema) isRequired(propName string) bool {
+	for _, name := range js.Required {
+		if name == propName {
+			return true
+		}
+	}
+	return false
+}
+
 type property struct {
 	Name     string      `json:"-"`
 	Ref      string      `json:"$ref,omitempty"`
@@ -164,6 +194,23 @@ func newProperty(rp Property) property {
 		p.Items = newArrayItem(rp.ArrayType())
 	}
 	return p
+}
+
+func (p *property) toRAMLProperty() Property {
+	rp := Property{
+		Name:        p.Name,
+		Type:        p.Type,
+		Required:    p.Required,
+		MinLength:   p.MinLength,
+		MaxLength:   p.MaxLength,
+		Pattern:     p.Pattern,
+		Minimum:     p.Minimum,
+		Maximum:     p.Maximum,
+		MultipleOf:  p.MultipleOf,
+		MinItems:    p.MinItems,
+		UniqueItems: p.UniqueItems,
+	}
+	return rp
 }
 
 func isPropTypeSupported(p Property) bool {

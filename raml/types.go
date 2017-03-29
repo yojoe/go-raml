@@ -526,39 +526,28 @@ func (t Type) IsUnion() bool {
 	return strings.Index(t.TypeString(), "|") > 0
 }
 
-type jsonType struct {
-	Description string              `json:"description"`
-	Properties  map[string]Property `json:"properties"`
-	Required    []string            `json:"required"`
-}
-
 // see if the 'Type' field is a JSON schema
 func (t *Type) postProcess() error {
 	if !t.IsJSONType() {
 		return nil
 	}
 
-	var jt jsonType
+	var jt JSONSchema
 
 	if err := json.Unmarshal([]byte(t.TypeString()), &jt); err != nil {
 		fmt.Println("failed to marshal json")
 		return err
 	}
+	jt.PostUnmarshal()
 
+	// assign the properties in JSON to Type object
 	if t.Properties == nil {
 		t.Properties = map[string]interface{}{}
 	}
 	for name, prop := range jt.Properties {
-		fmt.Printf("got property %v\n", name)
-		t.Properties[name] = prop
+		t.Properties[name] = prop.toRAMLProperty()
 	}
-	for _, req := range jt.Required {
-		if rp, ok := t.Properties[req]; ok {
-			prop := ToProperty(req, rp)
-			prop.Required = true
-			t.Properties[req] = prop
-		}
-	}
+
 	t.Type = "object"
 	return nil
 }

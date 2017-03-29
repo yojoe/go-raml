@@ -5,8 +5,8 @@ import (
 )
 
 type PersonPostReqBody struct {
-	FirstName string `json:"firstName" validate:"nonzero"`
-	LastName  string `json:"lastName" validate:"nonzero"`
+	FirstName string `json:"firstName,omitempty"`
+	LastName  string `json:"lastName,omitempty"`
 }
 
 func (s PersonPostReqBody) Validate() error {

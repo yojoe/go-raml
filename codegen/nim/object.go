@@ -115,9 +115,9 @@ func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, di
 // create new object from a method body
 func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
 	if body.ApplicationJSON.TypeString() != "" {
-		var t raml.Type
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &t); err == nil {
-			return newObjectFromType(t, methodName)
+		var js raml.JSONSchema
+		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err == nil {
+			return newObject(methodName, "", js.RAMLProperties())
 		}
 	}
 
