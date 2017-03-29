@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/python/jsonschema"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 const (
@@ -27,8 +28,8 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 
 func (s SanicServer) genJSONSchemaFromTypes(dir string) error {
 	for name, t := range s.APIDef.Types {
-		js := jsonschema.NewJSONSchema(t, name)
-		if err := js.Generate(dir); err != nil {
+		js := raml.NewJSONSchema(t, name)
+		if err := jsonschema.Generate(js, dir); err != nil {
 			return err
 		}
 	}
@@ -40,8 +41,8 @@ func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
 	jsonSchemaFromMethod := func(m serverMethod) error {
 		if commons.HasJSONBody(&m.Bodies) {
 			name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-			js := jsonschema.NewJSONSchemaFromBodies(m.Bodies, name)
-			if err := js.Generate(dir); err != nil {
+			js := raml.NewJSONSchemaFromBodies(m.Bodies, name)
+			if err := jsonschema.Generate(js, dir); err != nil {
 				return err
 			}
 		}

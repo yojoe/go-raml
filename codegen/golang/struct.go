@@ -82,9 +82,9 @@ func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName strin
 	//					}
 	//				}
 	if body.ApplicationJSON.TypeString() != "" {
-		var t raml.Type
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &t); err == nil {
-			return newStructDefFromType(t, structName, packageName)
+		var js raml.JSONSchema
+		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err == nil {
+			return newStructDef(structName, packageName, js.Description, js.RAMLProperties())
 		}
 	}
 	return newStructDef(structName, packageName, "", body.ApplicationJSON.Properties)

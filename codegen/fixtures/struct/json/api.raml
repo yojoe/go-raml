@@ -3,6 +3,9 @@ title: Using JSON Schema
 
 types:
   PersonInclude: !include person.json
+  PersonInType:
+    description: description not in json
+    type: !include person.json
 
 /person:
   get:

@@ -23,8 +23,8 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			for name, t := range apiDef.Types {
-				js := NewJSONSchema(t, name)
-				err := js.Generate(targetDir)
+				js := raml.NewJSONSchema(t, name)
+				err := Generate(js, targetDir)
 				So(err, ShouldBeNil)
 			}
 			rootFixture := "./fixtures/array_type"
@@ -54,8 +54,8 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			for name, t := range apiDef.Types {
-				js := NewJSONSchema(t, name)
-				err := js.Generate(targetDir)
+				js := raml.NewJSONSchema(t, name)
+				err := Generate(js, targetDir)
 				So(err, ShouldBeNil)
 			}
 			rootFixture := "./fixtures/simple"
@@ -83,8 +83,8 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			for name, t := range apiDef.Types {
-				js := NewJSONSchema(t, name)
-				err := js.Generate(targetDir)
+				js := raml.NewJSONSchema(t, name)
+				err := Generate(js, targetDir)
 				So(err, ShouldBeNil)
 			}
 			rootFixture := "./fixtures/struct"

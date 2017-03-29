@@ -4,13 +4,14 @@ import (
 	"gopkg.in/validator.v2"
 )
 
-type PersonGetRespBody struct {
+// description not in json
+type PersonInType struct {
 	Age       int    `json:"age,omitempty" validate:"min=0"`
 	FirstName string `json:"firstName" validate:"nonzero"`
 	LastName  string `json:"lastName,omitempty"`
 }
 
-func (s PersonGetRespBody) Validate() error {
+func (s PersonInType) Validate() error {
 
 	return validator.Validate(s)
 }

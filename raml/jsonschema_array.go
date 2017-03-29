@@ -1,13 +1,11 @@
-package jsonschema
+package raml
 
 import (
 	"fmt"
-
-	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/raml"
+	"strings"
 )
 
-func newArraySchema(t *raml.Type, typ, name string) JSONSchema {
+func newArraySchema(t *Type, typ, name string) JSONSchema {
 	js := JSONSchema{
 		Name:   name,
 		Schema: schemaVer,
@@ -24,7 +22,8 @@ func newArraySchema(t *raml.Type, typ, name string) JSONSchema {
 }
 
 func isTypeArray(typ string) bool {
-	return typ == "array" || (commons.IsArray(typ) && !commons.IsBidimensiArray(typ))
+	t := Type{Type: typ}
+	return typ == "array" || (t.IsArray() && !t.IsBidimensiArray())
 }
 
 type arrayItem struct {
@@ -43,9 +42,9 @@ func newArrayItem(typ string) *arrayItem {
 	}
 }
 
-func getArrayItemsType(t *raml.Type, typ string) string {
+func getArrayItemsType(t *Type, typ string) string {
 	if typ == "array" {
 		return fmt.Sprint(t.Items)
 	}
-	return commons.ArrayType(typ)
+	return strings.TrimSuffix(typ, "[]")
 }

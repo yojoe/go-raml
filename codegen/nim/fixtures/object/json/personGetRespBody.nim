@@ -1,6 +1,6 @@
 
 type
   personGetRespBody* = object
-    age*: string
+    age*: int
     firstName*: string
     lastName*: string

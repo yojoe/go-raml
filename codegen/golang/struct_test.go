@@ -67,20 +67,18 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct/json"
-			checks := []struct {
-				Result   string
-				Expected string
-			}{
-				{"PersonInclude.go", "PersonInclude.txt"},
-				{"PersonPostReqBody.go", "PersonPostReqBody.txt"},
-				{"PersonGetRespBody.go", "PersonGetRespBody.txt"},
+			files := []string{
+				"PersonInclude",
+				"PersonPostReqBody",
+				"PersonGetRespBody",
+				"PersonInType",
 			}
 
-			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
