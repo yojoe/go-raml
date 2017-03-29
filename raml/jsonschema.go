@@ -23,7 +23,7 @@ var (
 type JSONSchema struct {
 	Schema      string              `json:"$schema"`
 	Name        string              `json:"-"`
-	Description string              `json:"description"`
+	Description string              `json:"description,omitempty"`
 	Type        string              `json:"type"`
 	Items       *arrayItem          `json:"items,omitempty"`
 	Properties  map[string]property `json:"properties,omitempty"`
