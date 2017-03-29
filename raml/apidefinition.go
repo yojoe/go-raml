@@ -123,6 +123,12 @@ func (apiDef *APIDefinition) PostProcess(filename string) error {
 		apiDef.ResourceTypes[name] = rt
 	}
 
+	// types
+	for name, t := range apiDef.Types {
+		t.postProcess()
+		apiDef.Types[name] = t
+	}
+
 	// resources
 	for k := range apiDef.Resources {
 		r := apiDef.Resources[k]

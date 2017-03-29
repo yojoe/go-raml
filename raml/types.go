@@ -33,6 +33,7 @@ package raml
 // This file contains all of the RAML types.
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -523,6 +524,44 @@ func (t Type) IsUnion() bool {
 		return false
 	}
 	return strings.Index(t.TypeString(), "|") > 0
+}
+
+type jsonType struct {
+	Description string              `json:"description"`
+	Properties  map[string]Property `json:"properties"`
+	Required    []string            `json:"required"`
+}
+
+// see if the 'Type' field is a JSON schema
+func (t *Type) postProcess() error {
+	fmt.Printf("post procsess\n")
+	if !t.IsJSONType() {
+		return nil
+	}
+
+	var jt jsonType
+
+	if err := json.Unmarshal([]byte(t.TypeString()), &jt); err != nil {
+		fmt.Println("failed to marshal json")
+		return err
+	}
+
+	if t.Properties == nil {
+		t.Properties = map[string]interface{}{}
+	}
+	for name, prop := range jt.Properties {
+		fmt.Printf("got property %v\n", name)
+		t.Properties[name] = prop
+	}
+	for _, req := range jt.Required {
+		if rp, ok := t.Properties[req]; ok {
+			prop := ToProperty(req, rp)
+			prop.Required = true
+			t.Properties[req] = prop
+		}
+	}
+	t.Type = "object"
+	return nil
 }
 
 // BodiesProperty defines a Body's property
