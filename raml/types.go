@@ -389,6 +389,25 @@ type Type struct {
 	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
 }
 
+// IsBuiltin if a type is an RAML builtin type.
+func (t Type) IsBuiltin() bool {
+	_, ok := scalarTypes[t.TypeString()]
+	return ok
+}
+
+func (t Type) GetBuiltinType() (string, bool) {
+	if t.IsBuiltin() {
+		return t.TypeString(), true
+	}
+	if t.IsArray() {
+		return strings.TrimSuffix(t.TypeString(), "[]"), true
+	}
+	if t.IsBidimensiArray() {
+		return strings.TrimSuffix(t.TypeString(), "[][]"), true
+	}
+	return "", false
+}
+
 // Parents returns parents of this Type.
 // "object" is not considered a parent
 func (t Type) Parents() []string {

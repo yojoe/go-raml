@@ -28,13 +28,14 @@ func(api {{$apiName}}API) {{$v.MethodName}}(w http.ResponseWriter, r *http.Reque
 		w.WriteHeader(400)
 		return
 	}
-
+    {{ if .ReqBodyNeedValidation}}
     // validate request
     if err := reqBody.Validate(); err != nil {
         w.WriteHeader(400)
         w.Write([]byte(`{"error":"`+err.Error()+`"}`))
         return
     }
+    {{- end }}
 	{{- end }}
 
 	{{- if .RespBody }}

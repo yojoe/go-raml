@@ -80,6 +80,27 @@ type clientMethod struct {
 	*resource.Method
 }
 
+// true if req body need validation code
+func (gm serverMethod) ReqBodyNeedValidation() bool {
+	// we can't use t.GetBuiltinType here because
+	// the reqBody type is already in Go type
+	getBuiltinType := func() string {
+		switch {
+		case strings.HasPrefix(gm.ReqBody, "[][]"):
+			return strings.TrimPrefix(gm.ReqBody, "[][]")
+		case strings.HasPrefix(gm.ReqBody, "[]"):
+			return strings.TrimPrefix(gm.ReqBody, "[]")
+		default:
+			return gm.ReqBody
+		}
+	}
+	t := raml.Type{
+		Type: getBuiltinType(),
+	}
+
+	return !t.IsBuiltin()
+}
+
 // create client resource's method
 func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
