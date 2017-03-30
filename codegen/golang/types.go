@@ -13,6 +13,7 @@ var (
 		"number":  "float64",
 		"integer": "int",
 		"boolean": "bool",
+		"object":  "json.RawMessage",
 	}
 )
 

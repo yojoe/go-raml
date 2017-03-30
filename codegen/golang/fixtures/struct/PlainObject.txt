@@ -1,0 +1,16 @@
+package main
+
+import (
+	"encoding/json"
+	"gopkg.in/validator.v2"
+)
+
+// test plain object property
+type PlainObject struct {
+	Obj json.RawMessage `json:"obj" validate:"nonzero"`
+}
+
+func (s PlainObject) Validate() error {
+
+	return validator.Validate(s)
+}
