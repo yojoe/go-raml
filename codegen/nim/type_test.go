@@ -10,7 +10,7 @@ func TestTypeConversion(t *testing.T) {
 	Convey("Test Type Conversion", t, func() {
 		Convey("Type conversion", func() {
 			So(toNimType("string"), ShouldEqual, "string")
-			So(toNimType("number"), ShouldEqual, "float64")
+			So(toNimType("number"), ShouldEqual, "float")
 			So(toNimType("integer"), ShouldEqual, "int")
 			So(toNimType("boolean"), ShouldEqual, "bool")
 			So(toNimType("file"), ShouldEqual, "string")
