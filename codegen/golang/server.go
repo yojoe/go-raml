@@ -62,13 +62,7 @@ func (gs Server) Generate(dir string) error {
 		return err
 	}
 
-	// generate all Type structs
-	if err := generateStructs(gs.apiDef.Types, dir, gs.PackageName); err != nil {
-		return err
-	}
-
-	// generate all request & response body
-	if err := generateBodyStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateAllStructs(gs.apiDef, dir, gs.PackageName); err != nil {
 		return err
 	}
 

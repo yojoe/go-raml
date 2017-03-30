@@ -17,6 +17,15 @@ type Endpoint struct {
 	Verb   string
 }
 
+func (ep Endpoint) ResourceName() string {
+	name := ep.Addr
+	splt := strings.Split(name, "/")
+	if len(splt) > 0 {
+		name = splt[0]
+	}
+	return strings.TrimSuffix(strings.TrimPrefix(name, "/"), "/")
+}
+
 func getAllEndpoints(apiDef *raml.APIDefinition) map[string][]Endpoint {
 	endpoints := map[string][]Endpoint{}
 	for _, r := range apiDef.Resources {

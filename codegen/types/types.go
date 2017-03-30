@@ -8,10 +8,11 @@ import (
 )
 
 type TypeInBody struct {
-	Properties map[string]interface{}
-	Endpoint   *Endpoint
-	ReqResp    int
-	RespCode   raml.HTTPCode
+	Properties  map[string]interface{}
+	Description string
+	Endpoint    *Endpoint
+	ReqResp     int
+	RespCode    raml.HTTPCode
 }
 type TypeTask struct {
 	Type interface{}
@@ -72,12 +73,16 @@ func getTypesOfBody(ep Endpoint, body *raml.Bodies, pkg string,
 	if !commons.HasJSONBody(body) {
 		return tts
 	}
-
+	props, desc := getBodyPropertiesDescription(body)
+	if props == nil {
+		return tts
+	}
 	tib := TypeInBody{
-		Properties: getBodyProperties(body),
-		Endpoint:   &ep,
-		ReqResp:    reqRespType,
-		RespCode:   respCode,
+		Properties:  props,
+		Description: desc,
+		Endpoint:    &ep,
+		ReqResp:     reqRespType,
+		RespCode:    respCode,
 	}
 	tt := TypeTask{
 		Pkg:  pkg,
@@ -90,16 +95,17 @@ func getTypesOfBody(ep Endpoint, body *raml.Bodies, pkg string,
 
 // get properties of a body
 // TODO : move it to 'raml' package
-func getBodyProperties(body *raml.Bodies) map[string]interface{} {
+func getBodyPropertiesDescription(body *raml.Bodies) (map[string]interface{}, string) {
 	if body.ApplicationJSON.TypeString() == "" {
-		return body.ApplicationJSON.Properties
+		return body.ApplicationJSON.Properties, ""
 	}
 
 	var js raml.JSONSchema
+
 	if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err != nil {
-		panic("failed to unmarshal json schema:" + body.ApplicationJSON.TypeString())
+		return nil, ""
 	}
-	return js.RAMLProperties()
+	return js.RAMLProperties(), js.Description
 
 }
 

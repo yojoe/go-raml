@@ -1,8 +1,6 @@
 package golang
 
 import (
-	"strings"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
@@ -15,13 +13,6 @@ var (
 		"boolean": "bool",
 	}
 )
-
-func convertUnion(strType string) string {
-	if strings.Index(strType, "[]") > 0 {
-		return "[]interface{}"
-	}
-	return "interface{}"
-}
 
 // convert from raml type to go type
 func convertToGoType(tip string) string {

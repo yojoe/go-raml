@@ -74,12 +74,7 @@ func (gc Client) Generate(dir string) error {
 	}
 
 	// generate struct
-	if err := generateStructs(gc.apiDef.Types, dir, gc.PackageName); err != nil {
-		return err
-	}
-
-	// generate strucs from bodies
-	if err := generateBodyStructs(gc.apiDef, dir, gc.PackageName); err != nil {
+	if err := generateAllStructs(gc.apiDef, dir, gc.PackageName); err != nil {
 		return err
 	}
 
