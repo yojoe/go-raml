@@ -14,6 +14,19 @@ type TypeInBody struct {
 	ReqResp     int
 	RespCode    raml.HTTPCode
 }
+
+func (tib *TypeInBody) Body() raml.Bodies {
+	if tib.ReqResp == HTTPRequest {
+		return tib.Endpoint.Method.Bodies
+	}
+	for code, resp := range tib.Endpoint.Method.Responses {
+		if code == tib.RespCode {
+			return resp.Bodies
+		}
+	}
+	panic("failed to get body of " + tib.Endpoint.Verb + " " + tib.Endpoint.Addr)
+}
+
 type TypeTask struct {
 	Type interface{}
 	Name string
@@ -87,7 +100,7 @@ func getTypesOfBody(ep Endpoint, body *raml.Bodies, pkg string,
 	tt := TypeTask{
 		Pkg:  pkg,
 		Type: tib,
-		Name: tib.Endpoint.Addr + ":" + tib.Endpoint.Verb + ":body",
+		Name: tib.Endpoint.Addr + ":" + tib.Endpoint.Verb + ":body:" + string(respCode),
 	}
 	tts = append(tts, tt)
 	return tts

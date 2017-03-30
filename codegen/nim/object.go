@@ -1,13 +1,13 @@
 package nim
 
 import (
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -33,95 +33,49 @@ type object struct {
 	Enum        *enum
 }
 
-// generates Nim objects from RAML types
-func generateObjects(types map[string]raml.Type, dir string) error {
+func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	objs := []object{}
-	for name, t := range types {
-		obj, err := newObjectFromType(t, name)
-		if err != nil {
-			return err
-		}
-		objs = append(objs, obj)
-	}
-
-	for _, obj := range objs {
-		registerObject(obj.Name)
-		for _, f := range obj.Fields {
-			if f.Enum != nil {
-				registerObject(f.Enum.Name)
+	for name, t := range types.AllTypes(apiDef, "") {
+		switch tip := t.Type.(type) {
+		case string:
+			//TODO
+		case types.TypeInBody:
+			suffix := commons.RespBodySuffix
+			if tip.ReqResp == types.HTTPRequest {
+				suffix = commons.ReqBodySuffix
 			}
+			verb := strings.Title(strings.ToLower(tip.Endpoint.Verb))
+			bodyName := setBodyName(tip.Body(), tip.Endpoint.Addr+verb, suffix)
+			fmt.Printf("name=%v, bodyName=%v\n", name, bodyName)
+			obj, err := newObject(bodyName, "", tip.Properties)
+			if err != nil {
+				return err
+			}
+			registerObject(obj.Name)
+			objs = append(objs, obj)
+
+		case raml.Type:
+			obj, err := newObjectFromType(tip, t.Name)
+			if err != nil {
+				return err
+			}
+
+			registerObject(obj.Name)
+
+			for _, f := range obj.Fields {
+				if f.Enum != nil {
+					registerObject(f.Enum.Name)
+				}
+			}
+			objs = append(objs, obj)
 		}
 	}
-
 	for _, obj := range objs {
 		if err := obj.generate(dir); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// generate objects from method request & response bodies of all resources
-func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
-	names := []string{}
-	for _, r := range rs {
-		for _, mi := range r.Methods {
-			m := mi.(method)
-			ns, err := generateObjectFromMethod(r, m, dir)
-			if err != nil {
-				fmt.Printf("failed : %v\n", err) // TODO : return err if failed
-			}
-			names = append(names, ns...)
-		}
-	}
-	for _, name := range names {
-		registerObject(name)
-	}
-	return names, nil
-}
-
-// generate object from a method
-func generateObjectFromMethod(r resource, m method, dir string) ([]string, error) {
-	names := []string{}
-
-	name, err := generateObjectFromBody(m.ReqBody, &m.Bodies, true, dir)
-	if err != nil {
-		return names, err
-	}
-	names = append(names, name)
-
-	for _, v := range m.Responses {
-		name, err := generateObjectFromBody(m.RespBody, &v.Bodies, false, dir)
-		if err != nil {
-			return names, err
-		}
-		names = append(names, name)
-	}
-	return names, nil
-}
-
-// generateObjectFromBody generate a Nim object from an RAML Body
-func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, dir string) (string, error) {
-	if !commons.HasJSONBody(body) {
-		return "", nil
-	}
-	obj, err := newObjectFromBody(methodName, body, isReq)
-	if err != nil {
-		return "", err
-	}
-	return obj.Name, obj.generate(dir)
-}
-
-// create new object from a method body
-func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
-	if body.ApplicationJSON.TypeString() != "" {
-		var js raml.JSONSchema
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err == nil {
-			return newObject(methodName, "", js.RAMLProperties())
-		}
-	}
-
-	return newObject(methodName, "", body.ApplicationJSON.Properties)
 }
 
 // create new object from an RAML type

@@ -30,13 +30,7 @@ func NewServer(apiDef *raml.APIDefinition, apiDocsDir, dir string) Server {
 func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef, true)
 
-	// generate all objects from all RAML types
-	if err := generateObjects(s.APIDef.Types, s.Dir); err != nil {
-		return err
-	}
-
-	// generate all objects from request/response body
-	if _, err := generateObjectsFromBodies(s.Resources, s.Dir); err != nil {
+	if err := generateAllObjects(s.APIDef, s.Dir); err != nil {
 		return err
 	}
 

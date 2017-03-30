@@ -27,16 +27,9 @@ func NewClient(apiDef *raml.APIDefinition, dir string) Client {
 func (c *Client) Generate() error {
 	rs := getAllResources(c.APIDef, false)
 
-	// generate all objects from all RAML types
-	if err := generateObjects(c.APIDef.Types, c.Dir); err != nil {
+	if err := generateAllObjects(c.APIDef, c.Dir); err != nil {
 		return err
 	}
-
-	// generate all objects from request/response body
-	if _, err := generateObjectsFromBodies(rs, c.Dir); err != nil {
-		return err
-	}
-
 	// services files
 	if err := c.generateServices(rs); err != nil {
 		return err

@@ -21,7 +21,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 			err = raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateObjects(apiDef.Types, targetDir)
+			err = generateAllObjects(&apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"
@@ -56,7 +56,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 			err = raml.ParseFile("../fixtures/struct/json/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateObjects(apiDef.Types, targetDir)
+			err = generateAllObjects(&apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/json"
@@ -89,43 +89,12 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("From data structure", func() {
-			var body raml.Bodies
-			properties := map[string]interface{}{
-				"age": map[interface{}]interface{}{
-					"type": "integer",
-				},
-				"ID": map[interface{}]interface{}{
-					"type": "string",
-				},
-				"item": map[interface{}]interface{}{},
-				"grades": map[interface{}]interface{}{
-					"type": "integer[]",
-				},
-			}
-			body.ApplicationJSON = &raml.BodiesProperty{
-				Properties: properties,
-			}
-
-			_, err := generateObjectFromBody("usersPostReqBody", &body, true, targetDir)
-			So(err, ShouldBeNil)
-
-			s, err := testLoadFile(filepath.Join(targetDir, "usersPostReqBody.nim"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := testLoadFile("./fixtures/object/usersPostReqBody.nim")
-			So(err, ShouldBeNil)
-
-			So(s, ShouldEqual, tmpl)
-
-		})
-
 		Convey("From raml", func() {
 			var apiDef raml.APIDefinition
 			err := raml.ParseFile("../fixtures/struct/struct.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateObjectsFromBodies(getAllResources(&apiDef, true), targetDir)
+			err = generateAllObjects(&apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/"
@@ -154,7 +123,7 @@ func TestGenerateObjectMethodBody(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			_, err = generateObjectsFromBodies(getAllResources(&apiDef, true), targetDir)
+			err = generateAllObjects(&apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/object/json"

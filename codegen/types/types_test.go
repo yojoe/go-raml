@@ -16,8 +16,8 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			expected := []string{
-				"/users:POST:body",
-				"/users/{id}:GET:body",
+				"/users:POST:body:0",
+				"/users/{id}:GET:body:200",
 				"[Cat,animal]",
 				"Cat | animal",
 				"animal",
