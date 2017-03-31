@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -77,35 +78,6 @@ func (pc *wtfClass) handleAdvancedType() {
 	}
 }
 
-// generate all wtfClasses from all  methods request/response bodies
-func (fs FlaskServer) generateWtfClassesFromBodies(dir string) error {
-	for _, r := range fs.ResourcesDef {
-		for _, mi := range r.Methods {
-			m := mi.(serverMethod)
-			if err := generateWtfClassesFromMethod(m, dir); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-// generate wtfClasses from a method
-//
-// TODO:
-// we currently camel case instead of snake case because of mistake in previous code
-// and we might need to maintain backward compatibility. Fix this!
-func generateWtfClassesFromMethod(m serverMethod, dir string) error {
-	// request body
-	if commons.HasJSONBody(&m.Bodies) {
-		wtfClass := newWtfClass(m.ReqBody, "", m.Bodies.ApplicationJSON.Properties)
-		if err := wtfClass.generate(dir); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // return list of import statements
 func (pc wtfClass) Imports() []string {
 	var imports []string
@@ -125,12 +97,33 @@ func (pc wtfClass) Imports() []string {
 }
 
 // generate all python wtfClasses from an RAML document
-func generateWtfClasses(types map[string]raml.Type, dir string) error {
-	for k, t := range types {
-		pc := newWtfClassFromType(t, k)
-		if err := pc.generate(dir); err != nil {
-			return err
+func generateAllWtfClasses(apiDef *raml.APIDefinition, dir string) error {
+	for name, t := range types.AllTypes(apiDef, "") {
+		switch tip := t.Type.(type) {
+		case string:
+			// TODO
+		case types.TypeInBody:
+			if tip.ReqResp == types.HTTPRequest {
+				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+				wtfClass := newWtfClass(setReqBodyName(methodName), "", tip.Properties)
+				if err := wtfClass.generate(dir); err != nil {
+					return err
+				}
+
+			}
+		case raml.Type:
+			pc := newWtfClassFromType(tip, name)
+			if err := pc.generate(dir); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+func generateWtfClassesFromTypes(ts map[string]raml.Type, dir string) error {
+	apiDef := raml.APIDefinition{
+		Types: ts,
+	}
+	return generateAllWtfClasses(&apiDef, dir)
 }

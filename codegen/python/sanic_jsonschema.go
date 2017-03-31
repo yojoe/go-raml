@@ -19,6 +19,7 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 	for name, t := range types.AllTypes(s.APIDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
+			// TODO
 		case types.TypeInBody:
 			if tip.ReqResp == types.HTTPRequest {
 				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)

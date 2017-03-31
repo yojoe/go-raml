@@ -7,4 +7,6 @@ from input_validators import multiple_of
 
 
 class PersonPostReqBody(Form):
-    pass
+    
+    firstName = TextField(validators=[])
+    lastName = TextField(validators=[])

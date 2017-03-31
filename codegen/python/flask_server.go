@@ -45,13 +45,7 @@ func (ps FlaskServer) Generate(dir string) error {
 		return err
 	}
 
-	// generate wtform classes for request body
-	if err := ps.generateWtfClassesFromBodies(dir); err != nil {
-		return err
-	}
-
-	// python wtform classes
-	if err := generateWtfClasses(ps.APIDef.Types, dir); err != nil {
+	if err := generateAllWtfClasses(ps.APIDef, dir); err != nil {
 		log.Errorf("failed to generate python clased:%v", err)
 		return err
 	}

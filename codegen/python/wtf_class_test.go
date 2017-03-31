@@ -20,7 +20,7 @@ func TestGenerateWtfClass(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateWtfClasses(apiDef.Types, targetDir)
+			err = generateAllWtfClasses(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/wtf_class/"
@@ -49,7 +49,7 @@ func TestGenerateWtfClass(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateWtfClasses(apiDef.Types, targetDir)
+			err = generateAllWtfClasses(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/wtf_class/json/"
