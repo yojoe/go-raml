@@ -12,9 +12,10 @@ const (
 )
 
 type Endpoint struct {
-	Addr   string // complete endpoint address
-	Method *raml.Method
-	Verb   string
+	Addr     string // complete endpoint address
+	Method   *raml.Method
+	Resource *raml.Resource
+	Verb     string
 }
 
 func (ep Endpoint) ResourceName() string {
@@ -53,9 +54,10 @@ func getEndpointsOfResource(parentPath string, r *raml.Resource, endpoints map[s
 			continue
 		}
 		endp := Endpoint{
-			Addr:   parentPath + r.URI,
-			Method: m.Method,
-			Verb:   strings.ToUpper(m.Name),
+			Addr:     parentPath + r.URI,
+			Method:   m.Method,
+			Verb:     strings.ToUpper(m.Name),
+			Resource: r,
 		}
 		if _, exists := endpoints[endp.Addr]; exists {
 			endpoints[endp.Addr] = append(endpoints[endp.Addr], endp)
