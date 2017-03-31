@@ -38,6 +38,9 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				{"ArrayOfCats.nim", "ArrayOfCats.nim"},
 				{"BidimensionalArrayOfCats.nim", "BidimensionalArrayOfCats.nim"},
 				{"EnumString.nim", "EnumString.nim"}, // object is enum type
+				{"Catanimal.nim", "Catanimal.nim"},
+				//{"MultipleInheritance.nim", "MultipleInheritance.nim"},
+				{"petshop.nim", "petshop.nim"},
 			}
 
 			for _, check := range checks {

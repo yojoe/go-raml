@@ -3,8 +3,8 @@ package nim
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -15,16 +15,27 @@ type enumField struct {
 }
 
 type enum struct {
-	Name   string
+	name   string
 	Fields []enumField
+}
+
+func (e enum) NimType() string {
+	return "enum"
+}
+
+func (e enum) Name() string {
+	return e.name
+}
+func (e enum) FieldsMap() map[string]field {
+	return map[string]field{}
 }
 
 func newEnum(objName string, prop raml.Property, fromObj bool) *enum {
 	e := enum{
-		Name: strings.Title(objName) + strings.Title(prop.Name),
+		name: strings.Title(objName) + strings.Title(prop.Name),
 	}
 	if !fromObj {
-		e.Name = "Enum" + e.Name
+		e.name = "Enum" + e.Name()
 	}
 	for _, v := range prop.Enum.([]interface{}) {
 		e.Fields = append(e.Fields, newEnumField(v, e))
@@ -38,7 +49,7 @@ func newEnumFromObject(o *object) *enum {
 		Name: "",
 		Enum: o.T.Enum,
 	}
-	return newEnum(o.Name, prop, true)
+	return newEnum(o.Name(), prop, true)
 }
 func newEnumField(f interface{}, e enum) enumField {
 	var name string
@@ -57,7 +68,7 @@ func newEnumField(f interface{}, e enum) enumField {
 }
 
 func (e *enum) generate(dir string) error {
-	filename := filepath.Join(dir, e.Name+".nim")
+	filename := filepath.Join(dir, e.Name()+".nim")
 	return commons.GenerateFile(e, "./templates/enum_nim.tmpl", "enum_nim", filename, true)
 }
 

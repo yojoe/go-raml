@@ -42,3 +42,8 @@ func MultipleInheritance(t interface{}) ([]string, bool) {
 	}
 	return tip.MultipleInheritance()
 }
+
+func IsMultipleInheritance(t interface{}) bool {
+	_, ok := MultipleInheritance(t)
+	return ok
+}

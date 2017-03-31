@@ -463,6 +463,11 @@ func (t Type) MultipleInheritance() ([]string, bool) {
 	return splitted, len(splitted) > 1
 }
 
+func (t Type) IsMultipleInheritance() bool {
+	_, ok := t.MultipleInheritance()
+	return ok
+}
+
 // interfaceToString converts interface type to string.
 //
 // We can't simply do this using type casting.
