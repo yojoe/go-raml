@@ -35,29 +35,32 @@ func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
 }
 
 func (fd *fieldDef) buildValidators(p raml.Property) {
-	validators := ""
+	validators := []string{}
+	addVal := func(s string) {
+		validators = append(validators, s)
+	}
 	// string
 	if p.MinLength != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinLength)
+		addVal(fmt.Sprintf("min=%v", *p.MinLength))
 	}
 	if p.MaxLength != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxLength)
+		addVal(fmt.Sprintf("max=%v", *p.MaxLength))
 	}
 	if p.Pattern != nil {
-		validators += fmt.Sprintf(",regexp=%v", *p.Pattern)
+		addVal(fmt.Sprintf("regexp=%v", *p.Pattern))
 	}
 
 	// Number
 	if p.Minimum != nil {
-		validators += fmt.Sprintf(",min=%v", *p.Minimum)
+		addVal(fmt.Sprintf("min=%v", *p.Minimum))
 	}
 
 	if p.Maximum != nil {
-		validators += fmt.Sprintf(",max=%v", *p.Maximum)
+		addVal(fmt.Sprintf("max=%v", *p.Maximum))
 	}
 
 	if p.MultipleOf != nil {
-		validators += fmt.Sprintf(",multipleOf=%v", *p.MultipleOf)
+		addVal(fmt.Sprintf("multipleOf=%v", *p.MultipleOf))
 	}
 
 	//if p.Format != nil {
@@ -65,23 +68,21 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 
 	// Array & Map
 	if p.MinItems != nil {
-		validators += fmt.Sprintf(",min=%v", *p.MinItems)
+		addVal(fmt.Sprintf("min=%v", *p.MinItems))
 	}
 	if p.MaxItems != nil {
-		validators += fmt.Sprintf(",max=%v", *p.MaxItems)
+		addVal(fmt.Sprintf("max=%v", *p.MaxItems))
 	}
 	if p.UniqueItems {
 		fd.UniqueItems = true
 	}
 
 	// Required
-	if !fd.IsOmitted {
-		validators += ",nonzero"
+	if !fd.IsOmitted && fd.Type != "bool" {
+		addVal("nonzero")
 	}
 
-	if validators != "" {
-		fd.Validators = validators[1:]
-	}
+	fd.Validators = strings.Join(validators, ",")
 }
 
 // format struct's field name
