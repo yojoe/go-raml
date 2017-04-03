@@ -61,6 +61,9 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	for name, t := range types.AllTypes(apiDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
+			// we currently only handle multiple inheritance.
+			// TODO we also need to handle union, but we still don't have
+			// union support
 			if commons.IsMultipleInheritance(tip) {
 				delayedMI = append(delayedMI, tip)
 			}
@@ -71,18 +74,12 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 			}
 			verb := strings.Title(strings.ToLower(tip.Endpoint.Verb))
 			bodyName := setBodyName(tip.Body(), tip.Endpoint.Addr+verb, suffix)
-			obj, err := newObject(bodyName, "", tip.Properties)
-			if err != nil {
-				return err
-			}
+			obj := newObject(bodyName, "", tip.Properties)
 			registerObject(obj)
 			objs = append(objs, obj)
 
 		case raml.Type:
-			obj, err := newObjectFromType(tip, t.Name)
-			if err != nil {
-				return err
-			}
+			obj := newObjectFromType(tip, t.Name)
 			obj.name = name
 
 			registerObject(obj)
@@ -98,7 +95,7 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 
 	for _, tip := range delayedMI {
 		parents, _ := commons.MultipleInheritance(tip)
-		obj, _ := newObject(multipleInheritanceNewName(parents), "",
+		obj := newObject(multipleInheritanceNewName(parents), "",
 			map[string]interface{}{})
 		obj.inherit(parents)
 		registerObject(obj)
@@ -114,23 +111,20 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 }
 
 // create new object from an RAML type
-func newObjectFromType(t raml.Type, name string) (object, error) {
-	obj, err := newObject(name, t.Description, t.Properties)
+func newObjectFromType(t raml.Type, name string) object {
+	obj := newObject(name, t.Description, t.Properties)
 	obj.T = t
 	obj.handleAdvancedType()
-	return obj, err
+	return obj
 }
 
-func newObject(name, description string, properties map[string]interface{}) (object, error) {
+func newObject(name, description string, properties map[string]interface{}) object {
 	// generate fields from type properties
 	fields := make(map[string]field)
 
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
 		fd := newField(name, prop)
-		if fd.Type == "" {
-			return object{}, fmt.Errorf("unsupported type in nim:%v", prop.Type)
-		}
 		fields[fd.Name] = fd
 	}
 
@@ -138,7 +132,7 @@ func newObject(name, description string, properties map[string]interface{}) (obj
 		name:        name,
 		Fields:      fields,
 		Description: commons.ParseDescription(description),
-	}, nil
+	}
 }
 
 // generate nim object representation

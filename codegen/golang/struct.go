@@ -151,6 +151,7 @@ func (sd *structDef) handleAdvancedType() {
 
 	strType := sd.T.TypeString()
 	parents, isMultipleInherit := sd.T.MultipleInheritance()
+	parent, isSingleInherit := sd.T.SingleInheritance()
 
 	switch {
 	case isMultipleInherit: //multiple inheritance
@@ -165,8 +166,8 @@ func (sd *structDef) handleAdvancedType() {
 		sd.buildEnum()
 	case strType != "" && len(sd.T.Properties) == 0: // type alias
 		sd.buildTypeAlias()
-	default: // single inheritance
-		sd.addSingleInheritance(strType)
+	case isSingleInherit: // single inheritance
+		sd.addSingleInheritance(parent)
 	}
 }
 

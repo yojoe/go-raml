@@ -49,6 +49,16 @@ var (
 		"datetime-only": true,
 		"datetime":      true,
 		"file":          true,
+
+		// comes from Number format
+		"int8":   true,
+		"int16":  true,
+		"int32":  true,
+		"int64":  true,
+		"int":    true,
+		"long":   true,
+		"float":  true,
+		"double": true,
 	}
 )
 
