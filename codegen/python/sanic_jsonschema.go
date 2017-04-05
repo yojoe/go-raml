@@ -23,7 +23,8 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 		case types.TypeInBody:
 			if tip.ReqResp == types.HTTPRequest {
 				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
-				js := raml.NewJSONSchemaFromBodies(tip.Body(), setReqBodyName(methodName))
+				//js := raml.NewJSONSchemaFromBodies(tip.Body(), setReqBodyName(methodName))
+				js := raml.NewJSONSchemaFromProps(nil, tip.Properties, "object", setReqBodyName(methodName))
 				if err := jsonschema.Generate(js, sDir); err != nil {
 					return err
 				}

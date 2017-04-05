@@ -42,23 +42,12 @@ func NewJSONSchema(t Type, name string) JSONSchema {
 		typ = "object"
 	}
 
-	return newJSONSchemaFromProps(&t, t.Properties, typ, name)
+	return NewJSONSchemaFromProps(&t, t.Properties, typ, name)
 }
 
-// NewJSONSchemaFromBodies creates JSON schema from raml bodies
-func NewJSONSchemaFromBodies(b Bodies, name string) JSONSchema {
-	if b.ApplicationJSON.Type != "" {
-		var t Type
-		if err := json.Unmarshal([]byte(b.ApplicationJSON.TypeString()), &t); err == nil {
-			return NewJSONSchema(t, name)
-		}
-	}
-	return newJSONSchemaFromProps(nil, b.ApplicationJSON.Properties, "object", name)
-}
-
-// newJSONSchemaFromProps creates json schmema
+// NewJSONSchemaFromProps creates json schmema
 // from a map of properties
-func newJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, name string) JSONSchema {
+func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, name string) JSONSchema {
 	var required []string
 
 	if isTypeArray(typ) {
