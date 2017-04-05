@@ -58,6 +58,11 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
 
+	addObj := func(obj object) {
+		objs = append(objs, obj)
+		registerObject(obj)
+	}
+
 	for name, t := range types.AllTypes(apiDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
@@ -75,21 +80,18 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 			verb := strings.Title(strings.ToLower(tip.Endpoint.Verb))
 			bodyName := setBodyName(tip.Body(), tip.Endpoint.Addr+verb, suffix)
 			obj := newObject(bodyName, "", tip.Properties)
-			registerObject(obj)
-			objs = append(objs, obj)
+			addObj(obj)
 
 		case raml.Type:
 			obj := newObjectFromType(tip, t.Name)
 			obj.name = name
-
-			registerObject(obj)
 
 			for _, f := range obj.Fields {
 				if f.Enum != nil {
 					registerObject(f.Enum)
 				}
 			}
-			objs = append(objs, obj)
+			addObj(obj)
 		}
 	}
 
@@ -98,8 +100,7 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 		obj := newObject(multipleInheritanceNewName(parents), "",
 			map[string]interface{}{})
 		obj.inherit(parents)
-		registerObject(obj)
-		objs = append(objs, obj)
+		addObj(obj)
 	}
 
 	for _, obj := range objs {
@@ -137,6 +138,8 @@ func newObject(name, description string, properties map[string]interface{}) obje
 
 // generate nim object representation
 func (o *object) generate(dir string) error {
+	o.handleAdvancedType()
+
 	// generate enums
 	for _, f := range o.Fields {
 		if f.Enum != nil {
@@ -227,6 +230,7 @@ func (o *object) inherit(parents []string) {
 	for _, parent := range parents {
 		obj, ok := objectsRegister[parent]
 		if !ok {
+			fmt.Printf("parent %v not exist in object register\n", parent)
 			continue
 		}
 		for name, f := range obj.FieldsMap() {
