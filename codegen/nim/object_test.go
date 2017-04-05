@@ -41,6 +41,7 @@ func TestGenerateObjectFromRaml(t *testing.T) {
 				{"Catanimal.nim", "Catanimal.nim"},
 				//{"MultipleInheritance.nim", "MultipleInheritance.nim"},
 				{"petshop.nim", "petshop.nim"},
+				{"NumberFormat.nim", "NumberFormat.nim"},
 			}
 
 			for _, check := range checks {

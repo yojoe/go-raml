@@ -8,12 +8,20 @@ var (
 	typeMap = map[string]string{
 		"string":    "string",
 		"file":      "string",
-		"number":    "float64",
+		"number":    "float",
 		"integer":   "int",
 		"boolean":   "bool",
 		"datetime":  "Time",
 		"date-only": "Time",
 		"time-only": "Time",
+		"int8":      "int8",
+		"int16":     "int16",
+		"int32":     "int32",
+		"int64":     "int64",
+		"int":       "int",
+		"long":      "int64",
+		"float":     "float",
+		"double":    "float64",
 	}
 )
 

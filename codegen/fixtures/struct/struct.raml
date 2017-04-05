@@ -50,6 +50,41 @@ types:
     properties:
       Dashed-field:
         type: string
+  PlainObject:
+    description: test plain object property
+    properties:
+      obj:
+        type: object
+  
+  NumberFormat:
+    description: test number format
+    properties:
+      i8:
+        type: integer
+        format: int8
+      i16:
+        type: integer
+        format: int16
+      i32:
+        type: integer
+        format: int32
+      i64:
+        type: integer
+        format: int64
+      i:
+        type: integer
+        format: int
+      l:
+        type: integer
+        format: long
+      f:
+        type: number
+        format: float
+      d:
+        type: number
+        format: double
+      num:
+        type: number
 
   Cat:
     properties:

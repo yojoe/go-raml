@@ -144,7 +144,7 @@ type Property struct {
 	Minimum    *float64
 	Maximum    *float64
 	MultipleOf *float64
-	//Format *string
+	Format     *string
 
 	// array
 	MinItems    *int
@@ -177,7 +177,13 @@ func ToProperty(name string, p interface{}) Property {
 		for k, v := range val {
 			switch k {
 			case "type":
-				p.Type = v.(string)
+				if p.Format == nil { // if not nil, we already override it
+					p.Type = v.(string)
+				}
+			case "format":
+				p.Format = new(string)
+				*p.Format = v.(string)
+				p.Type = *p.Format
 			case "required":
 				p.Required = v.(bool)
 			case "enum":
