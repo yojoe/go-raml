@@ -3,10 +3,9 @@ package python
 import (
 	"path/filepath"
 
-	"github.com/chuckpreslar/inflect"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/python/jsonschema"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -17,44 +16,23 @@ const (
 func (s SanicServer) generateJSONSchema(dir string) error {
 	sDir := filepath.Join(dir, schemaDir)
 	commons.CheckCreateDir(sDir)
-	if err := s.genJSONSchemaFromTypes(sDir); err != nil {
-		return err
-	}
-	if err := s.genJSONSchemaFromMethods(sDir); err != nil {
-		return err
-	}
-	return nil
-}
+	for name, t := range types.AllTypes(s.APIDef, "") {
+		switch tip := t.Type.(type) {
+		case string:
+			// TODO
+		case types.TypeInBody:
+			if tip.ReqResp == types.HTTPRequest {
+				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+				//js := raml.NewJSONSchemaFromBodies(tip.Body(), setReqBodyName(methodName))
+				js := raml.NewJSONSchemaFromProps(nil, tip.Properties, "object", setReqBodyName(methodName))
+				if err := jsonschema.Generate(js, sDir); err != nil {
+					return err
+				}
 
-func (s SanicServer) genJSONSchemaFromTypes(dir string) error {
-	for name, t := range s.APIDef.Types {
-		js := raml.NewJSONSchema(t, name)
-		if err := jsonschema.Generate(js, dir); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (s SanicServer) genJSONSchemaFromMethods(dir string) error {
-	// creates JSON schema from an raml method
-	jsonSchemaFromMethod := func(m serverMethod) error {
-		if commons.HasJSONBody(&m.Bodies) {
-			name := inflect.UpperCamelCase(m.MethodName + "ReqBody")
-			js := raml.NewJSONSchemaFromBodies(m.Bodies, name)
-			if err := jsonschema.Generate(js, dir); err != nil {
-				return err
 			}
-		}
-
-		// no need to generate schema for response body
-		// because we never need to validate it first
-		return nil
-	}
-	for _, pr := range s.ResourcesDef {
-		for _, mi := range pr.Methods {
-			m := mi.(serverMethod)
-			if err := jsonSchemaFromMethod(m); err != nil {
+		case raml.Type:
+			js := raml.NewJSONSchema(tip, name)
+			if err := jsonschema.Generate(js, sDir); err != nil {
 				return err
 			}
 		}

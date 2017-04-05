@@ -49,6 +49,16 @@ var (
 		"datetime-only": true,
 		"datetime":      true,
 		"file":          true,
+
+		// comes from Number format
+		"int8":   true,
+		"int16":  true,
+		"int32":  true,
+		"int64":  true,
+		"int":    true,
+		"long":   true,
+		"float":  true,
+		"double": true,
 	}
 )
 
@@ -467,6 +477,11 @@ func (t Type) MultipleInheritance() ([]string, bool) {
 	tStr = strings.TrimPrefix(strings.TrimSuffix(tStr, "]"), "[")
 	splitted := strings.Split(tStr, ",")
 	return splitted, len(splitted) > 1
+}
+
+func (t Type) IsMultipleInheritance() bool {
+	_, ok := t.MultipleInheritance()
+	return ok
 }
 
 // interfaceToString converts interface type to string.

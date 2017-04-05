@@ -19,16 +19,24 @@ type serverMethod struct {
 	MiddlewaresArr []middleware
 }
 
+func setServerMethodName(displayName, verb string, resource *raml.Resource) string {
+	if len(displayName) > 0 {
+		return commons.DisplayNameToFuncName(displayName)
+	} else {
+		return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
+	}
+}
+
+func setReqBodyName(methodName string) string {
+	return inflect.UpperCamelCase(methodName + "ReqBody")
+}
+
 // setup sets all needed variables
 func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, resourceParams []string) error {
-	// method name
-	if len(sm.DisplayName) > 0 {
-		sm.MethodName = commons.DisplayNameToFuncName(sm.DisplayName)
-	} else {
-		sm.MethodName = snakeCaseResourceURI(r) + "_" + strings.ToLower(sm.Verb())
-	}
+	sm.MethodName = setServerMethodName(sm.DisplayName, sm.Verb(), r)
+
 	if commons.HasJSONBody(&(sm.Bodies)) {
-		sm.ReqBody = inflect.UpperCamelCase(sm.MethodName + "ReqBody")
+		sm.ReqBody = setReqBodyName(sm.MethodName)
 	}
 
 	sm.Params = strings.Join(resourceParams, ", ")

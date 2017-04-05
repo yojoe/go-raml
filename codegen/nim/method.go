@@ -16,18 +16,22 @@ type method struct {
 	*cr.Method
 }
 
+func getMethodName(endpoint, displayName, verb string) string {
+	if len(displayName) > 0 {
+		return strings.Replace(displayName, " ", "", -1)
+	} else {
+		return commons.NormalizeURI(formatProcName(endpoint)) + strings.Title(strings.ToLower(verb))
+	}
+}
+
 // creates new Nim method
 func newMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
 	methodName string) (cr.MethodInterface, error) {
 
 	rm := cr.NewMethod(r, rd, m, methodName, setBodyName)
 
-	// set method name
-	if len(rm.DisplayName) > 0 {
-		rm.MethodName = strings.Replace(rm.DisplayName, " ", "", -1)
-	} else {
-		rm.MethodName = commons.NormalizeURI(formatProcName(r.FullURI())) + methodName
-	}
+	rm.MethodName = getMethodName(r.FullURI(), rm.DisplayName, methodName)
+
 	rm.ResourcePath = commons.ParamizingURI(rm.Endpoint, "&")
 	if apiDef != nil {
 		rm.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)

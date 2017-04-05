@@ -1,11 +1,11 @@
 package golang
 
 import (
-	"encoding/json"
 	"path/filepath"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -60,36 +60,6 @@ func newStructDefFromType(t raml.Type, sName, packageName string) structDef {
 	return sd
 }
 
-// create struct definition from RAML Body node
-func newStructDefFromBody(body *raml.Bodies, structNamePrefix, packageName string, isGenerateRequest bool) structDef {
-	// set struct name based on request or response
-	structName := structNamePrefix + commons.RespBodySuffix
-	if isGenerateRequest {
-		structName = structNamePrefix + commons.ReqBodySuffix
-	}
-
-	// handle JSON string type
-	// for example:
-	// application/json: # media type
-	//		type: | # structural definition of a response (schema or type)
-	//			{
-	//				"title": "Hello world Response",
-	//				"type": "object",
-	//					"properties": {
-	//					"message": {
-	//						"type": "string"
-	//						}
-	//					}
-	//				}
-	if body.ApplicationJSON.TypeString() != "" {
-		var js raml.JSONSchema
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err == nil {
-			return newStructDef(structName, packageName, js.Description, js.RAMLProperties())
-		}
-	}
-	return newStructDef(structName, packageName, "", body.ApplicationJSON.Properties)
-}
-
 // generate Go struct
 func (sd structDef) generate(dir string) error {
 	// generate enums
@@ -107,12 +77,39 @@ func (sd structDef) generate(dir string) error {
 	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
 }
 
-// generate all structs from an RAML api definition
-func generateStructs(types map[string]raml.Type, dir, packageName string) error {
-	for name, t := range types {
-		sd := newStructDefFromType(t, name, packageName)
-		if err := sd.generate(dir); err != nil {
-			return err
+func generateStructs(types map[string]raml.Type, dir, pkgName string) error {
+	apiDef := raml.APIDefinition{
+		Types: types,
+	}
+	return generateAllStructs(&apiDef, dir, pkgName)
+}
+
+func generateAllStructs(apiDef *raml.APIDefinition, dir, pkgName string) error {
+	for _, t := range types.AllTypes(apiDef, pkgName) {
+		switch tip := t.Type.(type) {
+		case string:
+			createGenerateStruct(tip, dir, pkgName)
+		case types.TypeInBody:
+			// TODO:
+			// need to change this Req/Resp body name
+			// to simply use methodName
+			// it will break compatibility!
+			name := commons.NormalizeURITitle(tip.Endpoint.Addr)
+			name = name[len(tip.Endpoint.ResourceName()):] + strings.Title(strings.ToLower(tip.Endpoint.Verb))
+			if tip.ReqResp == types.HTTPRequest {
+				name += "ReqBody"
+			} else {
+				name += "RespBody"
+			}
+			sd := newStructDef(name, pkgName, tip.Description, tip.Properties)
+			if err := sd.generate(dir); err != nil {
+				return err
+			}
+		case raml.Type:
+			sd := newStructDefFromType(tip, t.Name, pkgName)
+			if err := sd.generate(dir); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -156,6 +153,7 @@ func (sd *structDef) handleAdvancedType() {
 
 	strType := sd.T.TypeString()
 	parents, isMultipleInherit := sd.T.MultipleInheritance()
+	parent, isSingleInherit := sd.T.SingleInheritance()
 
 	switch {
 	case isMultipleInherit: //multiple inheritance
@@ -170,8 +168,8 @@ func (sd *structDef) handleAdvancedType() {
 		sd.buildEnum()
 	case strType != "" && len(sd.T.Properties) == 0: // type alias
 		sd.buildTypeAlias()
-	default: // single inheritance
-		sd.addSingleInheritance(strType)
+	case isSingleInherit: // single inheritance
+		sd.addSingleInheritance(parent)
 	}
 }
 

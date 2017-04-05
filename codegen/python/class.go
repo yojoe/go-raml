@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -186,35 +187,6 @@ func (pc *class) handleAdvancedType() {
 	}
 }
 
-// generate all classes from all  methods request/response bodies
-func (fs FlaskServer) generateClassesFromBodies(dir string) error {
-	for _, r := range fs.ResourcesDef {
-		for _, mi := range r.Methods {
-			m := mi.(serverMethod)
-			if err := generateClassesFromMethod(m, dir); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-// generate classes from a method
-//
-// TODO:
-// we currently camel case instead of snake case because of mistake in previous code
-// and we might need to maintain backward compatibility. Fix this!
-func generateClassesFromMethod(m serverMethod, dir string) error {
-	// request body
-	if commons.HasJSONBody(&m.Bodies) {
-		class := newClass(m.ReqBody, "", m.Bodies.ApplicationJSON.Properties)
-		if _, err := class.generate(dir); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // return list of import statements
 func (pc class) Imports() []string {
 	// var imports []string
@@ -235,20 +207,34 @@ func (pc class) Imports() []string {
 }
 
 // generate all python classes from an RAML document
-func generateClasses(types map[string]raml.Type, dir string) ([]string, error) {
-	typeNames := make([]string, 0)
-	for k, t := range types {
-		// this is special; ignore it, Python has a native module for this
-		if k == "UUID" {
-			continue
-		}
+func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
+	names := []string{}
+	for name, t := range types.AllTypes(apiDef, "") {
+		switch tip := t.Type.(type) {
+		case string:
+			// TODO
+		case types.TypeInBody:
+			methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+			pc := newClass(setReqBodyName(methodName), "", tip.Properties)
+			results, err := pc.generate(dir)
+			if err != nil {
+				return names, err
+			}
+			names = append(names, results...)
 
-		pc := newClassFromType(t, k)
-		types, err := pc.generate(dir)
-		if err != nil {
-			return typeNames, err
+		case raml.Type:
+			if name == "UUID" {
+				continue
+			}
+			pc := newClassFromType(tip, name)
+			results, err := pc.generate(dir)
+			if err != nil {
+				return names, err
+			}
+			names = append(names, results...)
+
 		}
-		typeNames = append(typeNames, types...)
 	}
-	return typeNames, nil
+	return names, nil
+
 }

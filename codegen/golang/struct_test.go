@@ -62,7 +62,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 			err = generateStructs(apiDef.Types, targetDir, "main")
 			So(err, ShouldBeNil)
 
-			err = generateBodyStructs(apiDef, targetDir, "main")
+			err = generateAllStructs(apiDef, targetDir, "main")
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct/json"

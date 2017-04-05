@@ -37,7 +37,7 @@ func newField(objName string, prop raml.Property) field {
 	}
 	if prop.IsEnum() {
 		f.Enum = newEnum(objName, prop, false)
-		f.Type = f.Enum.Name
+		f.Type = f.Enum.Name()
 	}
 	return f
 }

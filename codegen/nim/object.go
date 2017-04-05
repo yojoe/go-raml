@@ -1,30 +1,36 @@
 package nim
 
 import (
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
 	// saves all generated objects
-	objectsRegister map[string]struct{}
+	objectsRegister map[string]adt
 )
 
 func init() {
 	// register of all objects.
 	// needed to generate `import`
-	objectsRegister = map[string]struct{}{}
+	objectsRegister = map[string]adt{}
+}
+
+type adt interface {
+	NimType() string
+	Name() string
+	FieldsMap() map[string]field
 }
 
 // object represents a Nim object
 type object struct {
-	Name        string
+	name        string
 	Description []string
 	Fields      map[string]field
 	T           raml.Type
@@ -33,24 +39,68 @@ type object struct {
 	Enum        *enum
 }
 
-// generates Nim objects from RAML types
-func generateObjects(types map[string]raml.Type, dir string) error {
+func (o object) NimType() string {
+	return "object"
+}
+
+func (o object) Name() string {
+	return o.name
+}
+
+func (o object) FieldsMap() map[string]field {
+	return o.Fields
+}
+
+func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	objs := []object{}
-	for name, t := range types {
-		obj, err := newObjectFromType(t, name)
-		if err != nil {
-			return err
-		}
+
+	// array of tip that need to be generated in the end of this
+	// process. because it needs other object to be registered first
+	delayedMI := []string{} // delayed multiple inheritance
+
+	addObj := func(obj object) {
 		objs = append(objs, obj)
+		registerObject(obj)
 	}
 
-	for _, obj := range objs {
-		registerObject(obj.Name)
-		for _, f := range obj.Fields {
-			if f.Enum != nil {
-				registerObject(f.Enum.Name)
+	for name, t := range types.AllTypes(apiDef, "") {
+		switch tip := t.Type.(type) {
+		case string:
+			// we currently only handle multiple inheritance.
+			// TODO we also need to handle union, but we still don't have
+			// union support
+			if commons.IsMultipleInheritance(tip) {
+				delayedMI = append(delayedMI, tip)
 			}
+		case types.TypeInBody:
+			suffix := commons.RespBodySuffix
+			if tip.ReqResp == types.HTTPRequest {
+				suffix = commons.ReqBodySuffix
+			}
+			verb := strings.Title(strings.ToLower(tip.Endpoint.Verb))
+			bodyName := setBodyName(tip.Body(), tip.Endpoint.Addr+verb, suffix)
+			obj := newObject(bodyName, "", tip.Properties)
+			addObj(obj)
+
+		case raml.Type:
+			obj := newObjectFromType(tip, t.Name)
+			obj.name = name
+
+			for _, f := range obj.Fields {
+				if f.Enum != nil {
+					registerObject(f.Enum)
+				}
+			}
+			addObj(obj)
 		}
+	}
+
+	for _, tip := range delayedMI {
+		parents, _ := commons.MultipleInheritance(tip)
+		obj := newObject(multipleInheritanceNewName(parents), "",
+			map[string]interface{}{})
+		obj.inherit(parents)
+		addObj(obj)
 	}
 
 	for _, obj := range objs {
@@ -61,99 +111,35 @@ func generateObjects(types map[string]raml.Type, dir string) error {
 	return nil
 }
 
-// generate objects from method request & response bodies of all resources
-func generateObjectsFromBodies(rs []resource, dir string) ([]string, error) {
-	names := []string{}
-	for _, r := range rs {
-		for _, mi := range r.Methods {
-			m := mi.(method)
-			ns, err := generateObjectFromMethod(r, m, dir)
-			if err != nil {
-				fmt.Printf("failed : %v\n", err) // TODO : return err if failed
-			}
-			names = append(names, ns...)
-		}
-	}
-	for _, name := range names {
-		registerObject(name)
-	}
-	return names, nil
-}
-
-// generate object from a method
-func generateObjectFromMethod(r resource, m method, dir string) ([]string, error) {
-	names := []string{}
-
-	name, err := generateObjectFromBody(m.ReqBody, &m.Bodies, true, dir)
-	if err != nil {
-		return names, err
-	}
-	names = append(names, name)
-
-	for _, v := range m.Responses {
-		name, err := generateObjectFromBody(m.RespBody, &v.Bodies, false, dir)
-		if err != nil {
-			return names, err
-		}
-		names = append(names, name)
-	}
-	return names, nil
-}
-
-// generateObjectFromBody generate a Nim object from an RAML Body
-func generateObjectFromBody(methodName string, body *raml.Bodies, isReq bool, dir string) (string, error) {
-	if !commons.HasJSONBody(body) {
-		return "", nil
-	}
-	obj, err := newObjectFromBody(methodName, body, isReq)
-	if err != nil {
-		return "", err
-	}
-	return obj.Name, obj.generate(dir)
-}
-
-// create new object from a method body
-func newObjectFromBody(methodName string, body *raml.Bodies, isReq bool) (object, error) {
-	if body.ApplicationJSON.TypeString() != "" {
-		var js raml.JSONSchema
-		if err := json.Unmarshal([]byte(body.ApplicationJSON.TypeString()), &js); err == nil {
-			return newObject(methodName, "", js.RAMLProperties())
-		}
-	}
-
-	return newObject(methodName, "", body.ApplicationJSON.Properties)
-}
-
 // create new object from an RAML type
-func newObjectFromType(t raml.Type, name string) (object, error) {
-	obj, err := newObject(name, t.Description, t.Properties)
+func newObjectFromType(t raml.Type, name string) object {
+	obj := newObject(name, t.Description, t.Properties)
 	obj.T = t
 	obj.handleAdvancedType()
-	return obj, err
+	return obj
 }
 
-func newObject(name, description string, properties map[string]interface{}) (object, error) {
+func newObject(name, description string, properties map[string]interface{}) object {
 	// generate fields from type properties
 	fields := make(map[string]field)
 
 	for k, v := range properties {
 		prop := raml.ToProperty(k, v)
 		fd := newField(name, prop)
-		if fd.Type == "" {
-			return object{}, fmt.Errorf("unsupported type in nim:%v", prop.Type)
-		}
 		fields[fd.Name] = fd
 	}
 
 	return object{
-		Name:        name,
+		name:        name,
 		Fields:      fields,
 		Description: commons.ParseDescription(description),
-	}, nil
+	}
 }
 
 // generate nim object representation
 func (o *object) generate(dir string) error {
+	o.handleAdvancedType()
+
 	// generate enums
 	for _, f := range o.Fields {
 		if f.Enum != nil {
@@ -166,7 +152,7 @@ func (o *object) generate(dir string) error {
 	if o.Enum != nil {
 		return o.Enum.generate(dir)
 	}
-	filename := filepath.Join(dir, o.Name+".nim")
+	filename := filepath.Join(dir, o.Name()+".nim")
 	if err := commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true); err != nil {
 		return err
 	}
@@ -195,25 +181,23 @@ func (o object) Imports() []string {
 		}
 	}
 	// del reference to our self
-	if _, ok := ip[o.Name]; ok {
-		delete(ip, o.Name)
+	if _, ok := ip[o.Name()]; ok {
+		delete(ip, o.Name())
 	}
 	return commons.MapToSortedStrings(ip)
 }
 
 // handle RAML advanced data type
 func (o *object) handleAdvancedType() {
-	if o.T.Type == nil {
-		o.T.Type = "object"
-	}
 	strType := o.T.TypeString()
 
+	parents, isMultipleInheritance := o.T.MultipleInheritance()
 	switch {
-	case len(strings.Split(strType, ",")) > 1: //multiple inheritance
-		// TODO
+	case isMultipleInheritance: //multiple inheritance
+		o.inherit(parents)
 	case o.T.IsEnum():
 		o.makeEnum()
-	case strings.ToLower(strType) == "object": // plain type
+	case strType == "object" || strType == "": // plain type
 	case o.T.IsArray():
 		o.makeArray(strType)
 	}
@@ -222,18 +206,46 @@ func (o *object) handleAdvancedType() {
 func (o *object) makeEnum() {
 	o.Enum = newEnumFromObject(o)
 }
+
 func (o *object) makeArray(t string) {
 	o.Parents = append(o.Parents, toNimType(t))
 	o.buildOneLine(toNimType(t))
 }
 
 func (o *object) buildOneLine(tipe string) {
-	o.OneLineDef = fmt.Sprintf("%v* = %v", o.Name, tipe)
+	o.OneLineDef = fmt.Sprintf("%v* = %v", o.Name(), tipe)
 }
 
-func registerObject(name string) {
-	name = strings.TrimSpace(name)
-	objectsRegister[name] = struct{}{}
+// Multiple inheritance is currently not supported by Nim.
+// see https://nim-lang.org/docs/tut2.html
+// Golang also doesn't support it but we use composition.
+// we can't use composition in Nim because it works differently
+// than Go. We can't use composed type directly in Nim.
+// So, we inherit the properties.
+func (o *object) inherit(parents []string) {
+	// save current fields
+	oriFields := o.Fields
+
+	// inherit from parents
+	for _, parent := range parents {
+		obj, ok := objectsRegister[parent]
+		if !ok {
+			fmt.Printf("parent %v not exist in object register\n", parent)
+			continue
+		}
+		for name, f := range obj.FieldsMap() {
+			o.Fields[name] = f
+		}
+	}
+	// restore original fields
+	for name, f := range oriFields {
+		o.Fields[name] = f
+	}
+}
+
+func registerObject(a adt) {
+	name := strings.TrimSpace(a.Name())
+	objectsRegister[name] = a
 }
 
 // regex to find string inside a square bracket
@@ -264,4 +276,8 @@ func extractTypeName(tip string) string {
 	last := strings.LastIndex(inBracket, "[")
 	inBracket = inBracket[last+1:]
 	return strings.TrimSuffix(inBracket, "]")
+}
+
+func multipleInheritanceNewName(parents []string) string {
+	return strings.Join(parents, "")
 }

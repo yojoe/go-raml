@@ -30,11 +30,14 @@ func toNimType(t string) string {
 		return v
 	}
 	// other types that need some processing
+	parents, isMultiple := commons.MultipleInheritance(t)
 	switch {
 	case commons.IsBidimensiArray(t):
 		return "seq[seq[" + toNimType(commons.BidimensiArrayType(t)) + "]]"
 	case commons.IsArray(t):
 		return "seq[" + toNimType(commons.ArrayType(t)) + "]"
+	case isMultiple:
+		return multipleInheritanceNewName(parents)
 	}
 	return t
 }

@@ -3,6 +3,7 @@ import requests
 
 from .Address import Address
 from .City import City
+from .GetUsersReqBody import GetUsersReqBody
 
 from .client import Client as APIClient
 

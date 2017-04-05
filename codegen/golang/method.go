@@ -15,15 +15,18 @@ type serverMethod struct {
 	Middlewares string
 }
 
+func serverMethodName(endpoint, displayName, verb, resName string) string {
+	if len(displayName) > 0 {
+		return commons.DisplayNameToFuncName(displayName)
+	} else {
+		name := commons.NormalizeURI(endpoint)
+		return name[len(resName):] + verb
+	}
+}
+
 // setup go server method, initializes all needed variables
 func (gm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
-	// set method name
-	name := commons.NormalizeURI(gm.Endpoint)
-	if len(gm.DisplayName) > 0 {
-		gm.MethodName = commons.DisplayNameToFuncName(gm.DisplayName)
-	} else {
-		gm.MethodName = name[len(rd.Name):] + methodName
-	}
+	gm.MethodName = serverMethodName(gm.Endpoint, gm.DisplayName, methodName, rd.Name)
 
 	// setting middlewares
 	middlewares := []string{}

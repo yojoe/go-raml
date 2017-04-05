@@ -1,0 +1,81 @@
+#%RAML 1.0
+title: Struct API Test
+mediaType: application/json
+types:
+  EnumCity:
+    description: |
+      first line
+      second line
+      third line
+    properties:
+      name: string
+      enum_parks:
+        type: string
+        enum: [ park_a, park_b ]
+      enum_homeNum:
+        type: integer
+        enum: [ 1, 2, 3 ]
+  animal:
+    description: |
+      Animal represent animal object.
+      It contains field that construct animal
+      such as : name, colours, and cities.
+    type: object
+    properties:
+      name?: string
+      colours:
+        type: string[]
+      cities:
+        type: EnumCity[]
+        minItems: 1
+        maxItems: 10
+
+  Cat:
+    properties:
+      kind:
+        type: string
+/users:
+  post:
+    description: create a user
+    body:
+      application/json:
+        properties:
+          age:
+            type: integer
+            minimum: 16
+            maximum: 100
+            multipleOf: 4
+          ID:
+            type: string
+            minLength: 4
+            maxLength: 8
+          item:
+            minLength: 2
+            pattern: ^[a-zA-Z]+$
+          grades:
+            type: integer[]
+            minItems: 2
+            maxItems: 5
+            uniqueItems: true
+  /{id}:
+    put:
+      body:
+        application/json:
+          type: [Cat, animal]
+      responses:
+        200:
+          body:
+            application/json:
+              type: Cat | animal
+    get:
+      description: |
+        get id of users.
+        This method will be return single user object.
+        Replace ID with user defined field.
+      responses:
+        200:
+          body:
+            application/json:
+              properties:
+                age: integer
+                ID:
