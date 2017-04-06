@@ -5,10 +5,18 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/codegen/python/jsonschema"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
+
+const (
+	jsFileSuffix = "_schema.json" // json schema file suffix
+)
+
+// just a convenience type
+type jsonSchema struct {
+	*raml.JSONSchema
+}
 
 var (
 	jsObjects map[string]raml.JSONSchema
@@ -59,9 +67,12 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 		jsObjects[js.Name] = js
 	}
 
-	for _, js := range jsObjects {
-		jsHandleAdvancedType(&js)
-		if err := jsonschema.Generate(js, sDir); err != nil {
+	for _, obj := range jsObjects {
+		js := jsonSchema{
+			JSONSchema: &obj,
+		}
+		js.HandleAdvancedType()
+		if err := js.Generate(sDir); err != nil {
 			return err
 		}
 	}
@@ -71,7 +82,7 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 // TODO : refactor it
 // this func is ugly, it should be part of raml.JSONSchema class
 // or we inherit that class
-func jsHandleAdvancedType(js *raml.JSONSchema) {
+func (js *jsonSchema) HandleAdvancedType() {
 	parents, isMult := commons.MultipleInheritance(js.Type)
 	switch {
 	case isMult:
@@ -92,4 +103,13 @@ func getParentsObjs(parents []string) []raml.JSONSchema {
 
 func jsMultipleInheritanceName(parents []string) string {
 	return strings.Join(parents, "")
+}
+
+// Generate generates a json file of this schema
+func (js jsonSchema) Generate(dir string) error {
+	filename := filepath.Join(dir, js.Name+jsFileSuffix)
+	ctx := map[string]interface{}{
+		"Content": js.String(),
+	}
+	return commons.GenerateFile(ctx, "./templates/json_schema.tmpl", "json_schema", filename, false)
 }
