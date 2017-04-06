@@ -79,6 +79,32 @@ func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, nam
 	}
 }
 
+func (js *JSONSchema) Inherit(parents []JSONSchema) {
+	// inherit `properties` and `required`
+	// only inherit if the property name not exist in
+	// child properties
+	oriProps := map[string]interface{}{}
+	for name, prop := range js.Properties {
+		oriProps[name] = prop
+	}
+
+	for _, parent := range parents {
+		for name, prop := range parent.Properties {
+			if _, exist := oriProps[name]; !exist {
+				js.Properties[name] = prop
+			}
+		}
+		for _, name := range parent.Required {
+			if _, exist := oriProps[name]; !exist {
+				if !js.isRequired(name) {
+					js.Required = append(js.Required, name)
+				}
+			}
+		}
+	}
+
+}
+
 // Supported returns true if the type is supported
 func (js JSONSchema) Supported() bool {
 	return js.Type == "object" || js.Type == "array"

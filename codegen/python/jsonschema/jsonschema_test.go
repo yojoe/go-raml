@@ -78,38 +78,6 @@ func TestGenerateStructFromRaml(t *testing.T) {
 
 		})
 
-		Convey("struct", func() {
-			err := raml.ParseFile("../../fixtures/struct/struct.raml", apiDef)
-			So(err, ShouldBeNil)
-
-			for name, t := range apiDef.Types {
-				js := raml.NewJSONSchema(t, name)
-				err := Generate(js, targetDir)
-				So(err, ShouldBeNil)
-			}
-			rootFixture := "./fixtures/struct"
-			checks := []struct {
-				Result   string
-				Expected string
-			}{
-				{"EnumCity_schema.json", "EnumCity_schema.json"},
-				{"EnumString_schema.json", "EnumString_schema.json"},
-				{"animal_schema.json", "animal_schema.json"},
-				{"Cage_schema.json", "Cage_schema.json"},
-			}
-
-			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
-				So(err, ShouldBeNil)
-
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
-				So(err, ShouldBeNil)
-
-				So(s, ShouldEqual, tmpl)
-			}
-
-		})
-
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
