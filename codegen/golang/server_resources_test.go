@@ -25,7 +25,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -50,7 +50,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -80,7 +80,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 

@@ -21,8 +21,8 @@ func TestGoLibrary(t *testing.T) {
 		err = raml.ParseFile("../fixtures/libraries/api.raml", &apiDef)
 		So(err, ShouldBeNil)
 
-		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true, false)
-		err = server.Generate(targetDir)
+		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true, false, targetDir)
+		err = server.Generate()
 		So(err, ShouldBeNil)
 
 		rootFixture := "../fixtures/libraries/go_server"
@@ -58,10 +58,10 @@ func TestGoLibrary(t *testing.T) {
 		err = raml.ParseFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		client, err := NewClient(apiDef, "theclient", "examples.com/theclient")
+		client, err := NewClient(apiDef, "theclient", "examples.com/theclient", targetDir)
 		So(err, ShouldBeNil)
 
-		err = client.Generate(targetDir)
+		err = client.Generate()
 		So(err, ShouldBeNil)
 
 		rootFixture := "../fixtures/libraries/go_client"
@@ -101,8 +101,8 @@ func TestGoLibrary(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, false)
-			err = server.Generate(targetDir)
+			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir)
+			err = server.Generate()
 			So(err, ShouldBeNil)
 
 			rootFixture := "../fixtures/libraries/raml-examples/go_server"
@@ -131,10 +131,10 @@ func TestGoLibrary(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			client, err := NewClient(&apiDef, "client", "examples.com/libro")
+			client, err := NewClient(&apiDef, "client", "examples.com/libro", targetDir)
 			So(err, ShouldBeNil)
 
-			err = client.Generate(targetDir)
+			err = client.Generate()
 			So(err, ShouldBeNil)
 
 			rootFixture := "../fixtures/libraries/raml-examples/go_client"

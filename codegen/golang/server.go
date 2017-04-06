@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
@@ -30,11 +31,12 @@ type Server struct {
 	withMain         bool
 	RootImportPath   string
 	APIFilePerMethod bool // true if we want to generate one API file per API method
+	TargetDir        string
 }
 
 // NewServer creates a new Golang server
 func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string,
-	withMain, apiFilePerMethod bool) Server {
+	withMain, apiFilePerMethod bool, targetDir string) Server {
 	// global variables
 	globAPIDef = apiDef
 	globRootImportPath = rootImportPath
@@ -45,53 +47,57 @@ func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPa
 		PackageName:      packageName,
 		APIDocsDir:       apiDocsDir,
 		withMain:         withMain,
-		RootImportPath:   rootImportPath,
+		RootImportPath:   setRootImportPath(rootImportPath, targetDir),
 		APIFilePerMethod: apiFilePerMethod,
+		TargetDir:        targetDir,
 	}
 }
 
 // Generate generates all Go server files
-func (gs Server) Generate(dir string) error {
+func (gs Server) Generate() error {
+	if gs.RootImportPath == "" {
+		return fmt.Errorf("invalid import path = empty. please set --import-path or set target dir under gopath")
+	}
 	// helper package
 	gh := goramlHelper{
 		rootImportPath: gs.RootImportPath,
 		packageName:    "goraml",
 		packageDir:     "goraml",
 	}
-	if err := gh.generate(dir); err != nil {
+	if err := gh.generate(gs.TargetDir); err != nil {
 		return err
 	}
 
-	if err := generateAllStructs(gs.apiDef, dir, gs.PackageName); err != nil {
+	if err := generateAllStructs(gs.apiDef, gs.TargetDir, gs.PackageName); err != nil {
 		return err
 	}
 
 	// security scheme
-	if err := generateSecurity(gs.apiDef.SecuritySchemes, dir, gs.PackageName); err != nil {
+	if err := generateSecurity(gs.apiDef.SecuritySchemes, gs.TargetDir, gs.PackageName); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
 
 	// genereate resources
-	rds, err := gs.generateServerResources(dir)
+	rds, err := gs.generateServerResources(gs.TargetDir)
 	if err != nil {
 		return err
 	}
 	gs.ResourcesDef = rds
 
 	// libraries
-	if err := generateLibraries(gs.apiDef.Libraries, dir); err != nil {
+	if err := generateLibraries(gs.apiDef.Libraries, gs.TargetDir); err != nil {
 		return err
 	}
 
 	// generate main
 	if gs.withMain {
 		// HTML front page
-		if err := commons.GenerateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), false); err != nil {
+		if err := commons.GenerateFile(gs, "./templates/index.html.tmpl", "index.html", filepath.Join(gs.TargetDir, "index.html"), false); err != nil {
 			return err
 		}
 		// main file
-		return commons.GenerateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(dir, "main.go"), true)
+		return commons.GenerateFile(gs, "./templates/server_main_go.tmpl", "server_main_go", filepath.Join(gs.TargetDir, "main.go"), true)
 	}
 
 	return nil

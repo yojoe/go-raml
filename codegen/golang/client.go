@@ -24,10 +24,11 @@ type Client struct {
 	PackageName    string
 	RootImportPath string
 	Services       map[string]*ClientService
+	TargetDir      string
 }
 
 // NewClient creates a new Golang client
-func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath string) (Client, error) {
+func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDir string) (Client, error) {
 	// rootImportPath only needed if we use libraries
 	if rootImportPath == "" && len(apiDef.Libraries) > 0 {
 		return Client{}, fmt.Errorf("--import-path can't be empty when we use libraries")
@@ -52,8 +53,9 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath string) (
 		BaseURI:        apiDef.BaseURI,
 		libraries:      apiDef.Libraries,
 		PackageName:    packageName,
-		RootImportPath: rootImportPath,
+		RootImportPath: setRootImportPath(rootImportPath, targetDir),
 		Services:       services,
+		TargetDir:      targetDir,
 	}
 
 	if strings.Index(client.BaseURI, "{version}") > 0 {
@@ -63,38 +65,38 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath string) (
 }
 
 // Generate generates all Go client files
-func (gc Client) Generate(dir string) error {
+func (gc Client) Generate() error {
 	// helper package
 	gh := goramlHelper{
 		packageName: gc.PackageName,
 		packageDir:  "",
 	}
-	if err := gh.generate(dir); err != nil {
+	if err := gh.generate(gc.TargetDir); err != nil {
 		return err
 	}
 
 	// generate struct
-	if err := generateAllStructs(gc.apiDef, dir, gc.PackageName); err != nil {
+	if err := generateAllStructs(gc.apiDef, gc.TargetDir, gc.PackageName); err != nil {
 		return err
 	}
 
 	// libraries
-	if err := generateLibraries(gc.libraries, dir); err != nil {
+	if err := generateLibraries(gc.libraries, gc.TargetDir); err != nil {
 		return err
 	}
 
-	if err := gc.generateHelperFile(dir); err != nil {
+	if err := gc.generateHelperFile(gc.TargetDir); err != nil {
 		return err
 	}
 
-	if err := gc.generateSecurity(dir); err != nil {
+	if err := gc.generateSecurity(gc.TargetDir); err != nil {
 		return err
 	}
 
-	if err := gc.generateServices(dir); err != nil {
+	if err := gc.generateServices(gc.TargetDir); err != nil {
 		return err
 	}
-	return gc.generateClientFile(dir)
+	return gc.generateClientFile(gc.TargetDir)
 }
 
 // generate Go client helper
