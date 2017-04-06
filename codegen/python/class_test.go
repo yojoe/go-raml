@@ -35,6 +35,8 @@ func TestGeneratePythonClass(t *testing.T) {
 				"animal.py",
 				"petshop.py",
 				"Catanimal.py",
+				"UsersByIdGetReqBody.py",
+				"UsersPostReqBody.py",
 			}
 
 			for _, f := range files {

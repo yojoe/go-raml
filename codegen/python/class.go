@@ -46,6 +46,10 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 		}
 	}
 	mergedProps := getTypeProperties(ramlTypes)
+	for k, v := range properties {
+		prop := raml.ToProperty(k, v)
+		mergedProps[k] = prop
+	}
 
 	for propName, propInterface := range mergedProps {
 		op := objectProperties(propName, propInterface)
@@ -224,6 +228,10 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 		case types.TypeInBody:
 			methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
 			pc := newClass(raml.Type{Type: "object"}, setReqBodyName(methodName), "", tip.Properties)
+			propNames := []string{}
+			for k, _ := range tip.Properties {
+				propNames = append(propNames, k)
+			}
 			results, errGen = pc.generate(dir)
 		case raml.Type:
 			if name == "UUID" {

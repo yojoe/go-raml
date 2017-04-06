@@ -1,11 +1,11 @@
 """
-Auto-generated class for GetUsersReqBody
+Auto-generated class for UsersByIdGetReqBody
 """
 
 from . import client_support
 
 
-class GetUsersReqBody(object):
+class UsersByIdGetReqBody(object):
     """
     auto-generated. don't touch.
     """
@@ -15,10 +15,10 @@ class GetUsersReqBody(object):
         """
         :type ID: str
         :type age: int
-        :rtype: GetUsersReqBody
+        :rtype: UsersByIdGetReqBody
         """
 
-        return GetUsersReqBody(
+        return UsersByIdGetReqBody(
             ID=ID,
             age=age,
         )
@@ -27,7 +27,7 @@ class GetUsersReqBody(object):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'GetUsersReqBody'
+        class_name = 'UsersByIdGetReqBody'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
