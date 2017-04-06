@@ -17,11 +17,11 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 
 	switch lang {
 	case langGo:
-		gc, err := golang.NewClient(apiDef, packageName, rootImportPath)
+		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir)
 		if err != nil {
 			return err
 		}
-		return gc.Generate(dir)
+		return gc.Generate()
 	case langPython:
 		pc := python.NewClient(apiDef, kind)
 		return pc.Generate(dir)

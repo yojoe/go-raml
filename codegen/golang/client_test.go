@@ -21,10 +21,10 @@ func TestClient(t *testing.T) {
 			err = raml.ParseFile("../fixtures/client_resources/client.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			client, err := NewClient(&apiDef, "theclient", "examples.com/libro")
+			client, err := NewClient(&apiDef, "theclient", "examples.com/libro", targetDir)
 			So(err, ShouldBeNil)
 
-			err = client.Generate(targetDir)
+			err = client.Generate()
 			So(err, ShouldBeNil)
 
 			rootFixture := "../fixtures/client_resources"

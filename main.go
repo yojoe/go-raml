@@ -94,8 +94,8 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:        "import-path",
-					Value:       "examples.com/ramlcode",
-					Usage:       "import path of the generated code",
+					Value:       "",
+					Usage:       "import path of the generated code. Set automatically if target dir under $GOPATH",
 					Destination: &serverCommand.ImportPath,
 				},
 				cli.BoolFlag{

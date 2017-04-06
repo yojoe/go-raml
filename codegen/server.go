@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"errors"
-	"fmt"
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
@@ -47,11 +46,8 @@ func (s *Server) Generate() error {
 
 	switch s.Lang {
 	case langGo:
-		if s.RootImportPath == "" {
-			return fmt.Errorf("invalid import path = empty")
-		}
-		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain, s.APIFilePerMethod)
-		err = gs.Generate(s.Dir)
+		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain, s.APIFilePerMethod, s.Dir)
+		err = gs.Generate()
 	case langPython:
 		ps := python.NewServer(s.Kind, apiDef, s.APIDocsDir, s.WithMain)
 		err = ps.Generate(s.Dir)
