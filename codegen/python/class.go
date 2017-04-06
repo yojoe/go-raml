@@ -29,14 +29,14 @@ type objectProperty struct {
 }
 
 // create a python class representations
-func newClass(name string, description string, properties map[string]interface{}) class {
+func newClass(T raml.Type, name string, description string, properties map[string]interface{}) class {
 	pc := class{
 		Name:        name,
 		Description: commons.ParseDescription(description),
 		Fields:      map[string]field{},
+		T:           T,
 	}
 	types := globAPIDef.Types
-	T := types[name]
 
 	typeHierarchy := getTypeHierarchy(name, T, types)
 	ramlTypes := make([]raml.Type, 0)
@@ -149,7 +149,7 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 }
 
 func newClassFromType(T raml.Type, name string) class {
-	pc := newClass(name, T.Description, T.Properties)
+	pc := newClass(T, name, T.Description, T.Properties)
 	pc.T = T
 	pc.handleAdvancedType()
 	return pc
@@ -208,32 +208,51 @@ func (pc class) Imports() []string {
 
 // generate all python classes from an RAML document
 func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
+	// array of tip that need to be generated in the end of this
+	// process. because it needs other object to be registered first
+	delayedMI := []string{} // delayed multiple inheritance
+
 	names := []string{}
 	for name, t := range types.AllTypes(apiDef, "") {
+		var errGen error
+		var results []string
 		switch tip := t.Type.(type) {
 		case string:
-			// TODO
+			if commons.IsMultipleInheritance(tip) {
+				delayedMI = append(delayedMI, tip)
+			}
 		case types.TypeInBody:
 			methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
-			pc := newClass(setReqBodyName(methodName), "", tip.Properties)
-			results, err := pc.generate(dir)
-			if err != nil {
-				return names, err
-			}
-			names = append(names, results...)
-
+			pc := newClass(raml.Type{Type: "object"}, setReqBodyName(methodName), "", tip.Properties)
+			results, errGen = pc.generate(dir)
 		case raml.Type:
 			if name == "UUID" {
 				continue
 			}
 			pc := newClassFromType(tip, name)
+			results, errGen = pc.generate(dir)
+		}
+
+		if errGen != nil {
+			return names, errGen
+		}
+		names = append(names, results...)
+	}
+
+	for _, tip := range delayedMI {
+		parents, isMult := commons.MultipleInheritance(tip)
+		if isMult {
+			t := raml.Type{
+				Type: tip,
+			}
+			pc := newClassFromType(t, strings.Join(parents, ""))
 			results, err := pc.generate(dir)
 			if err != nil {
 				return names, err
 			}
 			names = append(names, results...)
-
 		}
+
 	}
 	return names, nil
 

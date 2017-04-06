@@ -34,6 +34,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				"MultipleInheritance.py",
 				"animal.py",
 				"petshop.py",
+				"Catanimal.py",
 			}
 
 			for _, f := range files {
