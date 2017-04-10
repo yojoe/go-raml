@@ -6,7 +6,7 @@
 			"type": "integer"
 		},
 		"dob": {
-			"$ref": "datetime_schema.json"
+			"type": "string"
 		},
 		"firstName": {
 			"type": "string"

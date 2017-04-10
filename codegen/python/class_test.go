@@ -27,13 +27,15 @@ func TestGeneratePythonClass(t *testing.T) {
 
 			rootFixture := "./fixtures/class/"
 			files := []string{
-				"Cage.py",
 				"EnumCity.py",
-				"EnumString.py",
-				"SingleInheritance.py",
-				"MultipleInheritance.py",
-				"NumberFormat.py",
 				"animal.py",
+				"Cage.py",
+				"SingleInheritance.py",
+				"PlainObject.py",
+				"NumberFormat.py",
+				"Cat.py",
+				"MultipleInheritance.py",
+				"EnumString.py",
 				"petshop.py",
 				"Catanimal.py",
 				"UsersByIdGetReqBody.py",

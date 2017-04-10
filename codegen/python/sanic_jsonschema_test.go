@@ -87,10 +87,15 @@ func TestJSONSchema(t *testing.T) {
 			rootFixture := "./fixtures/json_schema/struct"
 			files := []string{
 				"EnumCity_schema.json",
-				"EnumString_schema.json",
 				"animal_schema.json",
 				"Cage_schema.json",
+				"SingleInheritance_schema.json",
+				"Dashed_schema.json",
+				//"PlainObject_schema.json",
+				"NumberFormat_schema.json",
+				"Cat_schema.json",
 				"MultipleInheritance_schema.json",
+				"EnumString_schema.json",
 				"Catanimal_schema.json",
 				"UsersPostReqBody_schema.json",
 			}

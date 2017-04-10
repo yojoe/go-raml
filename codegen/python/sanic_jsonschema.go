@@ -84,9 +84,12 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 // or we inherit that class
 func (js *jsonSchema) HandleAdvancedType() {
 	parents, isMult := commons.MultipleInheritance(js.Type)
+	parent, isSingleInherit := commons.SingleInheritance(js.Type)
 	switch {
 	case isMult:
 		js.Inherit(getParentsObjs(parents))
+	case isSingleInherit:
+		js.Inherit(getParentsObjs([]string{parent}))
 	}
 }
 

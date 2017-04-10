@@ -59,6 +59,13 @@ func IsMultipleInheritance(t interface{}) bool {
 	return ok
 }
 
+func SingleInheritance(t interface{}) (string, bool) {
+	tip := raml.Type{
+		Type: t,
+	}
+	return tip.SingleInheritance()
+}
+
 func IsBuiltinType(t interface{}) bool {
 	tip := raml.Type{
 		Type: t,
