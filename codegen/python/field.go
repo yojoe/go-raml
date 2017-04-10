@@ -184,7 +184,6 @@ func (pf *field) addImport(module, name string) {
 	if commons.IsBuiltinType(name) {
 		return
 	}
-	fmt.Printf("add import %v\n", module)
 	imp := pyimport{
 		Module: module,
 		Name:   name,
