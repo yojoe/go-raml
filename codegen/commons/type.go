@@ -28,6 +28,17 @@ func IsUnion(t interface{}) bool {
 	return tip.IsUnion()
 }
 
+func UnionTypes(t interface{}) []string {
+	tip := raml.Type{
+		Type: t,
+	}
+	uts, ok := tip.Union()
+	if !ok {
+		return []string{}
+	}
+	return uts
+}
+
 func ArrayType(t interface{}) string {
 	return strings.TrimSuffix(fmt.Sprint(t), "[]")
 }
@@ -46,4 +57,11 @@ func MultipleInheritance(t interface{}) ([]string, bool) {
 func IsMultipleInheritance(t interface{}) bool {
 	_, ok := MultipleInheritance(t)
 	return ok
+}
+
+func IsBuiltinType(t interface{}) bool {
+	tip := raml.Type{
+		Type: t,
+	}
+	return tip.IsBuiltin()
 }

@@ -32,6 +32,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				"EnumString.py",
 				"SingleInheritance.py",
 				"MultipleInheritance.py",
+				"NumberFormat.py",
 				"animal.py",
 				"petshop.py",
 				"Catanimal.py",

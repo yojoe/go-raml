@@ -547,6 +547,17 @@ func (t Type) IsUnion() bool {
 	return strings.Index(t.TypeString(), "|") > 0
 }
 
+func (t Type) Union() ([]string, bool) {
+	if !t.IsUnion() {
+		return nil, false
+	}
+	tips := []string{}
+	for _, ut := range strings.Split(t.TypeString(), "|") {
+		tips = append(tips, strings.TrimSpace(ut))
+	}
+	return tips, true
+}
+
 // see if the 'Type' field is a JSON schema
 func (t *Type) postProcess() error {
 	if !t.IsJSONType() {

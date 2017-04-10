@@ -2,7 +2,6 @@
 Auto-generated class for SingleInheritance
 """
 from .EnumCity import EnumCity
-from .bool import bool
 
 from . import client_support
 

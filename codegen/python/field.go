@@ -73,12 +73,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 			f.Enum = newEnum(className, prop, false)
 		}
 		f.Type = f.Enum.Name
-		f.imports = []pyimport{
-			pyimport{
-				Module: "." + f.Type,
-				Name:   f.Type,
-			},
-		}
+		f.addImport("."+f.Type, f.Type)
 	} else {
 		f.setType(prop.Type)
 		if f.Type == "" {
@@ -185,39 +180,45 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	return strings.Join(datatypes, ", "), true
 }
 
+func (pf *field) addImport(module, name string) {
+	if commons.IsBuiltinType(name) {
+		return
+	}
+	fmt.Printf("add import %v\n", module)
+	imp := pyimport{
+		Module: module,
+		Name:   name,
+	}
+	pf.imports = append(pf.imports, imp)
+}
+
 // convert from raml Type to python type
 func (pf *field) setType(t string) {
-	// base RAML types we can directly map:
-	switch t {
-	case "string":
-		pf.Type = "str"
-	case "integer", "number":
-		// not dealing with floats here
-		pf.Type = "int"
-	case "boolean":
-		pf.Type = "bool"
-	case "datetime":
-		pf.Type = t
-		pf.imports = []pyimport{
-			pyimport{
-				Module: "datetime",
-				Name:   "datetime",
-			},
-		}
-		// pf.Initializer = "timestamp_to_datetime"
-	case "object":
-		pf.Type = "dict"
+	typeMap := map[string]string{
+		"string":   "str",
+		"integer":  "int",
+		"int":      "int",
+		"int8":     "int",
+		"int16":    "int",
+		"int32":    "int",
+		"int64":    "int",
+		"long":     "int",
+		"number":   "float",
+		"double":   "float",
+		"float":    "float",
+		"boolean":  "bool",
+		"datetime": "datetime",
+		"object":   "dict",
+		"UUID":     "UUID",
 	}
 
-	// special types we want to hard code
-	switch t {
-	case "UUID":
-		pf.Type = t
-		pf.imports = []pyimport{
-			pyimport{
-				Module: "uuid",
-				Name:   "UUID",
-			},
+	if v, ok := typeMap[t]; ok {
+		pf.Type = v
+		switch t {
+		case "datetime":
+			pf.addImport("datetime", "datetime")
+		case "uuid":
+			pf.addImport("uuid", "UUID")
 		}
 	}
 
@@ -231,30 +232,20 @@ func (pf *field) setType(t string) {
 		log.Info("validator has no support for bidimensional array, ignore it")
 	case commons.IsArray(t): // array
 		pf.IsList = true
-		pf.setType(t[:len(t)-2])
+		pf.setType(commons.ArrayType(t))
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
-	case strings.Index(t, "|") > 0:
+	case commons.IsUnion(t):
 		// send the list of union types to the template
-		for _, ut := range strings.Split(t, "|") {
-			typename := strings.TrimSpace(ut)
+		for _, typename := range commons.UnionTypes(t) {
 			pf.UnionTypes = append(pf.UnionTypes, typename)
-			pf.imports = append(pf.imports, pyimport{
-				Module: "." + typename,
-				Name:   typename,
-			})
+			pf.addImport("."+typename, typename)
 			pf.Type = t
 		}
 	case strings.Index(t, ".") > 1:
 		pf.Type = t[strings.Index(t, ".")+1:]
 	default:
 		pf.Type = t
-		pf.imports = []pyimport{
-			pyimport{
-				Module: "." + t,
-				Name:   t,
-			},
-		}
+		pf.addImport("."+t, t)
 	}
-
 }
