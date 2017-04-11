@@ -7,7 +7,6 @@ class Client:
     def __init__(self, base_uri = "http://api.jumpscale.com/v3"):
         self.base_url = base_uri
         self.session = requests.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
         
         self.users = UsersService(self)
 
@@ -24,14 +23,19 @@ class Client:
         ''' set authorization header value'''
         self.session.headers.update({"Authorization":val})
 
-    def get(self, uri, headers, params):
+    def get(self, uri, headers, params, content_type):
+        self.session.headers.update({"Content-Type": content_type})
         res = self.session.get(uri, headers=headers, params=params)
         res.raise_for_status()
         return res
 
-    def post(self, uri, data, headers, params):
+    def post(self, uri, data, headers, params, content_type):
+        self.session.headers.update({"Content-Type": content_type})
         if self.is_goraml_class(data):
-            res = self.session.post(uri, data=data.as_json(), headers=headers, params=params)
+            data=data.as_json()
+
+        if content_type == "multipart/form-data":
+            res = self.session.post(uri, files=data, headers=headers, params=params)
         elif type(data) is str:
             res = self.session.post(uri, data=data, headers=headers, params=params)
         else:
@@ -39,9 +43,13 @@ class Client:
         res.raise_for_status()
         return res
 
-    def put(self, uri, data, headers, params):
+    def put(self, uri, data, headers, params, content_type):
+        self.session.headers.update({"Content-Type": content_type})
         if self.is_goraml_class(data):
-            res = self.session.put(uri, data=data.as_json(), headers=headers, params=params)
+            data=data.as_json()
+
+        if content_type == "multipart/form-data":
+            res = self.session.put(uri, files=data, headers=headers, params=params)
         elif type(data) is str:
             res = self.session.put(uri, data=data, headers=headers, params=params)
         else:
@@ -49,9 +57,13 @@ class Client:
         res.raise_for_status()
         return res
 
-    def patch(self, uri, data, headers, params):
+    def patch(self, uri, data, headers, params, content_type):
+        self.session.headers.update({"Content-Type": content_type})
         if self.is_goraml_class(data):
-            res = self.session.patch(uri, data=data.as_json(), headers=headers, params=params)
+            data=data.as_json()
+
+        if content_type == "multipart/form-data":
+            res = self.session.patch(uri, files=data, headers=headers, params=params)
         elif type(data) is str:
             res = self.session.patch(uri, data=data, headers=headers, params=params)
         else:

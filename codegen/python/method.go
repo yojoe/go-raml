@@ -119,12 +119,12 @@ func (pcm *clientMethod) setup() {
 	}
 
 	// construct prArgs string from the array
-	prArgs = append(prArgs, "headers=headers", "params=query_params")
+	prArgs = append(prArgs, "headers", "query_params", "content_type")
 	pcm.PRArgs = strings.Join(prArgs, ", ")
 
 	// construct method signature
 	params = append(params, resource.GetResourceParams(pcm.Resource())...)
-	params = append(params, "headers=None", "query_params=None")
+	params = append(params, "headers=None", "query_params=None", `content_type="application/json"`)
 	pcm.Params = strings.Join(params, ", ")
 
 	// python request call
