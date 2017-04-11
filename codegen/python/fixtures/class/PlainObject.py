@@ -1,55 +1,42 @@
 """
-Auto-generated class for GetUsersReqBody
+Auto-generated class for PlainObject
 """
 
 from . import client_support
 
 
-class GetUsersReqBody(object):
+class PlainObject(object):
     """
     auto-generated. don't touch.
     """
 
     @staticmethod
-    def create(ID, age):
+    def create(obj):
         """
-        :type ID: str
-        :type age: int
-        :rtype: GetUsersReqBody
+        :type obj: dict
+        :rtype: PlainObject
         """
 
-        return GetUsersReqBody(
-            ID=ID,
-            age=age,
+        return PlainObject(
+            obj=obj,
         )
 
     def __init__(self, json=None, **kwargs):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'GetUsersReqBody'
+        class_name = 'PlainObject'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
         data = json or kwargs
 
-        property_name = 'ID'
+        property_name = 'obj'
         val = data.get(property_name)
         if val is not None:
-            datatypes = [str]
+            datatypes = [dict]
             try:
-                self.ID = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'age'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                self.age = client_support.val_factory(val, datatypes)
+                self.obj = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

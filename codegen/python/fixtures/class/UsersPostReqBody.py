@@ -1,82 +1,81 @@
 """
-Auto-generated class for SingleInheritance
+Auto-generated class for UsersPostReqBody
 """
-from .EnumCity import EnumCity
 
 from . import client_support
 
 
-class SingleInheritance(object):
+class UsersPostReqBody(object):
     """
     auto-generated. don't touch.
     """
 
     @staticmethod
-    def create(cities, colours, name, single):
+    def create(ID, age, grades, item):
         """
-        :type cities: list[EnumCity]
-        :type colours: list[str]
-        :type name: str
-        :type single: bool
-        :rtype: SingleInheritance
+        :type ID: str
+        :type age: int
+        :type grades: list[int]
+        :type item: str
+        :rtype: UsersPostReqBody
         """
 
-        return SingleInheritance(
-            cities=cities,
-            colours=colours,
-            name=name,
-            single=single,
+        return UsersPostReqBody(
+            ID=ID,
+            age=age,
+            grades=grades,
+            item=item,
         )
 
     def __init__(self, json=None, **kwargs):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'SingleInheritance'
+        class_name = 'UsersPostReqBody'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
         data = json or kwargs
 
-        property_name = 'cities'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [EnumCity]
-            try:
-                self.cities = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'colours'
+        property_name = 'ID'
         val = data.get(property_name)
         if val is not None:
             datatypes = [str]
             try:
-                self.colours = client_support.list_factory(val, datatypes)
+                self.ID = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
             raise ValueError(required_error.format(cls=class_name, prop=property_name))
 
-        property_name = 'name'
+        property_name = 'age'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [int]
+            try:
+                self.age = client_support.val_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
+        property_name = 'grades'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [int]
+            try:
+                self.grades = client_support.list_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
+        property_name = 'item'
         val = data.get(property_name)
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'single'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.single = client_support.val_factory(val, datatypes)
+                self.item = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
