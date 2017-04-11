@@ -10,15 +10,6 @@ const (
 	fileSuffix = "_schema.json"
 )
 
-var (
-	jsonScalarTypes = map[string]bool{
-		"string":  true,
-		"number":  true,
-		"boolean": true,
-		"integer": true,
-	}
-)
-
 // JSONSchema represents a json-schema json file
 type JSONSchema struct {
 	Schema      string              `json:"$schema"`
@@ -77,6 +68,32 @@ func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, nam
 		Properties: props,
 		Required:   required,
 	}
+}
+
+func (js *JSONSchema) Inherit(parents []JSONSchema) {
+	// inherit `properties` and `required`
+	// only inherit if the property name not exist in
+	// child properties
+	oriProps := map[string]interface{}{}
+	for name, prop := range js.Properties {
+		oriProps[name] = prop
+	}
+
+	for _, parent := range parents {
+		for name, prop := range parent.Properties {
+			if _, exist := oriProps[name]; !exist {
+				js.Properties[name] = prop
+			}
+		}
+		for _, name := range parent.Required {
+			if _, exist := oriProps[name]; !exist {
+				if !js.isRequired(name) {
+					js.Required = append(js.Required, name)
+				}
+			}
+		}
+	}
+
 }
 
 // Supported returns true if the type is supported
@@ -150,7 +167,7 @@ type property struct {
 }
 
 func newProperty(rp Property) property {
-	_, isScalar := jsonScalarTypes[rp.Type]
+	_, isScalar := scalarTypes[rp.Type]
 
 	// complex type
 	if rp.Type != "" && !isScalar && !rp.IsArray() && !rp.IsBidimensiArray() {
@@ -161,9 +178,35 @@ func newProperty(rp Property) property {
 		}
 	}
 
+	mapTypes := func(t string) string {
+		typeMap := map[string]string{
+			"string":        "string",
+			"number":        "number",
+			"integer":       "integer",
+			"boolean":       "boolean",
+			"date-only":     "string",
+			"time-only":     "string",
+			"datetime-only": "string",
+			"datetime":      "string",
+
+			// from number format
+			"int8":   "integer",
+			"int16":  "integer",
+			"int32":  "integer",
+			"int64":  "integer",
+			"int":    "integer",
+			"long":   "integer",
+			"float":  "number",
+			"double": "number",
+		}
+		if v, ok := typeMap[t]; ok {
+			return v
+		}
+		return t
+	}
 	p := property{
 		Name:        rp.Name,
-		Type:        rp.Type,
+		Type:        mapTypes(rp.Type),
 		Required:    rp.Required,
 		Enum:        rp.Enum,
 		MinLength:   rp.MinLength,

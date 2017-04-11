@@ -1,38 +1,38 @@
 """
-Auto-generated class for SingleInheritance
+Auto-generated class for Catanimal
 """
 from .EnumCity import EnumCity
 
 from . import client_support
 
 
-class SingleInheritance(object):
+class Catanimal(object):
     """
     auto-generated. don't touch.
     """
 
     @staticmethod
-    def create(cities, colours, name, single):
+    def create(cities, colours, kind, name=None):
         """
         :type cities: list[EnumCity]
         :type colours: list[str]
+        :type kind: str
         :type name: str
-        :type single: bool
-        :rtype: SingleInheritance
+        :rtype: Catanimal
         """
 
-        return SingleInheritance(
+        return Catanimal(
             cities=cities,
             colours=colours,
+            kind=kind,
             name=name,
-            single=single,
         )
 
     def __init__(self, json=None, **kwargs):
         if not json and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'SingleInheritance'
+        class_name = 'Catanimal'
         create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
         required_error = '{cls}: missing required property {prop}'
 
@@ -60,6 +60,17 @@ class SingleInheritance(object):
         else:
             raise ValueError(required_error.format(cls=class_name, prop=property_name))
 
+        property_name = 'kind'
+        val = data.get(property_name)
+        if val is not None:
+            datatypes = [str]
+            try:
+                self.kind = client_support.val_factory(val, datatypes)
+            except ValueError as err:
+                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        else:
+            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+
         property_name = 'name'
         val = data.get(property_name)
         if val is not None:
@@ -68,19 +79,6 @@ class SingleInheritance(object):
                 self.name = client_support.val_factory(val, datatypes)
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'single'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.single = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
 
     def __str__(self):
         return self.as_json(indent=4)
