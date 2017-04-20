@@ -9,6 +9,7 @@ install:
 go:
   - 1.6
   - 1.7
+  - 1.8
 
 script:
   - ./build_apidocs.sh
