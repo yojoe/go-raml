@@ -28,12 +28,12 @@ class Client:
             hdrs[key] = headers[key]
         return hdrs
     
-    async def get(self, uri, headers, params):
+    async def get(self, uri, headers, params, content_type):
         res = await self.session.get(uri, headers=self.build_header(headers), params=params)
         res.raise_for_status()
         return res
 
-    async def post(self, uri, data, headers, params):
+    async def post(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
@@ -42,7 +42,7 @@ class Client:
         res.raise_for_status()
         return res
 
-    async def put(self, uri, data, headers, params):
+    async def put(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
@@ -51,7 +51,7 @@ class Client:
         res.raise_for_status()
         return res
 
-    async def patch(self, uri, data, headers, params):
+    async def patch(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
