@@ -23,10 +23,23 @@ func (s *UsersService) GetUsers(headers, queryParams map[string]interface{}) (Us
 }
 
 // create users
-func (s *UsersService) UsersPost(city City, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+func (s *UsersService) UsersPost(body City, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
 	var u City
 
-	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users", &city, headers, queryParams)
+	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users", &body, headers, queryParams)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+// create users
+func (s *UsersService) UsersPut(body []string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+	var u City
+
+	resp, err := s.client.doReqWithBody("PUT", s.client.BaseURI+"/users", &body, headers, queryParams)
 	if err != nil {
 		return u, nil, err
 	}
@@ -64,10 +77,10 @@ func (s *UsersService) UsersUserIdDelete(userId string, headers, queryParams map
 	return s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+userId, headers, queryParams)
 }
 
-func (s *UsersService) UsersUserIdAddressPost(userId string, usersuseridaddresspostreqbody UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
+func (s *UsersService) UsersUserIdAddressPost(userId string, body UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
 	var u UsersUserIdAddressPostRespBody
 
-	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+userId+"/address", &usersuseridaddresspostreqbody, headers, queryParams)
+	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+userId+"/address", &body, headers, queryParams)
 	if err != nil {
 		return u, nil, err
 	}

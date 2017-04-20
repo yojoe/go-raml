@@ -21,7 +21,7 @@ func TestGenerateClientFromRaml(t *testing.T) {
 
 		err = GenerateClient(apiDef, targetDir, "theclient", "go", "client", "")
 		So(err, ShouldBeNil)
-		rootFixture := "./fixtures/client_resources"
+		rootFixture := "./golang/fixtures/client_resources"
 		checks := []struct {
 			Result   string
 			Expected string

@@ -40,7 +40,7 @@ func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
-        resp, err := s.client.doReqWithBody("{{$v.Verb}}", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&{{$v.ReqBody | ToLower}}{{else}}nil{{end}}, headers, queryParams)
+        resp, err := s.client.doReqWithBody("{{$v.Verb}}", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&body{{else}}nil{{end}}, headers, queryParams)
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err

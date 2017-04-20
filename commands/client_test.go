@@ -28,7 +28,7 @@ func TestClientGeneration(t *testing.T) {
 			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../codegen/fixtures/client_resources/client_structapitest.txt")
+			tmpl, err := testLoadFile("../codegen/golang/fixtures/client_resources/client_structapitest.txt")
 			So(err, ShouldBeNil)
 
 			So(tmpl, ShouldEqual, s)

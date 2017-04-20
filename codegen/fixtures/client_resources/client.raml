@@ -46,6 +46,15 @@ types:
       200:
         body:
           type: City
+  put:
+    description: create users
+    body:
+      type: string[]
+    responses:
+      200:
+        body:
+          type: City
+
   /{userId}:
     get:
       displayName: Get User By ID
