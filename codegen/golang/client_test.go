@@ -27,7 +27,7 @@ func TestClient(t *testing.T) {
 			err = client.Generate()
 			So(err, ShouldBeNil)
 
-			rootFixture := "../fixtures/client_resources"
+			rootFixture := "./fixtures/client_resources"
 			checks := []struct {
 				Result   string
 				Expected string

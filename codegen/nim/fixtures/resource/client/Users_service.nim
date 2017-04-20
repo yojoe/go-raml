@@ -31,6 +31,13 @@ proc usersPost*(srv: Users_service, reqBody: City, queryParams: Table[string, st
   let resp = srv.client.request("/users", "POST", $$reqBody, queryParams=queryParams)
   return to[City](resp.body)
 
+proc usersPut*(srv: Users_service, reqBody: seq[string], queryParams: Table[string, string] = initTable[string, string]()) : City =
+  # create users
+  # It calls PUT /users endpoint.
+
+  let resp = srv.client.request("/users", "PUT", $$reqBody, queryParams=queryParams)
+  return to[City](resp.body)
+
 proc OptionsUsers*(srv: Users_service, queryParams: Table[string, string] = initTable[string, string]()) : string =
   
   # It calls OPTIONS /users endpoint.

@@ -122,27 +122,19 @@ func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, 
 func (gcm *clientMethod) setup(methodName string) {
 	// build func/method params
 	buildParams := func(r *raml.Resource, bodyType string) string {
-		paramsStr := strings.Join(resource.GetResourceParams(r), ",")
 		params := resource.GetResourceParams(r)
+
 		if len(params) > 0 {
+			// all params has string type
 			params[len(params)-1] = params[len(params)-1] + " string"
-		}
-		if len(paramsStr) > 0 {
-			paramsStr += " string"
 		}
 
 		// append request body type
 		if len(bodyType) > 0 {
-			if len(paramsStr) > 0 {
-				paramsStr += ", "
-			}
-			params = append(params, strings.ToLower(bodyType)+" "+bodyType)
+			params = append(params, "body "+bodyType)
 		}
 
 		// append header
-		if len(paramsStr) > 0 {
-			paramsStr += ","
-		}
 		params = append(params, "headers,queryParams map[string]interface{}")
 
 		return strings.Join(params, ", ")
