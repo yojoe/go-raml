@@ -74,5 +74,5 @@ type ByEndpoint []MethodInterface
 func (b ByEndpoint) Len() int      { return len(b) }
 func (b ByEndpoint) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
 func (b ByEndpoint) Less(i, j int) bool {
-	return strings.Compare(b[i].EndpointStr(), b[j].EndpointStr()) < 0
+	return b[i].EndpointStr()+b[i].Verb() < b[j].EndpointStr()+b[j].Verb()
 }

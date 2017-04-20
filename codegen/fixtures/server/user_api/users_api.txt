@@ -9,6 +9,30 @@ import (
 type UsersAPI struct {
 }
 
+// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
+// get address id
+func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
+	var respBody Address
+	json.NewEncoder(w).Encode(&respBody)
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}
+
+// userIdDelete is the handler for DELETE /users/{userId}
+func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}
+
+// userIdGet is the handler for GET /users/{userId}
+// get id
+func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
+	var respBody User
+	json.NewEncoder(w).Encode(&respBody)
+	// uncomment below line to add header
+	// w.Header().Set("key","value")
+}
+
 // Get is the handler for GET /users
 // Get a list of test
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
@@ -36,30 +60,6 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var respBody User
-	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
-}
-
-// userIdGet is the handler for GET /users/{userId}
-// get id
-func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
-	var respBody User
-	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
-}
-
-// userIdDelete is the handler for DELETE /users/{userId}
-func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
-}
-
-// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
-// get address id
-func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
-	var respBody Address
 	json.NewEncoder(w).Encode(&respBody)
 	// uncomment below line to add header
 	// w.Header().Set("key","value")

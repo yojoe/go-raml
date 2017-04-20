@@ -21,6 +21,7 @@ type goResource struct {
 
 // generate interface file of a resource
 func (gr *goResource) generateInterfaceFile(directory string) error {
+	gr.SortMethods()
 	filename := directory + "/" + strings.ToLower(gr.Name) + "_if.go"
 	return commons.GenerateFile(gr, resourceIfTemplate, "resource_if_template", filename, true)
 }
@@ -31,6 +32,7 @@ func (gr *goResource) generateAPIFile(dir string) error {
 	return commons.GenerateFile(gr, resourceAPITemplate, "resource_api_template", filename, false)
 }
 
+// generate API implementation in one file per method mode
 func (gr *goResource) generateAPIImplementations(dir string) error {
 	// generate the main API impl file, which only contains struct
 	mainCtx := map[string]interface{}{
