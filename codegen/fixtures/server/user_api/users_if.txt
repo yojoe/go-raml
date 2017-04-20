@@ -9,27 +9,27 @@ import (
 )
 
 // UsersInterface is interface for /users root endpoint
-type UsersInterface interface { // Get is the handler for GET /users
+type UsersInterface interface { // getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
+	// get address id
+	getUserAddressByID(http.ResponseWriter, *http.Request)
+	// userIdDelete is the handler for DELETE /users/{userId}
+	userIdDelete(http.ResponseWriter, *http.Request)
+	// userIdGet is the handler for GET /users/{userId}
+	// get id
+	userIdGet(http.ResponseWriter, *http.Request)
+	// Get is the handler for GET /users
 	// Get a list of test
 	Get(http.ResponseWriter, *http.Request)
 	// Post is the handler for POST /users
 	// create users
 	Post(http.ResponseWriter, *http.Request)
-	// userIdGet is the handler for GET /users/{userId}
-	// get id
-	userIdGet(http.ResponseWriter, *http.Request)
-	// userIdDelete is the handler for DELETE /users/{userId}
-	userIdDelete(http.ResponseWriter, *http.Request)
-	// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
-	// get address id
-	getUserAddressByID(http.ResponseWriter, *http.Request)
 }
 
 // UsersInterfaceRoutes is routing for /users root endpoint
 func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
+	r.HandleFunc("/users/{userId}/address/{addressId}", i.getUserAddressByID).Methods("GET")
+	r.HandleFunc("/users/{userId}", i.userIdDelete).Methods("DELETE")
+	r.HandleFunc("/users/{userId}", i.userIdGet).Methods("GET")
 	r.HandleFunc("/users", i.Get).Methods("GET")
 	r.HandleFunc("/users", i.Post).Methods("POST")
-	r.HandleFunc("/users/{userId}", i.userIdGet).Methods("GET")
-	r.HandleFunc("/users/{userId}", i.userIdDelete).Methods("DELETE")
-	r.HandleFunc("/users/{userId}/address/{addressId}", i.getUserAddressByID).Methods("GET")
 }

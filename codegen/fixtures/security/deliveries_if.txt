@@ -10,28 +10,28 @@ import (
 )
 
 // DeliveriesInterface is interface for /deliveries root endpoint
-type DeliveriesInterface interface { // Get is the handler for GET /deliveries
-	// Get a list of deliveries
-	Get(http.ResponseWriter, *http.Request)
-	// Post is the handler for POST /deliveries
-	// Create/request a new delivery
-	Post(http.ResponseWriter, *http.Request)
+type DeliveriesInterface interface { // deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
+	// Cancel a specific delivery
+	deliveryIdDelete(http.ResponseWriter, *http.Request)
 	// deliveryIdGet is the handler for GET /deliveries/{deliveryId}
 	// Get information on a specific delivery
 	deliveryIdGet(http.ResponseWriter, *http.Request)
 	// deliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
 	// Update the information on a specific delivery
 	deliveryIdPatch(http.ResponseWriter, *http.Request)
-	// deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
-	// Cancel a specific delivery
-	deliveryIdDelete(http.ResponseWriter, *http.Request)
+	// Get is the handler for GET /deliveries
+	// Get a list of deliveries
+	Get(http.ResponseWriter, *http.Request)
+	// Post is the handler for POST /deliveries
+	// Create/request a new delivery
+	Post(http.ResponseWriter, *http.Request)
 }
 
 // DeliveriesInterfaceRoutes is routing for /deliveries root endpoint
 func DeliveriesInterfaceRoutes(r *mux.Router, i DeliveriesInterface) {
-	r.Handle("/deliveries", alice.New(NewOauth2FacebookMiddleware([]string{"ADMINISTRATOR"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
-	r.Handle("/deliveries", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.Post))).Methods("POST")
+	r.Handle("/deliveries/{deliveryId}", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
 	r.HandleFunc("/deliveries/{deliveryId}", i.deliveryIdGet).Methods("GET")
 	r.Handle("/deliveries/{deliveryId}", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdPatch))).Methods("PATCH")
-	r.Handle("/deliveries/{deliveryId}", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.deliveryIdDelete))).Methods("DELETE")
+	r.Handle("/deliveries", alice.New(NewOauth2FacebookMiddleware([]string{"ADMINISTRATOR"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
+	r.Handle("/deliveries", alice.New(NewOauth2DropboxMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.Post))).Methods("POST")
 }

@@ -7,6 +7,49 @@ import (
 
 type UsersService service
 
+// get address id
+func (s *UsersService) UsersUserIdAddressFolderaddressIdtestaddressId2Get(addressId, addressId2, userId string, headers, queryParams map[string]interface{}) ([]address, *http.Response, error) {
+	var u []address
+
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+userId+"/address/folder"+addressId+"test"+addressId2, headers, queryParams)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+func (s *UsersService) UsersUserIdAddressPost(userId string, body UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
+	var u UsersUserIdAddressPostRespBody
+
+	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+userId+"/address", &body, headers, queryParams)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+func (s *UsersService) UsersUserIdDelete(userId string, headers, queryParams map[string]interface{}) (*http.Response, error) {
+	// create request object
+	return s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+userId, headers, queryParams)
+}
+
+// get id
+func (s *UsersService) GetUserByID(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
+	var u City
+
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+userId, headers, queryParams)
+	if err != nil {
+		return u, nil, err
+	}
+	defer resp.Body.Close()
+
+	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
 // get users.
 // This method will be return list user.
 // Use it wisely.
@@ -20,6 +63,17 @@ func (s *UsersService) GetUsers(headers, queryParams map[string]interface{}) (Us
 	defer resp.Body.Close()
 
 	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+}
+
+func (s *UsersService) OptionsUsers(headers, queryParams map[string]interface{}) (*http.Response, error) {
+
+	resp, err := s.client.doReqWithBody("OPTIONS", s.client.BaseURI+"/users", nil, headers, queryParams)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return resp, nil
 }
 
 // create users
@@ -40,60 +94,6 @@ func (s *UsersService) UsersPut(body []string, headers, queryParams map[string]i
 	var u City
 
 	resp, err := s.client.doReqWithBody("PUT", s.client.BaseURI+"/users", &body, headers, queryParams)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-func (s *UsersService) OptionsUsers(headers, queryParams map[string]interface{}) (*http.Response, error) {
-
-	resp, err := s.client.doReqWithBody("OPTIONS", s.client.BaseURI+"/users", nil, headers, queryParams)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	return resp, nil
-}
-
-// get id
-func (s *UsersService) GetUserByID(userId string, headers, queryParams map[string]interface{}) (City, *http.Response, error) {
-	var u City
-
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+userId, headers, queryParams)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-func (s *UsersService) UsersUserIdDelete(userId string, headers, queryParams map[string]interface{}) (*http.Response, error) {
-	// create request object
-	return s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+userId, headers, queryParams)
-}
-
-func (s *UsersService) UsersUserIdAddressPost(userId string, body UsersUserIdAddressPostReqBody, headers, queryParams map[string]interface{}) (UsersUserIdAddressPostRespBody, *http.Response, error) {
-	var u UsersUserIdAddressPostRespBody
-
-	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+userId+"/address", &body, headers, queryParams)
-	if err != nil {
-		return u, nil, err
-	}
-	defer resp.Body.Close()
-
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-}
-
-// get address id
-func (s *UsersService) UsersUserIdAddressFolderaddressIdtestaddressId2Get(addressId, addressId2, userId string, headers, queryParams map[string]interface{}) ([]address, *http.Response, error) {
-	var u []address
-
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+userId+"/address/folder"+addressId+"test"+addressId2, headers, queryParams)
 	if err != nil {
 		return u, nil, err
 	}

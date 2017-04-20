@@ -2,6 +2,7 @@ package resource
 
 import (
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -72,6 +73,11 @@ func (rd *Resource) GenerateMethods(r *raml.Resource, lang string, smc ServerMet
 	for _, v := range r.Nested {
 		rd.GenerateMethods(v, lang, smc, cmc)
 	}
+}
+
+// SortMethods sort all methods in order defined by ByEndpoint
+func (rd *Resource) SortMethods() {
+	sort.Sort(ByEndpoint(rd.Methods))
 }
 
 // _getResourceParams is the recursive function of getResourceParams

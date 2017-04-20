@@ -76,6 +76,30 @@ func TestResource(t *testing.T) {
 
 		})
 
+		Convey("big raml to check interface consistency", func() {
+			err := raml.ParseFile("../fixtures/server_resources/grid/api.raml", apiDef)
+			So(err, ShouldBeNil)
+
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir)
+			_, err = gs.generateServerResources(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/server_resources/grid/"
+			files := []string{
+				"nodes_if",
+			}
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
 		Convey("resource with request body", func() {
 			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
