@@ -131,7 +131,7 @@ func (pcm *clientMethod) setup() {
 	// we encapsulate the call to put, post, and patch.
 	// To be able to accept plain string or dict.
 	// if it is a dict, we encode it to json
-	if pcm.Verb() == "GET" || pcm.Verb() == "PUT" || pcm.Verb() == "POST" || pcm.Verb() == "PATCH" {
+	if pcm.Verb() == "GET" || pcm.Verb() == "PUT" || pcm.Verb() == "POST" || pcm.Verb() == "PATCH" || pcm.Verb() == "DELETE" {
 		pcm.PRCall = fmt.Sprintf("self.client.%v", strings.ToLower(pcm.Verb()))
 	} else {
 		pcm.PRCall = fmt.Sprintf("self.client.session.%v", strings.ToLower(pcm.Verb()))

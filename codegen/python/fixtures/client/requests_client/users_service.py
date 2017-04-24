@@ -19,7 +19,7 @@ class UsersService:
         It is method for DELETE /users/{userId}
         """
         uri = self.client.base_url + "/users/"+userId
-        return self.client.session.delete(uri, headers, query_params, content_type)
+        return self.client.delete(uri, headers, query_params, content_type)
 
 
     def getuserid(self, userId, headers=None, query_params=None, content_type="application/json"):
