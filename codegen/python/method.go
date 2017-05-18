@@ -113,9 +113,11 @@ func (pcm *clientMethod) setup() {
 	params := []string{"self"} // params are method signature params
 
 	// for method with request body, we add `data` argument
-	if pcm.Verb() == "PUT" || pcm.Verb() == "POST" || pcm.Verb() == "PATCH" {
+	if !pcm.Bodies.IsEmpty() {
 		params = append(params, "data")
 		prArgs = append(prArgs, "data")
+	} else {
+		prArgs = append(prArgs, "None")
 	}
 
 	// construct prArgs string from the array

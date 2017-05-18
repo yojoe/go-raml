@@ -58,7 +58,7 @@ You will need to install `requests` library to use the client.
 You can also generate `aiohttp` asyncio based client code by using this command
 
 ```
-go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python
+go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python -kind aiohttp
 ```
 
 Then you can find client code in `aiohttp_client` directory.

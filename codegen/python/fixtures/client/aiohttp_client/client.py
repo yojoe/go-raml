@@ -27,9 +27,14 @@ class Client:
         for key in headers:
             hdrs[key] = headers[key]
         return hdrs
-    
-    async def get(self, uri, headers, params, content_type):
-        res = await self.session.get(uri, headers=self.build_header(headers), params=params)
+
+    async def get(self, uri, data, headers, params, content_type):
+        res = await self.session.get(uri, data=data, headers=self.build_header(headers), params=params)
+        res.raise_for_status()
+        return res
+
+    async def delete(self, uri, data, headers, params, content_type):
+        res = await self.session.delete(uri, data=data, headers=self.build_header(headers), params=params)
         res.raise_for_status()
         return res
 

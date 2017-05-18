@@ -328,6 +328,11 @@ type Bodies struct {
 	Type string `yaml:"type"`
 }
 
+// IsEmpty returns true if the body is empty
+func (b *Bodies) IsEmpty() bool {
+	return b.Type == "" && b.ApplicationJSON == nil
+}
+
 // inherit inherits bodies properties from a parent bodies
 // parent object could be from trait or response type
 func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {

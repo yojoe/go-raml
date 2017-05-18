@@ -27,27 +27,40 @@ class Client:
         for key in headers:
             hdrs[key] = headers[key]
         return hdrs
-    
-    async def get(self, uri, headers, params):
-        return await self.session.get(uri, headers=self.build_header(headers), params=params)
 
-    async def post(self, uri, data, headers, params):
+    async def get(self, uri, data, headers, params, content_type):
+        res = await self.session.get(uri, data=data, headers=self.build_header(headers), params=params)
+        res.raise_for_status()
+        return res
+
+    async def delete(self, uri, data, headers, params, content_type):
+        res = await self.session.delete(uri, data=data, headers=self.build_header(headers), params=params)
+        res.raise_for_status()
+        return res
+
+    async def post(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
 
-        return await self.session.post(uri, data=data, headers=hdrs, params=params)
+        res = await self.session.post(uri, data=data, headers=hdrs, params=params)
+        res.raise_for_status()
+        return res
 
-    async def put(self, uri, data, headers, params):
+    async def put(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
 
-        return await self.session.put(uri, data=data, headers=hdrs, params=params)
+        res = await self.session.put(uri, data=data, headers=hdrs, params=params)
+        res.raise_for_status()
+        return res
 
-    async def patch(self, uri, data, headers, params):
+    async def patch(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
         if type(data) is not str:
             data = json.dumps(data)
         
-        return await self.session.patch(uri, data=data, headers=hdrs, params=params)
+        res = await self.session.patch(uri, data=data, headers=hdrs, params=params)
+        res.raise_for_status()
+        return res

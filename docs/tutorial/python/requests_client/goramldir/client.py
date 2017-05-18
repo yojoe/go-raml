@@ -1,13 +1,12 @@
 import requests
 
-from .users_service import  UsersService 
+from .users_service import UsersService 
 
 
 class Client:
-    def __init__(self, base_uri = "http://localhost:5000"):
+    def __init__(self, base_uri="http://localhost:5000"):
         self.base_url = base_uri
         self.session = requests.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
         
         self.users = UsersService(self)
 
@@ -22,39 +21,47 @@ class Client:
 
     def set_auth_header(self, val):
         ''' set authorization header value'''
-        self.session.headers.update({"Authorization":val})
+        self.session.headers.update({"Authorization": val})
 
-    def get(self, uri, headers, params):
-        res = self.session.get(uri, headers=headers, params=params)
-        res.raise_for_status()
-        return res
+    def _get_headers(self, headers, content_type):
+        if content_type:
+            contentheader = {"Content-Type": content_type}
+            if headers is None:
+                headers = contentheader
+            else:
+                headers.update(contentheader)
+        return headers
 
-    def post(self, uri, data, headers, params):
+    def _handle_data(self, uri, data, headers, params, content_type, method):
+        headers = self._get_headers(headers, content_type)
         if self.is_goraml_class(data):
-            res = self.session.post(uri, data=data.as_json(), headers=headers, params=params)
+            data = data.as_json()
+
+        if content_type == "multipart/form-data":
+            # when content type is multipart/formdata remove the content-type header
+            # as requests will set this itself with correct boundary
+            headers.pop('Content-Type')
+            res = method(uri, files=data, headers=headers, params=params)
+        elif data is None:
+            res = method(uri, headers=headers, params=params)
         elif type(data) is str:
-            res = self.session.post(uri, data=data, headers=headers, params=params)
+            res = method(uri, data=data, headers=headers, params=params)
         else:
-            res = self.session.post(uri, json=data, headers=headers, params=params)
+            res = method(uri, json=data, headers=headers, params=params)
         res.raise_for_status()
         return res
 
-    def put(self, uri, data, headers, params):
-        if self.is_goraml_class(data):
-            res = self.session.put(uri, data=data.as_json(), headers=headers, params=params)
-        elif type(data) is str:
-            res = self.session.put(uri, data=data, headers=headers, params=params)
-        else:
-            res = self.session.put(uri, json=data, headers=headers, params=params)
-        res.raise_for_status()
-        return res
+    def post(self, uri, data, headers, params, content_type):
+        return self._handle_data(uri, data, headers, params, content_type, self.session.post)
 
-    def patch(self, uri, data, headers, params):
-        if self.is_goraml_class(data):
-            res = self.session.patch(uri, data=data.as_json(), headers=headers, params=params)
-        elif type(data) is str:
-            res = self.session.patch(uri, data=data, headers=headers, params=params)
-        else:
-            res = self.session.patch(uri, json=data, headers=headers, params=params)
-        res.raise_for_status()
-        return res
+    def put(self, uri, data, headers, params, content_type):
+        return self._handle_data(uri, data, headers, params, content_type, self.session.put)
+
+    def patch(self, uri, data, headers, params, content_type):
+        return self._handle_data(uri, data, headers, params, content_type, self.session.patch)
+
+    def get(self, uri, data, headers, params, content_type):
+        return self._handle_data(uri, data, headers, params, content_type, self.session.get)
+
+    def delete(self, uri, data, headers, params, content_type):
+        return self._handle_data(uri, data, headers, params, content_type, self.session.delete)

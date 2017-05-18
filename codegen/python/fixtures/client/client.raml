@@ -36,6 +36,14 @@ types:
       200:
         body:
           type: City
+  delete:
+    description: delete with request body
+    body:
+      type: City
+    responses:
+      200:
+        body:
+          type: City
   options:
     displayName: option_users
   /{userId}:
@@ -47,6 +55,10 @@ types:
           body:
             type: City
     delete:
+      responses:
+        200:
+    post:
+      description: post without request body
       responses:
         200:
     /address:
