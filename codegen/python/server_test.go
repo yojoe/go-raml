@@ -18,7 +18,7 @@ func TestServer(t *testing.T) {
 
 		Convey("Congo python server", func() {
 			apiDef := new(raml.APIDefinition)
-			_, err = raml.ParseReadFile("../fixtures/congo/api.raml", apiDef)
+			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			server := NewFlaskServer(apiDef, "apidocs", true)

@@ -64,22 +64,20 @@ var (
 // Returns a raml.APIDefinition value or an error if
 // something went wrong.
 func ParseFile(filePath string, root Root) error {
-	_, err := ParseReadFile(filePath, root)
+	workDir, fileName := filepath.Split(filePath)
+	_, err := ParseReadFile(workDir, fileName, root)
 	return err
 }
 
 // ParseReadFile parse an .raml file.
 // It returns API definition and the concatenated .raml file.
-func ParseReadFile(filePath string, root Root) ([]byte, error) {
-
-	// Get the working directory
-	workingDirectory, fileName := filepath.Split(filePath)
+func ParseReadFile(workDir, fileName string, root Root) ([]byte, error) {
 	if strings.HasSuffix(fmt.Sprint(reflect.TypeOf(root)), "APIDefinition") { // when we parse for APIDefinition, we reset ramlFileDir
-		ramlFileDir = workingDirectory
+		ramlFileDir = workDir
 	}
 
 	// Read original file contents into a byte array
-	mainFileBytes, err := readFileContents(workingDirectory, fileName)
+	mainFileBytes, err := readFileOrURL(workDir, fileName)
 
 	if err != nil {
 		return []byte{}, err
@@ -106,7 +104,7 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 
 	// Pre-process the original file, following !include directive
 	preprocessedContentsBytes, err :=
-		preProcess(mainFileBuffer, workingDirectory)
+		preProcess(mainFileBuffer, workDir)
 
 	if err != nil {
 		return []byte{},
@@ -139,7 +137,7 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 		return []byte{}, ramlError
 	}
 
-	if err := root.PostProcess(filePath); err != nil {
+	if err := root.PostProcess(filepath.Join(workDir, fileName)); err != nil {
 		return preprocessedContentsBytes, err
 	}
 
@@ -147,21 +145,16 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 	return preprocessedContentsBytes, nil
 }
 
-// read included tag which can be URL or file
-func readIncludeTag(workingDir, included string) ([]byte, error) {
+// read raml file/url
+func readFileOrURL(workingDir, included string) ([]byte, error) {
 	// read from URL if it is an URL, otherwise read from local file.
-	if strings.HasPrefix(included, "http://") || strings.HasPrefix(included, "https://") {
+	if isURL(included) {
 		return readURL(included)
 	}
 	return readFileContents(workingDir, included)
 }
 
 func readURL(address string) ([]byte, error) {
-	// double check the URL
-	if _, err := url.Parse(address); err != nil {
-		return nil, err
-	}
-
 	resp, err := http.Get(address)
 	if err != nil {
 		return nil, err
@@ -188,6 +181,16 @@ func readFileContents(workingDirectory string, fileName string) ([]byte, error) 
 	}
 
 	return fileContentsArray, nil
+}
+
+// returns true if the path is an HTTP URL
+func isURL(path string) bool {
+	if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+		if _, err := url.Parse(path); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // preProcess acts as a preprocessor for a RAML document in YAML format,
@@ -220,7 +223,7 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 
 			// Get the included file contents
 			includedContents, err :=
-				readIncludeTag(workingDirectory, included)
+				readFileOrURL(workingDirectory, included)
 
 			if err != nil {
 				return nil,

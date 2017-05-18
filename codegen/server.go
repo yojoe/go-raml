@@ -34,7 +34,8 @@ type Server struct {
 func (s *Server) Generate() error {
 	apiDef := new(raml.APIDefinition)
 	// parse the raml file
-	ramlBytes, err := raml.ParseReadFile(s.RAMLFile, apiDef)
+	dir, fileName := filepath.Split(s.RAMLFile)
+	ramlBytes, err := raml.ParseReadFile(dir, fileName, apiDef)
 	if err != nil {
 		return err
 	}

@@ -17,7 +17,7 @@ func TestLibrary(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		apiDef := new(raml.APIDefinition)
-		_, err = raml.ParseReadFile("../fixtures/libraries/api.raml", apiDef)
+		err = raml.ParseFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		server := NewFlaskServer(apiDef, "apidocs", true)

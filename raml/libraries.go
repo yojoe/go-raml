@@ -35,7 +35,7 @@ func (l *Library) PostProcess(fileName string) error {
 	l.Libraries = map[string]*Library{}
 	for name, path := range l.Uses {
 		lib := &Library{Filename: path}
-		if err := ParseFile(filepath.Join(filepath.Dir(fileName), path), lib); err != nil {
+		if _, err := ParseReadFile(filepath.Dir(fileName), path, lib); err != nil {
 			return fmt.Errorf("l.PostProcess() failed to parse library	name=%v, path=%v, err=%v",
 				name, path, err)
 		}
