@@ -2,6 +2,7 @@ package raml
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -97,14 +98,18 @@ type APIDefinition struct {
 // - inheritance
 // - setting some additional values not exist in the .raml
 // - allocate map fields
-func (apiDef *APIDefinition) PostProcess(filename string) error {
-	apiDef.Filename = filename
+func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
+	apiDef.Filename = path.Join(workDir, fileName)
 	// libraries
 	apiDef.Libraries = map[string]*Library{}
 
+	if !isURL(fileName) {
+		workDir = filepath.Join(workDir, filepath.Dir(fileName))
+	}
+
 	for name, path := range apiDef.Uses {
 		lib := &Library{Filename: path}
-		if err := ParseFile(filepath.Join(filepath.Dir(apiDef.Filename), path), lib); err != nil {
+		if _, err := ParseReadFile(workDir, path, lib); err != nil {
 			return fmt.Errorf("apiDef.PostProcess() failed to parse library	name=%v, path=%v\n\terr=%v",
 				name, path, err)
 		}

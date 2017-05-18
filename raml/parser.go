@@ -137,7 +137,7 @@ func ParseReadFile(workDir, fileName string, root Root) ([]byte, error) {
 		return []byte{}, ramlError
 	}
 
-	if err := root.PostProcess(filepath.Join(workDir, fileName)); err != nil {
+	if err := root.PostProcess(workDir, fileName); err != nil {
 		return preprocessedContentsBytes, err
 	}
 
@@ -146,12 +146,12 @@ func ParseReadFile(workDir, fileName string, root Root) ([]byte, error) {
 }
 
 // read raml file/url
-func readFileOrURL(workingDir, included string) ([]byte, error) {
+func readFileOrURL(workingDir, fileName string) ([]byte, error) {
 	// read from URL if it is an URL, otherwise read from local file.
-	if isURL(included) {
-		return readURL(included)
+	if isURL(fileName) {
+		return readURL(fileName)
 	}
-	return readFileContents(workingDir, included)
+	return readFileContents(workingDir, fileName)
 }
 
 func readURL(address string) ([]byte, error) {
