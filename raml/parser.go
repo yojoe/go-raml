@@ -36,6 +36,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -52,6 +54,10 @@ var (
 	// the library that include it.
 	// But relative to RAML file
 	ramlFileDir string
+)
+
+var (
+	includeStringLen = len("!include ")
 )
 
 // ParseFile parses an RAML file.
@@ -141,6 +147,29 @@ func ParseReadFile(filePath string, root Root) ([]byte, error) {
 	return preprocessedContentsBytes, nil
 }
 
+// read included tag which can be URL or file
+func readIncludeTag(workingDir, included string) ([]byte, error) {
+	// read from URL if it is an URL, otherwise read from local file.
+	if strings.HasPrefix(included, "http://") || strings.HasPrefix(included, "https://") {
+		return readURL(included)
+	}
+	return readFileContents(workingDir, included)
+}
+
+func readURL(address string) ([]byte, error) {
+	// double check the URL
+	if _, err := url.Parse(address); err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Get(address)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
+}
+
 // Reads the contents of a file, returns a bytes buffer
 func readFileContents(workingDirectory string, fileName string) ([]byte, error) {
 
@@ -185,21 +214,18 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 		// Did we find an !include directive to handle?
 		if idx := strings.Index(line, "!include"); idx != -1 {
 
-			// TODO: Do this better
-			includeLength := len("!include ")
-
-			includedFile := line[idx+includeLength:]
+			included := line[idx+includeStringLen:]
 
 			preprocessedContents.Write([]byte(line[:idx]))
 
 			// Get the included file contents
 			includedContents, err :=
-				readFileContents(workingDirectory, includedFile)
+				readIncludeTag(workingDirectory, included)
 
 			if err != nil {
 				return nil,
 					fmt.Errorf("Error including file %s:\n    %s",
-						includedFile, err.Error())
+						included, err.Error())
 			}
 
 			// add newline to included content
