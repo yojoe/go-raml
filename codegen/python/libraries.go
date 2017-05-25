@@ -43,11 +43,6 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string) error
 
 // generate code of this library
 func (l *library) generate() error {
-	// create directory if needed
-	if err := commons.CheckCreateDir(l.dir); err != nil {
-		return err
-	}
-
 	// write empty __init__.py in each dir
 	walkFn := func(path string, info os.FileInfo, err error) error {
 		if err != nil {

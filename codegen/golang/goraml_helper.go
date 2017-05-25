@@ -4,8 +4,6 @@ import (
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
-
-	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 var (
@@ -24,11 +22,6 @@ type goramlHelper struct {
 func (gh goramlHelper) generate(dir string) error {
 	globGoramlPkgDir = gh.packageDir
 	pkgDir := filepath.Join(dir, gh.packageDir)
-
-	// create directory if needed
-	if err := commons.CheckCreateDir(pkgDir); err != nil {
-		return err
-	}
 
 	/// dates
 	d := dateGen{PackageName: gh.packageName}

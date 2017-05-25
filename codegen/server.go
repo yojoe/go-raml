@@ -7,7 +7,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/apidocs"
-	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/golang"
 	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/python"
@@ -36,11 +35,6 @@ func (s *Server) Generate() error {
 	// parse the raml file
 	ramlBytes, err := raml.ParseReadFile(s.RAMLFile, apiDef)
 	if err != nil {
-		return err
-	}
-
-	// create directory if needed
-	if err := commons.CheckCreateDir(s.Dir); err != nil {
 		return err
 	}
 

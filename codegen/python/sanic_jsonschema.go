@@ -37,8 +37,6 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 
 	sDir := filepath.Join(dir, s.schemaDir())
 
-	commons.CheckCreateDir(sDir)
-
 	for name, t := range types.AllTypes(s.APIDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
