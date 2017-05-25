@@ -24,7 +24,8 @@ types:
     properties:
       name?: string
       colours:
-        type: string[]
+        type: array
+        items: string
       cities:
         type: EnumCity[]
         minItems: 1

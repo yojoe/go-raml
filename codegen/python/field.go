@@ -75,7 +75,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 		f.Type = f.Enum.Name
 		f.addImport("."+f.Type, f.Type)
 	} else {
-		f.setType(prop.Type)
+		f.setType(prop.Type, prop.Items)
 		if f.Type == "" {
 			return f, fmt.Errorf("unsupported type:%v", prop.Type)
 		}
@@ -168,7 +168,7 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 		childField := field{
 			Name: objProp.name,
 		}
-		childField.setType(objProp.datatype)
+		childField.setType(objProp.datatype, "")
 		thisDatatype := childField.Type
 		if len(objProp.childProperties) > 0 {
 			thisDatatype, _ = buildDataType(childField, objProp.childProperties)
@@ -192,7 +192,7 @@ func (pf *field) addImport(module, name string) {
 }
 
 // convert from raml Type to python type
-func (pf *field) setType(t string) {
+func (pf *field) setType(t, items string) {
 	typeMap := map[string]string{
 		"string":   "str",
 		"integer":  "int",
@@ -225,18 +225,23 @@ func (pf *field) setType(t string) {
 		return
 	}
 
+	ramlType := raml.Type{
+		Type:  t,
+		Items: items,
+	}
 	// other types that need some processing
 	switch {
-	case commons.IsBidimensiArray(t): // bidimensional array
+	case ramlType.IsBidimensiArray(): // bidimensional array
 		log.Info("validator has no support for bidimensional array, ignore it")
-	case commons.IsArray(t): // array
+	case ramlType.IsArray(): // array
 		pf.IsList = true
-		pf.setType(commons.ArrayType(t))
+		pf.setType(ramlType.ArrayType(), "")
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
-	case commons.IsUnion(t):
+	case ramlType.IsUnion():
 		// send the list of union types to the template
-		for _, typename := range commons.UnionTypes(t) {
+		unionTypes, _ := ramlType.Union()
+		for _, typename := range unionTypes {
 			pf.UnionTypes = append(pf.UnionTypes, typename)
 			pf.addImport("."+typename, typename)
 			pf.Type = t

@@ -3,8 +3,8 @@ package golang
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -31,7 +31,7 @@ type enum struct {
 func newEnum(structName string, prop raml.Property, pkg string, fromStruct bool) *enum {
 	e := enum{
 		Name: strings.Title(structName) + strings.Title(prop.Name),
-		Type: convertToGoType(prop.Type),
+		Type: convertToGoType(prop.Type, prop.Items),
 		Pkg:  pkg,
 	}
 	if !fromStruct {

@@ -42,7 +42,8 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 	for name, t := range types.AllTypes(s.APIDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
-			if commons.IsMultipleInheritance(tip) {
+			rt := raml.Type{Type: tip}
+			if rt.IsMultipleInheritance() {
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
@@ -58,13 +59,14 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 	}
 
 	for _, tip := range delayedMI {
-		parents, _ := commons.MultipleInheritance(tip)
+		rt := raml.Type{Type: tip}
+		if parents, isMult := rt.MultipleInheritance(); isMult {
+			name := jsMultipleInheritanceName(parents)
+			js := raml.NewJSONSchemaFromProps(nil, map[string]interface{}{}, "object", name)
 
-		name := jsMultipleInheritanceName(parents)
-		js := raml.NewJSONSchemaFromProps(nil, map[string]interface{}{}, "object", name)
-
-		js.Inherit(getParentsObjs(parents))
-		jsObjects[js.Name] = js
+			js.Inherit(getParentsObjs(parents))
+			jsObjects[js.Name] = js
+		}
 	}
 
 	for _, obj := range jsObjects {
@@ -83,10 +85,11 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 // this func is ugly, it should be part of raml.JSONSchema class
 // or we inherit that class
 func (js *jsonSchema) HandleAdvancedType() {
-	parents, isMult := commons.MultipleInheritance(js.Type)
-	parent, isSingleInherit := commons.SingleInheritance(js.Type)
+	rt := raml.Type{Type: js.Type}
+	parent, isSingleInherit := rt.SingleInheritance()
 	switch {
-	case isMult:
+	case rt.IsMultipleInheritance():
+		parents, _ := rt.MultipleInheritance()
 		js.Inherit(getParentsObjs(parents))
 	case isSingleInherit:
 		js.Inherit(getParentsObjs([]string{parent}))
