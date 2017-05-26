@@ -19,37 +19,41 @@ var (
 
 	// global value of API definition
 	globAPIDef *raml.APIDefinition
+
+	globLibRootURLs []string
 )
 
 // Server represents a Go server
 type Server struct {
 	apiDef           *raml.APIDefinition
-	Title            string
 	ResourcesDef     []resource.ResourceInterface
 	PackageName      string // Name of the package this server resides in
 	APIDocsDir       string // apidocs directory. apidocs won't be generated if it is empty
-	withMain         bool
+	withMain         bool   // true if we need to generate main file
 	RootImportPath   string
-	APIFilePerMethod bool // true if we want to generate one API file per API method
-	TargetDir        string
+	APIFilePerMethod bool     // true if we want to generate one API file per API method
+	TargetDir        string   // root directory of the generated code
+	libsRootURLs     []string // root URLs of the libraries
 }
 
 // NewServer creates a new Golang server
 func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string,
-	withMain, apiFilePerMethod bool, targetDir string) Server {
+	withMain, apiFilePerMethod bool, targetDir string, libsRootURLs []string) Server {
 	// global variables
+	rootImportPath = setRootImportPath(rootImportPath, targetDir)
 	globAPIDef = apiDef
 	globRootImportPath = rootImportPath
+	globLibRootURLs = libsRootURLs
 
 	return Server{
 		apiDef:           apiDef,
-		Title:            apiDef.Title,
 		PackageName:      packageName,
 		APIDocsDir:       apiDocsDir,
 		withMain:         withMain,
-		RootImportPath:   setRootImportPath(rootImportPath, targetDir),
+		RootImportPath:   rootImportPath,
 		APIFilePerMethod: apiFilePerMethod,
 		TargetDir:        targetDir,
+		libsRootURLs:     libsRootURLs,
 	}
 }
 
@@ -86,7 +90,7 @@ func (gs Server) Generate() error {
 	gs.ResourcesDef = rds
 
 	// libraries
-	if err := generateLibraries(gs.apiDef.Libraries, gs.TargetDir); err != nil {
+	if err := generateLibraries(gs.apiDef.Libraries, gs.TargetDir, gs.libsRootURLs); err != nil {
 		return err
 	}
 
@@ -101,4 +105,9 @@ func (gs Server) Generate() error {
 	}
 
 	return nil
+}
+
+// Title returns title of this server
+func (gs Server) Title() string {
+	return gs.apiDef.Title
 }

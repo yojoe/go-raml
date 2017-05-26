@@ -25,17 +25,21 @@ type Client struct {
 	RootImportPath string
 	Services       map[string]*ClientService
 	TargetDir      string
+	libsRootURLs   []string
 }
 
 // NewClient creates a new Golang client
-func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDir string) (Client, error) {
+func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDir string,
+	libsRootURLs []string) (Client, error) {
 	// rootImportPath only needed if we use libraries
 	if rootImportPath == "" && len(apiDef.Libraries) > 0 {
 		return Client{}, fmt.Errorf("--import-path can't be empty when we use libraries")
 	}
 
+	rootImportPath = setRootImportPath(rootImportPath, targetDir)
 	globRootImportPath = rootImportPath
 	globAPIDef = apiDef
+	globLibRootURLs = libsRootURLs
 
 	services := map[string]*ClientService{}
 	for k, v := range apiDef.Resources {
@@ -53,9 +57,10 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 		BaseURI:        apiDef.BaseURI,
 		libraries:      apiDef.Libraries,
 		PackageName:    packageName,
-		RootImportPath: setRootImportPath(rootImportPath, targetDir),
+		RootImportPath: rootImportPath,
 		Services:       services,
 		TargetDir:      targetDir,
+		libsRootURLs:   libsRootURLs,
 	}
 
 	if strings.Index(client.BaseURI, "{version}") > 0 {
@@ -81,7 +86,7 @@ func (gc Client) Generate() error {
 	}
 
 	// libraries
-	if err := generateLibraries(gc.libraries, gc.TargetDir); err != nil {
+	if err := generateLibraries(gc.libraries, gc.TargetDir, gc.libsRootURLs); err != nil {
 		return err
 	}
 

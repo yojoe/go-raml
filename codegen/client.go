@@ -11,7 +11,8 @@ import (
 func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath, kind string) error {
 	switch lang {
 	case langGo:
-		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir)
+		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir,
+			[]string{"http://locahost/libs"})
 		if err != nil {
 			return err
 		}

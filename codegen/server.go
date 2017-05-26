@@ -41,7 +41,8 @@ func (s *Server) Generate() error {
 
 	switch s.Lang {
 	case langGo:
-		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain, s.APIFilePerMethod, s.Dir)
+		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain,
+			s.APIFilePerMethod, s.Dir, []string{"http://localhost/libs"})
 		err = gs.Generate()
 	case langPython:
 		ps := python.NewServer(s.Kind, apiDef, s.APIDocsDir, s.WithMain)

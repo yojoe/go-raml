@@ -21,7 +21,7 @@ func TestClient(t *testing.T) {
 			err = raml.ParseFile("../fixtures/client_resources/client.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			client, err := NewClient(&apiDef, "theclient", "examples.com/libro", targetDir)
+			client, err := NewClient(&apiDef, "theclient", "examples.com/libro", targetDir, nil)
 			So(err, ShouldBeNil)
 
 			err = client.Generate()

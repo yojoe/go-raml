@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/libraries"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -21,13 +22,14 @@ import (
 // types-lib: lib-types.raml  -> generated as `types_lib` package in current directory
 type goLibrary struct {
 	*raml.Library
-	PackageName string
-	baseDir     string // root directory
-	dir         string // library directory
+	PackageName  string
+	baseDir      string // root directory
+	dir          string // library directory
+	libsRootURLs string
 }
 
 // create new library instance
-func newGoLibrary(name string, lib *raml.Library, baseDir string) *goLibrary {
+func newGoLibrary(name string, lib *raml.Library, baseDir string, libsRootURLs []string) *goLibrary {
 	return &goLibrary{
 		Library:     lib,
 		baseDir:     baseDir,
@@ -37,9 +39,9 @@ func newGoLibrary(name string, lib *raml.Library, baseDir string) *goLibrary {
 }
 
 // generate code of all libraries
-func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
+func generateLibraries(libraries map[string]*raml.Library, baseDir string, libsRootURLs []string) error {
 	for name, ramlLib := range libraries {
-		l := newGoLibrary(name, ramlLib, baseDir)
+		l := newGoLibrary(name, ramlLib, baseDir, libsRootURLs)
 		if err := l.generate(); err != nil {
 			return err
 		}
@@ -61,7 +63,7 @@ func (l *goLibrary) generate() error {
 
 	// included libraries
 	for name, ramlLib := range l.Libraries {
-		childLib := newGoLibrary(name, ramlLib, l.baseDir)
+		childLib := newGoLibrary(name, ramlLib, l.baseDir, []string{l.libsRootURLs})
 		if err := childLib.generate(); err != nil {
 			return err
 		}
@@ -70,8 +72,9 @@ func (l *goLibrary) generate() error {
 }
 
 // get library import path from a type
-func libImportPath(rootImportPath, typ string) string {
-	// library use '.', return nothing if it is not a library
+func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
+	// all library use '.',
+	// return nothing if it is not a library
 	if strings.Index(typ, ".") < 0 {
 		return ""
 	}
@@ -89,6 +92,8 @@ func libImportPath(rootImportPath, typ string) string {
 	if libRAMLFile == "" {
 		log.Fatalf("can't find library : %v", libName)
 	}
+
+	libRAMLFile = libraries.StripLibRootURL(libRAMLFile, libRootURLs)
 
 	return filepath.Join(rootImportPath, goLibPackageDir(libName, libRAMLFile))
 }

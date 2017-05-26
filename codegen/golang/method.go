@@ -54,11 +54,11 @@ func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, gm.ReqBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.ReqBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
-	if lib := libImportPath(rootImportPath, gm.RespBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.RespBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	return libs
@@ -89,9 +89,9 @@ func (gm serverMethod) ReqBodyNeedValidation() bool {
 	// the reqBody type is already in Go type
 	getBuiltinType := func() string {
 		switch {
-		case strings.HasPrefix(gm.ReqBody, "[][]"):
+		case strings.HasPrefix(gm.ReqBody, "[][]"): // bidimensional array
 			return strings.TrimPrefix(gm.ReqBody, "[][]")
-		case strings.HasPrefix(gm.ReqBody, "[]"):
+		case strings.HasPrefix(gm.ReqBody, "[]"): // array
 			return strings.TrimPrefix(gm.ReqBody, "[]")
 		default:
 			return gm.ReqBody
@@ -105,7 +105,8 @@ func (gm serverMethod) ReqBodyNeedValidation() bool {
 }
 
 // create client resource's method
-func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
+func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method,
+	methodName string) (resource.MethodInterface, error) {
 	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
 
 	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
@@ -169,11 +170,11 @@ func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, gcm.ReqBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gcm.ReqBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
-	if lib := libImportPath(rootImportPath, gcm.RespBody); lib != "" {
+	if lib := libImportPath(rootImportPath, gcm.RespBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	return libs
