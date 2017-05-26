@@ -5,8 +5,10 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/libraries"
 	"github.com/Jumpscale/go-raml/raml"
@@ -37,8 +39,7 @@ func copyLibrariesFiles(uses map[string]string, libs map[string]*raml.Library, r
 	baseDir := filepath.Dir(ramlFile)
 	// copy library files
 	for _, path := range uses {
-		path = libraries.StripLibRootURL(path, libRootURLs)
-		if err := copyFile(filepath.Join(baseDir, path), filepath.Join(dir, path)); err != nil {
+		if err := copyFile(baseDir, path, dir, libRootURLs); err != nil {
 			return err
 		}
 	}
@@ -54,12 +55,25 @@ func copyLibrariesFiles(uses map[string]string, libs map[string]*raml.Library, r
 }
 
 // copy file from source to dest
-func copyFile(source, dest string) error {
-	// source file
-	sourceFile, err := os.Open(source)
-	if err != nil {
-		return err
+func copyFile(sourceDir, sourceFile, destDir string, libRootURLs []string) error {
+	var source io.Reader
+
+	if strings.HasPrefix(sourceFile, "http://") || strings.HasPrefix(sourceFile, "https://") {
+		resp, err := http.Get(sourceFile)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		source = resp.Body
+	} else {
+		sourceFile, err := os.Open(filepath.Join(sourceDir, sourceFile))
+		if err != nil {
+			return err
+		}
+		source = sourceFile
 	}
+
+	dest := filepath.Join(destDir, libraries.StripLibRootURL(sourceFile, libRootURLs))
 
 	// create target dir if needed
 	if err := os.MkdirAll(filepath.Dir(dest), 0777); err != nil {
@@ -72,7 +86,7 @@ func copyFile(source, dest string) error {
 		return err
 	}
 
-	_, err = io.Copy(destFile, sourceFile)
+	_, err = io.Copy(destFile, source)
 	return err
 }
 

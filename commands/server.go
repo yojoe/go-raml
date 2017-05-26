@@ -1,9 +1,11 @@
 package commands
 
 import (
-	"github.com/Jumpscale/go-raml/codegen"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen"
 )
 
 // ServerCommand is executed to generate a go server from a RAML specification
@@ -16,7 +18,18 @@ type ServerCommand struct {
 	NoMainGeneration bool   //do not generate a main.go file
 	ImportPath       string // root import path of the code, such as : github.com/jumpscale/restapi
 	NoAPIDocs        bool   // do not generate API Docs in /apidocs/ endpoint
+
+	// If true,generate one API file per method.
+	// If false, generate one API file per endpoint
 	APIFilePerMethod bool
+
+	// Root URL of the libraries.
+	// Usefull if we want to use remote libraries.
+	// Example:
+	//   root url     = http://localhost.com/lib
+	//   library file = http://localhost.com/lib/libraries/security.raml
+	//	 the library file is going to treated the same as local : libraries/security.raml
+	LibRootURLs string
 }
 
 // Execute generates a Go server from an RAML specification
@@ -40,6 +53,7 @@ func (command *ServerCommand) Execute() error {
 		RootImportPath:   command.ImportPath,
 		WithMain:         !command.NoMainGeneration,
 		APIFilePerMethod: command.APIFilePerMethod,
+		LibRootURLs:      strings.Split(command.LibRootURLs, ","),
 	}
 	return cs.Generate()
 }

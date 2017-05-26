@@ -103,6 +103,11 @@ func main() {
 					Usage:       "Generate one API implementation file per method (only for Go)",
 					Destination: &serverCommand.APIFilePerMethod,
 				},
+				cli.StringFlag{
+					Name:        "lib-root-urls",
+					Usage:       "Array of libraries root URLs",
+					Destination: &serverCommand.LibRootURLs,
+				},
 			},
 			Action: func(c *cli.Context) {
 				if err := serverCommand.Execute(); err != nil {
@@ -150,6 +155,11 @@ func main() {
 					Value:       "requests",
 					Usage:       "Kind of client to generate (requests,aiohttp)",
 					Destination: &clientCommand.Kind,
+				},
+				cli.StringFlag{
+					Name:        "lib-root-urls",
+					Usage:       "Array of libraries root URLs",
+					Destination: &clientCommand.LibRootURLs,
 				},
 			},
 			Action: func(c *cli.Context) {

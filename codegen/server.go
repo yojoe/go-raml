@@ -39,7 +39,6 @@ func (s *Server) Generate() error {
 	if err != nil {
 		return err
 	}
-	s.LibRootURLs = []string{"https://raw.githubusercontent.com/Jumpscale/go-raml/master/codegen/fixtures/libraries"}
 
 	switch s.Lang {
 	case langGo:

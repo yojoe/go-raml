@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"strings"
+
 	"github.com/Jumpscale/go-raml/codegen"
 	"github.com/Jumpscale/go-raml/raml"
 
@@ -15,6 +17,14 @@ type ClientCommand struct {
 	PackageName string //package name in the generated go source files
 	ImportPath  string
 	Kind        string
+
+	// Root URL of the libraries.
+	// Usefull if we want to use remote libraries.
+	// Example:
+	//   root url     = http://localhost.com/lib
+	//   library file = http://localhost.com/lib/libraries/security.raml
+	//	 the library file is going to treated the same as local : libraries/security.raml
+	LibRootURLs string
 }
 
 //Execute generates a client from a RAML specification
@@ -25,5 +35,6 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language, command.ImportPath, command.Kind)
+	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language,
+		command.ImportPath, command.Kind, strings.Split(command.LibRootURLs, ","))
 }
