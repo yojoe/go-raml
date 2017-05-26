@@ -21,7 +21,7 @@ func TestServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewFlaskServer(apiDef, "apidocs", true)
+			server := NewFlaskServer(apiDef, "apidocs", true, nil)
 			err = server.Generate(targetdir)
 			So(err, ShouldBeNil)
 

@@ -20,7 +20,7 @@ func TestMethod(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/display_name/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			fs := NewFlaskServer(apiDef, "apidocs", true)
+			fs := NewFlaskServer(apiDef, "apidocs", true, nil)
 
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
