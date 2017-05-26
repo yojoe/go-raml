@@ -222,7 +222,10 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 		var results []string
 		switch tip := t.Type.(type) {
 		case string:
-			if commons.IsMultipleInheritance(tip) {
+			rt := raml.Type{
+				Type: tip,
+			}
+			if rt.IsMultipleInheritance() {
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
@@ -248,12 +251,11 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 	}
 
 	for _, tip := range delayedMI {
-		parents, isMult := commons.MultipleInheritance(tip)
-		if isMult {
-			t := raml.Type{
-				Type: tip,
-			}
-			pc := newClassFromType(t, strings.Join(parents, ""))
+		rt := raml.Type{
+			Type: tip,
+		}
+		if parents, isMult := rt.MultipleInheritance(); isMult {
+			pc := newClassFromType(rt, strings.Join(parents, ""))
 			results, err := pc.generate(dir)
 			if err != nil {
 				return names, err

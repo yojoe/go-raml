@@ -66,10 +66,13 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	for name, t := range types.AllTypes(apiDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
+			rt := raml.Type{
+				Type: tip,
+			}
 			// we currently only handle multiple inheritance.
 			// TODO we also need to handle union, but we still don't have
 			// union support
-			if commons.IsMultipleInheritance(tip) {
+			if rt.IsMultipleInheritance() {
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
@@ -96,11 +99,15 @@ func generateAllObjects(apiDef *raml.APIDefinition, dir string) error {
 	}
 
 	for _, tip := range delayedMI {
-		parents, _ := commons.MultipleInheritance(tip)
-		obj := newObject(multipleInheritanceNewName(parents), "",
-			map[string]interface{}{})
-		obj.inherit(parents)
-		addObj(obj)
+		rt := raml.Type{
+			Type: tip,
+		}
+		if parents, isMult := rt.MultipleInheritance(); isMult {
+			obj := newObject(multipleInheritanceNewName(parents), "",
+				map[string]interface{}{})
+			obj.inherit(parents)
+			addObj(obj)
+		}
 	}
 
 	for _, obj := range objs {
@@ -208,8 +215,8 @@ func (o *object) makeEnum() {
 }
 
 func (o *object) makeArray(t string) {
-	o.Parents = append(o.Parents, toNimType(t))
-	o.buildOneLine(toNimType(t))
+	o.Parents = append(o.Parents, toNimType(t, ""))
+	o.buildOneLine(toNimType(t, ""))
 }
 
 func (o *object) buildOneLine(tipe string) {

@@ -216,7 +216,7 @@ func (sd *structDef) buildEnum() {
 // spec http://docs.raml.org/specs/1.0/#raml-10-spec-array-types
 // example result  `type TypeName []something`
 func (sd *structDef) buildArray() {
-	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
+	sd.buildOneLine(convertToGoType(sd.T.Type.(string), ""))
 }
 
 // build union type
@@ -225,7 +225,7 @@ func (sd *structDef) buildUnion() {
 }
 
 func (sd *structDef) buildTypeAlias() {
-	sd.buildOneLine(convertToGoType(sd.T.Type.(string)))
+	sd.buildOneLine(convertToGoType(sd.T.Type.(string), ""))
 }
 
 func (sd *structDef) buildOneLine(tipe string) {
@@ -278,13 +278,16 @@ func unionNewName(tip string) string {
 // - newType Name if we try to generate it
 // - nil if no error happened during generation
 func createGenerateStruct(tip, dir, pkgName string) (string, error) {
-	parents, isMultiple := commons.MultipleInheritance(tip)
-	if isMultiple {
+	rt := raml.Type{
+		Type: tip,
+	}
+	if parents, isMultiple := rt.MultipleInheritance(); isMultiple {
 		sd := newStructDef(multipleInheritanceNewName(parents), pkgName, "", map[string]interface{}{})
 		sd.addMultipleInheritance(parents)
 		return sd.Name, sd.generate(dir)
 	}
-	if commons.IsUnion(tip) {
+
+	if rt.IsUnion() {
 		t := raml.Type{
 			Type: tip,
 		}

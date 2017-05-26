@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -70,6 +71,9 @@ func GenerateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 	if !override && isFileExist(filename) {
 		log.Infof("file %v already exist and override=false, no need to regenerate", filename)
 		return nil
+	}
+
+	if err := checkCreateDir(filepath.Dir(filename)); err != nil {
 	}
 
 	// pass Go function to template
@@ -180,7 +184,7 @@ func AtoiOrPanic(str string) int {
 }
 
 // create directory if not exist
-func CheckCreateDir(dir string) error {
+func checkCreateDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return os.MkdirAll(dir, 0777)
 	}

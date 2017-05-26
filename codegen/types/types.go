@@ -125,10 +125,13 @@ func getBodyPropertiesDescription(body *raml.Bodies) (map[string]interface{}, st
 // single line type definition that need to be
 // defined as a new type
 func singleLineNewType(tip string) bool {
-	if _, isMultiple := commons.MultipleInheritance(tip); isMultiple {
+	rt := raml.Type{
+		Type: tip,
+	}
+	if rt.IsMultipleInheritance() {
 		return true
 	}
-	if commons.IsUnion(tip) {
+	if rt.IsUnion() {
 		return true
 	}
 	return false

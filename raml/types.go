@@ -38,6 +38,10 @@ import (
 	"strings"
 )
 
+const (
+	arrayType = "array"
+)
+
 var (
 	scalarTypes = map[string]bool{
 		"string":        true,
@@ -150,6 +154,7 @@ type Property struct {
 	MinItems    *int
 	MaxItems    *int
 	UniqueItems bool
+	Items       string
 
 	// Capnp extension
 	CapnpFieldNumber int
@@ -216,6 +221,8 @@ func ToProperty(name string, p interface{}) Property {
 				*p.MaxItems = v.(int)
 			case "uniqueItems":
 				p.UniqueItems = v.(bool)
+			case "items":
+				p.Items = v.(string)
 			case "capnpFieldNumber":
 				p.CapnpFieldNumber = v.(int)
 			case "capnpType":
@@ -263,7 +270,7 @@ func (p Property) IsBidimensiArray() bool {
 
 // IsArray returns true if it is an array
 func (p Property) IsArray() bool {
-	return strings.HasSuffix(p.Type, "[]")
+	return p.Type == arrayType || strings.HasSuffix(p.Type, "[]")
 }
 
 // IsUnion returns true if a property is a union
@@ -271,11 +278,16 @@ func (p Property) IsUnion() bool {
 	return strings.Index(p.Type, "|") > 0
 }
 
+// BidimensiArrayType returns type of the bidimensional array
 func (p Property) BidimensiArrayType() string {
 	return strings.TrimSuffix(p.Type, "[][]")
 }
 
+// ArrayType returns the type of the array
 func (p Property) ArrayType() string {
+	if p.Type == arrayType {
+		return p.Items
+	}
 	return strings.TrimSuffix(p.Type, "[]")
 }
 
@@ -417,10 +429,10 @@ func (t Type) GetBuiltinType() (string, bool) {
 		return t.TypeString(), true
 	}
 	if t.IsArray() {
-		return strings.TrimSuffix(t.TypeString(), "[]"), true
+		return t.ArrayType(), true
 	}
 	if t.IsBidimensiArray() {
-		return strings.TrimSuffix(t.TypeString(), "[][]"), true
+		return t.BidimensiArrayType(), true
 	}
 	return "", false
 }
@@ -466,6 +478,7 @@ func (t Type) SingleInheritance() (string, bool) {
 	return tStr, !isMultiple
 }
 
+// MultipleInheritance returns all types inherited by this type
 func (t Type) MultipleInheritance() ([]string, bool) {
 	if t.IsJSONType() {
 		return nil, false
@@ -479,6 +492,8 @@ func (t Type) MultipleInheritance() ([]string, bool) {
 	return splitted, len(splitted) > 1
 }
 
+// IsMultipleInheritance returns true if this type
+// has multiple inheritance
 func (t Type) IsMultipleInheritance() bool {
 	_, ok := t.MultipleInheritance()
 	return ok
@@ -522,14 +537,28 @@ func (t Type) IsArray() bool {
 	if t.IsJSONType() {
 		return false
 	}
-	return strings.HasSuffix(t.TypeString(), "[]")
+	return t.TypeString() == arrayType || strings.HasSuffix(t.TypeString(), "[]")
+	//return strings.HasSuffix(t.TypeString(), "[]")
 }
 
+// ArrayType returns type of the array
+func (t Type) ArrayType() string {
+	if t.TypeString() == "array" {
+		return interfaceToString(t.Items)
+	}
+	return strings.TrimSuffix(t.TypeString(), "[]")
+}
+
+// IsBidimensiArray returns true
+// if it is a bidimensional array
 func (t Type) IsBidimensiArray() bool {
 	if t.IsJSONType() {
 		return false
 	}
 	return strings.HasSuffix(t.TypeString(), "[][]")
+}
+func (t Type) BidimensiArrayType() string {
+	return strings.TrimSuffix(t.TypeString(), "[][]")
 }
 
 // IsEnum type check if this type is an enum
@@ -547,6 +576,7 @@ func (t Type) IsUnion() bool {
 	return strings.Index(t.TypeString(), "|") > 0
 }
 
+// Union returns union type of this type
 func (t Type) Union() ([]string, bool) {
 	if !t.IsUnion() {
 		return nil, false

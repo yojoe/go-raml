@@ -33,7 +33,7 @@ func (f field) EscapedName() string {
 func newField(objName string, prop raml.Property) field {
 	f := field{
 		Name: prop.Name,
-		Type: toNimType(prop.Type),
+		Type: toNimType(prop.Type, prop.Items),
 	}
 	if prop.IsEnum() {
 		f.Enum = newEnum(objName, prop, false)

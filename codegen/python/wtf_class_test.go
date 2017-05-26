@@ -30,7 +30,9 @@ func TestGenerateWtfClass(t *testing.T) {
 			}{
 				{"ValidationString.py", "ValidationString.py"}, // strings validator
 				{"Cage.py", "Cage.py"},                         // with form field
-				{"animal.py", "animal.py"},                     // FieldList of FormField
+				// disable this animal.py test for now, it becomes hard to maintain
+				// and we will remove support for wtform eventually
+				///{"animal.py", "animal.py"},                     // FieldList of FormField
 			}
 
 			for _, check := range checks {

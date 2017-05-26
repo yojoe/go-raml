@@ -49,10 +49,6 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string) error
 
 // generate code of this library
 func (l *goLibrary) generate() error {
-	if err := commons.CheckCreateDir(l.dir); err != nil {
-		return err
-	}
-
 	// generate all Type structs
 	if err := generateStructs(l.Types, l.dir, l.PackageName); err != nil {
 		return err

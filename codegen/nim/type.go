@@ -1,7 +1,7 @@
 package nim
 
 import (
-	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
@@ -25,18 +25,22 @@ var (
 	}
 )
 
-func toNimType(t string) string {
+func toNimType(t, items string) string {
 	if v, ok := typeMap[t]; ok {
 		return v
 	}
 	// other types that need some processing
-	parents, isMultiple := commons.MultipleInheritance(t)
+	ramlType := raml.Type{
+		Type:  t,
+		Items: items,
+	}
 	switch {
-	case commons.IsBidimensiArray(t):
-		return "seq[seq[" + toNimType(commons.BidimensiArrayType(t)) + "]]"
-	case commons.IsArray(t):
-		return "seq[" + toNimType(commons.ArrayType(t)) + "]"
-	case isMultiple:
+	case ramlType.IsBidimensiArray():
+		return "seq[seq[" + toNimType(ramlType.BidimensiArrayType(), "") + "]]"
+	case ramlType.IsArray():
+		return "seq[" + toNimType(ramlType.ArrayType(), "") + "]"
+	case ramlType.IsMultipleInheritance():
+		parents, _ := ramlType.MultipleInheritance()
 		return multipleInheritanceNewName(parents)
 	}
 	return t

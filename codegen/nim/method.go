@@ -163,10 +163,10 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 	prefix = commons.NormalizeURI(prefix)
 
 	if len(bodies.Type) > 0 && bodies.Type != "object" {
-		tipe = toNimType(bodies.Type)
+		tipe = toNimType(bodies.Type, "")
 	} else if bodies.ApplicationJSON != nil {
 		if bodies.ApplicationJSON.TypeString() != "" && bodies.ApplicationJSON.TypeString() != "object" {
-			tipe = toNimType(bodies.ApplicationJSON.TypeString())
+			tipe = toNimType(bodies.ApplicationJSON.TypeString(), "")
 		} else {
 			tipe = prefix + suffix
 		}

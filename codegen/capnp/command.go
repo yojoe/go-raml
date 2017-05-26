@@ -1,16 +1,10 @@
 package capnp
 
 import (
-	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 func GenerateCapnp(apiDef *raml.APIDefinition, dir, lang, pkg string) error {
-	// create directory if needed
-	if err := commons.CheckCreateDir(dir); err != nil {
-		return err
-	}
-
 	structs := []Struct{}
 
 	// generate types

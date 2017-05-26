@@ -2,6 +2,7 @@ package golang
 
 import (
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
@@ -24,7 +25,7 @@ var (
 )
 
 // convert from raml type to go type
-func convertToGoType(tip string) string {
+func convertToGoType(tip, items string) string {
 	if v, ok := typeMap[tip]; ok {
 		return v
 	}
@@ -46,16 +47,21 @@ func convertToGoType(tip string) string {
 		return v
 	}
 
+	ramlType := raml.Type{
+		Type:  tip,
+		Items: items,
+	}
+
 	// other types that need some processing
-	parents, isMultiple := commons.MultipleInheritance(tip)
 	switch {
-	case commons.IsBidimensiArray(tip):
-		return "[][]" + commons.BidimensiArrayType(tip)
-	case commons.IsArray(tip):
-		return "[]" + convertToGoType(commons.ArrayType(tip))
-	case commons.IsUnion(tip):
+	case ramlType.IsBidimensiArray():
+		return "[][]" + ramlType.BidimensiArrayType()
+	case ramlType.IsArray():
+		return "[]" + convertToGoType(ramlType.ArrayType(), "")
+	case ramlType.IsUnion():
 		return unionNewName(tip)
-	case isMultiple:
+	case ramlType.IsMultipleInheritance():
+		parents, _ := ramlType.MultipleInheritance()
 		return multipleInheritanceNewName(parents)
 	}
 	return commons.NormalizePkgName(tip)
