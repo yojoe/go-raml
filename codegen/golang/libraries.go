@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/libraries"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -21,25 +22,40 @@ import (
 // types-lib: lib-types.raml  -> generated as `types_lib` package in current directory
 type goLibrary struct {
 	*raml.Library
-	PackageName string
-	baseDir     string // root directory
-	dir         string // library directory
+	PackageName   string
+	rootTargetDir string // root target directory of the generated code
+	baseDir       string // base/parent directory of this lib
+	dir           string // actual directory of this lib
 }
 
 // create new library instance
-func newGoLibrary(name string, lib *raml.Library, baseDir string) *goLibrary {
-	return &goLibrary{
-		Library:     lib,
-		baseDir:     baseDir,
-		PackageName: commons.NormalizePkgName(name),
-		dir:         commons.NormalizePkgName(filepath.Join(baseDir, goLibPackageDir(name, lib.Filename))),
+func newGoLibrary(name string, lib *raml.Library, rootTargetDir, baseDir string,
+	libRootURLs []string) *goLibrary {
+
+	//baseDir = libraries.StripLibRootURL(baseDir, libRootURLs)
+	if libraries.IsRemote(lib.Filename) {
+		baseDir = rootTargetDir
 	}
+
+	filename := libraries.StripLibRootURL(lib.Filename, libRootURLs)
+	dir := commons.NormalizePkgName(libraries.JoinPath(baseDir, goLibPackageDir(name, filename),
+		libRootURLs))
+
+	gl := &goLibrary{
+		Library:       lib,
+		rootTargetDir: rootTargetDir,
+		baseDir:       baseDir,
+		PackageName:   commons.NormalizePkgName(name),
+		dir:           dir,
+	}
+	gl.Filename = filename
+	return gl
 }
 
 // generate code of all libraries
-func generateLibraries(libraries map[string]*raml.Library, baseDir string) error {
+func generateLibraries(libraries map[string]*raml.Library, baseDir string, libsRootURLs []string) error {
 	for name, ramlLib := range libraries {
-		l := newGoLibrary(name, ramlLib, baseDir)
+		l := newGoLibrary(name, ramlLib, baseDir, baseDir, libsRootURLs)
 		if err := l.generate(); err != nil {
 			return err
 		}
@@ -61,7 +77,8 @@ func (l *goLibrary) generate() error {
 
 	// included libraries
 	for name, ramlLib := range l.Libraries {
-		childLib := newGoLibrary(name, ramlLib, l.baseDir)
+		baseDir := filepath.Join(l.baseDir, filepath.Dir(l.Filename))
+		childLib := newGoLibrary(name, ramlLib, l.rootTargetDir, baseDir, globLibRootURLs)
 		if err := childLib.generate(); err != nil {
 			return err
 		}
@@ -70,8 +87,9 @@ func (l *goLibrary) generate() error {
 }
 
 // get library import path from a type
-func libImportPath(rootImportPath, typ string) string {
-	// library use '.', return nothing if it is not a library
+func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
+	// all library use '.',
+	// return nothing if it is not a library
 	if strings.Index(typ, ".") < 0 {
 		return ""
 	}
@@ -84,13 +102,15 @@ func libImportPath(rootImportPath, typ string) string {
 	}
 
 	// raml file of this lib
-	libRAMLFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
+	libDir, libFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
 
-	if libRAMLFile == "" {
+	if libFile == "" {
 		log.Fatalf("can't find library : %v", libName)
 	}
 
-	return filepath.Join(rootImportPath, goLibPackageDir(libName, libRAMLFile))
+	libPath := libraries.JoinPath(libDir, libFile, libRootURLs)
+
+	return filepath.Join(rootImportPath, goLibPackageDir(libName, libPath))
 }
 
 // returns Go package directory of a library

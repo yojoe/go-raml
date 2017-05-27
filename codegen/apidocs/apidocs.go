@@ -5,15 +5,19 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/libraries"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 // Generate generates API docs using api-console
 // https://github.com/mulesoft/api-console
-func Generate(apiDef *raml.APIDefinition, ramlFile string, ramlBytes []byte, dir string) error {
+func Generate(apiDef *raml.APIDefinition, ramlFile string, ramlBytes []byte,
+	dir string, libRootURLs []string) error {
 	// extract zipped files
 	if err := extract(dir); err != nil {
 		return err
@@ -26,22 +30,24 @@ func Generate(apiDef *raml.APIDefinition, ramlFile string, ramlBytes []byte, dir
 	}
 
 	// copy all libraries files
-	return copyLibrariesFiles(apiDef.Uses, apiDef.Libraries, ramlFile, dir)
+	return copyLibrariesFiles(apiDef.Uses, apiDef.Libraries, ramlFile, dir, libRootURLs)
 }
 
 // copy all library files to apidocs directory
-func copyLibrariesFiles(uses map[string]string, libraries map[string]*raml.Library, ramlFile, dir string) error {
+func copyLibrariesFiles(uses map[string]string, libs map[string]*raml.Library, ramlFile, dir string,
+	libRootURLs []string) error {
 	baseDir := filepath.Dir(ramlFile)
 	// copy library files
 	for _, path := range uses {
-		if err := copyFile(filepath.Join(baseDir, path), filepath.Join(dir, path)); err != nil {
+		if err := copyFile(baseDir, path, dir, libRootURLs); err != nil {
 			return err
 		}
 	}
 
 	// do it recursively
-	for _, l := range libraries {
-		if err := copyLibrariesFiles(l.Uses, l.Libraries, filepath.Join(baseDir, l.Filename), filepath.Join(dir, filepath.Dir(l.Filename))); err != nil {
+	for _, l := range libs {
+		if err := copyLibrariesFiles(l.Uses, l.Libraries, filepath.Join(baseDir, l.Filename),
+			filepath.Join(dir, filepath.Dir(l.Filename)), libRootURLs); err != nil {
 			return err
 		}
 	}
@@ -49,12 +55,25 @@ func copyLibrariesFiles(uses map[string]string, libraries map[string]*raml.Libra
 }
 
 // copy file from source to dest
-func copyFile(source, dest string) error {
-	// source file
-	sourceFile, err := os.Open(source)
-	if err != nil {
-		return err
+func copyFile(sourceDir, sourceFile, destDir string, libRootURLs []string) error {
+	var source io.Reader
+
+	if strings.HasPrefix(sourceFile, "http://") || strings.HasPrefix(sourceFile, "https://") {
+		resp, err := http.Get(sourceFile)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		source = resp.Body
+	} else {
+		sourceFile, err := os.Open(filepath.Join(sourceDir, sourceFile))
+		if err != nil {
+			return err
+		}
+		source = sourceFile
 	}
+
+	dest := filepath.Join(destDir, libraries.StripLibRootURL(sourceFile, libRootURLs))
 
 	// create target dir if needed
 	if err := os.MkdirAll(filepath.Dir(dest), 0777); err != nil {
@@ -67,7 +86,7 @@ func copyFile(source, dest string) error {
 		return err
 	}
 
-	_, err = io.Copy(destFile, sourceFile)
+	_, err = io.Copy(destFile, source)
 	return err
 }
 

@@ -11,6 +11,13 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+var (
+	testLibRootURLs = []string{
+		"https://raw.githubusercontent.com/Jumpscale/go-raml/master/codegen/fixtures/libraries",
+		"https://raw.githubusercontent.com/Jumpscale/go-raml/libraries-in-file/codegen/fixtures/libraries/",
+	}
+)
+
 func TestGoLibrary(t *testing.T) {
 	Convey("Library usage in server", t, func() {
 		var apiDef raml.APIDefinition
@@ -21,7 +28,8 @@ func TestGoLibrary(t *testing.T) {
 		err = raml.ParseFile("../fixtures/libraries/api.raml", &apiDef)
 		So(err, ShouldBeNil)
 
-		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true, false, targetDir)
+		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true, false,
+			targetDir, testLibRootURLs)
 		err = server.Generate()
 		So(err, ShouldBeNil)
 
@@ -58,7 +66,7 @@ func TestGoLibrary(t *testing.T) {
 		err = raml.ParseFile("../fixtures/libraries/api.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		client, err := NewClient(apiDef, "theclient", "examples.com/theclient", targetDir)
+		client, err := NewClient(apiDef, "theclient", "examples.com/theclient", targetDir, testLibRootURLs)
 		So(err, ShouldBeNil)
 
 		err = client.Generate()
@@ -101,7 +109,7 @@ func TestGoLibrary(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir)
+			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
 			err = server.Generate()
 			So(err, ShouldBeNil)
 
@@ -131,7 +139,7 @@ func TestGoLibrary(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			client, err := NewClient(&apiDef, "client", "examples.com/libro", targetDir)
+			client, err := NewClient(&apiDef, "client", "examples.com/libro", targetDir, nil)
 			So(err, ShouldBeNil)
 
 			err = client.Generate()

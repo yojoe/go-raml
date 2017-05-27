@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"examples.com/theclient/libraries/file_type"
+	"examples.com/theclient/libraries/filelib/file_type"
 )
 
 type ConfigsService service

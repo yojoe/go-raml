@@ -3,13 +3,15 @@ title: Example API
 version: v1
 uses:
   files: libraries/files.raml
-  security: libraries/security.raml
+  employee: https://raw.githubusercontent.com/Jumpscale/go-raml/libraries-in-file/codegen/fixtures/libraries/libraries/employee.raml
+  security: https://raw.githubusercontent.com/Jumpscale/go-raml/master/codegen/fixtures/libraries/libraries/security.raml
 types:
   Place:
     properties:
       name: string
       dir: files.Directory
       created: datetime
+      employee: employee.Employee
 
 /dirs:
   get:

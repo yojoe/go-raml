@@ -27,23 +27,26 @@ type Server struct {
 	WithMain         bool   // true if we also generate main file
 	Kind             string // currently only used by python client : sanic/flask
 	APIFilePerMethod bool   // true if we want to generate one API file per API method
+	LibRootURLs      []string
 }
 
 // Generate generates API server files
 func (s *Server) Generate() error {
 	apiDef := new(raml.APIDefinition)
 	// parse the raml file
-	ramlBytes, err := raml.ParseReadFile(s.RAMLFile, apiDef)
+	dir, fileName := filepath.Split(s.RAMLFile)
+	ramlBytes, err := raml.ParseReadFile(dir, fileName, apiDef)
 	if err != nil {
 		return err
 	}
 
 	switch s.Lang {
 	case langGo:
-		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain, s.APIFilePerMethod, s.Dir)
+		gs := golang.NewServer(apiDef, s.PackageName, s.APIDocsDir, s.RootImportPath, s.WithMain,
+			s.APIFilePerMethod, s.Dir, s.LibRootURLs)
 		err = gs.Generate()
 	case langPython:
-		ps := python.NewServer(s.Kind, apiDef, s.APIDocsDir, s.WithMain)
+		ps := python.NewServer(s.Kind, apiDef, s.APIDocsDir, s.WithMain, s.LibRootURLs)
 		err = ps.Generate(s.Dir)
 	case langNim:
 		ns := nim.NewServer(apiDef, s.APIDocsDir, s.Dir)
@@ -65,5 +68,5 @@ func (s *Server) Generate() error {
 
 	log.Infof("Generating API Docs to %v", s.APIDocsDir)
 
-	return apidocs.Generate(apiDef, s.RAMLFile, ramlBytes, filepath.Join(s.Dir, s.APIDocsDir))
+	return apidocs.Generate(apiDef, s.RAMLFile, ramlBytes, filepath.Join(s.Dir, s.APIDocsDir), s.LibRootURLs)
 }

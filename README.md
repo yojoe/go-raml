@@ -142,6 +142,7 @@ Executes this command to generates Sanic server
    --no-apidocs                                 Do not generate API Docs in /apidocs/ endpoint
    --import-path "examples.com/ramlcode"        import path of the generated code
    --api-file-per-method                        Generate one API implementation file per method (only for Go)
+   --lib-root-urls								Array of libraries root URLs 
 ```
 
 ## Generating Client

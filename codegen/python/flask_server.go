@@ -19,8 +19,10 @@ type FlaskServer struct {
 }
 
 // NewFlaskServer creates new flask server from an RAML file
-func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *FlaskServer {
+func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
+	withMain bool, libRootURLs []string) *FlaskServer {
 	globAPIDef = apiDef
+	globLibRootURLs = libRootURLs
 
 	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {

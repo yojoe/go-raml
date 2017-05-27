@@ -73,7 +73,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 //		implementation of the API interface.
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string,
-	apiFilePerMethod bool) error {
+	apiFilePerMethod bool, libRootURLs []string) error {
 	gr.GenerateMethods(r, "go", newServerMethod, newGoClientMethod)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
@@ -101,12 +101,11 @@ func (gr goResource) InterfaceImportPaths() []string {
 			ip["github.com/justinas/alice"] = struct{}{}
 		}
 		for _, sb := range gm.SecuredBy {
-			if lib := libImportPath(globRootImportPath, sb.Name); lib != "" {
+			if lib := libImportPath(globRootImportPath, sb.Name, globLibRootURLs); lib != "" {
 				ip[lib] = struct{}{}
 			}
 		}
 	}
-
 	// return sorted array for predictable order
 	// we need it for unit test to always return same order
 	return sortImportPaths(ip)

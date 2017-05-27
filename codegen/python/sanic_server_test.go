@@ -18,7 +18,7 @@ func TestSanicServer(t *testing.T) {
 
 		Convey("Hello world server", func() {
 			apiDef := new(raml.APIDefinition)
-			_, err = raml.ParseReadFile("../fixtures/raml-examples/helloworld/helloworld.raml", apiDef)
+			err = raml.ParseFile("../fixtures/raml-examples/helloworld/helloworld.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			server := NewSanicServer(apiDef, "apidocs", true)
@@ -50,7 +50,7 @@ func TestSanicServer(t *testing.T) {
 
 		Convey("Congo", func() {
 			apiDef := new(raml.APIDefinition)
-			_, err = raml.ParseReadFile("../fixtures/congo/api.raml", apiDef)
+			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
 			server := NewSanicServer(apiDef, "apidocs", true)

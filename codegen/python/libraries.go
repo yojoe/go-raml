@@ -5,9 +5,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/raml"
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/libraries"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 type library struct {
@@ -21,6 +23,7 @@ func newLibrary(lib *raml.Library, baseDir string) *library {
 		Library: lib,
 		baseDir: baseDir,
 	}
+	pl.Filename = libraries.StripLibRootURL(pl.Filename, globLibRootURLs)
 
 	// package directory : filename without the extension
 	relDir := libRelDir(pl.Filename)
@@ -94,14 +97,16 @@ func libImportPath(typ, prefix string) (string, string) {
 	libName := splitted[0]
 
 	// raml file of this lib
-	libRAMLFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
+	libDir, libFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
 
-	if libRAMLFile == "" {
+	if libFile == "" {
 		log.Fatalf("pythonLibImportPath() can't find library : %v", libName)
 	}
 
+	libPath := libraries.JoinPath(libDir, libFile, globLibRootURLs)
+
 	// relative lib package
-	libPkg := libRelDir(libRAMLFile)
+	libPkg := libRelDir(libPath)
 
 	return strings.Replace(commons.NormalizePkgName(libPkg), "/", ".", -1) + "." + prefix + splitted[1], prefix + splitted[1]
 }

@@ -131,7 +131,7 @@ func (sd structDef) ImportPaths() map[string]struct{} {
 	for _, fd := range sd.Fields {
 		if fd.Type == "json.RawMessage" {
 			ip["encoding/json"] = struct{}{}
-		} else if lib := libImportPath(globRootImportPath, fd.Type); lib != "" {
+		} else if lib := libImportPath(globRootImportPath, fd.Type, globLibRootURLs); lib != "" {
 			ip[lib] = struct{}{}
 		}
 	}

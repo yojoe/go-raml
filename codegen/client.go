@@ -8,10 +8,12 @@ import (
 )
 
 // GenerateClient generates client library
-func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath, kind string) error {
+func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath, kind string,
+	libRootURLs []string) error {
 	switch lang {
 	case langGo:
-		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir)
+		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir,
+			libRootURLs)
 		if err != nil {
 			return err
 		}

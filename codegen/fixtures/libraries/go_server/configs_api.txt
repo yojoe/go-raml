@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"examples.com/ramlcode/libraries/file_type"
+	"examples.com/ramlcode/libraries/filelib/file_type"
 	"net/http"
 )
 

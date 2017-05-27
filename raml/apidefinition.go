@@ -2,6 +2,7 @@ package raml
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -97,14 +98,18 @@ type APIDefinition struct {
 // - inheritance
 // - setting some additional values not exist in the .raml
 // - allocate map fields
-func (apiDef *APIDefinition) PostProcess(filename string) error {
-	apiDef.Filename = filename
+func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
+	apiDef.Filename = path.Join(workDir, fileName)
 	// libraries
 	apiDef.Libraries = map[string]*Library{}
 
+	if !isURL(fileName) {
+		workDir = filepath.Join(workDir, filepath.Dir(fileName))
+	}
+
 	for name, path := range apiDef.Uses {
 		lib := &Library{Filename: path}
-		if err := ParseFile(filepath.Join(filepath.Dir(apiDef.Filename), path), lib); err != nil {
+		if _, err := ParseReadFile(workDir, path, lib); err != nil {
 			return fmt.Errorf("apiDef.PostProcess() failed to parse library	name=%v, path=%v\n\terr=%v",
 				name, path, err)
 		}
@@ -142,21 +147,21 @@ func (apiDef *APIDefinition) PostProcess(filename string) error {
 	return nil
 }
 
-// FindLibFile find lbrary file by it's name
+// FindLibFile find lbrary dir and file by it's name
 // we also search from included library
-func (apiDef *APIDefinition) FindLibFile(name string) string {
+func (apiDef *APIDefinition) FindLibFile(name string) (string, string) {
 	// search in it's document
 	if filename, ok := apiDef.Uses[name]; ok {
-		return filename
+		return "", filename
 	}
 
 	// search in included libraries
 	for _, lib := range apiDef.Libraries {
 		if filename, ok := lib.Uses[name]; ok {
-			return filename
+			return filepath.Dir(lib.Filename), filename
 		}
 	}
-	return ""
+	return "", ""
 }
 
 // GetSecurityScheme gets security scheme by it's name
