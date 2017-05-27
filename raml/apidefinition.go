@@ -147,21 +147,21 @@ func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
 	return nil
 }
 
-// FindLibFile find lbrary file by it's name
+// FindLibFile find lbrary dir and file by it's name
 // we also search from included library
-func (apiDef *APIDefinition) FindLibFile(name string) string {
+func (apiDef *APIDefinition) FindLibFile(name string) (string, string) {
 	// search in it's document
 	if filename, ok := apiDef.Uses[name]; ok {
-		return filename
+		return "", filename
 	}
 
 	// search in included libraries
 	for _, lib := range apiDef.Libraries {
 		if filename, ok := lib.Uses[name]; ok {
-			return filename
+			return filepath.Dir(lib.Filename), filename
 		}
 	}
-	return ""
+	return "", ""
 }
 
 // GetSecurityScheme gets security scheme by it's name
