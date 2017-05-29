@@ -53,6 +53,9 @@ type Method struct {
 
 	// The security schemes that apply to this method.
 	SecuredBy []DefinitionChoice `yaml:"securedBy"`
+
+	// name of the resource type this method inherited
+	resourceTypeName string
 }
 
 func newMethod(name string) *Method {
@@ -62,9 +65,9 @@ func newMethod(name string) *Method {
 }
 
 // doing post processing that can't be done by YAML parser
-func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trait) {
+func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trait, apiDef *APIDefinition) {
 	m.Name = name
-	m.inheritFromTraits(r, append(r.Is, m.Is...), traitsMap)
+	m.inheritFromTraits(r, append(r.Is, m.Is...), traitsMap, apiDef)
 	r.Methods = append(r.Methods, m)
 }
 
@@ -72,7 +75,7 @@ func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trai
 // fields need to be inherited:
 // - description
 // - response
-func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceType) {
+func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceType, apiDef *APIDefinition) {
 	if rtm == nil {
 		return
 	}
@@ -85,7 +88,7 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceT
 	m.DisplayName = substituteParams(m.DisplayName, rtm.DisplayName, dicts)
 
 	// inherit bodies
-	m.Bodies.inherit(rtm.Bodies, dicts)
+	m.Bodies.inherit(rtm.Bodies, dicts, m.resourceTypeName, apiDef)
 
 	// inherit headers
 	m.inheritHeaders(rtm.Headers, dicts)
@@ -94,7 +97,7 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceT
 	m.inheritQueryParams(rtm.QueryParameters, dicts)
 
 	// inherit response
-	m.inheritResponses(rtm.Responses, dicts)
+	m.inheritResponses(rtm.Responses, dicts, apiDef)
 
 	// inherit protocols
 	m.inheritProtocols(rtm.Protocols)
@@ -103,7 +106,8 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceT
 // inherit from all traits, inherited traits are:
 // - resource level trait
 // - method trait
-func (m *Method) inheritFromTraits(r *Resource, is []DefinitionChoice, traitsMap map[string]Trait) error {
+func (m *Method) inheritFromTraits(r *Resource, is []DefinitionChoice, traitsMap map[string]Trait,
+	apiDef *APIDefinition) error {
 	for _, tDef := range is {
 		// acquire traits object
 		t, ok := traitsMap[tDef.Name]
@@ -111,7 +115,7 @@ func (m *Method) inheritFromTraits(r *Resource, is []DefinitionChoice, traitsMap
 			return fmt.Errorf("invalid traits name:%v", tDef.Name)
 		}
 
-		if err := m.inheritFromATrait(r, &t, tDef.Parameters); err != nil {
+		if err := m.inheritFromATrait(r, &t, tDef.Parameters, apiDef); err != nil {
 			return err
 		}
 	}
@@ -120,16 +124,17 @@ func (m *Method) inheritFromTraits(r *Resource, is []DefinitionChoice, traitsMap
 
 // inherit from a trait
 // dicts is map of trait parameters values
-func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]interface{}) error {
+func (m *Method) inheritFromATrait(r *Resource, t *Trait, dicts map[string]interface{},
+	apiDef *APIDefinition) error {
 	dicts = initTraitDicts(r, m, dicts)
 
 	m.Description = substituteParams(m.Description, t.Description, dicts)
 
-	m.Bodies.inherit(t.Bodies, dicts)
+	m.Bodies.inherit(t.Bodies, dicts, m.resourceTypeName, apiDef)
 
 	m.inheritHeaders(t.Headers, dicts)
 
-	m.inheritResponses(t.Responses, dicts)
+	m.inheritResponses(t.Responses, dicts, apiDef)
 
 	m.inheritQueryParams(t.QueryParameters, dicts)
 
@@ -201,7 +206,8 @@ func (m *Method) inheritProtocols(parent []string) {
 
 // inheritResponses inherit method's responses from parent responses
 // parent responses could be from resource type or a trait
-func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string]interface{}) {
+func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string]interface{},
+	apiDef *APIDefinition) {
 	if len(m.Responses) == 0 { // allocate if needed
 		m.Responses = map[HTTPCode]Response{}
 	}
@@ -213,7 +219,7 @@ func (m *Method) inheritResponses(parent map[HTTPCode]Response, dicts map[string
 			}
 			resp = Response{HTTPCode: code}
 		}
-		resp.inherit(rParent, dicts)
+		resp.inherit(rParent, dicts, m.resourceTypeName, apiDef)
 		m.Responses[code] = resp
 	}
 
@@ -246,9 +252,10 @@ type Response struct {
 }
 
 // inherit from parent response
-func (resp *Response) inherit(parent Response, dicts map[string]interface{}) {
+func (resp *Response) inherit(parent Response, dicts map[string]interface{}, rtName string,
+	apiDef *APIDefinition) {
 	resp.Description = substituteParams(resp.Description, parent.Description, dicts)
-	resp.Bodies.inherit(parent.Bodies, dicts)
+	resp.Bodies.inherit(parent.Bodies, dicts, rtName, apiDef)
 	resp.Headers = inheritHeaders(resp.Headers, parent.Headers, dicts)
 }
 
@@ -338,12 +345,12 @@ func (b *Bodies) IsEmpty() bool {
 
 // inherit inherits bodies properties from a parent bodies
 // parent object could be from trait or response type
-func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
+func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}, rtName string, apiDef *APIDefinition) {
 	b.Schema = substituteParams(b.Schema, parent.Schema, dicts)
 	b.Description = substituteParams(b.Description, parent.Description, dicts)
 	b.Example = substituteParams(b.Example, parent.Example, dicts)
 
-	b.Type = substituteParams(b.Type, parent.Type, dicts)
+	b.Type = mergeTypeName(substituteParams(b.Type, parent.Type, dicts), rtName, apiDef)
 
 	// request body
 	if parent.ApplicationJSON != nil {
@@ -354,6 +361,10 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
 		}
 
 		b.ApplicationJSON.Type = substituteParams(b.ApplicationJSON.TypeString(), parent.ApplicationJSON.TypeString(), dicts)
+		// check if type name is in library
+		if typeStr, ok := b.ApplicationJSON.Type.(string); ok {
+			b.ApplicationJSON.Type = mergeTypeName(typeStr, rtName, apiDef)
+		}
 
 		for k, p := range parent.ApplicationJSON.Properties {
 			if _, ok := b.ApplicationJSON.Properties[k]; !ok {
@@ -368,7 +379,8 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}) {
 				}
 				k = substituteParams(k, k, dicts)
 				prop := ToProperty(k, p)
-				b.ApplicationJSON.Properties[k] = substituteParams(prop.Type, prop.Type, dicts)
+				inheritedType := substituteParams(prop.Type, prop.Type, dicts)
+				b.ApplicationJSON.Properties[k] = mergeTypeName(inheritedType, rtName, apiDef)
 			}
 		}
 	}

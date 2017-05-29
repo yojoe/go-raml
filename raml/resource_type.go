@@ -2,6 +2,9 @@ package raml
 
 import (
 	"regexp"
+	"strings"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -104,9 +107,9 @@ type ResourceType struct {
 // - assign all properties that can't be obtained from RAML document
 // - inherit from other resource type
 // - apply traits
-func (rt *ResourceType) postProcess(name string, traitsMap map[string]Trait) {
+func (rt *ResourceType) postProcess(name string, traitsMap map[string]Trait, apiDef *APIDefinition) {
 	rt.Name = name
-	rt.setMethods(traitsMap)
+	rt.setMethods(traitsMap, apiDef)
 	rt.setOptionalMethods()
 
 	// TODO : inherit from other resource type
@@ -116,40 +119,40 @@ func (rt *ResourceType) postProcess(name string, traitsMap map[string]Trait) {
 
 // set methods set all methods name
 // and add it to methods slice
-func (rt *ResourceType) setMethods(traitsMap map[string]Trait) {
+func (rt *ResourceType) setMethods(traitsMap map[string]Trait, apiDef *APIDefinition) {
 	if rt.Get != nil {
 		rt.Get.Name = "GET"
-		rt.Get.inheritFromTraits(nil, append(rt.Is, rt.Get.Is...), traitsMap)
+		rt.Get.inheritFromTraits(nil, append(rt.Is, rt.Get.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Get)
 	}
 	if rt.Post != nil {
 		rt.Post.Name = "POST"
-		rt.Post.inheritFromTraits(nil, append(rt.Is, rt.Post.Is...), traitsMap)
+		rt.Post.inheritFromTraits(nil, append(rt.Is, rt.Post.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Post)
 	}
 	if rt.Put != nil {
 		rt.Put.Name = "PUT"
-		rt.Put.inheritFromTraits(nil, append(rt.Is, rt.Put.Is...), traitsMap)
+		rt.Put.inheritFromTraits(nil, append(rt.Is, rt.Put.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Put)
 	}
 	if rt.Patch != nil {
 		rt.Patch.Name = "PATCH"
-		rt.Patch.inheritFromTraits(nil, append(rt.Is, rt.Patch.Is...), traitsMap)
+		rt.Patch.inheritFromTraits(nil, append(rt.Is, rt.Patch.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Patch)
 	}
 	if rt.Head != nil {
 		rt.Head.Name = "HEAD"
-		rt.Head.inheritFromTraits(nil, append(rt.Is, rt.Head.Is...), traitsMap)
+		rt.Head.inheritFromTraits(nil, append(rt.Is, rt.Head.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Head)
 	}
 	if rt.Delete != nil {
 		rt.Delete.Name = "DELETE"
-		rt.Delete.inheritFromTraits(nil, append(rt.Is, rt.Delete.Is...), traitsMap)
+		rt.Delete.inheritFromTraits(nil, append(rt.Is, rt.Delete.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Delete)
 	}
 	if rt.Options != nil {
 		rt.Options.Name = "OPTIONS"
-		rt.Options.inheritFromTraits(nil, append(rt.Is, rt.Options.Is...), traitsMap)
+		rt.Options.inheritFromTraits(nil, append(rt.Is, rt.Options.Is...), traitsMap, apiDef)
 		rt.methods = append(rt.methods, rt.Options)
 	}
 }
@@ -196,4 +199,33 @@ func initResourceTypeDicts(r *Resource, dicts map[string]interface{}) map[string
 		dicts["resourcePath"] = r.FullURI()
 	}
 	return dicts
+}
+
+// merge name of type with resource type name.
+func mergeTypeName(name, rtName string, apiDef *APIDefinition) string {
+	if apiDef == nil {
+		log.Warning("passing nil API definition to mergeTypeName")
+		return name
+	}
+
+	// check if this resource type is in library
+	splt := strings.Split(rtName, ".")
+	if len(splt) < 2 {
+		// if not in library, we need to do nothing
+		return name
+	}
+
+	// get the library object from API definition root object
+	libName := splt[0]
+	lib, ok := apiDef.Libraries[libName]
+	if !ok {
+		return name
+	}
+
+	// type not exist in the library
+	if _, ok := lib.Types[name]; !ok {
+		return name
+	}
+
+	return strings.Join([]string{libName, name}, ".")
 }

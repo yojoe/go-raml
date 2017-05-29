@@ -70,21 +70,22 @@ type Resource struct {
 // - assign all properties that can't be obtained from RAML document
 // - inherit from resource type
 // - inherit from traits
-func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType, traitsMap map[string]Trait) error {
+func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[string]ResourceType,
+	traitsMap map[string]Trait, apiDef *APIDefinition) error {
 	r.URI = strings.TrimSpace(uri)
 	r.Parent = parent
 
-	r.setMethods(traitsMap)
+	r.setMethods(traitsMap, apiDef)
 
 	// inherit from resource types
-	if err := r.inheritResourceType(resourceTypes); err != nil {
+	if err := r.inheritResourceType(resourceTypes, apiDef); err != nil {
 		return err
 	}
 
 	// process nested/child resources
 	for k := range r.Nested {
 		n := r.Nested[k]
-		if err := n.postProcess(k, r, resourceTypes, traitsMap); err != nil {
+		if err := n.postProcess(k, r, resourceTypes, traitsMap, apiDef); err != nil {
 			return err
 		}
 		r.Nested[k] = n
@@ -93,7 +94,7 @@ func (r *Resource) postProcess(uri string, parent *Resource, resourceTypes map[s
 }
 
 // inherit from a resource type
-func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType) error {
+func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType, apiDef *APIDefinition) error {
 	// get resource type object to inherit
 	rt, err := r.getResourceType(resourceTypes)
 	if rt == nil || err != nil {
@@ -119,13 +120,13 @@ func (r *Resource) inheritResourceType(resourceTypes map[string]ResourceType) er
 	}
 
 	// methods
-	r.inheritMethods(rt)
+	r.inheritMethods(rt, apiDef)
 
 	return nil
 }
 
 // inherit methods inherits all methods based on it's resource type
-func (r *Resource) inheritMethods(rt *ResourceType) {
+func (r *Resource) inheritMethods(rt *ResourceType, apiDef *APIDefinition) {
 	// inherit all methods from resource type
 	// if it doesn't have the methods, we create it
 	for _, rtm := range rt.methods {
@@ -134,7 +135,8 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 			m = newMethod(rtm.Name)
 			r.assignMethod(m, m.Name)
 		}
-		m.inheritFromResourceType(r, rtm, rt)
+		m.resourceTypeName = r.Type.Name
+		m.inheritFromResourceType(r, rtm, rt, apiDef)
 	}
 
 	// inherit optional methods if only the resource also has the method
@@ -143,7 +145,8 @@ func (r *Resource) inheritMethods(rt *ResourceType) {
 		if m == nil {
 			continue
 		}
-		m.inheritFromResourceType(r, rtm, rt)
+		m.resourceTypeName = r.Type.Name
+		m.inheritFromResourceType(r, rtm, rt, apiDef)
 	}
 
 }
@@ -166,27 +169,27 @@ func (r *Resource) getResourceType(resourceTypes map[string]ResourceType) (*Reso
 
 // set methods set all methods name
 // and add it to Methods slice
-func (r *Resource) setMethods(traitsMap map[string]Trait) {
+func (r *Resource) setMethods(traitsMap map[string]Trait, apiDef *APIDefinition) {
 	if r.Get != nil {
-		r.Get.postProcess(r, "GET", traitsMap)
+		r.Get.postProcess(r, "GET", traitsMap, apiDef)
 	}
 	if r.Post != nil {
-		r.Post.postProcess(r, "POST", traitsMap)
+		r.Post.postProcess(r, "POST", traitsMap, apiDef)
 	}
 	if r.Put != nil {
-		r.Put.postProcess(r, "PUT", traitsMap)
+		r.Put.postProcess(r, "PUT", traitsMap, apiDef)
 	}
 	if r.Patch != nil {
-		r.Patch.postProcess(r, "PATCH", traitsMap)
+		r.Patch.postProcess(r, "PATCH", traitsMap, apiDef)
 	}
 	if r.Head != nil {
-		r.Head.postProcess(r, "HEAD", traitsMap)
+		r.Head.postProcess(r, "HEAD", traitsMap, apiDef)
 	}
 	if r.Delete != nil {
-		r.Delete.postProcess(r, "DELETE", traitsMap)
+		r.Delete.postProcess(r, "DELETE", traitsMap, apiDef)
 	}
 	if r.Options != nil {
-		r.Options.postProcess(r, "OPTIONS", traitsMap)
+		r.Options.postProcess(r, "OPTIONS", traitsMap, apiDef)
 	}
 }
 

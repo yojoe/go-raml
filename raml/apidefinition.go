@@ -124,7 +124,7 @@ func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
 
 	// resource types
 	for name, rt := range apiDef.ResourceTypes {
-		rt.postProcess(name, apiDef.Traits)
+		rt.postProcess(name, apiDef.Traits, apiDef)
 		apiDef.ResourceTypes[name] = rt
 	}
 
@@ -139,7 +139,7 @@ func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
 		r := apiDef.Resources[k]
 		rts := apiDef.allResourceTypes(apiDef.ResourceTypes, apiDef.Libraries)
 		trts := apiDef.allTraits(apiDef.Traits, apiDef.Libraries)
-		if err := r.postProcess(k, nil, rts, trts); err != nil {
+		if err := r.postProcess(k, nil, rts, trts, apiDef); err != nil {
 			return err
 		}
 		apiDef.Resources[k] = r

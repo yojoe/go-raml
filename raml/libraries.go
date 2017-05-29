@@ -54,7 +54,7 @@ func (l *Library) PostProcess(workDir, fileName string) error {
 
 	// resource types
 	for name, rt := range l.ResourceTypes {
-		rt.postProcess(name, l.Traits)
+		rt.postProcess(name, l.Traits, nil)
 		l.ResourceTypes[name] = rt
 	}
 	return nil
