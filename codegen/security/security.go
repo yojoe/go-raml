@@ -59,13 +59,29 @@ func Supported(ss raml.SecurityScheme) bool {
 
 // GetMethodSecuredBy get SecuredBy field of a method
 func GetMethodSecuredBy(apiDef *raml.APIDefinition, r *raml.Resource, m *raml.Method) []raml.DefinitionChoice {
-	if len(m.SecuredBy) > 0 {
-		return m.SecuredBy
-	} else if sb := FindResourceSecuredBy(r); len(sb) > 0 {
-		return sb
-	}
+	// get the secured by
+	securedBy := func() []raml.DefinitionChoice {
+		if len(m.SecuredBy) > 0 {
+			return m.SecuredBy
+		} else if sb := FindResourceSecuredBy(r); len(sb) > 0 {
+			return sb
+		}
+		return apiDef.SecuredBy
+	}()
 
-	return apiDef.SecuredBy
+	// filter only security scheme we supported
+	var filtered []raml.DefinitionChoice
+	for _, sb := range securedBy {
+		ss, ok := apiDef.SecuritySchemes[sb.Name]
+		if !ok {
+			continue
+		}
+		if !Supported(ss) {
+			continue
+		}
+		filtered = append(filtered, sb)
+	}
+	return filtered
 }
 
 // get array of security scopes in the form of quoted string
