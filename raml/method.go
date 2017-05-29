@@ -81,6 +81,9 @@ func (m *Method) inheritFromResourceType(r *Resource, rtm *Method, rt *ResourceT
 	// inherit description
 	m.Description = substituteParams(m.Description, rtm.Description, dicts)
 
+	// inherit display name
+	m.DisplayName = substituteParams(m.DisplayName, rtm.DisplayName, dicts)
+
 	// inherit bodies
 	m.Bodies.inherit(rtm.Bodies, dicts)
 

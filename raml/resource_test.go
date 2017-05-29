@@ -20,6 +20,7 @@ func TestResourceTypeInheritance(t *testing.T) {
 
 			So(r.Get, ShouldNotBeNil)
 			So(r.Get.Description, ShouldEqual, "Get all Users, optionally filtered")
+			So(r.Get.DisplayName, ShouldEqual, "ListAllUsers")
 			So(r.Get.Responses["200"].Bodies.Type, ShouldEqual, "Users")
 
 			So(r.Post, ShouldNotBeNil)
