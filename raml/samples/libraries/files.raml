@@ -7,7 +7,17 @@ traits:
   drm:
     headers:
       drm-key:
+
+types:
+  Link:
+    type: object
+    properties:
+      name: string
 resourceTypes:
+  link:
+    post:
+      body:
+        type: Link
   file:
     get:
       is: [ drm ]

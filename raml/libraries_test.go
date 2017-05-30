@@ -47,5 +47,12 @@ func TestLibraries(t *testing.T) {
 			So(files.Get.Headers["drm-key"].Required, ShouldBeFalse)
 		})
 
+		Convey("proper variable name", func() {
+			r := apiDef.Resources["/links"]
+
+			So(r.Post, ShouldNotBeNil)
+			So(r.Post.Bodies.Type, ShouldEqual, "files.Link")
+		})
+
 	})
 }
