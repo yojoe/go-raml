@@ -195,7 +195,7 @@ func initResourceTypeDicts(r *Resource, dicts map[string]interface{}) map[string
 		dicts = map[string]interface{}{}
 	}
 	if r != nil {
-		dicts["resourcePathName"] = r.CleanURI()
+		dicts["resourcePathName"] = r.resourcePathName()
 		dicts["resourcePath"] = r.FullURI()
 	}
 	return dicts

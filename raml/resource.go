@@ -302,11 +302,8 @@ func getParamValue(param string, dicts map[string]interface{}) string {
 
 // CleanURI returns URI without `/`, `\`', `{`, and `}`
 func (r *Resource) CleanURI() string {
-	s := strings.Replace(r.URI, "/", "", -1)
-	s = strings.Replace(s, `\`, "", -1)
-	s = strings.Replace(s, "{", "", -1)
-	s = strings.Replace(s, "}", "", -1)
-	return strings.TrimSpace(s)
+	s := removeDoubleSlash(r.URI)
+	return strings.TrimSpace(removeDoubleChevron(s))
 }
 
 // FullURI returns full/absolute URI of this resource
@@ -320,4 +317,23 @@ func doFullURI(r *Resource, completeURI string) string {
 		return completeURI
 	}
 	return doFullURI(r.Parent, completeURI)
+}
+
+// from spec : the rightmost of the non-URI-parameter-containing path fragments.
+func (r *Resource) resourcePathName() string {
+	if !strings.HasPrefix(r.URI, "/{") {
+		return removeDoubleSlash(r.URI)
+	}
+	if r.Parent == nil {
+		return ""
+	}
+	return r.Parent.resourcePathName()
+}
+
+func removeDoubleSlash(s string) string {
+	return strings.TrimPrefix(strings.TrimSuffix(s, "/"), "/")
+}
+
+func removeDoubleChevron(s string) string {
+	return strings.TrimPrefix(strings.TrimSuffix(s, "}"), "{")
 }

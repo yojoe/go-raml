@@ -52,7 +52,12 @@ func TestResourceTypeInheritance(t *testing.T) {
 
 			mem := r.Nested["/{id}"]
 			So(mem, ShouldNotBeNil)
-			So(mem.Get.Description, ShouldEqual, "get /corps/{id}")
+			So(mem.Get.Description, ShouldEqual, "get /corps/{id}") // check resourcePath parsing
+
+			// check resourcePathName parsing
+			respCode := HTTPCode("200")
+			So(mem.Get.Responses, ShouldContainKey, respCode)
+			So(mem.Get.Responses[respCode].Bodies.Type, ShouldEqual, "corps")
 		})
 
 		Convey("books - query parameters", func() {
