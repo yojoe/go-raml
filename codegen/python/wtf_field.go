@@ -33,7 +33,7 @@ func newWtfField(className string, prop raml.Property) (wtfField, error) {
 		f.Enum = newEnum(className, prop, false)
 		f.Type = f.Enum.Name
 	} else {
-		f.setType(prop.Type)
+		f.setType(prop.TypeString())
 		if f.Type == "" {
 			return f, fmt.Errorf("unsupported type:%v", prop.Type)
 		}

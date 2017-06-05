@@ -1,0 +1,13 @@
+#%RAML 1.0
+title: test
+mediaType: application/json
+
+types:
+  Action:
+    properties:
+      name: string
+      recurring:
+        type: object
+        properties:
+          period:
+            type: integer

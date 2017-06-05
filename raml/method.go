@@ -378,8 +378,8 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}, rtName str
 					continue
 				}
 				k = substituteParams(k, k, dicts)
-				prop := ToProperty(k, p)
-				inheritedType := substituteParams(prop.Type, prop.Type, dicts)
+				prop := toProperty(k, p)
+				inheritedType := substituteParams(prop.TypeString(), prop.TypeString(), dicts)
 				b.ApplicationJSON.Properties[k] = mergeTypeName(inheritedType, rtName, apiDef)
 			}
 		}

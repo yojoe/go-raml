@@ -35,6 +35,7 @@ package raml
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -131,10 +132,16 @@ func (dc *DefinitionChoice) UnmarshalYAML(unmarshaler func(interface{}) error) e
 	return err
 }
 
+// HasProperties is interface of all objects that
+// contains RAML properties
+type HasProperties interface {
+	GetProperty(string) Property
+}
+
 // Property defines a Type property
 type Property struct {
 	Name        string
-	Type        string      `yaml:"type"`
+	Type        interface{} `yaml:"type"`
 	Required    bool        `yaml:"required"`
 	Enum        interface{} `yaml:"enum"`
 	Description string      `yaml:"description"`
@@ -159,11 +166,18 @@ type Property struct {
 	// Capnp extension
 	CapnpFieldNumber int
 	CapnpType        string
+
+	_type *Type // pointer to Type of this Property
 }
 
 // ToProperty creates a property from an interface
 // we use `interface{}` as property type to support syntactic sugar & shortcut
+// using it directly is DEPRECATED
 func ToProperty(name string, p interface{}) Property {
+	return toProperty(name, p)
+}
+
+func toProperty(name string, p interface{}) Property {
 	// convert number(int/float) to float
 	toFloat64 := func(number interface{}) float64 {
 		switch v := number.(type) {
@@ -227,6 +241,8 @@ func ToProperty(name string, p interface{}) Property {
 				p.CapnpFieldNumber = v.(int)
 			case "capnpType":
 				p.CapnpType = v.(string)
+			case "properties":
+				log.Fatalf("Properties field should already be deleted. Seems there are unsupported inline type")
 			}
 		}
 		return p
@@ -251,10 +267,24 @@ func ToProperty(name string, p interface{}) Property {
 	// if has "?" suffix, remove the "?" and set required=false
 	if strings.HasSuffix(prop.Name, "?") {
 		prop.Required = false
-		prop.Name = prop.Name[:len(prop.Name)-1]
+		prop.Name = strings.TrimSuffix(prop.Name, "?")
 	}
 	return prop
 
+}
+
+func (p Property) TypeString() string {
+	switch p.Type.(type) {
+	case string:
+		return p.Type.(string)
+	case Type:
+		if p._type == nil {
+			panic(fmt.Errorf("property '%v' has no parent type", p.Name))
+		}
+		return p._type.Name + p.Name
+	default:
+		return "string"
+	}
 }
 
 // IsEnum returns true if a property is an enum
@@ -265,22 +295,22 @@ func (p Property) IsEnum() bool {
 // IsBidimensiArray returns true if
 // this property is a bidimensional array
 func (p Property) IsBidimensiArray() bool {
-	return strings.HasSuffix(p.Type, "[][]")
+	return strings.HasSuffix(p.TypeString(), "[][]")
 }
 
 // IsArray returns true if it is an array
 func (p Property) IsArray() bool {
-	return p.Type == arrayType || strings.HasSuffix(p.Type, "[]")
+	return p.Type == arrayType || strings.HasSuffix(p.TypeString(), "[]")
 }
 
 // IsUnion returns true if a property is a union
 func (p Property) IsUnion() bool {
-	return strings.Index(p.Type, "|") > 0
+	return strings.Index(p.TypeString(), "|") > 0
 }
 
 // BidimensiArrayType returns type of the bidimensional array
 func (p Property) BidimensiArrayType() string {
-	return strings.TrimSuffix(p.Type, "[][]")
+	return strings.TrimSuffix(p.TypeString(), "[][]")
 }
 
 // ArrayType returns the type of the array
@@ -288,11 +318,13 @@ func (p Property) ArrayType() string {
 	if p.Type == arrayType {
 		return p.Items
 	}
-	return strings.TrimSuffix(p.Type, "[]")
+	return strings.TrimSuffix(p.TypeString(), "[]")
 }
 
 // Type defines an RAML data type
 type Type struct {
+	Name string
+
 	// A default value for a type
 	Default interface{} `yaml:"default"`
 
@@ -416,6 +448,20 @@ type Type struct {
 	// ---------- facets for file --------------------------------//
 	// A list of valid content-type strings for the file. The file type */* MUST be a valid value.
 	FileTypes string `yaml:"fileTypes" json:"fileTypes"`
+
+	_apiDef *APIDefinition
+}
+
+func (t *Type) GetProperty(name string) Property {
+	propInterface, ok := t.Properties[name]
+	if !ok {
+		panic(fmt.Errorf("property %v not exist", name))
+	}
+
+	prop := toProperty(name, propInterface)
+	prop._type = t
+
+	return prop
 }
 
 // IsBuiltin if a type is an RAML builtin type.
@@ -589,11 +635,49 @@ func (t Type) Union() ([]string, bool) {
 }
 
 // see if the 'Type' field is a JSON schema
-func (t *Type) postProcess() error {
-	if !t.IsJSONType() {
-		return nil
+func (t *Type) postProcess(name string, apiDef *APIDefinition) error {
+	t.Name = name
+	t._apiDef = apiDef
+
+	if t.IsJSONType() {
+		return t.postProcessJSONSchema()
 	}
 
+	// process type in properties
+	for name := range t.Properties {
+		p := t.Properties[name]
+
+		// only process map[interface]interface{}
+		propMap, ok := p.(map[interface{}]interface{})
+		if !ok {
+			continue
+		}
+
+		// only process if it has 'properties' field
+		propsIf, ok := propMap["properties"]
+		if !ok {
+			continue
+		}
+
+		// check validity of the properties
+		props, ok := propsIf.(map[interface{}]interface{})
+		if !ok {
+			panic("inline properties expect properties in type:map[string]interface{}")
+		}
+
+		newName := t.Name + name
+		apiDef.createType(newName, propMap["type"], props)
+
+		propMap["type"] = newName
+
+		// delete the 'properties' field
+		delete(propMap, "properties")
+
+		t.Properties[name] = propMap
+	}
+	return nil
+}
+func (t *Type) postProcessJSONSchema() error {
 	var jt JSONSchema
 
 	if err := json.Unmarshal([]byte(t.TypeString()), &jt); err != nil {
@@ -624,4 +708,12 @@ type BodiesProperty struct {
 
 func (bp BodiesProperty) TypeString() string {
 	return interfaceToString(bp.Type)
+}
+
+func (bp BodiesProperty) GetProperty(name string) Property {
+	p, ok := bp.Properties[name]
+	if !ok {
+		panic(fmt.Errorf("can't find property name %v", name))
+	}
+	return toProperty(name, p)
 }

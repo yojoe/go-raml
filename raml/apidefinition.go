@@ -130,7 +130,7 @@ func (apiDef *APIDefinition) PostProcess(workDir, fileName string) error {
 
 	// types
 	for name, t := range apiDef.Types {
-		t.postProcess()
+		t.postProcess(name, apiDef)
 		apiDef.Types[name] = t
 	}
 
@@ -226,4 +226,30 @@ func (apiDef *APIDefinition) allTraits(trts map[string]Trait, libraries map[stri
 		}
 	}
 	return trts
+}
+
+// create new type
+func (apiDef *APIDefinition) createType(name string, tip interface{}, inputProps map[interface{}]interface{}) {
+	// check that there is no type with this name
+	if _, exist := apiDef.Types[name]; exist {
+		return
+	}
+
+	// convert the inputProps to properties
+	props := make(map[string]interface{})
+
+	for k, p := range inputProps {
+		name, ok := k.(string)
+		if !ok {
+			panic(fmt.Errorf("property key:%v need to be a string", k))
+		}
+		props[name] = p
+	}
+
+	t := Type{
+		Name:       name,
+		Type:       tip,
+		Properties: props,
+	}
+	apiDef.Types[name] = t
 }

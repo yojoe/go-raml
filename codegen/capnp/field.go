@@ -14,7 +14,7 @@ type field struct {
 func newField(structName string, prop raml.Property, lang, pkg string) field {
 	fd := field{
 		Name: prop.Name,
-		Type: toCapnpType(prop.Type, prop.CapnpType),
+		Type: toCapnpType(prop.TypeString(), prop.CapnpType),
 		Num:  prop.CapnpFieldNumber,
 	}
 	if isEnum(prop) {

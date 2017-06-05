@@ -75,7 +75,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 		f.Type = f.Enum.Name
 		f.addImport("."+f.Type, f.Type)
 	} else {
-		f.setType(prop.Type, prop.Items)
+		f.setType(prop.TypeString(), prop.Items)
 		if f.Type == "" {
 			return f, fmt.Errorf("unsupported type:%v", prop.Type)
 		}

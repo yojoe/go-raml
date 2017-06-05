@@ -95,7 +95,7 @@ func objectProperties(name string, p interface{}) []objectProperty {
 						objprop := objectProperty{
 							name:     rProp.Name,
 							required: rProp.Required,
-							datatype: rProp.Type,
+							datatype: rProp.TypeString(),
 						}
 						if rProp.Type == "object" {
 							objprop.childProperties = append(objprop.childProperties, objectProperties(propName.(string), childProp)...)

@@ -46,8 +46,8 @@ func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, nam
 	}
 
 	props := make(map[string]property, len(properties))
-	for k, v := range properties {
-		rp := ToProperty(k, v)
+	for name := range properties {
+		rp := t.GetProperty(name)
 		if !isPropTypeSupported(rp) {
 			continue
 		}
@@ -167,13 +167,13 @@ type property struct {
 }
 
 func newProperty(rp Property) property {
-	_, isScalar := scalarTypes[rp.Type]
+	_, isScalar := scalarTypes[rp.TypeString()]
 
 	// complex type
 	if rp.Type != "" && !isScalar && !rp.IsArray() && !rp.IsBidimensiArray() {
 		return property{
 			Name:     rp.Name,
-			Ref:      rp.Type + fileSuffix,
+			Ref:      rp.TypeString() + fileSuffix,
 			Required: rp.Required,
 		}
 	}
@@ -206,7 +206,7 @@ func newProperty(rp Property) property {
 	}
 	p := property{
 		Name:        rp.Name,
-		Type:        mapTypes(rp.Type),
+		Type:        mapTypes(rp.TypeString()),
 		Required:    rp.Required,
 		Enum:        rp.Enum,
 		MinLength:   rp.MinLength,

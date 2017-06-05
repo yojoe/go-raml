@@ -47,7 +47,10 @@ func (s SanicServer) generateJSONSchema(dir string) error {
 		case types.TypeInBody:
 			if tip.ReqResp == types.HTTPRequest {
 				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
-				js := raml.NewJSONSchemaFromProps(nil, tip.Properties, "object", setReqBodyName(methodName))
+				typeObj := raml.Type{
+					Properties: tip.Properties,
+				}
+				js := raml.NewJSONSchemaFromProps(&typeObj, tip.Properties, "object", setReqBodyName(methodName))
 				jsObjects[js.Name] = js
 			}
 		case raml.Type:
