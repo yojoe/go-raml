@@ -8,7 +8,7 @@ import (
 
 func TestTypeInType(t *testing.T) {
 	apiDef := new(APIDefinition)
-	Convey("Type in property's type", t, func() {
+	Convey("Type in type's properties", t, func() {
 		err := ParseFile("./samples/types.raml", apiDef)
 		So(err, ShouldBeNil)
 
@@ -45,5 +45,13 @@ func TestTypeInType(t *testing.T) {
 
 		combo := ar.GetProperty("combo")
 		So(combo.TypeString(), ShouldEqual, "Actionrecurringcombo")
+
+		// check the items
+		coinInputs := action.GetProperty("coininputs")
+		So(coinInputs.Type, ShouldEqual, "array")
+		So(coinInputs.Items, ShouldEqual, "ActioncoininputsItem")
+
+		_, ok = apiDef.Types["ActioncoininputsItem"]
+		So(ok, ShouldBeTrue)
 	})
 }

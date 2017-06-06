@@ -645,43 +645,95 @@ func (t *Type) postProcess(name string, apiDef *APIDefinition) error {
 
 	// process type in properties
 	for name := range t.Properties {
-		p := t.Properties[name]
-
-		// only process map[interface]interface{}
-		propMap, ok := p.(map[interface{}]interface{})
-		if !ok {
-			continue
-		}
-
-		// only process if it has 'properties' field
-		propsIf, ok := propMap["properties"]
-		if !ok {
-			continue
-		}
-
-		// check validity of the properties
-		props, ok := propsIf.(map[interface{}]interface{})
-		if !ok {
-			panic("inline properties expect properties in type:map[string]interface{}")
-		}
-
-		newName := t.Name + name
-		created := apiDef.createType(newName, propMap["type"], props)
-
-		propMap["type"] = newName
-
-		// delete the 'properties' field
-		delete(propMap, "properties")
-
-		t.Properties[name] = propMap
-
-		// post process the created type
-		if created {
-			createdType := apiDef.Types[newName]
-			createdType.postProcess(newName, apiDef)
-		}
+		t.createTypeFromPropProperty(name, apiDef)
+		t.createTypeFromPropItems(name, apiDef)
 	}
 	return nil
+}
+
+// create type from item
+func (t *Type) createTypeFromPropItems(name string, apiDef *APIDefinition) {
+	p := t.Properties[name]
+
+	// propMap is this properties as map
+	propMap, ok := p.(map[interface{}]interface{})
+	if !ok {
+		return
+	}
+
+	// only process the array
+	tip, ok := propMap["type"]
+	if !ok || tip != "array" {
+		return
+	}
+
+	// only process if it has 'items' field
+	itemsIf, ok := propMap["items"]
+	if !ok {
+		return
+	}
+
+	// check it's validity
+	items, ok := itemsIf.(map[interface{}]interface{})
+	if !ok {
+		return
+	}
+
+	props, ok := items["properties"].(map[interface{}]interface{})
+	if !ok {
+		panic("inline item's properties expect properties in type:map[string]interface{}")
+	}
+	newName := t.Name + name + "Item"
+	created := apiDef.createType(newName, tip, props)
+
+	delete(items, "properties")
+	propMap["items"] = newName
+
+	t.Properties[name] = propMap
+
+	if created {
+		createdType := apiDef.Types[newName]
+		createdType.postProcess(newName, apiDef)
+	}
+}
+
+// create type from property's property
+func (t *Type) createTypeFromPropProperty(name string, apiDef *APIDefinition) {
+	p := t.Properties[name]
+	// only process map[interface]interface{}
+	propMap, ok := p.(map[interface{}]interface{})
+	if !ok {
+		return
+	}
+
+	// only process if it has 'properties' field
+	propsIf, ok := propMap["properties"]
+	if !ok {
+		return
+	}
+
+	// check validity of the properties
+	props, ok := propsIf.(map[interface{}]interface{})
+	if !ok {
+		panic("inline properties expect properties in type:map[string]interface{}")
+	}
+
+	newName := t.Name + name
+	created := apiDef.createType(newName, propMap["type"], props)
+
+	propMap["type"] = newName
+
+	// delete the 'properties' field
+	delete(propMap, "properties")
+
+	t.Properties[name] = propMap
+
+	// post process the created type
+	if created {
+		createdType := apiDef.Types[newName]
+		createdType.postProcess(newName, apiDef)
+	}
+
 }
 func (t *Type) postProcessJSONSchema() error {
 	var jt JSONSchema
