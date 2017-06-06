@@ -229,10 +229,13 @@ func (apiDef *APIDefinition) allTraits(trts map[string]Trait, libraries map[stri
 }
 
 // create new type
-func (apiDef *APIDefinition) createType(name string, tip interface{}, inputProps map[interface{}]interface{}) {
+func (apiDef *APIDefinition) createType(name string, tip interface{},
+	inputProps map[interface{}]interface{}) bool {
+
+	created := false
 	// check that there is no type with this name
 	if _, exist := apiDef.Types[name]; exist {
-		return
+		return created
 	}
 
 	// convert the inputProps to properties
@@ -252,4 +255,6 @@ func (apiDef *APIDefinition) createType(name string, tip interface{}, inputProps
 		Properties: props,
 	}
 	apiDef.Types[name] = t
+	created = true
+	return created
 }

@@ -666,7 +666,7 @@ func (t *Type) postProcess(name string, apiDef *APIDefinition) error {
 		}
 
 		newName := t.Name + name
-		apiDef.createType(newName, propMap["type"], props)
+		created := apiDef.createType(newName, propMap["type"], props)
 
 		propMap["type"] = newName
 
@@ -674,6 +674,12 @@ func (t *Type) postProcess(name string, apiDef *APIDefinition) error {
 		delete(propMap, "properties")
 
 		t.Properties[name] = propMap
+
+		// post process the created type
+		if created {
+			createdType := apiDef.Types[newName]
+			createdType.postProcess(newName, apiDef)
+		}
 	}
 	return nil
 }

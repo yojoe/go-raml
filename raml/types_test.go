@@ -38,5 +38,12 @@ func TestTypeInType(t *testing.T) {
 			}
 		}
 		So(prop.TypeString(), ShouldEqual, "Actionrecurring")
+
+		// test for the recursive type
+		_, ok = apiDef.Types["Actionrecurringcombo"]
+		So(ok, ShouldBeTrue)
+
+		combo := ar.GetProperty("combo")
+		So(combo.TypeString(), ShouldEqual, "Actionrecurringcombo")
 	})
 }
