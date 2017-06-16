@@ -73,8 +73,8 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 func (gc Client) Generate() error {
 	// helper package
 	gh := goramlHelper{
-		packageName: gc.PackageName,
-		packageDir:  "",
+		packageName: "goraml",
+		packageDir:  "goraml",
 	}
 	if err := gh.generate(gc.TargetDir); err != nil {
 		return err
