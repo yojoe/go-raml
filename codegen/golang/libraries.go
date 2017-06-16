@@ -53,8 +53,7 @@ func (gl *goLibrary) targetDir() string {
 
 	fileDir := goLibPackageDir(gl.name, libraries.StripLibRootURL(gl.Filename, gl.libRootURLs))
 
-	res := filepath.Join(baseDir, fileDir)
-	return commons.NormalizePkgName(res)
+	return filepath.Join(baseDir, fileDir)
 }
 
 // generate code of all libraries
@@ -122,5 +121,10 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 // name is library name. filename is library file name.
 // for the rule, see comment of `type goLibrary struct`
 func goLibPackageDir(name, filename string) string {
-	return commons.NormalizePkgName(filepath.Join(filepath.Dir(filename), name))
+	dir := filepath.Join(filepath.Dir(filename), name)
+
+	// escape last dir element
+	elems := strings.Split(dir, "/")
+	elems[len(elems)-1] = escapeIdentifier(elems[len(elems)-1])
+	return strings.Join(elems, "/")
 }

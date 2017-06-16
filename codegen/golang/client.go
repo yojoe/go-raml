@@ -53,7 +53,7 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 	}
 	client := Client{
 		apiDef:         apiDef,
-		Name:           commons.NormalizeURI(apiDef.Title),
+		Name:           escapeIdentifier(commons.NormalizeURI(apiDef.Title)),
 		BaseURI:        apiDef.BaseURI,
 		libraries:      apiDef.Libraries,
 		PackageName:    packageName,
