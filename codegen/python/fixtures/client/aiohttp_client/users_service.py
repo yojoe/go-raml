@@ -31,13 +31,13 @@ class UsersService:
         return await self.client.get(uri, None, headers, query_params, content_type)
 
 
-    async def users_byUserId_post(self, userId, headers=None, query_params=None, content_type="application/json"):
+    async def users_byUserId_post(self, data, userId, headers=None, query_params=None, content_type="application/json"):
         """
         post without request body
         It is method for POST /users/{userId}
         """
         uri = self.client.base_url + "/users/"+userId
-        return await self.client.post(uri, None, headers, query_params, content_type)
+        return await self.client.post(uri, data, headers, query_params, content_type)
 
 
     async def users_delete(self, data, headers=None, query_params=None, content_type="application/json"):
