@@ -31,7 +31,7 @@ type enum struct {
 func newEnum(structName string, prop raml.Property, pkg string, fromStruct bool) *enum {
 	e := enum{
 		Name: strings.Title(structName) + strings.Title(prop.Name),
-		Type: convertToGoType(prop.TypeString(), prop.Items),
+		Type: convertToGoType(prop.TypeString(), prop.Items.Type),
 		Pkg:  pkg,
 	}
 	if !fromStruct {

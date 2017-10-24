@@ -46,12 +46,23 @@ func TestTypeInType(t *testing.T) {
 		combo := ar.GetProperty("combo")
 		So(combo.TypeString(), ShouldEqual, "Actionrecurringcombo")
 
-		// check the items
+		// check the items with properties
 		coinInputs := action.GetProperty("coininputs")
 		So(coinInputs.Type, ShouldEqual, "array")
-		So(coinInputs.Items, ShouldEqual, "ActioncoininputsItem")
+		So(coinInputs.Items.Type, ShouldEqual, "ActioncoininputsItem")
 
 		_, ok = apiDef.Types["ActioncoininputsItem"]
 		So(ok, ShouldBeTrue)
+
+		// check the items with Type and format
+		coinTipes := action.GetProperty("coinTipes")
+		So(coinTipes.Type, ShouldEqual, "array")
+		So(coinTipes.Items.Type, ShouldEqual, "number")
+		So(coinTipes.Items.Format, ShouldEqual, "double")
+
+		// check the items with plain type
+		coinTipesPlain := action.GetProperty("coinTipesPlain")
+		So(coinTipesPlain.Type, ShouldEqual, "array")
+		So(coinTipesPlain.Items.Type, ShouldEqual, "string")
 	})
 }

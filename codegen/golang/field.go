@@ -22,7 +22,7 @@ type fieldDef struct {
 func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
 	fd := fieldDef{
 		Name:      formatFieldName(prop.Name),
-		Type:      convertToGoType(prop.TypeString(), prop.Items),
+		Type:      convertToGoType(prop.TypeString(), prop.Items.Type),
 		IsOmitted: !prop.Required,
 	}
 	fd.buildValidators(prop)

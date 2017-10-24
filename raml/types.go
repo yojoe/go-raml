@@ -161,7 +161,7 @@ type Property struct {
 	MinItems    *int
 	MaxItems    *int
 	UniqueItems bool
-	Items       string
+	Items       Items
 
 	// Capnp extension
 	CapnpFieldNumber int
@@ -236,7 +236,7 @@ func toProperty(name string, p interface{}) Property {
 			case "uniqueItems":
 				p.UniqueItems = v.(bool)
 			case "items":
-				p.Items = v.(string)
+				p.Items = newItems(v)
 			case "capnpFieldNumber":
 				p.CapnpFieldNumber = v.(int)
 			case "capnpType":
@@ -316,7 +316,7 @@ func (p Property) BidimensiArrayType() string {
 // ArrayType returns the type of the array
 func (p Property) ArrayType() string {
 	if p.Type == arrayType {
-		return p.Items
+		return p.Items.Type
 	}
 	return strings.TrimSuffix(p.TypeString(), "[]")
 }
@@ -721,7 +721,8 @@ func (t *Type) createTypeFromPropItems(name string, apiDef *APIDefinition) {
 	created := apiDef.createType(newName, tip, props)
 
 	delete(items, "properties")
-	propMap["items"] = newName
+	items["type"] = newName
+	propMap["items"] = items
 
 	t.Properties[name] = propMap
 
