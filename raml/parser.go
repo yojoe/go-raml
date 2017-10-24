@@ -235,7 +235,8 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 			prepender := []byte("\n")
 
 			// if it is in response body, we prepend "|" to make it as string
-			if strings.HasPrefix(strings.TrimSpace(line), "type") { // in body
+			trimmedLine := strings.TrimSpace(line)
+			if strings.HasPrefix(trimmedLine, "type ") || strings.HasPrefix(trimmedLine, "type:") { // in body
 				prepender = []byte("|\n")
 			}
 			includedContents = append(prepender, includedContents...)
