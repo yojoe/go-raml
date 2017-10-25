@@ -181,7 +181,8 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 }
 
 func (pf *field) addImport(module, name string) {
-	if commons.IsBuiltinType(name) {
+	if commons.IsBuiltinType(name) && !datetimeVariant(name) {
+		// datetime variant is not builtin type in python
 		return
 	}
 	imp := pyimport{
@@ -252,4 +253,19 @@ func (pf *field) setType(t, items string) {
 		pf.Type = t
 		pf.addImport("."+t, t)
 	}
+}
+
+var (
+	dateTimeVariantMap = map[string]struct{}{
+		"date-only":     struct{}{},
+		"time-only":     struct{}{},
+		"datetime-only": struct{}{},
+		"datetime":      struct{}{},
+	}
+)
+
+// check if a type name is variant of datetime
+func datetimeVariant(name string) bool {
+	_, ok := dateTimeVariantMap[name]
+	return ok
 }

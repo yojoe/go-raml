@@ -126,6 +126,12 @@ types:
         type: string
         minLength: 8
         maxLength: 40
+  WithDateTime:
+    properties:
+      name:
+        type: string
+      birth:
+        type: datetime
 /users:
   post:
     description: create a user

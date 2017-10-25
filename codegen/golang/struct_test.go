@@ -41,6 +41,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 				"Dashed",           // field with dash
 				"PlainObject",
 				"NumberFormat",
+				"WithDateTime",
 			}
 
 			for _, f := range files {

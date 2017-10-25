@@ -40,6 +40,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				"Catanimal.py",
 				"UsersByIdGetReqBody.py",
 				"UsersPostReqBody.py",
+				"WithDateTime.py",
 			}
 
 			for _, f := range files {
