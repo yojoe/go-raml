@@ -258,14 +258,19 @@ func substituteParams(toReplace, words string, dicts map[string]interface{}) str
 
 	// substitute the params
 	for _, p := range params {
-		pVal := getParamValue(removeParamBracket(p), dicts)
+		pVal, ok := getParamValue(removeParamBracket(p), dicts)
+		if !ok {
+			// only replace if param is found
+			continue
+		}
 		words = strings.Replace(words, p, pVal, -1)
 	}
 	return words
 }
 
 // get value of a resource type param
-func getParamValue(param string, dicts map[string]interface{}) string {
+// return false if not exists
+func getParamValue(param string, dicts map[string]interface{}) (string, bool) {
 	// split between inflectors and real param
 	// real param and each inflector is seperated by `|`
 	cleanParam, inflectors := func() (string, string) {
@@ -277,14 +282,17 @@ func getParamValue(param string, dicts map[string]interface{}) string {
 	}()
 
 	// get the value
-	val := func() string {
+	val, ok := func() (string, bool) {
 		// get from type parameters
 		val, ok := dicts[cleanParam]
 		if !ok {
-			log.Fatalf("getParamValue unknown param:%v, dicts=%v", cleanParam, dicts)
+			return "", false
 		}
-		return fmt.Sprintf("%v", val)
+		return fmt.Sprintf("%v", val), true
 	}()
+	if !ok {
+		return "", false
+	}
 
 	// inflect the value if needed
 	if inflectors != "" {
@@ -297,7 +305,7 @@ func getParamValue(param string, dicts map[string]interface{}) string {
 			}
 		}
 	}
-	return val
+	return val, true
 }
 
 // CleanURI returns URI without `/`, `\`', `{`, and `}`
