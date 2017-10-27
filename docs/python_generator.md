@@ -30,7 +30,7 @@ RAML Enum become python enum as described in https://docs.python.org/3/library/e
 
 go-raml use Flask WTF for request body validation.
 
-    Validation              |   Python
+    Validation              | Python
 --------------------------- | ------
  minLength                  |   v
  maxLength                  |   v
