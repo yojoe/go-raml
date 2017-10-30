@@ -35,15 +35,6 @@ func newEnum(name string, prop raml.Property, fromClass bool) *enum {
 	return &e
 }
 
-func newEnumFromWtfClass(pc *wtfClass) *enum {
-	prop := raml.Property{
-		Type: fmt.Sprint(pc.T.Type),
-		Name: "",
-		Enum: pc.T.Enum,
-	}
-	return newEnum(pc.Name, prop, true)
-}
-
 func newEnumFromClass(pc *class) *enum {
 	prop := raml.Property{
 		Type: fmt.Sprint(pc.T.Type),

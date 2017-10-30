@@ -25,12 +25,12 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/wtf_class/"
+			rootFixture := "./fixtures/from_body/"
 			checks := []struct {
 				Result   string
 				Expected string
 			}{
-				{"UsersPostReqBody.py", "UsersPostReqBody.py"},
+				{"schema/UsersPostReqBody_schema.json", "UsersPostReqBody_schema.json"},
 			}
 
 			for _, check := range checks {
@@ -53,12 +53,12 @@ func TestGenerateClassFromBody(t *testing.T) {
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/wtf_class/json/"
+			rootFixture := "./fixtures/from_body/json/"
 			checks := []struct {
 				Result   string
 				Expected string
 			}{
-				{"PersonPostReqBody.py", "PersonPostReqBody.py"},
+				{"schema/PersonPostReqBody_schema.json", "PersonPostReqBody_schema.json"},
 			}
 
 			for _, check := range checks {

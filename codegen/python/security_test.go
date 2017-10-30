@@ -54,10 +54,10 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check route
-			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
+			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_api.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/security/deliveries.py")
+			tmpl, err := testLoadFile("./fixtures/security/deliveries_api.py")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

@@ -1,7 +1,16 @@
+import json as JSON
+import jsonschema
+from jsonschema import Draft4Validator
 from flask import Blueprint, jsonify, request
 
 
-from User import User
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+User_schema =  JSON.load(open('./schema/User_schema.json'))
+User_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', User_schema)
+User_schema_validator = Draft4Validator(User_schema, resolver=User_schema_resolver)
+
 
 drones_api = Blueprint('drones_api', __name__)
 
@@ -23,9 +32,11 @@ def drones_post():
     It is handler for POST /drones
     '''
     
-    inputs = User.from_json(request.get_json())
-    if not inputs.validate():
-        return jsonify(errors=inputs.errors), 400
+    inputs = request.get_json()
+    try:
+        User_schema_validator.validate(inputs)
+    except jsonschema.ValidationError as e:
+        return jsonify(errors="bad request body"), 400
     
     return jsonify()
 
@@ -47,9 +58,11 @@ def drones_byDroneId_patch(droneId):
     It is handler for PATCH /drones/<droneId>
     '''
     
-    inputs = User.from_json(request.get_json())
-    if not inputs.validate():
-        return jsonify(errors=inputs.errors), 400
+    inputs = request.get_json()
+    try:
+        User_schema_validator.validate(inputs)
+    except jsonschema.ValidationError as e:
+        return jsonify(errors="bad request body"), 400
     
     return jsonify()
 

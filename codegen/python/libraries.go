@@ -61,9 +61,11 @@ func (l *library) generate() error {
 		return err
 	}
 
-	// python classes
-	if err := generateWtfClassesFromTypes(l.Types, l.dir); err != nil {
-		log.Errorf("failed to generate python clased:%v", err)
+	// json schema
+	if err := generateJSONSchema(&raml.APIDefinition{
+		Types: l.Types,
+	}, l.dir); err != nil {
+		log.Errorf("failed to generate jsonschema:%v", err)
 		return err
 	}
 

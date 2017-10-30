@@ -13,7 +13,7 @@ import (
 
 func TestServer(t *testing.T) {
 	Convey("server generator", t, func() {
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("Congo python server", func() {
@@ -22,37 +22,29 @@ func TestServer(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			server := NewFlaskServer(apiDef, "apidocs", true, nil)
-			err = server.Generate(targetdir)
+			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
 
-			// check drones API implementation
-			s, err := testLoadFile(filepath.Join(targetdir, "drones.py"))
-			So(err, ShouldBeNil)
+			rootFixture := "../fixtures/congo/python_server"
+			files := []string{
+				"drones_api.py",
+				"deliveries_api.py",
+				"app.py",
+			}
 
-			tmpl, err := testLoadFile("../fixtures/congo/python_server/drones.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
 
-			// check deliveries API implementation
-			s, err = testLoadFile(filepath.Join(targetdir, "deliveries.py"))
-			So(err, ShouldBeNil)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../fixtures/congo/python_server/deliveries.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
-			// check main file
-			s, err = testLoadFile(filepath.Join(targetdir, "app.py"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("../fixtures/congo/python_server/app.py")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
+				So(s, ShouldEqual, tmpl)
+			}
 		})
 
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
 }

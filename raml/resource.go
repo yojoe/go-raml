@@ -329,8 +329,13 @@ func doFullURI(r *Resource, completeURI string) string {
 
 // from spec : the rightmost of the non-URI-parameter-containing path fragments.
 func (r *Resource) resourcePathName() string {
-	if !strings.HasPrefix(r.URI, "/{") {
-		return removeDoubleSlash(r.URI)
+	// remove trailing slash
+	uri := strings.TrimSuffix(r.URI, "/")
+
+	if uri != "" && !strings.HasSuffix(uri, "}") {
+		// check if it is non-URI params, which ended by "}"
+		elems := strings.Split(uri, "/")
+		return elems[len(elems)-1]
 	}
 	if r.Parent == nil {
 		return ""

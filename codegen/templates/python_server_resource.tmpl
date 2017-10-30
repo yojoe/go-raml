@@ -1,10 +1,19 @@
 {{- define "resource_python_template" -}}
 {{- $apiName := .Name -}}
+import json as JSON
+import jsonschema
+from jsonschema import Draft4Validator
 from flask import Blueprint, jsonify, request
 {{ range $k, $v := .MiddlewaresArr}}
 import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 {{ range $k, $v := .ReqBodies }}
-from {{$v}} import {{$v}}{{ end }}
+{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json'))
+{{$v}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$v}}_schema)
+{{$v}}_schema_validator = Draft4Validator({{$v}}_schema, resolver={{$v}}_schema_resolver)
+{{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}
@@ -21,9 +30,11 @@ def {{$v.MethodName}}({{$v.Params}}):
     It is handler for {{$v.Verb}} {{$v.Endpoint}}
     '''
     {{ if .ReqBody }}
-    inputs = {{.ReqBody}}.from_json(request.get_json())
-    if not inputs.validate():
-        return jsonify(errors=inputs.errors), 400
+    inputs = request.get_json()
+    try:
+        {{.ReqBody}}_schema_validator.validate(inputs)
+    except jsonschema.ValidationError as e:
+        return jsonify(errors="bad request body"), 400
     {{ end }}
     return jsonify()
 {{ end -}}

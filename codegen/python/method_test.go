@@ -27,8 +27,7 @@ func TestMethod(t *testing.T) {
 
 			rootFixture := "./fixtures/method/flask/display_name"
 			files := []string{
-				"CreateSomethingCoolReqBody.py",
-				"coolness.py",
+				"coolness_api.py",
 			}
 
 			for _, f := range files {

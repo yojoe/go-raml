@@ -1,13 +1,9 @@
 from flask import Flask, send_from_directory, send_file
-import wtforms_json
-from deliveries import deliveries_api
-from drones import drones_api
+from deliveries_api import deliveries_api
+from drones_api import drones_api
 
 
 app = Flask(__name__)
-
-app.config["WTF_CSRF_ENABLED"] = False
-wtforms_json.init()
 
 app.register_blueprint(deliveries_api)
 app.register_blueprint(drones_api)

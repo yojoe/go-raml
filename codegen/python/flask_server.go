@@ -47,8 +47,7 @@ func (ps FlaskServer) Generate(dir string) error {
 		return err
 	}
 
-	if err := generateAllWtfClasses(ps.APIDef, dir); err != nil {
-		log.Errorf("failed to generate python clased:%v", err)
+	if err := generateJSONSchema(ps.APIDef, dir); err != nil {
 		return err
 	}
 

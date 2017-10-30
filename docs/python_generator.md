@@ -4,13 +4,14 @@
 
 Generated server code use these libraries:
 
-- Flask as web framework
-- Flask WTF for request body validation
+- Flask or Sanic as web framework
+- [python jsonschema](https://pypi.python.org/pypi/jsonschema) for request body validation
 - [python-jose](https://github.com/mpdavis/python-jose) for JWT decoding
 
 ## Client
 
-Generated client library use [requests](http://docs.python-requests.org/en/master/) as http library.
+Generated client library use [requests](http://docs.python-requests.org/en/master/) or 
+[aiohttp](http://aiohttp.readthedocs.io/en/stable/) as http library.
 
 
 ## Type
@@ -28,7 +29,7 @@ RAML Enum become python enum as described in https://docs.python.org/3/library/e
 
 ## Input Validation
 
-go-raml use Flask WTF for request body validation.
+go-raml use python-jsonschema for request body validation.
 
     Validation              | Python
 --------------------------- | ------

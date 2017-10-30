@@ -26,18 +26,18 @@ func init() {
 	jsObjects = map[string]raml.JSONSchema{}
 }
 
-func (s SanicServer) schemaDir() string {
+func jsonSchemaDir() string {
 	return "schema"
 }
-func (s SanicServer) generateJSONSchema(dir string) error {
+func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
 
-	sDir := filepath.Join(dir, s.schemaDir())
+	sDir := filepath.Join(dir, jsonSchemaDir())
 
-	for name, t := range types.AllTypes(s.APIDef, "") {
+	for name, t := range types.AllTypes(apiDef, "") {
 		switch tip := t.Type.(type) {
 		case string:
 			rt := raml.Type{Type: tip}

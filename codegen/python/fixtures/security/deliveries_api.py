@@ -1,7 +1,13 @@
+import json as JSON
+import jsonschema
+from jsonschema import Draft4Validator
 from flask import Blueprint, jsonify, request
 
 import oauth2_Facebook as oauth2_Facebook
 import oauth2_Dropbox as oauth2_Dropbox
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 deliveries_api = Blueprint('deliveries_api', __name__)

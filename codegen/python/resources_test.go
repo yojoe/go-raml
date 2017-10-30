@@ -26,10 +26,10 @@ func TestPythonResource(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check  api implementation
-			s, err := testLoadFile(filepath.Join(targetdir, "deliveries.py"))
+			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_api.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/server_resources/deliveries.py")
+			tmpl, err := testLoadFile("../fixtures/server_resources/deliveries_api.py")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})
