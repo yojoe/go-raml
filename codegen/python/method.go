@@ -158,18 +158,20 @@ func _snakeCaseResourceURI(r *raml.Resource, completeURI string) string {
 	var snake string
 	if len(r.URI) > 0 {
 		uri := commons.NormalizeURI(r.URI)
-		if r.Parent != nil { // not root resource, need to add "_"
-			snake = "_"
-		}
+		if len(uri) > 0 {
+			if r.Parent != nil { // not root resource, need to add "_"
+				snake = "_"
+			}
 
-		if strings.HasPrefix(r.URI, "/{") {
-			snake += "by" + strings.ToUpper(uri[:1])
-		} else {
-			snake += strings.ToLower(uri[:1])
-		}
+			if strings.HasPrefix(r.URI, "/{") {
+				snake += "by" + strings.ToUpper(uri[:1])
+			} else {
+				snake += strings.ToLower(uri[:1])
+			}
 
-		if len(uri) > 1 { // append with the rest of uri
-			snake += uri[1:]
+			if len(uri) > 1 { // append with the rest of uri
+				snake += uri[1:]
+			}
 		}
 	}
 	return _snakeCaseResourceURI(r.Parent, snake+completeURI)
