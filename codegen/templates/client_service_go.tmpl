@@ -3,7 +3,7 @@ package {{.PackageName}}
 
 {{$serviceiName := .Name}}
 import (
-	"encoding/json"
+	{{ if .NeedImportJSON}}"encoding/json"{{end}}
 	"net/http"
 
     {{ range $k, $v := .LibImportPaths -}}

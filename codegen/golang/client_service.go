@@ -33,6 +33,18 @@ func (cs ClientService) filename(dir string) string {
 	return name + ".go"
 }
 
+// NeedImportJSON returns true if this service need
+// to import encoding/json
+func (cs ClientService) NeedImportJSON() bool {
+	for _, v := range cs.Methods {
+		cm := v.(clientMethod)
+		if cm.needImportEncodingJson() {
+			return true
+		}
+	}
+	return false
+}
+
 // LibImportPaths returns all imported lib
 func (cs ClientService) LibImportPaths() map[string]struct{} {
 	ip := map[string]struct{}{}

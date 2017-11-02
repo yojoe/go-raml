@@ -122,13 +122,13 @@ func (gc *Client) generateServices(dir string) error {
 
 // generate security related files
 // it currently only supports itsyou.online oauth2
-func (c *Client) generateSecurity(dir string) error {
-	for name, ss := range c.apiDef.SecuritySchemes {
+func (gc *Client) generateSecurity(dir string) error {
+	for name, ss := range gc.apiDef.SecuritySchemes {
 		if v, ok := ss.Settings["accessTokenUri"]; ok {
 			ctx := map[string]string{
-				"ClientName":     c.Name,
+				"ClientName":     gc.Name,
 				"AccessTokenURI": fmt.Sprintf("%v", v),
-				"PackageName":    c.PackageName,
+				"PackageName":    gc.PackageName,
 			}
 			filename := filepath.Join(dir, "oauth2_client_"+name+".go")
 			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_go.tmpl", "oauth2_client_go", filename, true); err != nil {

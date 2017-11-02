@@ -166,6 +166,11 @@ func (gcm clientMethod) ReturnTypes() string {
 	return fmt.Sprintf("(%v)", strings.Join(types, ","))
 }
 
+// return true if this method need to import encoding/json
+func (gcm clientMethod) needImportEncodingJson() bool {
+	return gcm.RespBody != ""
+}
+
 func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
