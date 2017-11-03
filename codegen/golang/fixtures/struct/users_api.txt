@@ -15,9 +15,8 @@ type UsersAPI struct {
 // Replace ID with user defined field.
 func (api UsersAPI) idGet(w http.ResponseWriter, r *http.Request) {
 	var respBody UsersIdGetRespBody
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // idPut is the handler for PUT /users/{id}
@@ -37,9 +36,8 @@ func (api UsersAPI) idPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var respBody UnionCatanimal
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // Post is the handler for POST /users
@@ -59,6 +57,4 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
 	}
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

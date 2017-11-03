@@ -11,34 +11,24 @@ type DeliveriesAPI struct {
 // deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
 // Cancel a specific delivery
 func (api DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // getDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
 // Get information on a specific delivery
 func (api DeliveriesAPI) getDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // deliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
 // Update the information on a specific delivery
 func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // Get is the handler for GET /deliveries
 // Get a list of deliveries
 func (api DeliveriesAPI) Get(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // Post is the handler for POST /deliveries
 // Create/request a new delivery
 func (api DeliveriesAPI) Post(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

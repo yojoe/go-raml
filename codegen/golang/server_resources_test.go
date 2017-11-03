@@ -44,6 +44,22 @@ func TestResource(t *testing.T) {
 			tmpl, err = testLoadFile("./fixtures/server_resources/simple/deliveries_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
+
+			rootFixture := "./fixtures/server_resources/simple"
+			files := []string{
+				"deliveries_api",
+				"deliveries_if",
+			}
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
 		})
 
 		Convey("simple resource with one api file per method", func() {
@@ -97,7 +113,6 @@ func TestResource(t *testing.T) {
 
 				So(s, ShouldEqual, tmpl)
 			}
-
 		})
 
 		Convey("resource with request body", func() {
@@ -108,22 +123,20 @@ func TestResource(t *testing.T) {
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
-			// check users api implementation
-			s, err := testLoadFile(filepath.Join(targetDir, "users_api.go"))
-			So(err, ShouldBeNil)
+			rootFixture := "./fixtures/server_resources/with_req_body"
+			files := []string{
+				"users_if",
+				"users_api",
+			}
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server_resources/with_req_body/users_api.txt")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
 
-			// check user interface
-			s, err = testLoadFile(filepath.Join(targetDir, "users_if.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = testLoadFile("./fixtures/server_resources/with_req_body/users_if.txt")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
+				So(s, ShouldEqual, tmpl)
+			}
 		})
 
 		Reset(func() {

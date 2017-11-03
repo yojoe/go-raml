@@ -35,6 +35,7 @@ func(api {{.APIName}}API) {{.Method.MethodName}}(w http.ResponseWriter, r *http.
 	{{- end }}
 
 	{{- if .Method.RespBody }}
+	w.Header().Set("Content-Type", "application/json")
 	var respBody {{.Method.RespBody}}
 	json.NewEncoder(w).Encode(&respBody)
 	{{- end }}

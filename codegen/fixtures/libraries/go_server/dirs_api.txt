@@ -13,7 +13,6 @@ type DirsAPI struct {
 // Get is the handler for GET /dirs
 func (api DirsAPI) Get(w http.ResponseWriter, r *http.Request) {
 	var respBody files.Directory
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

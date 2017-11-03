@@ -19,8 +19,6 @@ func (api BuiltinAPI) scalartype(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // morecomplextype is the handler for PUT /builtin
@@ -33,6 +31,4 @@ func (api BuiltinAPI) morecomplextype(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

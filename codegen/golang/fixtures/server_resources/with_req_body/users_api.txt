@@ -25,6 +25,4 @@ func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
 	}
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

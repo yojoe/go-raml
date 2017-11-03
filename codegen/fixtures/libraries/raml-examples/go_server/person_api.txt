@@ -13,7 +13,6 @@ type PersonAPI struct {
 // Get is the handler for GET /person
 func (api PersonAPI) Get(w http.ResponseWriter, r *http.Request) {
 	var respBody types_lib.Person
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

@@ -12,7 +12,6 @@ type HelloworldAPI struct {
 // Get is the handler for GET /helloworld
 func (api HelloworldAPI) Get(w http.ResponseWriter, r *http.Request) {
 	var respBody HelloworldGetRespBody
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }

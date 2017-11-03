@@ -14,21 +14,17 @@ type ConfigsAPI struct {
 // get config files
 func (api ConfigsAPI) Get(w http.ResponseWriter, r *http.Request) {
 	var respBody file_type.File
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // Post is the handler for POST /configs
 func (api ConfigsAPI) Post(w http.ResponseWriter, r *http.Request) {
 	var respBody Place
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
 
 // Put is the handler for PUT /configs
 func (api ConfigsAPI) Put(w http.ResponseWriter, r *http.Request) {
-	// uncomment below line to add header
-	// w.Header().Set("key","value")
 }
