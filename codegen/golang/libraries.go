@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -102,7 +103,7 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 	libName := strings.Split(typ, ".")[0]
 
 	if libName == "goraml" { // special package name, reserved for goraml
-		return filepath.Join(rootImportPath, "goraml")
+		return joinImportPath(rootImportPath, "goraml")
 	}
 
 	// raml file of this lib
@@ -114,7 +115,7 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 
 	libPath := libraries.JoinPath(libDir, libFile, libRootURLs)
 
-	return filepath.Join(rootImportPath, goLibPackageDir(libName, libPath))
+	return joinImportPath(rootImportPath, goLibPackageDir(libName, libPath))
 }
 
 // returns Go package directory of a library
@@ -127,4 +128,14 @@ func goLibPackageDir(name, filename string) string {
 	elems := strings.Split(dir, "/")
 	elems[len(elems)-1] = escapeIdentifier(elems[len(elems)-1])
 	return strings.Join(elems, "/")
+}
+
+// joinImportPath should always use `/`.
+// this is not the case in windows.
+// so we need to split it based on file separator and then join again using `/`
+func joinImportPath(baseDir, dir string) string {
+	baseDirElems := strings.Split(baseDir, string(filepath.Separator))
+	dirElems := strings.Split(dir, string(filepath.Separator))
+	elems := append(baseDirElems, dirElems...)
+	return path.Join(elems...)
 }

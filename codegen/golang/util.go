@@ -2,6 +2,7 @@ package golang
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"unicode"
@@ -41,7 +42,8 @@ func setRootImportPath(importPath, targetDir string) string {
 		panic("failed to set import path automatically:" + err.Error())
 	}
 
-	return newImportPath
+	// re-join because otherwise windows will use `\`
+	return path.Join(strings.Split(newImportPath, string(filepath.Separator))...)
 }
 
 // escape identifier to meet this spec
