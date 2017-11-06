@@ -19,7 +19,7 @@ func serverMethodName(endpoint, displayName, verb, resName string) string {
 	if len(displayName) > 0 {
 		return commons.DisplayNameToFuncName(displayName)
 	} else {
-		name := commons.NormalizeURI(endpoint)
+		name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(endpoint))
 		return name[len(resName):] + verb
 	}
 }
@@ -149,7 +149,7 @@ func (gcm *clientMethod) setup(methodName string) {
 	} else {
 		gcm.MethodName = name + methodName
 	}
-	gcm.MethodName = strings.Title(gcm.MethodName)
+	gcm.MethodName = commons.ReplaceNonAlphanumerics(strings.Title(gcm.MethodName))
 
 	// method param
 	gcm.Params = buildParams(gcm.RAMLResource, gcm.ReqBody)

@@ -201,12 +201,11 @@ func IsStrInArray(arr []string, str string) bool {
 	return false
 }
 
-// replace non alphanumerics with "_"
-func replaceNonAlphanumerics(s string) string {
+// ReplaceNonAlphanumerics replaces non alphanumerics with "_"
+func ReplaceNonAlphanumerics(s string) string {
 	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
 }
-
 func DisplayNameToFuncName(str string) string {
 	str = strings.Replace(str, " ", "", -1) // remove the space
-	return replaceNonAlphanumerics(str)     // change the other to _
+	return ReplaceNonAlphanumerics(str)     // change the other to _
 }

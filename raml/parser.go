@@ -41,6 +41,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"unicode/utf8"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gigforks/yaml"
@@ -229,6 +230,11 @@ func preProcess(originalContents io.Reader, workingDirectory string) ([]byte, er
 				return nil,
 					fmt.Errorf("Error including file %s:\n    %s",
 						included, err.Error())
+			}
+
+			// we only parse utf8 content
+			if !utf8.Valid(includedContents) {
+				includedContents = []byte("")
 			}
 
 			// add newline to included content
