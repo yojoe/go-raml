@@ -84,7 +84,11 @@ func TestResourceTypeInheritance(t *testing.T) {
 			So(r.Get, ShouldNotBeNil)
 
 			qps := r.Get.QueryParameters
-			So(qps["numPages"].Description, ShouldEqual, "The number of pages to return, not to exceed 10")
+			numPages := qps["numPages"]
+			So(numPages.Description, ShouldEqual, "The number of pages to return, not to exceed 10")
+			So(numPages.Type, ShouldEqual, "integer")
+			So(*numPages.Minimum, ShouldEqual, 1)
+			So(numPages.Required, ShouldEqual, true)
 
 			So(qps["access_token"].Description, ShouldEqual, "A valid access_token is required")
 

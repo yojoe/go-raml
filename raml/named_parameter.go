@@ -101,6 +101,7 @@ func (np *NamedParameter) inherit(parent NamedParameter, dicts map[string]interf
 	np.Name = substituteParams(np.Name, parent.Name, dicts)
 	np.DisplayName = substituteParams(np.DisplayName, parent.DisplayName, dicts)
 	np.Description = substituteParams(np.Description, parent.Description, dicts)
+	np.Type = parent.Type
 
 	/*
 		for _, elem := range parent.Enum {

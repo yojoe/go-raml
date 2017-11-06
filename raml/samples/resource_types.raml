@@ -67,6 +67,10 @@ traits:
       queryParameters:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
+          type: integer
+          default: 1
+          minimum: 1
+          required: true
   hasPayload:
       body:
         application/json:
