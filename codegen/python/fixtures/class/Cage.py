@@ -12,17 +12,14 @@ class Cage(object):
     """
 
     @staticmethod
-    def create(colours, owner):
+    def create(**kwargs):
         """
         :type colours: str
         :type owner: animal
         :rtype: Cage
         """
 
-        return Cage(
-            colours=colours,
-            owner=owner,
-        )
+        return Cage(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -39,7 +36,7 @@ class Cage(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.colours = client_support.val_factory(val, datatypes)
+                setattr(self, 'colours', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -50,7 +47,7 @@ class Cage(object):
         if val is not None:
             datatypes = [animal]
             try:
-                self.owner = client_support.val_factory(val, datatypes)
+                setattr(self, 'owner', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

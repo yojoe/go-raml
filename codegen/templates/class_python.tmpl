@@ -14,7 +14,7 @@ class {{.Name}}(object):
     """
 
     @staticmethod
-    def create({{.CreateParamString}}):
+    def create(**kwargs):
         """
         {{ range $key, $val := .Fields -}}
         :type {{$val.Name}}: {{if $val.IsList}}list[{{$val.DataType}}]{{else}}{{$val.DataType}}{{end}}
@@ -22,11 +22,7 @@ class {{.Name}}(object):
         :rtype: {{.Name}}
         """
 
-        return {{.Name}}(
-        {{- range $key, $val := .Fields }}
-            {{$val.Name}}={{$val.Name}},
-        {{- end }}
-        )
+        return {{.Name}}(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -56,18 +52,19 @@ class {{.Name}}(object):
             {{- end }}
             try:
                 {{ if $val.IsList -}}
-                self.{{$val.Name}} = client_support.list_factory(val, datatypes)
+                setattr(self, '{{$val.Name}}', client_support.list_factory(val, datatypes))
                 {{- else if $val.HasChildProperties -}}
-                self.{{$val.Name}} = client_support.dict_factory(val, objmap)
+                setattr(self, '{{$val.Name}}', client_support.dict_factory(val, objmap))
                 {{- else -}}
-                self.{{$val.Name}} = client_support.val_factory(val, datatypes)
+                setattr(self, '{{$val.Name}}', client_support.val_factory(val, datatypes))
                 {{- end }}
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
             {{- if $val.RequiredChildProperties }}
             else:
                 {{- range $rcName := $val.RequiredChildProperties }}
-                if not getattr(self.{{$val.Name}}, '{{$rcName}}', None):
+				attr = getattr(self, '{{$val.Name}}')
+                if not getattr(attr, '{{$rcName}}', None):
                     child_prop_name = "{parent}.{child}".format(parent=property_name, child='{{$rcName}}')
                     raise ValueError(required_error.format(cls=class_name, prop=child_prop_name))
                 {{- end -}}

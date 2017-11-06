@@ -11,15 +11,13 @@ class City(object):
     """
 
     @staticmethod
-    def create(name):
+    def create(**kwargs):
         """
         :type name: str
         :rtype: City
         """
 
-        return City(
-            name=name,
-        )
+        return City(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -36,7 +34,7 @@ class City(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

@@ -12,7 +12,7 @@ class SingleInheritance(object):
     """
 
     @staticmethod
-    def create(cities, colours, name, single):
+    def create(**kwargs):
         """
         :type cities: list[EnumCity]
         :type colours: list[str]
@@ -21,12 +21,7 @@ class SingleInheritance(object):
         :rtype: SingleInheritance
         """
 
-        return SingleInheritance(
-            cities=cities,
-            colours=colours,
-            name=name,
-            single=single,
-        )
+        return SingleInheritance(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -43,7 +38,7 @@ class SingleInheritance(object):
         if val is not None:
             datatypes = [EnumCity]
             try:
-                self.cities = client_support.list_factory(val, datatypes)
+                setattr(self, 'cities', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -54,7 +49,7 @@ class SingleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.colours = client_support.list_factory(val, datatypes)
+                setattr(self, 'colours', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -65,7 +60,7 @@ class SingleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -76,7 +71,7 @@ class SingleInheritance(object):
         if val is not None:
             datatypes = [bool]
             try:
-                self.single = client_support.val_factory(val, datatypes)
+                setattr(self, 'single', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

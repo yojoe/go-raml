@@ -11,15 +11,13 @@ class Cat(object):
     """
 
     @staticmethod
-    def create(kind):
+    def create(**kwargs):
         """
         :type kind: str
         :rtype: Cat
         """
 
-        return Cat(
-            kind=kind,
-        )
+        return Cat(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -36,7 +34,7 @@ class Cat(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.kind = client_support.val_factory(val, datatypes)
+                setattr(self, 'kind', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

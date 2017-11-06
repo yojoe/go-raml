@@ -12,7 +12,7 @@ class MultipleInheritance(object):
     """
 
     @staticmethod
-    def create(cities, color, colours, kind, name=None):
+    def create(**kwargs):
         """
         :type cities: list[EnumCity]
         :type color: str
@@ -22,13 +22,7 @@ class MultipleInheritance(object):
         :rtype: MultipleInheritance
         """
 
-        return MultipleInheritance(
-            cities=cities,
-            color=color,
-            colours=colours,
-            kind=kind,
-            name=name,
-        )
+        return MultipleInheritance(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -45,7 +39,7 @@ class MultipleInheritance(object):
         if val is not None:
             datatypes = [EnumCity]
             try:
-                self.cities = client_support.list_factory(val, datatypes)
+                setattr(self, 'cities', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -56,7 +50,7 @@ class MultipleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.color = client_support.val_factory(val, datatypes)
+                setattr(self, 'color', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -67,7 +61,7 @@ class MultipleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.colours = client_support.list_factory(val, datatypes)
+                setattr(self, 'colours', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -78,7 +72,7 @@ class MultipleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.kind = client_support.val_factory(val, datatypes)
+                setattr(self, 'kind', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -89,7 +83,7 @@ class MultipleInheritance(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
 

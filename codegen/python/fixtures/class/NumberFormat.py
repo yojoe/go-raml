@@ -11,7 +11,7 @@ class NumberFormat(object):
     """
 
     @staticmethod
-    def create(d, f, i, i16, i32, i64, i8, l, num):
+    def create(**kwargs):
         """
         :type d: float
         :type f: float
@@ -25,17 +25,7 @@ class NumberFormat(object):
         :rtype: NumberFormat
         """
 
-        return NumberFormat(
-            d=d,
-            f=f,
-            i=i,
-            i16=i16,
-            i32=i32,
-            i64=i64,
-            i8=i8,
-            l=l,
-            num=num,
-        )
+        return NumberFormat(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -52,7 +42,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [float]
             try:
-                self.d = client_support.val_factory(val, datatypes)
+                setattr(self, 'd', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -63,7 +53,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [float]
             try:
-                self.f = client_support.val_factory(val, datatypes)
+                setattr(self, 'f', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -74,7 +64,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.i = client_support.val_factory(val, datatypes)
+                setattr(self, 'i', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -85,7 +75,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.i16 = client_support.val_factory(val, datatypes)
+                setattr(self, 'i16', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -96,7 +86,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.i32 = client_support.val_factory(val, datatypes)
+                setattr(self, 'i32', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -107,7 +97,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.i64 = client_support.val_factory(val, datatypes)
+                setattr(self, 'i64', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -118,7 +108,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.i8 = client_support.val_factory(val, datatypes)
+                setattr(self, 'i8', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -129,7 +119,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.l = client_support.val_factory(val, datatypes)
+                setattr(self, 'l', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -140,7 +130,7 @@ class NumberFormat(object):
         if val is not None:
             datatypes = [float]
             try:
-                self.num = client_support.val_factory(val, datatypes)
+                setattr(self, 'num', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

@@ -1,7 +1,6 @@
 package python
 
 import (
-	"fmt"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -13,12 +12,11 @@ import (
 
 // class defines a python class
 type class struct {
-	T                 raml.Type
-	Name              string
-	Description       []string
-	Fields            map[string]field
-	Enum              *enum
-	CreateParamString string
+	T           raml.Type
+	Name        string
+	Description []string
+	Fields      map[string]field
+	Enum        *enum
 }
 
 type objectProperty struct {
@@ -60,22 +58,6 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 
 		pc.Fields[field.Name] = field
 	}
-
-	// build the CreateParamString, used as part of the create() staticmethod
-	// which is a convenience initializer for the class
-	requiredFields := make([]string, 0)
-	optionalFields := make([]string, 0)
-	for fieldName, fieldVal := range pc.Fields {
-		if fieldVal.Required {
-			requiredFields = append(requiredFields, fieldName)
-		} else {
-			optionalFields = append(optionalFields, fmt.Sprintf("%s=None", fieldName))
-		}
-	}
-	// sort them so we have some stability in param order (important for requiredFields)
-	sort.Strings(requiredFields)
-	sort.Strings(optionalFields)
-	pc.CreateParamString = strings.Join(append(requiredFields, optionalFields...), ", ")
 
 	return pc
 }

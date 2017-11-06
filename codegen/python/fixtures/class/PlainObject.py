@@ -11,15 +11,13 @@ class PlainObject(object):
     """
 
     @staticmethod
-    def create(obj):
+    def create(**kwargs):
         """
         :type obj: dict
         :rtype: PlainObject
         """
 
-        return PlainObject(
-            obj=obj,
-        )
+        return PlainObject(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -36,7 +34,7 @@ class PlainObject(object):
         if val is not None:
             datatypes = [dict]
             try:
-                self.obj = client_support.val_factory(val, datatypes)
+                setattr(self, 'obj', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

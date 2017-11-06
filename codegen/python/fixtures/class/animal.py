@@ -12,7 +12,7 @@ class animal(object):
     """
 
     @staticmethod
-    def create(cities, colours, name=None):
+    def create(**kwargs):
         """
         :type cities: list[EnumCity]
         :type colours: list[str]
@@ -20,11 +20,7 @@ class animal(object):
         :rtype: animal
         """
 
-        return animal(
-            cities=cities,
-            colours=colours,
-            name=name,
-        )
+        return animal(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -41,7 +37,7 @@ class animal(object):
         if val is not None:
             datatypes = [EnumCity]
             try:
-                self.cities = client_support.list_factory(val, datatypes)
+                setattr(self, 'cities', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -52,7 +48,7 @@ class animal(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.colours = client_support.list_factory(val, datatypes)
+                setattr(self, 'colours', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -63,7 +59,7 @@ class animal(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
 

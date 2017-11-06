@@ -11,17 +11,14 @@ class UsersByIdGetReqBody(object):
     """
 
     @staticmethod
-    def create(ID, age):
+    def create(**kwargs):
         """
         :type ID: str
         :type age: int
         :rtype: UsersByIdGetReqBody
         """
 
-        return UsersByIdGetReqBody(
-            ID=ID,
-            age=age,
-        )
+        return UsersByIdGetReqBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -38,7 +35,7 @@ class UsersByIdGetReqBody(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.ID = client_support.val_factory(val, datatypes)
+                setattr(self, 'ID', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -49,7 +46,7 @@ class UsersByIdGetReqBody(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.age = client_support.val_factory(val, datatypes)
+                setattr(self, 'age', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

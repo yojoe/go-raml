@@ -13,7 +13,7 @@ class EnumCity(object):
     """
 
     @staticmethod
-    def create(enum_homeNum, enum_parks, name):
+    def create(**kwargs):
         """
         :type enum_homeNum: EnumEnumCityEnum_homeNum
         :type enum_parks: EnumEnumCityEnum_parks
@@ -21,11 +21,7 @@ class EnumCity(object):
         :rtype: EnumCity
         """
 
-        return EnumCity(
-            enum_homeNum=enum_homeNum,
-            enum_parks=enum_parks,
-            name=name,
-        )
+        return EnumCity(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -42,7 +38,7 @@ class EnumCity(object):
         if val is not None:
             datatypes = [EnumEnumCityEnum_homeNum]
             try:
-                self.enum_homeNum = client_support.val_factory(val, datatypes)
+                setattr(self, 'enum_homeNum', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -53,7 +49,7 @@ class EnumCity(object):
         if val is not None:
             datatypes = [EnumEnumCityEnum_parks]
             try:
-                self.enum_parks = client_support.val_factory(val, datatypes)
+                setattr(self, 'enum_parks', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -64,7 +60,7 @@ class EnumCity(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:

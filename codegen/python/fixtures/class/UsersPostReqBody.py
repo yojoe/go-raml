@@ -11,7 +11,7 @@ class UsersPostReqBody(object):
     """
 
     @staticmethod
-    def create(ID, age, grades, item):
+    def create(**kwargs):
         """
         :type ID: str
         :type age: int
@@ -20,12 +20,7 @@ class UsersPostReqBody(object):
         :rtype: UsersPostReqBody
         """
 
-        return UsersPostReqBody(
-            ID=ID,
-            age=age,
-            grades=grades,
-            item=item,
-        )
+        return UsersPostReqBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
@@ -42,7 +37,7 @@ class UsersPostReqBody(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.ID = client_support.val_factory(val, datatypes)
+                setattr(self, 'ID', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -53,7 +48,7 @@ class UsersPostReqBody(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.age = client_support.val_factory(val, datatypes)
+                setattr(self, 'age', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -64,7 +59,7 @@ class UsersPostReqBody(object):
         if val is not None:
             datatypes = [int]
             try:
-                self.grades = client_support.list_factory(val, datatypes)
+                setattr(self, 'grades', client_support.list_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -75,7 +70,7 @@ class UsersPostReqBody(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.item = client_support.val_factory(val, datatypes)
+                setattr(self, 'item', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
