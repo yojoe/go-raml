@@ -25,6 +25,10 @@ type ClientCommand struct {
 	//   library file = http://localhost.com/lib/libraries/security.raml
 	//	 the library file is going to treated the same as local : libraries/security.raml
 	LibRootURLs string
+
+	// If true, python client will unmarshall the response
+	// Other languages already unmarshall the response
+	PythonUnmarshallResponse bool
 }
 
 //Execute generates a client from a RAML specification
@@ -36,5 +40,5 @@ func (command *ClientCommand) Execute() error {
 		return err
 	}
 	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language,
-		command.ImportPath, command.Kind, strings.Split(command.LibRootURLs, ","))
+		command.ImportPath, command.Kind, strings.Split(command.LibRootURLs, ","), command.PythonUnmarshallResponse)
 }

@@ -1,4 +1,7 @@
 
+from .Address import Address
+from .City import City
+from .unmarshall_error import UnmarshallError
 
 class UsersService:
     def __init__(self, client):
@@ -13,7 +16,14 @@ class UsersService:
         It is method for GET /users/{userId}/address/{addressId}
         """
         uri = self.client.base_url + "/users/"+userId+"/address/"+addressId
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+        	return Address(resp.json())
+        except ValueError as msg:
+        	raise UnmarshallError(resp, msg)
+        except:
+        	raise UnmarshallError(resp)
+        
 
 
     def users_byUserId_delete(self, userId, headers=None, query_params=None, content_type="application/json"):
@@ -30,7 +40,14 @@ class UsersService:
         It is method for GET /users/{userId}
         """
         uri = self.client.base_url + "/users/"+userId
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+        	return City(resp.json())
+        except ValueError as msg:
+        	raise UnmarshallError(resp, msg)
+        except:
+        	raise UnmarshallError(resp)
+        
 
 
     def users_byUserId_post(self, data, userId, headers=None, query_params=None, content_type="application/json"):
@@ -48,7 +65,14 @@ class UsersService:
         It is method for DELETE /users
         """
         uri = self.client.base_url + "/users"
-        return self.client.delete(uri, data, headers, query_params, content_type)
+        resp = self.client.delete(uri, data, headers, query_params, content_type)
+        try:
+        	return City(resp.json())
+        except ValueError as msg:
+        	raise UnmarshallError(resp, msg)
+        except:
+        	raise UnmarshallError(resp)
+        
 
 
     def get_users(self, data, headers=None, query_params=None, content_type="application/json"):
@@ -75,4 +99,11 @@ class UsersService:
         It is method for POST /users
         """
         uri = self.client.base_url + "/users"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+        	return City(resp.json())
+        except ValueError as msg:
+        	raise UnmarshallError(resp, msg)
+        except:
+        	raise UnmarshallError(resp)
+        

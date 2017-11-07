@@ -1,6 +1,7 @@
 {
 	"ImportPath": "github.com/Jumpscale/go-raml",
-	"GoVersion": "go1.6",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
 	"Packages": [
 		"./..."
 	],
@@ -43,6 +44,10 @@
 		{
 			"ImportPath": "github.com/gorilla/mux",
 			"Rev": "270c42505a11c779b5a5aaecfa5ec717adac996e"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "1c35d901db3da928c72a72d8458480cc9ade058f"
 		},
 		{
 			"ImportPath": "github.com/jtolds/gls",

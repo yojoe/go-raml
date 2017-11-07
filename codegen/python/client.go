@@ -25,24 +25,22 @@ var (
 
 // Client represents a python client
 type Client struct {
-	Name     string
-	APIDef   *raml.APIDefinition
-	BaseURI  string
-	Services map[string]*service
-	Kind     string
-	Template clientTemplate
+	Name               string
+	APIDef             *raml.APIDefinition
+	BaseURI            string
+	Services           map[string]*service
+	Kind               string
+	Template           clientTemplate
+	UnmarshallResponse bool // true if response body should be unmarshalled into python class
 }
 
 // NewClient creates a python Client
-func NewClient(apiDef *raml.APIDefinition, kind string) Client {
+func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool) Client {
 	services := map[string]*service{}
 	for k, v := range apiDef.Resources {
 		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
 		rd.GenerateMethods(&v, "python", newServerMethodFlask, newClientMethod)
-		services[k] = &service{
-			rootEndpoint: k,
-			Methods:      rd.Methods,
-		}
+		services[k] = newService(k, rd.Methods, unmarshallResponse)
 	}
 	switch kind {
 	case "":
@@ -53,11 +51,12 @@ func NewClient(apiDef *raml.APIDefinition, kind string) Client {
 	}
 
 	c := Client{
-		Name:     commons.NormalizeURI(apiDef.Title),
-		APIDef:   apiDef,
-		BaseURI:  apiDef.BaseURI,
-		Services: services,
-		Kind:     kind,
+		Name:               commons.NormalizeURI(apiDef.Title),
+		APIDef:             apiDef,
+		BaseURI:            apiDef.BaseURI,
+		Services:           services,
+		Kind:               kind,
+		UnmarshallResponse: unmarshallResponse,
 	}
 	if strings.Index(c.BaseURI, "{version}") > 0 {
 		c.BaseURI = strings.Replace(c.BaseURI, "{version}", apiDef.Version, -1)
@@ -100,6 +99,13 @@ func (c Client) Generate(dir string) error {
 		return err
 	}
 
+	if c.UnmarshallResponse {
+		if err := commons.GenerateFile(nil, "./templates/client_unmarshall_error_python.tmpl",
+			"client_unmarshall_error_python", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
+			return err
+		}
+	}
+
 	sort.Strings(classes)
 	if err := c.generateInitPy(classes, dir); err != nil {
 		return err
@@ -110,8 +116,7 @@ func (c Client) Generate(dir string) error {
 
 func (c Client) generateServices(dir string) error {
 	for _, s := range c.Services {
-		sort.Sort(resource.ByEndpoint(s.Methods))
-		if err := commons.GenerateFile(s, c.Template.serviceFile, c.Template.serviceName, s.filename(dir), false); err != nil {
+		if err := s.generate(c.Template, dir); err != nil {
 			return err
 		}
 	}

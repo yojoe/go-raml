@@ -9,7 +9,7 @@ import (
 
 // GenerateClient generates client library
 func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImportPath, kind string,
-	libRootURLs []string) error {
+	libRootURLs []string, pythonUnnmarshallResponse bool) error {
 	switch lang {
 	case langGo:
 		gc, err := golang.NewClient(apiDef, packageName, rootImportPath, dir,
@@ -19,7 +19,7 @@ func GenerateClient(apiDef *raml.APIDefinition, dir, packageName, lang, rootImpo
 		}
 		return gc.Generate()
 	case langPython:
-		pc := python.NewClient(apiDef, kind)
+		pc := python.NewClient(apiDef, kind, pythonUnnmarshallResponse)
 		return pc.Generate(dir)
 	case langNim:
 		nc := nim.NewClient(apiDef, dir)
