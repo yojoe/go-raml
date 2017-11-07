@@ -7,10 +7,14 @@ import (
 )
 
 const (
+	// HTTPRequest defines an HTTP request
 	HTTPRequest = iota
+
+	// HTTPResponse defines an HTTP response
 	HTTPResponse
 )
 
+// Endpoint represents an endpoint defined in the RAML specs
 type Endpoint struct {
 	Addr     string // complete endpoint address
 	Method   *raml.Method
@@ -18,6 +22,7 @@ type Endpoint struct {
 	Verb     string
 }
 
+// ResourceName returns resource name of an endpoint
 func (ep Endpoint) ResourceName() string {
 	name := ep.Addr
 	splt := strings.Split(name, "/")

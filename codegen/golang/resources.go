@@ -80,9 +80,8 @@ func (gr *goResource) generate(r *raml.Resource, URI, dir string,
 	}
 	if !apiFilePerMethod {
 		return gr.generateAPIFile(dir)
-	} else {
-		return gr.generateAPIImplementations(dir)
 	}
+	return gr.generateAPIImplementations(dir)
 }
 
 // InterfaceImportPaths returns all packages imported by

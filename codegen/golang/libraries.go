@@ -70,20 +70,20 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string, libsR
 }
 
 // generate code of this library
-func (l *goLibrary) generate() error {
+func (gl *goLibrary) generate() error {
 	// generate all Type structs
-	if err := generateStructs(l.Types, l.targetDir(), l.PackageName); err != nil {
+	if err := generateStructs(gl.Types, gl.targetDir(), gl.PackageName); err != nil {
 		return err
 	}
 
 	// security schemes
-	if err := generateSecurity(l.SecuritySchemes, l.targetDir(), l.PackageName); err != nil {
+	if err := generateSecurity(gl.SecuritySchemes, gl.targetDir(), gl.PackageName); err != nil {
 		return err
 	}
 
 	// included libraries
-	for name, ramlLib := range l.Libraries {
-		childLib := newGoLibrary(name, ramlLib, l.targetDir(), l.rootTargetDir, globLibRootURLs)
+	for name, ramlLib := range gl.Libraries {
+		childLib := newGoLibrary(name, ramlLib, gl.targetDir(), gl.rootTargetDir, globLibRootURLs)
 		if err := childLib.generate(); err != nil {
 			return err
 		}

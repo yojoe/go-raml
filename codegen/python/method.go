@@ -22,9 +22,8 @@ type serverMethod struct {
 func setServerMethodName(displayName, verb string, resource *raml.Resource) string {
 	if len(displayName) > 0 {
 		return commons.DisplayNameToFuncName(displayName)
-	} else {
-		return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
 	}
+	return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
 }
 
 func setReqBodyName(methodName string) string {

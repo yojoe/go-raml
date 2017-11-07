@@ -19,9 +19,8 @@ type method struct {
 func getMethodName(endpoint, displayName, verb string) string {
 	if len(displayName) > 0 {
 		return strings.Replace(displayName, " ", "", -1)
-	} else {
-		return commons.NormalizeURI(formatProcName(endpoint)) + strings.Title(strings.ToLower(verb))
 	}
+	return commons.NormalizeURI(formatProcName(endpoint)) + strings.Title(strings.ToLower(verb))
 }
 
 // creates new Nim method

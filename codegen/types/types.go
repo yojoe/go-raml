@@ -7,6 +7,8 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+// TypeInBody represents a Type that defined inline
+// in the body
 type TypeInBody struct {
 	Properties  map[string]interface{}
 	Description string
@@ -15,6 +17,7 @@ type TypeInBody struct {
 	RespCode    raml.HTTPCode
 }
 
+// Body returns raml.Bodies from TypeInBody object
 func (tib *TypeInBody) Body() raml.Bodies {
 	if tib.ReqResp == HTTPRequest {
 		return tib.Endpoint.Method.Bodies

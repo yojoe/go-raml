@@ -92,6 +92,7 @@ func objectProperties(name string, p interface{}) []objectProperty {
 	return props
 }
 
+// ChildProperties returns child properties of a property
 func ChildProperties(Properties map[string]interface{}) []raml.Property {
 	props := make([]raml.Property, 0)
 
@@ -214,7 +215,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 			methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
 			pc := newClass(raml.Type{Type: "object"}, setReqBodyName(methodName), "", tip.Properties)
 			propNames := []string{}
-			for k, _ := range tip.Properties {
+			for k := range tip.Properties {
 				propNames = append(propNames, k)
 			}
 			results, errGen = pc.generate(dir)

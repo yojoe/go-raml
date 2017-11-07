@@ -18,10 +18,9 @@ type serverMethod struct {
 func serverMethodName(endpoint, displayName, verb, resName string) string {
 	if len(displayName) > 0 {
 		return commons.DisplayNameToFuncName(displayName)
-	} else {
-		name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(endpoint))
-		return name[len(resName):] + verb
 	}
+	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(endpoint))
+	return name[len(resName):] + verb
 }
 
 // setup go server method, initializes all needed variables
@@ -167,7 +166,7 @@ func (gcm clientMethod) ReturnTypes() string {
 }
 
 // return true if this method need to import encoding/json
-func (gcm clientMethod) needImportEncodingJson() bool {
+func (gcm clientMethod) needImportEncodingJSON() bool {
 	return gcm.RespBody != ""
 }
 

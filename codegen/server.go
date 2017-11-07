@@ -17,6 +17,7 @@ var (
 	errInvalidLang = errors.New("invalid language")
 )
 
+// Server represents server code
 type Server struct {
 	RAMLFile         string
 	Dir              string // Destination directory

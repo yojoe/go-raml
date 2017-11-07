@@ -70,6 +70,7 @@ func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, nam
 	}
 }
 
+// Inherit inherits JSON schema from the parents
 func (js *JSONSchema) Inherit(parents []JSONSchema) {
 	// inherit `properties` and `required`
 	// only inherit if the property name not exist in

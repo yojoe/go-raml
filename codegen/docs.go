@@ -9,6 +9,7 @@ const (
 	formatMarkdown = "markdown"
 )
 
+// GenerateDocs generate markdown docs from RAML specs
 func GenerateDocs(apiDef *raml.APIDefinition, format, output string) error {
 	switch format {
 	case formatMarkdown:

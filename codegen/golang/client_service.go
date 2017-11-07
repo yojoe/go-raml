@@ -38,7 +38,7 @@ func (cs ClientService) filename(dir string) string {
 func (cs ClientService) NeedImportJSON() bool {
 	for _, v := range cs.Methods {
 		cm := v.(clientMethod)
-		if cm.needImportEncodingJson() {
+		if cm.needImportEncodingJSON() {
 			return true
 		}
 	}

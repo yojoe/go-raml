@@ -273,6 +273,8 @@ func toProperty(name string, p interface{}) Property {
 
 }
 
+// TypeString returns string representation
+// of the property's type
 func (p Property) TypeString() string {
 	switch p.Type.(type) {
 	case string:
@@ -452,6 +454,7 @@ type Type struct {
 	_apiDef *APIDefinition
 }
 
+// GetProperty returns property with given name
 func (t *Type) GetProperty(name string) Property {
 	propInterface, ok := t.Properties[name]
 	if !ok {
@@ -468,19 +471,6 @@ func (t *Type) GetProperty(name string) Property {
 func (t Type) IsBuiltin() bool {
 	_, ok := scalarTypes[t.TypeString()]
 	return ok
-}
-
-func (t Type) GetBuiltinType() (string, bool) {
-	if t.IsBuiltin() {
-		return t.TypeString(), true
-	}
-	if t.IsArray() {
-		return t.ArrayType(), true
-	}
-	if t.IsBidimensiArray() {
-		return t.BidimensiArrayType(), true
-	}
-	return "", false
 }
 
 // Parents returns parents of this Type.
@@ -603,6 +593,9 @@ func (t Type) IsBidimensiArray() bool {
 	}
 	return strings.HasSuffix(t.TypeString(), "[][]")
 }
+
+// BidimensiArrayType returns type
+// of a bidimensional array
 func (t Type) BidimensiArrayType() string {
 	return strings.TrimSuffix(t.TypeString(), "[][]")
 }
@@ -680,7 +673,7 @@ func (t *Type) parseOptionalProperty(name string) {
 		propMap["required"] = false
 		t.Properties[newName] = propMap
 	default:
-		log.Fatalf("unexpeced property type:", p)
+		log.Fatalf("unexpeced property type: %v", p)
 	}
 }
 
@@ -799,10 +792,13 @@ type BodiesProperty struct {
 	Type interface{}
 }
 
+// TypeString returns string representation of the type of the body
 func (bp BodiesProperty) TypeString() string {
 	return interfaceToString(bp.Type)
 }
 
+// GetProperty gets property with given name
+// from a bodies
 func (bp BodiesProperty) GetProperty(name string) Property {
 	p, ok := bp.Properties[name]
 	if !ok {
