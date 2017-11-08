@@ -39,6 +39,15 @@ func (command *ClientCommand) Execute() error {
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateClient(apiDef, command.Dir, command.PackageName, command.Language,
-		command.ImportPath, command.Kind, strings.Split(command.LibRootURLs, ","), command.PythonUnmarshallResponse)
+	conf := codegen.ClientConfig{
+		Dir:                      command.Dir,
+		PackageName:              command.PackageName,
+		Lang:                     command.Language,
+		RootImportPath:           command.ImportPath,
+		Kind:                     command.Kind,
+		LibRootURLs:              strings.Split(command.LibRootURLs, ","),
+		PythonUnmarshallResponse: command.PythonUnmarshallResponse,
+	}
+
+	return codegen.GenerateClient(apiDef, conf)
 }
