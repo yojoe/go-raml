@@ -145,11 +145,15 @@ func (pcm *clientMethod) setup() {
 	}
 }
 
+// IsArrayResponse returns true if the response body is
+// of array type
 func (pcm clientMethod) IsArrayResponse() bool {
 	t := raml.Type{Type: pcm.RespBody}
 	return t.IsArray() || t.IsBidimensiArray()
 }
 
+// RespBodyBasicType returns basic type of the response body.
+// example : string[] -> string
 func (pcm clientMethod) RespBodyBasicType() string {
 	return commons.GetBasicType(pcm.RespBody)
 }

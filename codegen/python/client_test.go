@@ -99,6 +99,30 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 		})
 
+		Convey("aiohttp client with unmarshall response", func() {
+			client := NewClient(apiDef, clientNameAiohttp, true)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/aiohttp_client/unmarshall_response"
+			// cek with generated with fixtures
+			files := []string{
+				"__init__.py",
+				"users_service.py",
+				"unmarshall_error.py",
+			}
+
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})

@@ -22,7 +22,7 @@ class {{.Name}}:
         	resps = []
         	for elem in resp.json():
         		resps.append({{$v.RespBodyBasicType}}(elem))
-        	return respsS
+        	return resps
         {{- else }}
         	return {{$v.RespBodyBasicType}}(resp.json())
         {{- end }}
