@@ -18,26 +18,12 @@ type {{.Name}} service
 {{ range $kf, $vf := $v.FuncComments }}
 // {{$vf}} {{end}}
 func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
-    {{- if or (eq $v.Verb "GET") (eq $v.Verb "DELETE") }}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
-
+    	{{ if or (eq $v.Verb "GET") (eq $v.Verb "DELETE") }}
         resp, err := s.client.doReqNoBody("GET", s.client.BaseURI {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
-		if err != nil {
-			{{if ne $v.RespBody "" }} return u, nil, err
-			{{else}} return nil, err
-			{{- end -}}
-		}
-		defer resp.Body.Close()
-
-		{{if ne $v.RespBody "" }}
-			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-		{{else}}
-			return resp, nil
-		{{- end -}}
-	{{else}}
-		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
-
+		{{- else }}
         resp, err := s.client.doReqWithBody("{{$v.Verb}}", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&body{{else}}nil{{end}}, headers, queryParams)
+		{{- end }}
 		if err != nil {
 			{{if ne $v.RespBody "" }} return u, nil, err
 			{{else}} return nil, err
@@ -50,7 +36,6 @@ func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
 		{{else}}
 			return resp, nil
 		{{- end -}}
-	{{- end -}}
 
 }
 {{- end -}}
