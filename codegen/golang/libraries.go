@@ -99,6 +99,10 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 		return ""
 	}
 
+	if strings.Index(typ, "json.RawMessage") >= 0 {
+		return "encoding/json"
+	}
+
 	// library name in the current document
 	libName := strings.Split(typ, ".")[0]
 
