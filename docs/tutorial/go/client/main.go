@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"log"
+
+	"github.com/Jumpscale/go-raml/docs/tutorial/go/client/goramldir"
 )
 
 var (
@@ -16,7 +18,7 @@ func main() {
 		log.Fatalf("please specify itsyou.online application ID & API Key")
 	}
 
-	gr := Newgoramldir()
+	gr := goramldir.Newgoramldir()
 
 	// create itsyou.online JWT token
 	jwtToken, err := gr.GetOauth2AccessToken(*appID, *appSecret, []string{}, []string{})

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"examples.com/theclient/goraml"
 	"examples.com/theclient/libraries/filelib/file_type"
 )
 
@@ -11,30 +12,47 @@ type ConfigsService service
 
 // get config files
 func (s *ConfigsService) ConfigsGet(headers, queryParams map[string]interface{}) (file_type.File, *http.Response, error) {
-	var u file_type.File
+	var err error
+	var respBody201 file_type.File
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/configs", headers, queryParams)
 	if err != nil {
-		return u, nil, err
+		return respBody201, nil, err
 	}
 	defer resp.Body.Close()
 
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+	switch resp.StatusCode {
+	case 201:
+		err = json.NewDecoder(resp.Body).Decode(&respBody201)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody201, resp, err
 }
 
 func (s *ConfigsService) ConfigsPost(headers, queryParams map[string]interface{}) (Place, *http.Response, error) {
-	var u Place
+	var err error
+	var respBody201 Place
 
 	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/configs", nil, headers, queryParams)
 	if err != nil {
-		return u, nil, err
+		return respBody201, nil, err
 	}
 	defer resp.Body.Close()
 
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+	switch resp.StatusCode {
+	case 201:
+		err = json.NewDecoder(resp.Body).Decode(&respBody201)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody201, resp, err
 }
 
 func (s *ConfigsService) ConfigsPut(headers, queryParams map[string]interface{}) (*http.Response, error) {
+	var err error
 
 	resp, err := s.client.doReqWithBody("PUT", s.client.BaseURI+"/configs", nil, headers, queryParams)
 	if err != nil {
@@ -42,5 +60,5 @@ func (s *ConfigsService) ConfigsPut(headers, queryParams map[string]interface{})
 	}
 	defer resp.Body.Close()
 
-	return resp, nil
+	return resp, err
 }

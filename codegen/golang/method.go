@@ -78,10 +78,6 @@ func (gm serverMethod) Imports() []string {
 	return sortImportPaths(ip)
 }
 
-type clientMethod struct {
-	*resource.Method
-}
-
 // true if req body need validation code
 func (gm serverMethod) ReqBodyNeedValidation() bool {
 	// we can't use t.GetBuiltinType here because
@@ -101,87 +97,6 @@ func (gm serverMethod) ReqBodyNeedValidation() bool {
 	}
 
 	return !t.IsBuiltin()
-}
-
-// create client resource's method
-func newGoClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName string) (resource.MethodInterface, error) {
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-
-	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
-
-	name := commons.NormalizeURITitle(method.Endpoint)
-
-	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
-
-	gcm := clientMethod{Method: &method}
-	gcm.setup(methodName)
-	return gcm, nil
-}
-
-func (gcm *clientMethod) setup(methodName string) {
-	// build func/method params
-	buildParams := func(r *raml.Resource, bodyType string) string {
-		params := resource.GetResourceParams(r)
-
-		if len(params) > 0 {
-			// all params has string type
-			params[len(params)-1] = params[len(params)-1] + " string"
-		}
-
-		// append request body type
-		if len(bodyType) > 0 {
-			params = append(params, "body "+bodyType)
-		}
-
-		// append header
-		params = append(params, "headers,queryParams map[string]interface{}")
-
-		return strings.Join(params, ", ")
-	}
-
-	// method name
-	name := commons.NormalizeURITitle(gcm.Endpoint)
-
-	if len(gcm.DisplayName) > 0 {
-		gcm.MethodName = commons.DisplayNameToFuncName(gcm.DisplayName)
-	} else {
-		gcm.MethodName = name + methodName
-	}
-	gcm.MethodName = commons.ReplaceNonAlphanumerics(strings.Title(gcm.MethodName))
-
-	// method param
-	gcm.Params = buildParams(gcm.RAMLResource, gcm.ReqBody)
-}
-
-// ReturnTypes returns all types returned by this method
-func (gcm clientMethod) ReturnTypes() string {
-	var types []string
-	if gcm.RespBody != "" {
-		types = append(types, gcm.RespBody)
-	}
-	types = append(types, []string{"*http.Response", "error"}...)
-
-	return fmt.Sprintf("(%v)", strings.Join(types, ","))
-}
-
-// return true if this method need to import encoding/json
-func (gcm clientMethod) needImportEncodingJSON() bool {
-	return gcm.RespBody != ""
-}
-
-func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
-	libs := map[string]struct{}{}
-
-	// req body
-	if lib := libImportPath(rootImportPath, gcm.ReqBody, globLibRootURLs); lib != "" {
-		libs[lib] = struct{}{}
-	}
-	// resp body
-	if lib := libImportPath(rootImportPath, gcm.RespBody, globLibRootURLs); lib != "" {
-		libs[lib] = struct{}{}
-	}
-	return libs
 }
 
 // get oauth2 middleware handler from a security scheme

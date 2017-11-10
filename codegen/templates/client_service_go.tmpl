@@ -18,25 +18,37 @@ type {{.Name}} service
 {{ range $kf, $vf := $v.FuncComments }}
 // {{$vf}} {{end}}
 func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
-		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
+		var err error
+		{{ range $k, $resp := $v.SuccessRespBodyTypes }}var respBody{{$resp.Code}} {{$resp.Type}}
+		{{ end }}
+
     	{{ if or (eq $v.Verb "GET") (eq $v.Verb "DELETE") }}
         resp, err := s.client.doReqNoBody("GET", s.client.BaseURI {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
 		{{- else }}
         resp, err := s.client.doReqWithBody("{{$v.Verb}}", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&body{{else}}nil{{end}}, headers, queryParams)
 		{{- end }}
 		if err != nil {
-			{{if ne $v.RespBody "" }} return u, nil, err
-			{{else}} return nil, err
-			{{- end -}}
+			return {{ range $k, $resp := $v.SuccessRespBodyTypes }}respBody{{$resp.Code}}, {{ end }} nil, err
 		}
 		defer resp.Body.Close()
+		
+		{{ if $v.HasRespBody }}
+		switch resp.StatusCode {
+		{{- range $k, $resp := $v.SuccessRespBodyTypes }}
+			case {{$resp.Code}}:
+			err = json.NewDecoder(resp.Body).Decode(&respBody{{$resp.Code}})
+		{{- end}}
+		{{- range $k, $resp := $v.FailedRespBodyTypes }}
+			case {{$resp.Code}}:
+			var respBody{{$resp.Code}} {{$resp.Type}}
+			err = goraml.NewAPIError(resp, &respBody{{$resp.Code}})
+		{{- end}}
+			default:
+				err = goraml.NewAPIError(resp, nil)
+		}
+		{{end}}
 
-		{{if ne $v.RespBody "" }}
-			return u, resp, json.NewDecoder(resp.Body).Decode(&u)
-		{{else}}
-			return resp, nil
-		{{- end -}}
-
+		return {{ range $k, $resp := $v.SuccessRespBodyTypes }}respBody{{$resp.Code}}, {{ end }} resp, err
 }
 {{- end -}}
 

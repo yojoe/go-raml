@@ -4,6 +4,8 @@ import (
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/Jumpscale/go-raml/codegen/commons"
 )
 
 var (
@@ -32,6 +34,17 @@ func (gh goramlHelper) generate(dir string) error {
 
 	// generate struct validator
 	if err := generateInputValidator(gh.packageName, pkgDir); err != nil {
+		return err
+	}
+
+	// error helper
+	ctx := struct {
+		PackageName string
+	}{
+		PackageName: gh.packageName,
+	}
+	if err := commons.GenerateFile(ctx, "./templates/goraml_go_api_error.tmpl", "goraml_go_api_error",
+		filepath.Join(pkgDir, "api_error.go"), false); err != nil {
 		return err
 	}
 	return nil
