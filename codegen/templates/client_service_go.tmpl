@@ -18,7 +18,7 @@ type {{.Name}} service
 {{ range $kf, $vf := $v.FuncComments }}
 // {{$vf}} {{end}}
 func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
-    {{- if eq $v.Verb "GET" }}
+    {{- if or (eq $v.Verb "GET") (eq $v.Verb "DELETE") }}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
         resp, err := s.client.doReqNoBody("GET", s.client.BaseURI {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
@@ -34,9 +34,6 @@ func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
 		{{else}}
 			return resp, nil
 		{{- end -}}
-	{{else if eq $v.Verb "DELETE"}}
-		// create request object
-		return s.client.doReqNoBody("DELETE", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
 	{{else}}
 		{{if ne $v.RespBody "" }} var u {{$v.RespBody}} {{end}}
 
