@@ -5,7 +5,7 @@ import (
 
 	"bitbucket.org/pkg/inflect"
 	chuck_inflect "github.com/chuckpreslar/inflect"
-	jinzhu_inflect "github.com/jinzhu/inflection"
+	jinzhu_inflection "github.com/jinzhu/inflection"
 )
 
 var inflectFunc = map[string]func(string) string{
@@ -31,7 +31,7 @@ func doInflect(s, op string) (string, bool) {
 
 // singularize returns singular version of a word
 func singularize(s string) string {
-	return jinzhu_inflect.Singular(s)
+	return jinzhu_inflection.Singular(s)
 }
 
 // pluralize returns plural version of a word

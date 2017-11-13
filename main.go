@@ -147,19 +147,24 @@ func main() {
 				cli.StringFlag{
 					Name:        "import-path",
 					Value:       "",
-					Usage:       "import path of the generated code",
+					Usage:       "golang import path of the generated code",
 					Destination: &clientCommand.ImportPath,
 				},
 				cli.StringFlag{
 					Name:        "kind",
 					Value:       "requests",
-					Usage:       "Kind of client to generate (requests,aiohttp)",
+					Usage:       "Kind of python client to generate (requests,aiohttp)",
 					Destination: &clientCommand.Kind,
 				},
 				cli.StringFlag{
 					Name:        "lib-root-urls",
 					Usage:       "Array of libraries root URLs",
 					Destination: &clientCommand.LibRootURLs,
+				},
+				cli.BoolFlag{
+					Name:        "python-unmarshall-response",
+					Usage:       "set to true for python client to unmarshall the response into python class",
+					Destination: &clientCommand.PythonUnmarshallResponse,
 				},
 			},
 			Action: func(c *cli.Context) {

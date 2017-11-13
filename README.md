@@ -157,6 +157,20 @@ A go 1.5.x compatible client is generated in result_directory directory.
 
 A python 3.5 compatible client is generated in result_directory directory.
 
+### Code Generator Options
+
+```
+OPTIONS:
+   --language, -l "go"		Language to construct a client for
+   --dir "."			target directory
+   --ramlfile "."		Source raml file
+   --package "client"		package name
+   --import-path 		golang import path of the generated code
+   --kind "requests"		Kind of python client to generate (requests,aiohttp)
+   --lib-root-urls 		Array of libraries root URLs
+   --python-unmarshall-response	set to true for python client to unmarshall the response into python class
+```
+
 ## Generating Docs
 `go-raml docs [--format markdown] --ramlfile api.raml --output api.md`
 

@@ -145,6 +145,35 @@ func (pcm *clientMethod) setup() {
 	}
 }
 
+// IsArrayResponse returns true if the response body is
+// of array type
+func (pcm clientMethod) IsArrayResponse() bool {
+	t := raml.Type{Type: pcm.RespBody}
+	return t.IsArray() || t.IsBidimensiArray()
+}
+
+// RespBodyBasicType returns basic type of the response body.
+// example : string[] -> string
+func (pcm clientMethod) RespBodyBasicType() string {
+	return commons.GetBasicType(pcm.RespBody)
+}
+
+func (pcm clientMethod) imports() []string {
+	var imports []string
+
+	// import from response body
+	if pcm.HasRespBody() {
+		basicType := pcm.RespBodyBasicType()
+		imports = append(imports, "from ."+basicType+" import "+basicType)
+	}
+	return imports
+}
+
+// HasRespBody returns true if this method has response body
+func (pcm clientMethod) HasRespBody() bool {
+	return pcm.RespBody != ""
+}
+
 // create snake case function name from a resource URI
 func snakeCaseResourceURI(r *raml.Resource) string {
 	return _snakeCaseResourceURI(r, "")

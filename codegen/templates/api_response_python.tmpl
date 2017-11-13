@@ -1,0 +1,5 @@
+{{- define "api_response_python" -}}
+import collections
+
+APIResponse = collections.namedtuple('APIResponse', 'data response')
+{{- end -}}
