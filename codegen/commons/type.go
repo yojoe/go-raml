@@ -12,3 +12,19 @@ func IsBuiltinType(t interface{}) bool {
 	}
 	return tip.IsBuiltin()
 }
+
+// GetBasicType returns basic type of a basic or complex type
+func GetBasicType(t string) string {
+	tip := raml.Type{
+		Type: t,
+	}
+
+	switch {
+	case tip.IsArray():
+		return tip.ArrayType()
+	case tip.IsBidimensiArray():
+		return tip.BidimensiArrayType()
+	default:
+		return t
+	}
+}

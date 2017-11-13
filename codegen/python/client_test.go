@@ -20,7 +20,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("requests client", func() {
-			client := NewClient(apiDef, "")
+			client := NewClient(apiDef, "", false)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 
@@ -50,8 +50,33 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 		})
 
+		Convey("requests client with unmarshall response", func() {
+			client := NewClient(apiDef, "", true)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/requests_client/unmarshall_response"
+			// cek with generated with fixtures
+			files := []string{
+				"__init__.py",
+				"users_service.py",
+				"unmarshall_error.py",
+				"api_response.py",
+			}
+
+			for _, file := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, file))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, file))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
 		Convey("aiohttp client", func() {
-			client := NewClient(apiDef, clientNameAiohttp)
+			client := NewClient(apiDef, clientNameAiohttp, false)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
 
@@ -62,6 +87,31 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				"__init__.py",
 				"client_utils.py",
 				"users_service.py",
+			}
+
+			for _, f := range files {
+				s, err := testLoadFile(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
+
+				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+		})
+
+		Convey("aiohttp client with unmarshall response", func() {
+			client := NewClient(apiDef, clientNameAiohttp, true)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/aiohttp_client/unmarshall_response"
+			// cek with generated with fixtures
+			files := []string{
+				"__init__.py",
+				"users_service.py",
+				"unmarshall_error.py",
+				"api_response.py",
 			}
 
 			for _, f := range files {

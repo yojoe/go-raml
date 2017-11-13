@@ -1,5 +1,8 @@
 {{- define "client_service_python" -}}
-
+{{- range $k, $v := .Imports}}
+{{ $v }}
+{{- end}}
+{{ $UnmarshallResponse := .UnmarshallResponse}}
 class {{.Name}}:
     def __init__(self, client):
         self.client = client
@@ -12,6 +15,23 @@ class {{.Name}}:
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
         uri = self.client.base_url + {{$v.ResourcePath}}
+        {{- if (and $v.HasRespBody $UnmarshallResponse ) }}
+        resp = {{$v.PRCall}}({{$v.PRArgs}})
+        try:
+        {{- if $v.IsArrayResponse}}
+            resps = []
+            for elem in resp.json():
+                resps.append({{$v.RespBodyBasicType}}(elem))
+            return APIResponse(data=resps, response=resp)
+        {{- else }}
+            return APIResponse(data={{$v.RespBodyBasicType}}(resp.json()), response=resp)
+        {{- end }}
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
+        {{ else }}
         return {{$v.PRCall}}({{$v.PRArgs}})
-{{ end }}
+        {{- end}}
+{{ end -}}
 {{- end -}}

@@ -13,6 +13,34 @@ Generated server code use these libraries:
 Generated client library use [requests](http://docs.python-requests.org/en/master/) or 
 [aiohttp](http://aiohttp.readthedocs.io/en/stable/) as http library.
 
+### unmarshall response
+
+Client generator has an option to generate client code that unmarshall the response
+body into the generated client class.
+It is currently disabled by default and could be enabled by setting this option
+
+```
+--python-unmarshall-response=true
+```
+in the `go-raml client` command line option.
+
+In case of success unmarshal, the generated client returns named tuple with two fields:
+- data : python class constructed by unmarshalling the response body
+- response: response object
+
+otherwise it returns exception.
+
+Usage example:
+
+```python
+try:
+    resp = client.api.network.getNetwork("my_net_id")
+    print(resp.data)
+except unmarshall_error.UnmarshallError as ue:
+    print("response:", ue.response.text)
+    print("msg: ", ue.msg)
+```
+
 
 ## Type
 
