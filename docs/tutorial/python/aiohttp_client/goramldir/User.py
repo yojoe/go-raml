@@ -11,20 +11,17 @@ class User(object):
     """
 
     @staticmethod
-    def create(name, username):
+    def create(**kwargs):
         """
         :type name: str
         :type username: str
         :rtype: User
         """
 
-        return User(
-            name=name,
-            username=username,
-        )
+        return User(**kwargs)
 
     def __init__(self, json=None, **kwargs):
-        if not json and not kwargs:
+        if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'User'
@@ -38,7 +35,7 @@ class User(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.name = client_support.val_factory(val, datatypes)
+                setattr(self, 'name', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
@@ -49,7 +46,7 @@ class User(object):
         if val is not None:
             datatypes = [str]
             try:
-                self.username = client_support.val_factory(val, datatypes)
+                setattr(self, 'username', client_support.val_factory(val, datatypes))
             except ValueError as err:
                 raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
         else:
