@@ -1,6 +1,7 @@
 
 from .Address import Address
 from .City import City
+from .api_response import APIResponse
 from .unmarshall_error import UnmarshallError
 
 class UsersService:
@@ -18,11 +19,11 @@ class UsersService:
         uri = self.client.base_url + "/users/"+userId+"/address/"+addressId
         resp = self.client.get(uri, None, headers, query_params, content_type)
         try:
-        	return Address(resp.json())
+            return APIResponse(data=Address(resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
         
 
 
@@ -42,11 +43,11 @@ class UsersService:
         uri = self.client.base_url + "/users/"+userId
         resp = self.client.get(uri, None, headers, query_params, content_type)
         try:
-        	return City(resp.json())
+            return APIResponse(data=City(resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
         
 
 
@@ -67,11 +68,11 @@ class UsersService:
         uri = self.client.base_url + "/users"
         resp = self.client.delete(uri, data, headers, query_params, content_type)
         try:
-        	return City(resp.json())
+            return APIResponse(data=City(resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
         
 
 
@@ -101,9 +102,9 @@ class UsersService:
         uri = self.client.base_url + "/users"
         resp = self.client.post(uri, data, headers, query_params, content_type)
         try:
-        	return City(resp.json())
+            return APIResponse(data=City(resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
         

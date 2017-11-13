@@ -61,6 +61,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				"__init__.py",
 				"users_service.py",
 				"unmarshall_error.py",
+				"api_response.py",
 			}
 
 			for _, file := range files {
@@ -110,6 +111,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				"__init__.py",
 				"users_service.py",
 				"unmarshall_error.py",
+				"api_response.py",
 			}
 
 			for _, f := range files {

@@ -19,17 +19,17 @@ class {{.Name}}:
         resp = {{$v.PRCall}}({{$v.PRArgs}})
         try:
         {{- if $v.IsArrayResponse}}
-        	resps = []
-        	for elem in resp.json():
-        		resps.append({{$v.RespBodyBasicType}}(elem))
-        	return resps
+            resps = []
+            for elem in resp.json():
+                resps.append({{$v.RespBodyBasicType}}(elem))
+            return APIResponse(data=resps, response=resp)
         {{- else }}
-        	return {{$v.RespBodyBasicType}}(resp.json())
+            return APIResponse(data={{$v.RespBodyBasicType}}(resp.json()), response=resp)
         {{- end }}
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
         {{ else }}
         return {{$v.PRCall}}({{$v.PRArgs}})
         {{- end}}

@@ -104,6 +104,11 @@ func (c Client) Generate(dir string) error {
 			"client_unmarshall_error_python", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
 			return err
 		}
+		if err := commons.GenerateFile(nil, "./templates/api_response_python.tmpl",
+			"api_response_python", filepath.Join(dir, "api_response.py"), false); err != nil {
+			return err
+		}
+
 	}
 
 	sort.Strings(classes)

@@ -1,6 +1,7 @@
 
 from .Address import Address
 from .City import City
+from .api_response import APIResponse
 from .unmarshall_error import UnmarshallError
 
 class UsersService:
