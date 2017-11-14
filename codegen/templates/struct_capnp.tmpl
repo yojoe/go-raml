@@ -6,6 +6,6 @@
 {{$v}};{{end}}
 struct {{.Name}} {
 {{- range $k, $v := .OrderedFields }}
-  {{$v.Name}} @{{$v.Num}} :{{$v.Type}};{{end}}
+  {{ if eq $v.Type "List" -}}{{$v.Name}} @{{$v.Num}} :List({{$v.Items}});{{ else }}{{$v.Name}} @{{$v.Num}} :{{$v.Type}};{{ end }}{{end}}
 }
 {{end}}

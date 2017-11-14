@@ -25,8 +25,10 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	// generate fields from type properties
 	fields := make(map[string]field)
 
+	index := 0
 	for k, v := range t.Properties {
-		fd := newField(name, raml.ToProperty(k, v), lang, pkg)
+		fd := newField(name, raml.ToProperty(k, v), index, lang, pkg)
+		index += 1
 		fields[fd.Name] = fd
 	}
 
@@ -80,16 +82,16 @@ func (s *Struct) Imports() []string {
 
 func (s *Struct) importsNonBuiltin() []string {
 	imports := []string{}
-	// import non buitin types
 	for _, f := range s.Fields {
+                // import non buitin types
 		if typesRegistered(f.Type) {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Type, f.Type))
 		}
-	}
-	// import enum
-	for _, f := range s.Fields {
 		if f.Enum != nil {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
+		}
+		if typesRegistered(f.Items) {
+			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Items, f.Items))
 		}
 	}
 	return imports
