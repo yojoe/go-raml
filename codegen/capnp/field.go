@@ -12,12 +12,11 @@ type field struct {
 	Items string
 }
 
-func newField(structName string, prop raml.Property, fieldNumber int, lang, pkg string) field {
+func newField(structName string, prop raml.Property, lang, pkg string) field {
 	capnpType, items :=  toCapnpType(prop.TypeString(), prop.CapnpType, prop.Items.Type)
 	fd := field{
 		Name: prop.Name,
 		Type: capnpType,
-		Num:  fieldNumber,
 		Items: items,
 
 	}

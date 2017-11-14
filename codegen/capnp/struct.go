@@ -24,12 +24,12 @@ type Struct struct {
 func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	// generate fields from type properties
 	fields := make(map[string]field)
+	fieldNames := []string{}
 
-	index := 0
 	for k, v := range t.Properties {
-		fd := newField(name, raml.ToProperty(k, v), index, lang, pkg)
-		index += 1
+		fd := newField(name, raml.ToProperty(k, v), lang, pkg)
 		fields[fd.Name] = fd
+		fieldNames = append(fieldNames, fd.Name)
 	}
 
 	s := Struct{
@@ -44,7 +44,10 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	if err := s.checkValidCapnp(); err != nil {
 		return s, err
 	}
-	return s, s.orderFields()
+
+	s.orderFields(fieldNames)
+
+	return s, nil
 }
 
 // Generate generates struct code
@@ -83,13 +86,15 @@ func (s *Struct) Imports() []string {
 func (s *Struct) importsNonBuiltin() []string {
 	imports := []string{}
 	for _, f := range s.Fields {
-                // import non buitin types
+		// import non buitin types
 		if typesRegistered(f.Type) {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Type, f.Type))
 		}
+		// import enum types
 		if f.Enum != nil {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
 		}
+		// import non-builtin types used in List
 		if typesRegistered(f.Items) {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Items, f.Items))
 		}
@@ -112,22 +117,11 @@ func (s *Struct) checkValidCapnp() error {
 	return nil
 }
 
-func (s *Struct) orderFields() error {
-	findField := func(num int) (field, bool) {
-		for _, f := range s.Fields {
-			if f.Num == num {
-				return f, true
-			}
-		}
-		return field{}, false
+func (s *Struct) orderFields(fieldNames []string) {
+	sort.Strings(fieldNames)
+	for index, name := range fieldNames {
+		field := s.Fields[name]
+		field.Num = index
+		s.OrderedFields = append(s.OrderedFields, field)
 	}
-
-	for i := 0; i < len(s.Fields); i++ {
-		f, ok := findField(i)
-		if !ok {
-			return fmt.Errorf("can't find field number %v of `%v`", i, s.Name)
-		}
-		s.OrderedFields = append(s.OrderedFields, f)
-	}
-	return nil
 }

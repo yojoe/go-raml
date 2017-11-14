@@ -11,22 +11,17 @@ types:
     properties:
       name:
         type: string
-        capnpFieldNumber: 1
       colours:
         type: string[]
-        capnpFieldNumber: 0
   Admin:
     type: object
     properties:
       clearanceLevel:
-        capnpFieldNumber: 0
         enum: [ low, high ]
   Cage:
     type: object
     properties:
       animal:
         type: Animal
-        capnpFieldNumber: 0
       admin:
         type: Admin
-        capnpFieldNumber: 1

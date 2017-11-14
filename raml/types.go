@@ -164,7 +164,6 @@ type Property struct {
 	Items       Items
 
 	// Capnp extension
-	CapnpFieldNumber int
 	CapnpType        string
 
 	_type *Type // pointer to Type of this Property
@@ -237,8 +236,6 @@ func toProperty(name string, p interface{}) Property {
 				p.UniqueItems = v.(bool)
 			case "items":
 				p.Items = newItems(v)
-			case "capnpFieldNumber":
-				p.CapnpFieldNumber = v.(int)
 			case "capnpType":
 				p.CapnpType = v.(string)
 			case "properties":
