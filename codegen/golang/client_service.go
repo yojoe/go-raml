@@ -49,12 +49,19 @@ func (cs ClientService) NeedImportJSON() bool {
 func (cs ClientService) LibImportPaths() map[string]struct{} {
 	ip := map[string]struct{}{}
 
+	var needImportGoraml bool
 	// methods
 	for _, v := range cs.Methods {
 		gm := v.(clientMethod)
 		for lib := range gm.libImported(globRootImportPath) {
 			ip[lib] = struct{}{}
 		}
+		if !needImportGoraml {
+			needImportGoraml = gm.needImportGoraml()
+		}
+	}
+	if needImportGoraml {
+		ip[joinImportPath(globRootImportPath, "goraml")] = struct{}{}
 	}
 	return ip
 }

@@ -41,7 +41,7 @@ go build
 
 generate client code by using this command
 
-`go-raml client --ramlfile ../api.raml --dir client --package main`
+`go-raml client --ramlfile ../api.raml --dir client/goramldir --package goramldir`
 
 Then you can find client code in `client` directory.
 

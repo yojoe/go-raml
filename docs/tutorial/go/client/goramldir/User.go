@@ -1,4 +1,4 @@
-package main
+package goramldir
 
 import (
 	"gopkg.in/validator.v2"

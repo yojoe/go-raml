@@ -32,6 +32,9 @@ func (m Method) Verb() string {
 	return m.verb
 }
 
+func (m Method) VerbTitle() string {
+	return strings.Title(strings.ToLower(m.verb))
+}
 func (m Method) Resource() *raml.Resource {
 	return m.RAMLResource
 }

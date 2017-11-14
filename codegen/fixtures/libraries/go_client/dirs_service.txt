@@ -4,19 +4,28 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"examples.com/theclient/goraml"
 	"examples.com/theclient/libraries/files"
 )
 
 type DirsService service
 
 func (s *DirsService) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
-	var u files.Directory
+	var err error
+	var respBody200 files.Directory
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/dirs", headers, queryParams)
 	if err != nil {
-		return u, nil, err
+		return respBody200, nil, err
 	}
 	defer resp.Body.Close()
 
-	return u, resp, json.NewDecoder(resp.Body).Decode(&u)
+	switch resp.StatusCode {
+	case 200:
+		err = json.NewDecoder(resp.Body).Decode(&respBody200)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody200, resp, err
 }
