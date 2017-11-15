@@ -7,6 +7,6 @@ using import "Animal.capnp".Animal;
 $Go.package("main");
 $Go.import("main");
 struct Cage {
-  animal @0 :Animal;
-  admin @1 :Admin;
+  admin @0 :Admin;
+  animal @1 :Animal;
 }
