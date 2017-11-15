@@ -29,51 +29,15 @@ class {{.Name}}(object):
             raise ValueError('No data or kwargs present')
 
         class_name = '{{.Name}}'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
         
         {{- range $key, $val := .Fields}}
-
-        property_name = '{{$val.Name}}'
-        val = data.get(property_name)
-        if val is not None:
-            {{ if $val.HasChildProperties -}}
-            # objmap is a dict outlining the structure of this value (or its memebers if it's a list)
-            # its format is {'attrname': {'datatype': [type], 'required': bool}}
-            # the type values in the 'datatype' list can be any type, but if they are a dict, it's assumed to be in objmap format
-            # (thus describing sub-properties of this object)
-            objmap = {
-                {{$val.DataType}}
-            }
-            {{- else -}}
-            datatypes = [{{$val.DataType}}]
-            {{- end }}
-            try:
-                {{ if $val.IsList -}}
-                setattr(self, '{{$val.Name}}', client_support.list_factory(val, datatypes))
-                {{- else if $val.HasChildProperties -}}
-                setattr(self, '{{$val.Name}}', client_support.dict_factory(val, objmap))
-                {{- else -}}
-                setattr(self, '{{$val.Name}}', client_support.val_factory(val, datatypes))
-                {{- end }}
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-            {{- if $val.RequiredChildProperties }}
-            else:
-                {{- range $rcName := $val.RequiredChildProperties }}
-				attr = getattr(self, '{{$val.Name}}')
-                if not getattr(attr, '{{$rcName}}', None):
-                    child_prop_name = "{parent}.{child}".format(parent=property_name, child='{{$rcName}}')
-                    raise ValueError(required_error.format(cls=class_name, prop=child_prop_name))
-                {{- end -}}
-            {{ end -}}
-        {{- if $val.Required }}
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        self.{{$val.Name}} = client_support.set_property('{{$val.Name}}', data, {{$val.DataType}},
+                                                       {{if $val.HasChildProperties}}True{{else}}False{{end}},
+                                                       {{ $val.RequiredChildProperties }},
+                                                       {{if $val.IsList}}True{{else}}False{{end}},
+                                                       {{if $val.Required}}True{{else}}False{{end}}, class_name)
         {{- end }}
-    {{- end }}
 
     def __str__(self):
         return self.as_json(indent=4)

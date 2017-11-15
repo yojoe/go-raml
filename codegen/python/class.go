@@ -193,14 +193,14 @@ func (pc class) Imports() []string {
 	return importStrings
 }
 
-// generate all python classes from an RAML document
-func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
+// generate all python classes from a RAML document
+func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) ([]string, error) {
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
 
 	names := []string{}
-	for name, t := range types.AllTypes(apiDef, "") {
+	for name, t := range types.AllTypes(apiDef, "", typesOnly) {
 		var errGen error
 		var results []string
 		switch tip := t.Type.(type) {

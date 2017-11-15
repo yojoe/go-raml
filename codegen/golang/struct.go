@@ -85,7 +85,7 @@ func generateStructs(types map[string]raml.Type, dir, pkgName string) error {
 }
 
 func generateAllStructs(apiDef *raml.APIDefinition, dir, pkgName string) error {
-	for _, t := range types.AllTypes(apiDef, pkgName) {
+	for _, t := range types.AllTypes(apiDef, pkgName, false) {
 		switch tip := t.Type.(type) {
 		case string:
 			createGenerateStruct(tip, dir, pkgName)

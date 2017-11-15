@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+
+	"github.com/pinzolo/casee"
 )
 
 type Struct struct {
@@ -111,9 +112,16 @@ func (s *Struct) Annotations() []string {
 }
 
 func (s *Struct) checkValidCapnp() error {
-	if strings.Title(s.Name) != s.Name {
-		return fmt.Errorf("invalid type name:%v. Type names must begin with a capital letter", s.Name)
+	if !casee.IsPascalCase(s.Name) {
+		return fmt.Errorf("invalid type name:%v. Type names must be PascalCase", s.Name)
 	}
+
+	for _, field := range s.Fields {
+		if !casee.IsCamelCase(field.Name) {
+			return fmt.Errorf("invalid decleration name:%v. Decleration names must be CamelCase", field.Name)
+		}
+	}
+
 	return nil
 }
 

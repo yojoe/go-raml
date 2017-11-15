@@ -37,7 +37,7 @@ func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 
 	sDir := filepath.Join(dir, jsonSchemaDir())
 
-	for name, t := range types.AllTypes(apiDef, "") {
+	for name, t := range types.AllTypes(apiDef, "", false) {
 		switch tip := t.Type.(type) {
 		case string:
 			rt := raml.Type{Type: tip}

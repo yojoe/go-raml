@@ -22,7 +22,7 @@ func TestGeneratePythonClass(t *testing.T) {
 
 			globAPIDef = apiDef
 
-			_, err = generateAllClasses(apiDef, targetDir)
+			_, err = generateAllClasses(apiDef, targetDir, false)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/class/"

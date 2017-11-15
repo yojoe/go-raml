@@ -164,7 +164,7 @@ type Property struct {
 	Items       Items
 
 	// Capnp extension
-	CapnpType        string
+	CapnpType string
 
 	_type *Type // pointer to Type of this Property
 }
