@@ -103,7 +103,7 @@ def set_property(name, data, data_type, has_child_properties,
             if is_list:
                 factory_value = list_factory(val, [data_type])
             elif has_child_properties:
-                factory_value = dict_factory(val, {data_type})
+                factory_value = dict_factory(val, dict(data_type))
             else:
                 factory_value = val_factory(val, [data_type])
         except ValueError as err:
