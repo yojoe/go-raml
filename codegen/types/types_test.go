@@ -24,7 +24,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 				"Cat",
 				"EnumCity",
 			}
-			tts := AllTypes(apiDef, "main", false)
+			tts := AllTypes(apiDef, "main")
 
 			So(len(tts), ShouldEqual, len(expected))
 			for name := range tts {

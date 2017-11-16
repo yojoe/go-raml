@@ -72,15 +72,14 @@ func generateEmptyInitPy(dir string) error {
 
 func (c Client) GenerateClasses(dir string) error {
 	globAPIDef = c.APIDef
-	// helper for python classes
-	if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
-		"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
-		return err
-	}
+	//// helper for python classes
+	//if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
+	//	"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
+	//	return err
+	//}
 
 	// python classes
-	_, err := generateAllClasses(c.APIDef, dir, true)
-	return err
+	return generateMyPyClasses(c.APIDef, dir)
 }
 
 // Generate generates python client library files

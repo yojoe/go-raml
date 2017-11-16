@@ -30,13 +30,15 @@ class {{.Name}}(object):
 
         class_name = '{{.Name}}'
         data = json or kwargs
-        
+
         {{- range $key, $val := .Fields}}
-        self.{{$val.Name}} = client_support.set_property('{{$val.Name}}', data, {{$val.DataType}},
-                                                       {{if $val.HasChildProperties}}True{{else}}False{{end}},
-                                                       {{ $val.RequiredChildProperties }},
-                                                       {{if $val.IsList}}True{{else}}False{{end}},
-                                                       {{if $val.Required}}True{{else}}False{{end}}, class_name)
+        {{ if $val.HasChildProperties -}}
+        data_types = { {{$val.DataType}} }
+        {{- else -}}
+        data_types = [{{$val.DataType}}]
+        {{- end }}
+        self.{{$val.Name}} = client_support.set_property('{{$val.Name}}', data, data_types, {{if $val.HasChildProperties}}True{{else}}False{{end}}, {{ $val.RequiredChildProperties }}, {{if $val.IsList}}True{{else}}False{{end}}, {{if $val.Required}}True{{else}}False{{end}}, class_name)
+
         {{- end }}
 
     def __str__(self):

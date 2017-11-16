@@ -8,15 +8,17 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
+	"fmt"
 )
 
 // class defines a python class
 type class struct {
-	T           raml.Type
-	Name        string
-	Description []string
-	Fields      map[string]field
-	Enum        *enum
+	T                 raml.Type
+	Name              string
+	Description       []string
+	Fields            map[string]field
+	Enum              *enum
+	CreateParamString string
 }
 
 type objectProperty struct {
@@ -135,6 +137,14 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 	return properties
 }
 
+func newMyPyClassFromType(T raml.Type, name string) class {
+	pc := newClass(T, name, T.Description, T.Properties)
+	pc.T = T
+	pc.handleAdvancedType()
+	pc.createParamString()
+	return pc
+}
+
 func newClassFromType(T raml.Type, name string) class {
 	pc := newClass(T, name, T.Description, T.Properties)
 	pc.T = T
@@ -143,7 +153,7 @@ func newClassFromType(T raml.Type, name string) class {
 }
 
 // generate a python class file
-func (pc *class) generate(dir string) ([]string, error) {
+func (pc *class) generate(dir string, template string) ([]string, error) {
 	// generate enums
 	typeNames := make([]string, 0)
 	for _, f := range pc.Fields {
@@ -162,7 +172,26 @@ func (pc *class) generate(dir string) ([]string, error) {
 
 	fileName := filepath.Join(dir, pc.Name+".py")
 	typeNames = append(typeNames, pc.Name)
-	return typeNames, commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
+	return typeNames, commons.GenerateFile(pc, template, "class_python", fileName, false)
+}
+
+func (pc *class) createParamString() {
+	// build the CreateParamString, used as part of the create() staticmethod
+	// which is a convenience initializer for the class
+	requiredFields := make([]string, 0)
+	optionalFields := make([]string, 0)
+
+	for fieldName, field := range pc.Fields {
+		if field.Required {
+			requiredFields = append(requiredFields, fmt.Sprintf("%s: %s", fieldName, field.MyPyType))
+		} else {
+			optionalFields = append(optionalFields, fmt.Sprintf("%s: %s=None", fieldName, field.MyPyType))
+		}
+	}
+	// sort them so we have some stability in param order (important for requiredFields)
+	sort.Strings(requiredFields)
+	sort.Strings(optionalFields)
+	pc.CreateParamString = strings.Join(append(requiredFields, optionalFields...), ", ")
 }
 
 func (pc *class) handleAdvancedType() {
@@ -239,7 +268,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 		}
 		if parents, isMult := rt.MultipleInheritance(); isMult {
 			pc := newClassFromType(rt, strings.Join(parents, ""))
-			results, err := pc.generate(dir)
+			results, err := pc.generate(dir, "./templates/class_python.tmpl")
 			if err != nil {
 				return names, err
 			}
@@ -249,4 +278,20 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 	}
 	return names, nil
 
+}
+
+// generate all python classes from a RAML document. If typesOnly is True, generate only for
+// types defined in the types section of the raml file.
+func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
+	// from types
+	for name, tip := range apiDef.Types {
+		if name == "UUID" {
+			continue
+		}
+		pc := newMyPyClassFromType(tip, name)
+		if _, errGen := pc.generate(dir, "./templates/class_python_mypy.tmpl"); errGen != nil {
+			return errGen
+		}
+	}
+	return nil
 }

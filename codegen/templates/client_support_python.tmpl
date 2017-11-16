@@ -92,7 +92,7 @@ def val_factory(val, datatypes):
                      format(val=val, types=datatypes, excs=exceptions))
 
 
-def set_property(name, data, data_type, has_child_properties,
+def set_property(name, data, data_types, has_child_properties,
                  required_child_properties, is_list, required, class_name):
     create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
     required_error = '{cls}: missing required property {prop}'
@@ -101,11 +101,11 @@ def set_property(name, data, data_type, has_child_properties,
     if val:
         try:
             if is_list:
-                factory_value = list_factory(val, [data_type])
+                factory_value = list_factory(val, data_types)
             elif has_child_properties:
-                factory_value = dict_factory(val, dict(data_type))
+                factory_value = dict_factory(val, data_types)
             else:
-                factory_value = val_factory(val, [data_type])
+                factory_value = val_factory(val, data_types)
         except ValueError as err:
             raise ValueError(create_error.format(cls=class_name, prop=name, val=val, err=err))
         else:
