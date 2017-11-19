@@ -70,13 +70,13 @@ func generateEmptyInitPy(dir string) error {
 	return commons.GenerateFile(nil, "./templates/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
 }
 
-func (c Client) GenerateClasses(dir string) error {
+func (c Client) GenerateMyPyClasses(dir string) error {
 	globAPIDef = c.APIDef
-	//// helper for python classes
-	//if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
-	//	"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
-	//	return err
-	//}
+	// helper for python classes
+	if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
+		"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
+		return err
+	}
 
 	// python classes
 	return generateMyPyClasses(c.APIDef, dir)

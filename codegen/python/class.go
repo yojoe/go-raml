@@ -153,7 +153,7 @@ func newClassFromType(T raml.Type, name string) class {
 }
 
 // generate a python class file
-func (pc *class) generate(dir string, template string) ([]string, error) {
+func (pc *class) generate(dir string, template string, name string) ([]string, error) {
 	// generate enums
 	typeNames := make([]string, 0)
 	for _, f := range pc.Fields {
@@ -172,7 +172,7 @@ func (pc *class) generate(dir string, template string) ([]string, error) {
 
 	fileName := filepath.Join(dir, pc.Name+".py")
 	typeNames = append(typeNames, pc.Name)
-	return typeNames, commons.GenerateFile(pc, template, "class_python", fileName, false)
+	return typeNames, commons.GenerateFile(pc, template, name, fileName, false)
 }
 
 func (pc *class) createParamString() {
@@ -228,6 +228,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
 	template := "./templates/class_python.tmpl"
+	templateName := "class_python"
 
 	names := []string{}
 	for name, t := range types.AllTypes(apiDef, "") {
@@ -248,13 +249,13 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 			for k := range tip.Properties {
 				propNames = append(propNames, k)
 			}
-			results, errGen = pc.generate(dir, template)
+			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:
 			if name == "UUID" {
 				continue
 			}
 			pc := newClassFromType(tip, name)
-			results, errGen = pc.generate(dir, template)
+			results, errGen = pc.generate(dir, template, templateName)
 		}
 
 		if errGen != nil {
@@ -269,7 +270,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 		}
 		if parents, isMult := rt.MultipleInheritance(); isMult {
 			pc := newClassFromType(rt, strings.Join(parents, ""))
-			results, err := pc.generate(dir, "./templates/class_python.tmpl")
+			results, err := pc.generate(dir, template, templateName)
 			if err != nil {
 				return names, err
 			}
@@ -290,7 +291,7 @@ func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
 			continue
 		}
 		pc := newMyPyClassFromType(tip, name)
-		if _, errGen := pc.generate(dir, "./templates/class_python_mypy.tmpl"); errGen != nil {
+		if _, errGen := pc.generate(dir, "./templates/class_python_mypy.tmpl", "class_python_mypy"); errGen != nil {
 			return errGen
 		}
 	}

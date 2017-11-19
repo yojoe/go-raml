@@ -1,10 +1,16 @@
-{{- define "class_python" -}}
+{{- define "class_python_mypy" -}}
 """
 Auto-generated class for {{.Name}}
 """
+import capnp
+import os
 {{range $k, $v := .Imports -}}
 {{$v}}
 {{end}}
+from . import client_support
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 class {{.Name}}(object):
     """
@@ -25,6 +31,21 @@ class {{.Name}}(object):
         {{- end }}
 
     def to_capnp(self):
-        pass
+        template = capnp.load('%s/{{.Name}}.capnp' % DIR)
+        return template.{{.Name}}.new_message(**self.as_dict()).to_bytes()
+
+    def as_dict(self):
+        return client_support.to_dict(self)
+
+
+class {{.Name}}Collection(object):
+    """
+    auto-generated. don't touch.
+    """
+
+    def new(self, bin=None) -> {{.Name}}:
+        template = capnp.load('%s/{{.Name}}.capnp' % DIR)
+        struct = template.{{.Name}}.from_bytes(bin) if bin else template.{{.Name}}.new_message()
+        return {{.Name}}(**struct.to_dict(verbose=True))
 
 {{end -}}

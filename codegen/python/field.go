@@ -156,6 +156,9 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool, str
 		return dataType, false, myPyType
 	}
 	if f.Type != "dict" || len(childProperties) == 0 {
+		if f.IsList{
+			return f.Type, false, fmt.Sprintf("List[%s]", f.Type)
+		}
 		return f.Type, false, f.Type
 	}
 
@@ -242,6 +245,7 @@ func (pf *field) setType(t, items string) {
 	case ramlType.IsArray(): // array
 		pf.IsList = true
 		pf.setType(ramlType.ArrayType(), "")
+		pf.addImport("typing", "List")
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
 	case ramlType.IsUnion():
