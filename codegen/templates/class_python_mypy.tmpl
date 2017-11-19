@@ -11,7 +11,7 @@ class {{.Name}}(object):
     auto-generated. don't touch.
     """
 
-    def __init__(self, {{.CreateParamString}}):
+    def __init__(self, {{.CreateParamString}}) -> None:
         """
         {{ range $key, $val := .Fields -}}
         :type {{$val.Name}}: {{if $val.IsList}}list[{{$val.DataType}}]{{else}}{{$val.DataType}}{{end}}

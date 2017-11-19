@@ -29,63 +29,19 @@ class MultipleInheritance(object):
             raise ValueError('No data or kwargs present')
 
         class_name = 'MultipleInheritance'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'cities'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [EnumCity]
-            try:
-                setattr(self, 'cities', client_support.list_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'color'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'color', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'colours'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'colours', client_support.list_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'kind'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'kind', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'name'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'name', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        # set attributes
+        data_types = [EnumCity]
+        self.cities = client_support.set_property('cities', data, data_types, False, [], True, True, class_name)
+        data_types = [str]
+        self.color = client_support.set_property('color', data, data_types, False, [], False, True, class_name)
+        data_types = [str]
+        self.colours = client_support.set_property('colours', data, data_types, False, [], True, True, class_name)
+        data_types = [str]
+        self.kind = client_support.set_property('kind', data, data_types, False, [], False, True, class_name)
+        data_types = [str]
+        self.name = client_support.set_property('name', data, data_types, False, [], False, False, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

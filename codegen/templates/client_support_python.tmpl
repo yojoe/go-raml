@@ -94,6 +94,18 @@ def val_factory(val, datatypes):
 
 def set_property(name, data, data_types, has_child_properties,
                  required_child_properties, is_list, required, class_name):
+    """
+    Set a class property
+    :param name: property name to set
+    :param data: class data
+    :param data_types: the data types this property supports
+    :param has_child_properties: boolean indicating if the property has child properties
+    :param required_child_properties: a list of required child properties
+    :param is_list: boolean indicating if this property is a list
+    :param required: boolean indicating if this property is required or not
+    :param class_name: name of the class this property belongs to
+    :return:
+    """
     create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
     required_error = '{cls}: missing required property {prop}'
     factory_value = None

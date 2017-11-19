@@ -32,109 +32,27 @@ class NumberFormat(object):
             raise ValueError('No data or kwargs present')
 
         class_name = 'NumberFormat'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'd'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [float]
-            try:
-                setattr(self, 'd', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'f'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [float]
-            try:
-                setattr(self, 'f', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'i'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'i', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'i16'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'i16', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'i32'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'i32', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'i64'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'i64', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'i8'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'i8', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'l'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [int]
-            try:
-                setattr(self, 'l', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'num'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [float]
-            try:
-                setattr(self, 'num', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [float]
+        self.d = client_support.set_property('d', data, data_types, False, [], False, True, class_name)
+        data_types = [float]
+        self.f = client_support.set_property('f', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.i = client_support.set_property('i', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.i16 = client_support.set_property('i16', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.i32 = client_support.set_property('i32', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.i64 = client_support.set_property('i64', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.i8 = client_support.set_property('i8', data, data_types, False, [], False, True, class_name)
+        data_types = [int]
+        self.l = client_support.set_property('l', data, data_types, False, [], False, True, class_name)
+        data_types = [float]
+        self.num = client_support.set_property('num', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

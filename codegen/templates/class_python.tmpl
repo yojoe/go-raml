@@ -31,7 +31,9 @@ class {{.Name}}(object):
         class_name = '{{.Name}}'
         data = json or kwargs
 
-        {{- range $key, $val := .Fields}}
+        # set attributes
+
+        {{- range $key, $val := .Fields }}
         {{ if $val.HasChildProperties -}}
         data_types = { {{$val.DataType}} }
         {{- else -}}

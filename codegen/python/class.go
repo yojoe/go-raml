@@ -227,9 +227,10 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
+	template := "./templates/class_python.tmpl"
 
 	names := []string{}
-	for name, t := range types.AllTypes(apiDef, "", typesOnly) {
+	for name, t := range types.AllTypes(apiDef, "") {
 		var errGen error
 		var results []string
 		switch tip := t.Type.(type) {
@@ -247,13 +248,13 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 			for k := range tip.Properties {
 				propNames = append(propNames, k)
 			}
-			results, errGen = pc.generate(dir)
+			results, errGen = pc.generate(dir, template)
 		case raml.Type:
 			if name == "UUID" {
 				continue
 			}
 			pc := newClassFromType(tip, name)
-			results, errGen = pc.generate(dir)
+			results, errGen = pc.generate(dir, template)
 		}
 
 		if errGen != nil {

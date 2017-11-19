@@ -24,21 +24,11 @@ class Cat(object):
             raise ValueError('No data or kwargs present')
 
         class_name = 'Cat'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'kind'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'kind', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [str]
+        self.kind = client_support.set_property('kind', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)
