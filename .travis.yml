@@ -14,5 +14,5 @@ go:
 
 script:
   - ./build_apidocs.sh
-  - ./build.sh
-  - go test -v ./...
+  - make install
+  - make test
