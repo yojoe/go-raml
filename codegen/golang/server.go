@@ -101,7 +101,7 @@ func (gs Server) Generate() error {
 			return err
 		}
 		// main file
-		return commons.GenerateFile(gs, "./templates/go/server_main_go.tmpl", "server_main_go", filepath.Join(gs.TargetDir, "main.go"), true)
+		return commons.GenerateFile(gs, "./templates/golang/server_main_go.tmpl", "server_main_go", filepath.Join(gs.TargetDir, "main.go"), true)
 	}
 
 	return nil

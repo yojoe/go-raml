@@ -118,5 +118,5 @@ func (js jsonSchema) Generate(dir string) error {
 	ctx := map[string]interface{}{
 		"Content": js.String(),
 	}
-	return commons.GenerateFile(ctx, "./templates/go/json_schema.tmpl", "json_schema", filename, false)
+	return commons.GenerateFile(ctx, "./templates/golang/json_schema.tmpl", "json_schema", filename, false)
 }
