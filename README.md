@@ -63,9 +63,9 @@ make sure you have at least go 1.6 installed !
 
 ### Build in development
 
-Install `godep` as package manager, we need it for vendoring tool
+Install `dep` as package manager, we need it for vendoring tool
 
-`$go get -u github.com/tools/godep`
+`$go get -u github.com/golang/dep/cmd/dep
 
 Install go-bindata, we need it to compile all resource files to .go file
 
@@ -81,7 +81,7 @@ sh build_apidocs.sh
 Build go-raml and all resource files
 ```
 cd $GOPATH/src/github.com/Jumpscale/go-raml
-sh build.sh
+make install
 ```
 
 ## Code generation
