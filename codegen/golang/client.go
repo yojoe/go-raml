@@ -107,13 +107,13 @@ func (gc Client) Generate() error {
 // generate Go client helper
 func (gc *Client) generateHelperFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_utils.go")
-	return commons.GenerateFile(gc, "./templates/client_utils_go.tmpl", "client_utils_go", fileName, false)
+	return commons.GenerateFile(gc, "./templates/go/client_utils_go.tmpl", "client_utils_go", fileName, false)
 }
 
 func (gc *Client) generateServices(dir string) error {
 	for _, s := range gc.Services {
 		sort.Sort(resource.ByEndpoint(s.Methods))
-		if err := commons.GenerateFile(s, "./templates/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
+		if err := commons.GenerateFile(s, "./templates/go/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
 			return err
 		}
 	}
@@ -131,7 +131,7 @@ func (gc *Client) generateSecurity(dir string) error {
 				"PackageName":    gc.PackageName,
 			}
 			filename := filepath.Join(dir, "oauth2_client_"+name+".go")
-			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_go.tmpl", "oauth2_client_go", filename, true); err != nil {
+			if err := commons.GenerateFile(ctx, "./templates/go/oauth2_client_go.tmpl", "oauth2_client_go", filename, true); err != nil {
 				return err
 			}
 		}
@@ -142,5 +142,5 @@ func (gc *Client) generateSecurity(dir string) error {
 // generate Go client lib file
 func (gc *Client) generateClientFile(dir string) error {
 	fileName := filepath.Join(dir, "/client_"+strings.ToLower(gc.Name)+".go")
-	return commons.GenerateFile(gc, "./templates/client_go.tmpl", "client_go", fileName, false)
+	return commons.GenerateFile(gc, "./templates/go/client_go.tmpl", "client_go", fileName, false)
 }

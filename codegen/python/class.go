@@ -5,10 +5,10 @@ import (
 	"sort"
 	"strings"
 
+	"fmt"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
-	"fmt"
 )
 
 // class defines a python class
@@ -19,6 +19,7 @@ type class struct {
 	Fields            map[string]field
 	Enum              *enum
 	CreateParamString string
+	MyPy              bool
 }
 
 type objectProperty struct {
@@ -210,6 +211,10 @@ func (pc class) Imports() []string {
 
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
+			// Ignore mypy imports if this is not a mypy class
+			if !pc.MyPy && imp.Module == "typing" {
+				continue
+			}
 			importString := "from " + imp.Module + " import " + imp.Name
 			imports[importString] = true
 		}
@@ -227,7 +232,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
-	template := "./templates/class_python.tmpl"
+	template := "./templates/python/class_python.tmpl"
 	templateName := "class_python"
 
 	names := []string{}
@@ -282,8 +287,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) 
 
 }
 
-// generate all python classes from a RAML document. If typesOnly is True, generate only for
-// types defined in the types section of the raml file.
+// generate all mypy python classes from a RAML document type section.
 func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
 	// from types
 	for name, tip := range apiDef.Types {
@@ -291,7 +295,8 @@ func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
 			continue
 		}
 		pc := newMyPyClassFromType(tip, name)
-		if _, errGen := pc.generate(dir, "./templates/class_python_mypy.tmpl", "class_python_mypy"); errGen != nil {
+		pc.MyPy = true
+		if _, errGen := pc.generate(dir, "./templates/python/class_python_mypy.tmpl", "class_python_mypy"); errGen != nil {
 			return errGen
 		}
 	}

@@ -47,7 +47,7 @@ func (c *Client) Generate() error {
 
 func (c *Client) generateMain() error {
 	filename := filepath.Join(c.Dir, clientName(c.APIDef)+".nim")
-	return commons.GenerateFile(c, "./templates/client_nim.tmpl", "client_nim", filename, true)
+	return commons.GenerateFile(c, "./templates/nim/client_nim.tmpl", "client_nim", filename, true)
 }
 
 func (c *Client) generateServices(rs []resource) error {
@@ -70,7 +70,7 @@ func (c *Client) generateSecurity() error {
 				"BaseURI":    fmt.Sprintf("%v", v),
 			}
 			filename := filepath.Join(c.Dir, "oauth2_client_"+name+".nim")
-			if err := commons.GenerateFile(ctx, "./templates/oauth2_client_nim.tmpl", "oauth2_client_nim", filename, true); err != nil {
+			if err := commons.GenerateFile(ctx, "./templates/nim/oauth2_client_nim.tmpl", "oauth2_client_nim", filename, true); err != nil {
 				return err
 			}
 		}

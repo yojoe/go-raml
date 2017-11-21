@@ -57,7 +57,7 @@ func (s *Struct) Generate(dir string) error {
 		return err
 	}
 	filename := filepath.Join(dir, s.Name+".capnp")
-	return commons.GenerateFile(s, "./templates/struct_capnp.tmpl", "struct_capnp", filename, true)
+	return commons.GenerateFile(s, "./templates/capnp/struct_capnp.tmpl", "struct_capnp", filename, true)
 }
 
 // generate all enums contained in this struct

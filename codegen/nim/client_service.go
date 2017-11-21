@@ -18,7 +18,7 @@ func newClientService(r resource) clientService {
 
 func (cs *clientService) generate(dir string) error {
 	filename := filepath.Join(dir, cs.Name+"_service.nim")
-	return commons.GenerateFile(cs, "./templates/client_service_nim.tmpl", "client_service_nim", filename, true)
+	return commons.GenerateFile(cs, "./templates/nim/client_service_nim.tmpl", "client_service_nim", filename, true)
 }
 
 func (cs *clientService) Imports() []string {

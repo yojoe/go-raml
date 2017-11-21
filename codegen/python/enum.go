@@ -76,5 +76,5 @@ func newEnumField(f interface{}, e enum) enumField {
 
 func (e *enum) generate(dir string) error {
 	filename := filepath.Join(dir, e.Name+".py")
-	return commons.GenerateFile(e, "./templates/enum_python.tmpl", "enum_python", filename, true)
+	return commons.GenerateFile(e, "./templates/python/enum_python.tmpl", "enum_python", filename, true)
 }

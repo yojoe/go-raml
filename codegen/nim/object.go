@@ -160,7 +160,7 @@ func (o *object) generate(dir string) error {
 		return o.Enum.generate(dir)
 	}
 	filename := filepath.Join(dir, o.Name()+".nim")
-	if err := commons.GenerateFile(o, "./templates/object_nim.tmpl", "object_nim", filename, true); err != nil {
+	if err := commons.GenerateFile(o, "./templates/nim/object_nim.tmpl", "object_nim", filename, true); err != nil {
 		return err
 	}
 	return nil

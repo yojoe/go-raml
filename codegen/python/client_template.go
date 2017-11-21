@@ -28,26 +28,26 @@ func (c *Client) initTemplates() {
 
 func (c *Client) initTemplatesRequests() {
 	c.Template = clientTemplate{
-		serviceFile: "./templates/client_service_python.tmpl",
+		serviceFile: "./templates/python/client_service_python.tmpl",
 		serviceName: "client_service_python",
-		oauth2File:  "./templates/oauth2_client_python.tmpl",
+		oauth2File:  "./templates/python/oauth2_client_python.tmpl",
 		oauth2Name:  "oauth2_client_python",
-		initFile:    "./templates/client_initpy_python.tmpl",
+		initFile:    "./templates/python/client_initpy_python.tmpl",
 		initName:    "client_initpy_python",
-		mainFile:    "./templates/client_python.tmpl",
+		mainFile:    "./templates/python/client_python.tmpl",
 		mainName:    "client_python",
 	}
 }
 
 func (c *Client) initTemplatesAioHTTP() {
 	c.Template = clientTemplate{
-		serviceFile: "./templates/client_service_python_aiohttp.tmpl",
+		serviceFile: "./templates/python/client_service_python_aiohttp.tmpl",
 		serviceName: "client_service_python_aiohttp",
-		oauth2File:  "./templates/oauth2_client_python_aiohttp.tmpl",
+		oauth2File:  "./templates/python/oauth2_client_python_aiohttp.tmpl",
 		oauth2Name:  "oauth2_client_python_aiohttp",
-		initFile:    "./templates/client_initpy_python_aiohttp.tmpl",
+		initFile:    "./templates/python/client_initpy_python_aiohttp.tmpl",
 		initName:    "client_initpy_python_aiohttp",
-		mainFile:    "./templates/client_python_aiohttp.tmpl",
+		mainFile:    "./templates/python/client_python_aiohttp.tmpl",
 		mainName:    "client_python_aiohttp",
 	}
 

@@ -60,7 +60,7 @@ func (s *Server) Generate() error {
 // main generates main file
 func (s *Server) generateMain() error {
 	filename := filepath.Join(s.Dir, "main.nim")
-	return commons.GenerateFile(s, "./templates/server_main_nim.tmpl", "server_main_nim", filename, true)
+	return commons.GenerateFile(s, "./templates/nim/server_main_nim.tmpl", "server_main_nim", filename, true)
 }
 
 // generates all needed security files
@@ -70,12 +70,12 @@ func (s *Server) generateSecurity() error {
 		return nil
 	}
 	// libjwt
-	if err := commons.GenerateFile(s, "./templates/libjwt_nim.tmpl", "libjwt_nim", filepath.Join(s.Dir, "libjwt.nim"), true); err != nil {
+	if err := commons.GenerateFile(s, "./templates/nim/libjwt_nim.tmpl", "libjwt_nim", filepath.Join(s.Dir, "libjwt.nim"), true); err != nil {
 		return err
 	}
 
 	// itsyouonline integration
-	return commons.GenerateFile(s, "./templates/oauth2_jwt_nim.tmpl", "oauth2_jwt_nim", filepath.Join(s.Dir, "oauth2_jwt.nim"), true)
+	return commons.GenerateFile(s, "./templates/nim/oauth2_jwt_nim.tmpl", "oauth2_jwt_nim", filepath.Join(s.Dir, "oauth2_jwt.nim"), true)
 }
 
 // Imports returns array of modules that need to be imported by server's main file

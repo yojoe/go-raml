@@ -42,7 +42,7 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 // Generate generates all python server files
 func (ps FlaskServer) Generate(dir string) error {
 	// generate input validators helper
-	if err := commons.GenerateFile(struct{}{}, "./templates/input_validators_python.tmpl", "input_validators_python",
+	if err := commons.GenerateFile(struct{}{}, "./templates/python/input_validators_python.tmpl", "input_validators_python",
 		filepath.Join(dir, "input_validators.py"), false); err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// requirements.txt file
-	if err := commons.GenerateFile(nil, "./templates/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/python/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
 		return err
 	}
 
@@ -79,7 +79,7 @@ func (ps FlaskServer) Generate(dir string) error {
 			return err
 		}
 		// main file
-		return commons.GenerateFile(ps, "./templates/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
+		return commons.GenerateFile(ps, "./templates/python/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
 	}
 	return nil
 

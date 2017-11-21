@@ -50,7 +50,7 @@ func (r *resource) Imports() []string {
 // generate server resource API implementation
 func (r *resource) generate(dir string) error {
 	filename := filepath.Join(dir, r.apiName()+".nim")
-	return commons.GenerateFile(r, "./templates/server_resources_api_nim.tmpl", "server_resources_api_nim", filename, true)
+	return commons.GenerateFile(r, "./templates/nim/server_resources_api_nim.tmpl", "server_resources_api_nim", filename, true)
 }
 
 // returns server's API name

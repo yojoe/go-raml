@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	resourceIfTemplate  = "./templates/server_resources_interface.tmpl" // resource interface template
-	resourceAPITemplate = "./templates/server_resources_api.tmpl"       // resource API template
+	resourceIfTemplate  = "./templates/go/server_resources_interface.tmpl" // resource interface template
+	resourceAPITemplate = "./templates/go/server_resources_api.tmpl"       // resource API template
 )
 
 type goResource struct {
@@ -42,7 +42,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 	}
 
 	mainFile := filepath.Join(dir, strings.ToLower(gr.Name)+"_api")
-	if err := commons.GenerateFile(mainCtx, "./templates/server_resource_api_main_go.tmpl",
+	if err := commons.GenerateFile(mainCtx, "./templates/go/server_resource_api_main_go.tmpl",
 		"server_resource_api_main_go", mainFile+".go", false); err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 			"PackageName": gr.PackageName,
 		}
 		filename := mainFile + "_" + sm.MethodName + ".go"
-		if err := commons.GenerateFile(ctx, "./templates/server_resource_api_impl_go.tmpl",
+		if err := commons.GenerateFile(ctx, "./templates/go/server_resource_api_impl_go.tmpl",
 			"server_resource_api_impl_go", filename, false); err != nil {
 			return err
 		}

@@ -43,7 +43,7 @@ func (gh goramlHelper) generate(dir string) error {
 	}{
 		PackageName: gh.packageName,
 	}
-	if err := commons.GenerateFile(ctx, "./templates/goraml_go_api_error.tmpl", "goraml_go_api_error",
+	if err := commons.GenerateFile(ctx, "./templates/go/goraml_go_api_error.tmpl", "goraml_go_api_error",
 		filepath.Join(pkgDir, "api_error.go"), false); err != nil {
 		return err
 	}
