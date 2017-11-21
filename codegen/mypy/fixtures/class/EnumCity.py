@@ -10,7 +10,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class EnumCity(object):
+class EnumCity:
     """
     auto-generated. don't touch.
     """
@@ -32,7 +32,7 @@ class EnumCity(object):
         return client_support.to_dict(self)
 
 
-class EnumCityCollection(object):
+class EnumCityCollection:
     """
     auto-generated. don't touch.
     """

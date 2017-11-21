@@ -10,7 +10,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class Cage(object):
+class Cage:
     """
     auto-generated. don't touch.
     """
@@ -32,7 +32,7 @@ class Cage(object):
         return client_support.to_dict(self)
 
 
-class CageCollection(object):
+class CageCollection:
     """
     auto-generated. don't touch.
     """

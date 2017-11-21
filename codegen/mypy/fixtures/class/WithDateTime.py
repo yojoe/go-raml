@@ -10,7 +10,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class WithDateTime(object):
+class WithDateTime:
     """
     auto-generated. don't touch.
     """
@@ -32,7 +32,7 @@ class WithDateTime(object):
         return client_support.to_dict(self)
 
 
-class WithDateTimeCollection(object):
+class WithDateTimeCollection:
     """
     auto-generated. don't touch.
     """

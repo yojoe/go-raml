@@ -9,7 +9,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class NumberFormat(object):
+class NumberFormat:
     """
     auto-generated. don't touch.
     """
@@ -45,7 +45,7 @@ class NumberFormat(object):
         return client_support.to_dict(self)
 
 
-class NumberFormatCollection(object):
+class NumberFormatCollection:
     """
     auto-generated. don't touch.
     """

@@ -9,7 +9,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class Cat(object):
+class Cat:
     """
     auto-generated. don't touch.
     """
@@ -29,7 +29,7 @@ class Cat(object):
         return client_support.to_dict(self)
 
 
-class CatCollection(object):
+class CatCollection:
     """
     auto-generated. don't touch.
     """

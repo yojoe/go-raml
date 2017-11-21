@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class EnumEnumCityEnumParks(Enum):
+class EnumEnumCityEnumParks:
     parkA = "parkA"
     parkB = "parkB"

@@ -11,7 +11,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class SingleInheritance(object):
+class SingleInheritance:
     """
     auto-generated. don't touch.
     """
@@ -37,7 +37,7 @@ class SingleInheritance(object):
         return client_support.to_dict(self)
 
 
-class SingleInheritanceCollection(object):
+class SingleInheritanceCollection:
     """
     auto-generated. don't touch.
     """

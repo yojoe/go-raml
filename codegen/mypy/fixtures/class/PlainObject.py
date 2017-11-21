@@ -9,7 +9,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class PlainObject(object):
+class PlainObject:
     """
     auto-generated. don't touch.
     """
@@ -29,7 +29,7 @@ class PlainObject(object):
         return client_support.to_dict(self)
 
 
-class PlainObjectCollection(object):
+class PlainObjectCollection:
     """
     auto-generated. don't touch.
     """

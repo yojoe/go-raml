@@ -11,7 +11,7 @@ from . import client_support
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-class Animal(object):
+class Animal:
     """
     auto-generated. don't touch.
     """
@@ -35,7 +35,7 @@ class Animal(object):
         return client_support.to_dict(self)
 
 
-class AnimalCollection(object):
+class AnimalCollection:
     """
     auto-generated. don't touch.
     """
