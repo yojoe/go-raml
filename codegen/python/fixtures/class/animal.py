@@ -2,6 +2,7 @@
 Auto-generated class for animal
 """
 from .EnumCity import EnumCity
+from six import string_types
 
 from . import client_support
 
@@ -32,9 +33,9 @@ class animal(object):
         # set attributes
         data_types = [EnumCity]
         self.cities = client_support.set_property('cities', data, data_types, False, [], True, True, class_name)
-        data_types = [str]
+        data_types = [string_types]
         self.colours = client_support.set_property('colours', data, data_types, False, [], True, True, class_name)
-        data_types = [str]
+        data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, False, class_name)
 
     def __str__(self):

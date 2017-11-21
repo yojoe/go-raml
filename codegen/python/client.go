@@ -104,7 +104,7 @@ func (c Client) Generate(dir string) error {
 	}
 
 	// python classes
-	classes, err := generateAllClasses(c.APIDef, dir, false)
+	classes, err := generateAllClasses(c.APIDef, dir)
 	if err != nil {
 		return err
 	}

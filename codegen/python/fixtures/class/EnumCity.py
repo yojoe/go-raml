@@ -3,6 +3,7 @@ Auto-generated class for EnumCity
 """
 from .EnumEnumCityEnum_homeNum import EnumEnumCityEnum_homeNum
 from .EnumEnumCityEnum_parks import EnumEnumCityEnum_parks
+from six import string_types
 
 from . import client_support
 
@@ -35,7 +36,7 @@ class EnumCity(object):
         self.enum_homeNum = client_support.set_property('enum_homeNum', data, data_types, False, [], False, True, class_name)
         data_types = [EnumEnumCityEnum_parks]
         self.enum_parks = client_support.set_property('enum_parks', data, data_types, False, [], False, True, class_name)
-        data_types = [str]
+        data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):

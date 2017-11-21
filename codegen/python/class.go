@@ -212,7 +212,7 @@ func (pc class) Imports() []string {
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
 			// Ignore mypy imports if this is not a mypy class
-			if !pc.MyPy && imp.Module == "typing" {
+			if !pc.MyPy && imp.Module == "typing" || pc.MyPy && imp.Module == "six" {
 				continue
 			}
 			importString := "from " + imp.Module + " import " + imp.Name
@@ -228,7 +228,7 @@ func (pc class) Imports() []string {
 }
 
 // generate all python classes from a RAML document
-func generateAllClasses(apiDef *raml.APIDefinition, dir string, typesOnly bool) ([]string, error) {
+func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance

@@ -2,6 +2,7 @@
 Auto-generated class for Cage
 """
 from .animal import animal
+from six import string_types
 
 from . import client_support
 
@@ -29,7 +30,7 @@ class Cage(object):
         data = json or kwargs
 
         # set attributes
-        data_types = [str]
+        data_types = [string_types]
         self.colours = client_support.set_property('colours', data, data_types, False, [], False, True, class_name)
         data_types = [animal]
         self.owner = client_support.set_property('owner', data, data_types, False, [], False, True, class_name)

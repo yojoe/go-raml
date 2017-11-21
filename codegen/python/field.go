@@ -227,6 +227,8 @@ func (pf *field) setType(t, items string) {
 			pf.addImport("datetime", "datetime")
 		case "uuid":
 			pf.addImport("uuid", "UUID")
+		case "string":
+			pf.addImport("six", "string_types")
 		}
 	}
 
@@ -259,6 +261,8 @@ func (pf *field) setType(t, items string) {
 					pf.addImport("datetime", "datetime")
 				case "uuid":
 					pf.addImport("uuid", "UUID")
+				case "string":
+					pf.addImport("six", "string_types")
 				default:
 					pf.addImport("."+typename, typename)
 				}
@@ -288,4 +292,17 @@ var (
 func datetimeVariant(name string) bool {
 	_, ok := dateTimeVariantMap[name]
 	return ok
+}
+
+// covert all str to string_types
+func (f field) ConverDataTypes() string {
+	// split on ',' instead of replaying str in the whole string to make sure we don't conflict with any type
+	// starting with str
+	dataTypes := strings.Split(f.DataType, ",")
+	for i, dataType := range dataTypes {
+		if dataType == "str" {
+			dataTypes[i] = "string_types"
+		}
+	}
+	return strings.Join(dataTypes, ",")
 }

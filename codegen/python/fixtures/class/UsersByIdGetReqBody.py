@@ -1,6 +1,7 @@
 """
 Auto-generated class for UsersByIdGetReqBody
 """
+from six import string_types
 
 from . import client_support
 
@@ -28,7 +29,7 @@ class UsersByIdGetReqBody(object):
         data = json or kwargs
 
         # set attributes
-        data_types = [str]
+        data_types = [string_types]
         self.ID = client_support.set_property('ID', data, data_types, False, [], False, True, class_name)
         data_types = [int]
         self.age = client_support.set_property('age', data, data_types, False, [], False, True, class_name)

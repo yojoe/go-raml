@@ -35,9 +35,9 @@ class {{.Name}}(object):
 
         {{- range $key, $val := .Fields }}
         {{ if $val.HasChildProperties -}}
-        data_types = { {{$val.DataType}} }
+        data_types = { {{.ConverDataTypes}} }
         {{- else -}}
-        data_types = [{{$val.DataType}}]
+        data_types = [{{.ConverDataTypes}}]
         {{- end }}
         self.{{$val.Name}} = client_support.set_property('{{$val.Name}}', data, data_types, {{if $val.HasChildProperties}}True{{else}}False{{end}}, {{ $val.RequiredChildProperties }}, {{if $val.IsList}}True{{else}}False{{end}}, {{if $val.Required}}True{{else}}False{{end}}, class_name)
 

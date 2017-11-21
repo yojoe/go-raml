@@ -1,6 +1,7 @@
 """
 Auto-generated class for Address
 """
+from six import string_types
 
 from . import client_support
 
@@ -27,7 +28,7 @@ class Address(object):
         data = json or kwargs
 
         # set attributes
-        data_types = [str]
+        data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
