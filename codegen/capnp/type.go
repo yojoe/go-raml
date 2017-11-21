@@ -50,6 +50,7 @@ func toCapnpType(t, capnpType string, itemsType string) (string, string) {
 			if itemsType == "" {
 				return v, "Data"
 			}
+			itemsType, _ := builtinType(itemsType)
 			return v, itemsType
 		}
 		return v, ""

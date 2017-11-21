@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -25,19 +26,19 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// oauth 2 facebook
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_Facebook_middleware.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "oauth2_Facebook_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/security/oauth2_Facebook_middleware.txt")
+			tmpl, err := utils.TestLoadFile("../fixtures/security/oauth2_Facebook_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
 
 			// oauth 2 dropbox
-			s, err = testLoadFile(filepath.Join(targetdir, "oauth2_Dropbox_middleware.go"))
+			s, err = utils.TestLoadFile(filepath.Join(targetdir, "oauth2_Dropbox_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../fixtures/security/oauth2_Dropbox_middleware.txt")
+			tmpl, err = utils.TestLoadFile("../fixtures/security/oauth2_Dropbox_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -54,10 +55,10 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check route
-			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_if.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "deliveries_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/security/deliveries_if.txt")
+			tmpl, err := utils.TestLoadFile("../fixtures/security/deliveries_if.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)
@@ -72,10 +73,10 @@ func TestOauth2Middleware(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// oauth 2 middleware
-			s, err := testLoadFile(filepath.Join(targetdir, "oauth2_DropboxIncluded_middleware.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "oauth2_DropboxIncluded_middleware.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/security/oauth2_DropboxIncluded_middleware.txt")
+			tmpl, err := utils.TestLoadFile("../fixtures/security/oauth2_DropboxIncluded_middleware.txt")
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

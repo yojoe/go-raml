@@ -7,13 +7,10 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func testLoadFile(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	return string(b), err
-}
 func TestResource(t *testing.T) {
 	Convey("resource generator", t, func() {
 		targetDir, err := ioutil.TempDir("", "")
@@ -30,18 +27,18 @@ func TestResource(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check interface file
-			s, err := testLoadFile(filepath.Join(targetDir, "deliveries_if.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, "deliveries_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("./fixtures/server_resources/simple/deliveries_if.txt")
+			tmpl, err := utils.TestLoadFile("./fixtures/server_resources/simple/deliveries_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
 			// check api implemetation file
-			s, err = testLoadFile(filepath.Join(targetDir, "deliveries_api.go"))
+			s, err = utils.TestLoadFile(filepath.Join(targetDir, "deliveries_api.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("./fixtures/server_resources/simple/deliveries_api.txt")
+			tmpl, err = utils.TestLoadFile("./fixtures/server_resources/simple/deliveries_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
@@ -51,10 +48,10 @@ func TestResource(t *testing.T) {
 				"deliveries_if",
 			}
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -81,10 +78,10 @@ func TestResource(t *testing.T) {
 				"deliveries_if",
 			}
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -105,10 +102,10 @@ func TestResource(t *testing.T) {
 				"nodes_if",
 			}
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -129,10 +126,10 @@ func TestResource(t *testing.T) {
 				"users_api",
 			}
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -35,10 +36,10 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -59,10 +60,10 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f+".txt"))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

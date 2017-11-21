@@ -9,6 +9,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 )
 
 func TestSanicServer(t *testing.T) {
@@ -37,10 +38,10 @@ func TestSanicServer(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -69,10 +70,10 @@ func TestSanicServer(t *testing.T) {
 			}
 
 			for _, filename := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, filename))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, filename))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, filename))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, filename))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

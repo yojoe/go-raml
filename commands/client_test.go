@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -25,10 +26,10 @@ func TestClientGeneration(t *testing.T) {
 			err := cmd.Execute()
 			So(err, ShouldBeNil)
 
-			s, err := testLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "client_structapitest.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../codegen/golang/fixtures/client_resources/client_structapitest.txt")
+			tmpl, err := utils.TestLoadFile("../codegen/golang/fixtures/client_resources/client_structapitest.txt")
 			So(err, ShouldBeNil)
 
 			So(tmpl, ShouldEqual, s)
