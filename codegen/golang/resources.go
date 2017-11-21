@@ -17,11 +17,24 @@ const (
 
 type goResource struct {
 	*resource.Resource
+	Methods     []serverMethod
+	PackageName string
+}
+
+func newGoResource(rd *resource.Resource, packageName string) *goResource {
+	var methods []serverMethod
+	for _, rm := range rd.Methods {
+		methods = append(methods, newServerMethod(rm, rd.APIDef, rd))
+	}
+	return &goResource{
+		Resource:    rd,
+		Methods:     methods,
+		PackageName: packageName,
+	}
 }
 
 // generate interface file of a resource
 func (gr *goResource) generateInterfaceFile(directory string) error {
-	gr.SortMethods()
 	filename := directory + "/" + strings.ToLower(gr.Name) + "_if.go"
 	return commons.GenerateFile(gr, resourceIfTemplate, "resource_if_template", filename, true)
 }
@@ -48,8 +61,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 	}
 
 	// generate per methods file
-	for _, mi := range gr.Methods {
-		sm := mi.(serverMethod)
+	for _, sm := range gr.Methods {
 		ctx := map[string]interface{}{
 			"Method":      sm,
 			"APIName":     gr.Name,
@@ -74,7 +86,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string,
 	apiFilePerMethod bool, libRootURLs []string) error {
-	gr.GenerateMethods(r, "go", newServerMethod, newGoClientMethod)
+	//gr.GenerateMethods(r, "go", nil, nil)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
@@ -92,9 +104,7 @@ func (gr goResource) InterfaceImportPaths() []string {
 		"github.com/gorilla/mux": struct{}{},
 	}
 
-	for _, v := range gr.Methods {
-		gm := v.(serverMethod)
-
+	for _, gm := range gr.Methods {
 		// if has middleware, we need to import middleware helper library
 		if len(gm.Middlewares) > 0 {
 			ip["github.com/justinas/alice"] = struct{}{}
@@ -116,8 +126,7 @@ func (gr goResource) APILibImportPaths() []string {
 	ip := map[string]struct{}{}
 
 	// methods
-	for _, v := range gr.Methods {
-		gm := v.(serverMethod)
+	for _, gm := range gr.Methods {
 		for _, v := range gm.Imports() {
 			ip[v] = struct{}{}
 		}

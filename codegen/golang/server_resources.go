@@ -7,28 +7,27 @@ import (
 )
 
 // generate Server's Go representation of RAML resources
-func (s *Server) generateServerResources(dir string) ([]resource.ResourceInterface, error) {
-	var rds []resource.ResourceInterface
+func (s *Server) generateServerResources(dir string) ([]resource.Resource, error) {
+	var rds []resource.Resource
 
-	rs := s.apiDef.Resources
+	resources := s.apiDef.Resources
 
 	// sort the keys, so we have resource sorted by keys.
 	// the generated code actually don't need it to be sorted.
 	// but test fixture need it
 	var keys []string
-	for k := range rs {
+	for k := range resources {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 
 	// create resource def
 	var err error
-	for _, k := range keys {
-		r := rs[k]
-		rd := resource.New(s.apiDef, k, s.PackageName)
-		rd.IsServer = true
-		gr := goResource{Resource: &rd}
-		err = gr.generate(&r, k, dir, s.APIFilePerMethod, s.libsRootURLs)
+	for _, endpoint := range keys {
+		r := resources[endpoint]
+		rd := resource.New(s.apiDef, &r, endpoint, true)
+		gr := newGoResource(&rd, s.PackageName)
+		err = gr.generate(&r, endpoint, dir, s.APIFilePerMethod, s.libsRootURLs)
 		if err != nil {
 			return rds, err
 		}
