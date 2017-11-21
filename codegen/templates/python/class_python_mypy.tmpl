@@ -48,5 +48,4 @@ class {{.Name}}Collection(object):
         template = capnp.load('%s/{{.Name}}.capnp' % dir)
         struct = template.{{.Name}}.from_bytes(bin) if bin else template.{{.Name}}.new_message()
         return {{.Name}}(**struct.to_dict(verbose=True))
-
 {{end -}}
