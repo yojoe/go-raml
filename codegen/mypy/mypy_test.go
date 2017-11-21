@@ -35,7 +35,6 @@ func TestGeneratePythonClass(t *testing.T) {
 				"NumberFormat.%s",
 				"Cat.%s",
 				"MultipleInheritance.%s",
-				"EnumString.%s",
 				"Petshop.%s",
 				"WithDateTime.%s",
 			}
