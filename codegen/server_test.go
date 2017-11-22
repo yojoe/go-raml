@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"github.com/Jumpscale/go-raml/utils"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -46,10 +47,10 @@ func TestServer(t *testing.T) {
 				{"goraml/struct_input_validator.go", "goraml/struct_input_validator.txt"},
 			}
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetdir, check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetdir, check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -63,7 +64,3 @@ func TestServer(t *testing.T) {
 	})
 }
 
-func testLoadFile(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	return string(b), err
-}

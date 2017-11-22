@@ -1,0 +1,121 @@
+#%RAML 1.0
+title: Struct API Test
+mediaType: application/json
+types:
+  EnumCity:
+    description: |
+      first line
+      second line
+      third line
+    properties:
+      name: string
+      enumParks:
+        type: string
+        enum: [ parkA, parkB ]
+  Animal:
+    description: |
+      Animal represent animal object.
+      It contains field that construct animal
+      such as : name, colours, and cities.
+    type: object
+    properties:
+      name?: string
+      colours:
+        type: array
+        items: string
+      cities:
+        type: EnumCity[]
+        minItems: 1
+        maxItems: 10
+  Cage:
+    description: |
+      Animal's cage
+    type: object
+    properties:
+      owner:
+        type: Animal
+      colours:
+        type: string
+  SingleInheritance:
+    type: Animal
+    properties:
+      name:
+        type: string
+      single:
+        type: boolean
+  PlainObject:
+    description: test plain object property
+    properties:
+      obj:
+        type: object
+  NumberFormat:
+    description: test number format
+    properties:
+      i8:
+        type: integer
+        format: int8
+      i16:
+        type: integer
+        format: int16
+      i32:
+        type: integer
+        format: int32
+      i64:
+        type: integer
+        format: int64
+      i:
+        type: integer
+        format: int
+      l:
+        type: integer
+        format: long
+      f:
+        type: number
+        format: float
+      d:
+        type: number
+        format: double
+      num:
+        type: number
+  Cat:
+    properties:
+      kind:
+        type: string
+  MultipleInheritance:
+    type: [ Animal , Cat ]
+    properties:
+      color:
+        type: string
+  ArrayOfCats:
+    type: Cat[]
+    minItems: 1
+    maxItems: 4
+    uniqueItems: true
+  BidimensionalArrayOfCats:
+    type: Cat[][]
+  Pet:
+    type: Cat | Animal
+    #discriminator: kind
+  ArrayOfPets:
+    type: (Cat | Animal)[]
+  Specialization:
+    type: number
+    minimum: 0
+  Petshop:
+    properties:
+      name:
+        type: string
+      cats:
+        type: Cat[]
+  ValidationString:
+    properties:
+      name:
+        type: string
+        minLength: 8
+        maxLength: 40
+  WithDateTime:
+    properties:
+      name:
+        type: string
+      birth:
+        type: datetime

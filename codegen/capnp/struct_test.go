@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -36,10 +37,10 @@ func TestGenerateCapnpSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				s, err := utils.TestLoadFileRemoveID(filepath.Join(targetDir, check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFileRemoveID(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -63,10 +64,10 @@ func TestGenerateCapnpSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				s, err := utils.TestLoadFileRemoveID(filepath.Join(targetDir, check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFileRemoveID(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -78,25 +79,4 @@ func TestGenerateCapnpSchema(t *testing.T) {
 			os.RemoveAll(targetDir)
 		})
 	})
-}
-
-func testLoadFile(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	return removeID(string(b)), err
-}
-
-// remove capnp ID from a file, we need it for the test.
-// because capnp ID will always produce different value
-// this func is not elegant
-func removeID(s string) string {
-	splt := strings.Split(s, "\n")
-	clean := []string{}
-	for i, v := range splt {
-		if strings.HasPrefix(v, "@0x") {
-			clean = append(clean, splt[i+1:]...)
-			break
-		}
-		clean = append(clean, v)
-	}
-	return strings.Join(clean, "\n")
 }

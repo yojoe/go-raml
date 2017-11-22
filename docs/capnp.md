@@ -62,21 +62,31 @@ Or simply use `nimble-fix` branch of https://github.com/iwanbk/capnp.nim
 
 ## Schema Generation
 
-To generate capnp schema, go-raml needs two additional fields of an RAML property:
-
-- capnpFieldNumber : it is capnp field number. Capnp docs at https://capnproto.org/language.html calls it `@N` annotations. It is a **mandatory** field
+To generate capnp schema, go-raml supports an additional fields of RAML property:
 
 - capnpType: if you want to specify [built-in types](https://capnproto.org/language.html#built-in-types) to use, you can use this field. It is **not mandatory** field.
 
 Unless specified otherwise using `capnpType` field described above, go-raml use this type mapping
 
- RAML Type   | Capnp Type
- ----------- | -----------
- string      |  Text 
- number      | Float64
- integer     | Int64
- boolean     | Bool
- array       | List
+| RAML Type/Format             | Capnp Type|
+| -----------------------------| ----------|
+|string                        |  Text     |
+|number                        | Float64   |
+|integer                       | Int64     |
+|boolean                       | Bool      |
+| array                        | List      |
+|file                          | Data      |
+|object                        | Data      |
+|datetime/date-only/time-only  | Text      |
+|int8                          | Int8      |
+|int16                         | Int16     |
+| int64                        | Int64     |
+|int                           | Int16     |
+|float                         | Float64   |
+|long                          | Int32     |
+|double                        |Float64    |
+ 
+ 
 
 ### Plain schema
 

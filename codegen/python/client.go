@@ -66,7 +66,23 @@ func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool)
 
 // generate empty __init__.py without overwrite it
 func generateEmptyInitPy(dir string) error {
-	return commons.GenerateFile(nil, "./templates/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
+	return commons.GenerateFile(nil, "./templates/python/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
+}
+
+func (c Client) GenerateMyPyClasses(dir string) error {
+	globAPIDef = c.APIDef
+	// helper for python classes
+	if err := commons.GenerateFile(nil, "./templates/python/client_support_python.tmpl",
+		"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
+		return err
+	}
+
+	if err := generateEmptyInitPy(dir); err != nil {
+		return err
+	}
+
+	// python classes
+	return generateMyPyClasses(c.APIDef, dir)
 }
 
 // Generate generates python client library files
@@ -74,7 +90,7 @@ func (c Client) Generate(dir string) error {
 	globAPIDef = c.APIDef
 
 	// generate helper
-	if err := commons.GenerateFile(nil, "./templates/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/python/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
 		return err
 	}
 
@@ -93,17 +109,17 @@ func (c Client) Generate(dir string) error {
 	}
 
 	// helper for python classes
-	if err := commons.GenerateFile(nil, "./templates/client_support_python.tmpl",
+	if err := commons.GenerateFile(nil, "./templates/python/client_support_python.tmpl",
 		"client_support_python", filepath.Join(dir, "client_support.py"), false); err != nil {
 		return err
 	}
 
 	if c.UnmarshallResponse {
-		if err := commons.GenerateFile(nil, "./templates/client_unmarshall_error_python.tmpl",
+		if err := commons.GenerateFile(nil, "./templates/python/client_unmarshall_error_python.tmpl",
 			"client_unmarshall_error_python", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
 			return err
 		}
-		if err := commons.GenerateFile(nil, "./templates/api_response_python.tmpl",
+		if err := commons.GenerateFile(nil, "./templates/python/api_response_python.tmpl",
 			"api_response_python", filepath.Join(dir, "api_response.py"), false); err != nil {
 			return err
 		}

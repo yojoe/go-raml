@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+
+	"github.com/pinzolo/casee"
 )
 
 type Struct struct {
@@ -24,10 +25,12 @@ type Struct struct {
 func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	// generate fields from type properties
 	fields := make(map[string]field)
+	fieldNames := []string{}
 
 	for k, v := range t.Properties {
 		fd := newField(name, raml.ToProperty(k, v), lang, pkg)
 		fields[fd.Name] = fd
+		fieldNames = append(fieldNames, fd.Name)
 	}
 
 	s := Struct{
@@ -42,7 +45,10 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 	if err := s.checkValidCapnp(); err != nil {
 		return s, err
 	}
-	return s, s.orderFields()
+
+	s.orderFields(fieldNames)
+
+	return s, nil
 }
 
 // Generate generates struct code
@@ -51,7 +57,7 @@ func (s *Struct) Generate(dir string) error {
 		return err
 	}
 	filename := filepath.Join(dir, s.Name+".capnp")
-	return commons.GenerateFile(s, "./templates/struct_capnp.tmpl", "struct_capnp", filename, true)
+	return commons.GenerateFile(s, "./templates/capnp/struct_capnp.tmpl", "struct_capnp", filename, true)
 }
 
 // generate all enums contained in this struct
@@ -80,16 +86,18 @@ func (s *Struct) Imports() []string {
 
 func (s *Struct) importsNonBuiltin() []string {
 	imports := []string{}
-	// import non buitin types
 	for _, f := range s.Fields {
+		// import non buitin types
 		if typesRegistered(f.Type) {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Type, f.Type))
 		}
-	}
-	// import enum
-	for _, f := range s.Fields {
+		// import enum types
 		if f.Enum != nil {
 			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Enum.Name, f.Enum.Name))
+		}
+		// import non-builtin types used in List
+		if typesRegistered(f.Items) {
+			imports = append(imports, fmt.Sprintf(`using import "%v.capnp".%v`, f.Items, f.Items))
 		}
 	}
 	return imports
@@ -104,28 +112,24 @@ func (s *Struct) Annotations() []string {
 }
 
 func (s *Struct) checkValidCapnp() error {
-	if strings.Title(s.Name) != s.Name {
-		return fmt.Errorf("invalid type name:%v. Type names must begin with a capital letter", s.Name)
+	if !casee.IsPascalCase(s.Name) {
+		return fmt.Errorf("invalid type name:%v. Type names must be PascalCase", s.Name)
 	}
+
+	for _, field := range s.Fields {
+		if !casee.IsCamelCase(field.Name) {
+			return fmt.Errorf("invalid decleration name:%v. Decleration names must be CamelCase", field.Name)
+		}
+	}
+
 	return nil
 }
 
-func (s *Struct) orderFields() error {
-	findField := func(num int) (field, bool) {
-		for _, f := range s.Fields {
-			if f.Num == num {
-				return f, true
-			}
-		}
-		return field{}, false
+func (s *Struct) orderFields(fieldNames []string) {
+	sort.Strings(fieldNames)
+	for index, name := range fieldNames {
+		field := s.Fields[name]
+		field.Num = index
+		s.OrderedFields = append(s.OrderedFields, field)
 	}
-
-	for i := 0; i < len(s.Fields); i++ {
-		f, ok := findField(i)
-		if !ok {
-			return fmt.Errorf("can't find field number %v of `%v`", i, s.Name)
-		}
-		s.OrderedFields = append(s.OrderedFields, f)
-	}
-	return nil
 }

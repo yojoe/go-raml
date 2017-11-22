@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	structTemplateLocation         = "./templates/struct.tmpl"
-	inputValidatorTemplateLocation = "./templates/struct_input_validator.tmpl"
+	structTemplateLocation         = "./templates/golang/struct.tmpl"
+	inputValidatorTemplateLocation = "./templates/golang/struct_input_validator.tmpl"
 	inputValidatorFileResult       = "struct_input_validator.go"
 )
 

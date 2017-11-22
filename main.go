@@ -22,6 +22,7 @@ var (
 	capnpCommand  = &commands.CapnpCommand{}
 	specCommand   = &commands.SpecCommand{}
 	docsCommand   = &commands.DocsCommand{}
+	mypyCommand   = &commands.MyPyCommand{}
 )
 
 func main() {
@@ -207,6 +208,29 @@ func main() {
 			Action: func(c *cli.Context) {
 				err := errors.New("Not implemented, check the roadmap")
 				log.Error(err)
+			},
+		}, {
+			Name:  "mypy",
+			Usage: "Create mypy models",
+
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "dir",
+					Value:       ".",
+					Usage:       "target directory",
+					Destination: &mypyCommand.Dir,
+				},
+				cli.StringFlag{
+					Name:        "ramlfile",
+					Value:       ".",
+					Usage:       "Source raml file",
+					Destination: &mypyCommand.RAMLFile,
+				},
+			},
+			Action: func(c *cli.Context) {
+				if err := mypyCommand.Execute(); err != nil {
+					log.Error(err)
+				}
 			},
 		},
 		{

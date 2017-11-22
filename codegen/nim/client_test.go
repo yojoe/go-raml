@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -36,10 +38,10 @@ func TestGenerateClient(t *testing.T) {
 		}
 
 		for _, check := range checks {
-			s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, check.Result))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 			So(err, ShouldBeNil)
 
 			So(s, ShouldEqual, tmpl)

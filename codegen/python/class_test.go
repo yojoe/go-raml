@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -44,10 +45,10 @@ func TestGeneratePythonClass(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

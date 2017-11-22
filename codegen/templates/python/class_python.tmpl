@@ -1,0 +1,54 @@
+{{- define "class_python" -}}
+"""
+Auto-generated class for {{.Name}}
+"""
+{{range $k, $v := .Imports -}}
+{{$v}}
+{{end}}
+from . import client_support
+
+
+class {{.Name}}(object):
+    """
+    auto-generated. don't touch.
+    """
+
+    @staticmethod
+    def create(**kwargs):
+        """
+        {{ range $key, $val := .Fields -}}
+        :type {{$val.Name}}: {{if $val.IsList}}list[{{$val.DataType}}]{{else}}{{$val.DataType}}{{end}}
+        {{ end -}}
+        :rtype: {{.Name}}
+        """
+
+        return {{.Name}}(**kwargs)
+
+    def __init__(self, json=None, **kwargs):
+        if json is None and not kwargs:
+            raise ValueError('No data or kwargs present')
+
+        class_name = '{{.Name}}'
+        data = json or kwargs
+
+        # set attributes
+
+        {{- range $key, $val := .Fields }}
+        {{ if $val.HasChildProperties -}}
+        data_types = { {{.ConverDataTypes}} }
+        {{- else -}}
+        data_types = [{{.ConverDataTypes}}]
+        {{- end }}
+        self.{{$val.Name}} = client_support.set_property('{{$val.Name}}', data, data_types, {{if $val.HasChildProperties}}True{{else}}False{{end}}, {{ $val.RequiredChildProperties }}, {{if $val.IsList}}True{{else}}False{{end}}, {{if $val.Required}}True{{else}}False{{end}}, class_name)
+
+        {{- end }}
+
+    def __str__(self):
+        return self.as_json(indent=4)
+
+    def as_json(self, indent=0):
+        return client_support.to_json(self, indent=indent)
+
+    def as_dict(self):
+        return client_support.to_dict(self)
+{{end -}}

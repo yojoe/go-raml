@@ -50,6 +50,7 @@ func AllTypes(apiDef *raml.APIDefinition, pkgName string) map[string]TypeTask {
 			Name: name,
 		}
 	}
+
 	for _, endpoints := range getAllEndpoints(apiDef) {
 		for _, ep := range endpoints {
 			tts := getTypesOfEndpoint(ep, pkgName)

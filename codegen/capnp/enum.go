@@ -36,7 +36,7 @@ func newEnum(structName string, prop raml.Property, lang, pkg string) *enum {
 
 func (e *enum) generate(dir string) error {
 	filename := filepath.Join(dir, e.Name+".capnp")
-	return commons.GenerateFile(e, "./templates/enum_capnp.tmpl", "enum_capnp", filename, true)
+	return commons.GenerateFile(e, "./templates/capnp/enum_capnp.tmpl", "enum_capnp", filename, true)
 }
 
 func (e *enum) Imports() string {

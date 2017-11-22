@@ -30,6 +30,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/fatih/camelcase"
+  packages = ["."]
+  revision = "44e46d280b43ec1531bb25252440e34f1b800b65"
+
+[[projects]]
   branch = "v2"
   name = "github.com/gigforks/yaml"
   packages = ["."]
@@ -68,6 +74,12 @@
   revision = "bb797dc4fb8320488f47bf11de07a733d7233e1f"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/pinzolo/casee"
+  packages = ["."]
+  revision = "956b6baf666aeb716a38e78d8e69823676048099"
+
+[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -104,6 +116,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f485afa90d68bd1179c5a60673eb1c696220e19e4f75cdd2411b11161e4e2bf5"
+  inputs-digest = "94c9b7eb1faf3ce312d8d502a2d1d89ed21951223b116037edaef0833cc1aedd"
   solver-name = "gps-cdcl"
   solver-version = 1

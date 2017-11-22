@@ -60,7 +60,7 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 			"RouteView": srvMap,
 			"PR":        pr,
 		}
-		if err := commons.GenerateFile(ctx, "./templates/server_resources_if_python_sanic.tmpl", "server_resources_if_python_sanic", filename, true); err != nil {
+		if err := commons.GenerateFile(ctx, "./templates/python/server_resources_if_python_sanic.tmpl", "server_resources_if_python_sanic", filename, true); err != nil {
 			return err
 		}
 	}
@@ -71,7 +71,7 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 func (s SanicServer) generateResourcesAPIImpl(dir string) error {
 	for _, pr := range s.ResourcesDef {
 		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_api.py")
-		if err := pr.generate(filename, "./templates/server_resources_api_python_sanic.tmpl", "server_resources_api_python_sanic", dir); err != nil {
+		if err := pr.generate(filename, "./templates/python/server_resources_api_python_sanic.tmpl", "server_resources_api_python_sanic", dir); err != nil {
 			return err
 		}
 	}

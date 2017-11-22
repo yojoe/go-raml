@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -26,10 +28,10 @@ func TestPythonResource(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check  api implementation
-			s, err := testLoadFile(filepath.Join(targetdir, "deliveries_api.py"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "deliveries_api.py"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../fixtures/server_resources/deliveries_api.py")
+			tmpl, err := utils.TestLoadFile("../fixtures/server_resources/deliveries_api.py")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})

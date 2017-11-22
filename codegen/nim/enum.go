@@ -69,7 +69,7 @@ func newEnumField(f interface{}, e enum) enumField {
 
 func (e *enum) generate(dir string) error {
 	filename := filepath.Join(dir, e.Name()+".nim")
-	return commons.GenerateFile(e, "./templates/enum_nim.tmpl", "enum_nim", filename, true)
+	return commons.GenerateFile(e, "./templates/nim/enum_nim.tmpl", "enum_nim", filename, true)
 }
 
 // FieldsStr is a string representation of all the fields

@@ -7,13 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
-
-func testLoadFile(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	return string(b), err
-}
 
 func TestServerGeneration(t *testing.T) {
 	Convey("test command server generation", t, func() {
@@ -32,26 +28,26 @@ func TestServerGeneration(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check users api implementation
-			s, err := testLoadFile(filepath.Join(targetdir, "users_api.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "users_api.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err := testLoadFile("../codegen/fixtures/server/user_api/users_api.txt")
+			tmpl, err := utils.TestLoadFile("../codegen/fixtures/server/user_api/users_api.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
 			// check user interface
-			s, err = testLoadFile(filepath.Join(targetdir, "users_if.go"))
+			s, err = utils.TestLoadFile(filepath.Join(targetdir, "users_if.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../codegen/fixtures/server/user_api/users_if.txt")
+			tmpl, err = utils.TestLoadFile("../codegen/fixtures/server/user_api/users_if.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 
 			// check main file
-			s, err = testLoadFile(filepath.Join(targetdir, "main.go"))
+			s, err = utils.TestLoadFile(filepath.Join(targetdir, "main.go"))
 			So(err, ShouldBeNil)
 
-			tmpl, err = testLoadFile("../codegen/fixtures/server/user_api/main.txt")
+			tmpl, err = utils.TestLoadFile("../codegen/fixtures/server/user_api/main.txt")
 			So(err, ShouldBeNil)
 			So(s, ShouldEqual, tmpl)
 		})

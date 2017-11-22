@@ -2,6 +2,7 @@
 Auto-generated class for Cage
 """
 from .animal import animal
+from six import string_types
 
 from . import client_support
 
@@ -26,32 +27,13 @@ class Cage(object):
             raise ValueError('No data or kwargs present')
 
         class_name = 'Cage'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'colours'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                setattr(self, 'colours', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'owner'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [animal]
-            try:
-                setattr(self, 'owner', client_support.val_factory(val, datatypes))
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.colours = client_support.set_property('colours', data, data_types, False, [], False, True, class_name)
+        data_types = [animal]
+        self.owner = client_support.set_property('owner', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

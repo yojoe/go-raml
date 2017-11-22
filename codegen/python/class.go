@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"fmt"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
@@ -12,11 +13,13 @@ import (
 
 // class defines a python class
 type class struct {
-	T           raml.Type
-	Name        string
-	Description []string
-	Fields      map[string]field
-	Enum        *enum
+	T                 raml.Type
+	Name              string
+	Description       []string
+	Fields            map[string]field
+	Enum              *enum
+	CreateParamString string
+	MyPy              bool
 }
 
 type objectProperty struct {
@@ -135,6 +138,14 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 	return properties
 }
 
+func newMyPyClassFromType(T raml.Type, name string) class {
+	pc := newClass(T, name, T.Description, T.Properties)
+	pc.T = T
+	pc.handleAdvancedType()
+	pc.createParamString()
+	return pc
+}
+
 func newClassFromType(T raml.Type, name string) class {
 	pc := newClass(T, name, T.Description, T.Properties)
 	pc.T = T
@@ -143,7 +154,7 @@ func newClassFromType(T raml.Type, name string) class {
 }
 
 // generate a python class file
-func (pc *class) generate(dir string) ([]string, error) {
+func (pc *class) generate(dir string, template string, name string) ([]string, error) {
 	// generate enums
 	typeNames := make([]string, 0)
 	for _, f := range pc.Fields {
@@ -162,7 +173,26 @@ func (pc *class) generate(dir string) ([]string, error) {
 
 	fileName := filepath.Join(dir, pc.Name+".py")
 	typeNames = append(typeNames, pc.Name)
-	return typeNames, commons.GenerateFile(pc, "./templates/class_python.tmpl", "class_python", fileName, false)
+	return typeNames, commons.GenerateFile(pc, template, name, fileName, false)
+}
+
+func (pc *class) createParamString() {
+	// build the CreateParamString, used as part of the create() staticmethod
+	// which is a convenience initializer for the class
+	requiredFields := make([]string, 0)
+	optionalFields := make([]string, 0)
+
+	for fieldName, field := range pc.Fields {
+		if field.Required {
+			requiredFields = append(requiredFields, fmt.Sprintf("%s: %s", fieldName, field.MyPyType))
+		} else {
+			optionalFields = append(optionalFields, fmt.Sprintf("%s: %s=None", fieldName, field.MyPyType))
+		}
+	}
+	// sort them so we have some stability in param order (important for requiredFields)
+	sort.Strings(requiredFields)
+	sort.Strings(optionalFields)
+	pc.CreateParamString = strings.Join(append(requiredFields, optionalFields...), ", ")
 }
 
 func (pc *class) handleAdvancedType() {
@@ -181,6 +211,10 @@ func (pc class) Imports() []string {
 
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
+			// Ignore mypy imports if this is not a mypy class
+			if !pc.MyPy && imp.Module == "typing" || pc.MyPy && imp.Module == "six" {
+				continue
+			}
 			importString := "from " + imp.Module + " import " + imp.Name
 			imports[importString] = true
 		}
@@ -193,11 +227,13 @@ func (pc class) Imports() []string {
 	return importStrings
 }
 
-// generate all python classes from an RAML document
+// generate all python classes from a RAML document
 func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
+	template := "./templates/python/class_python.tmpl"
+	templateName := "class_python"
 
 	names := []string{}
 	for name, t := range types.AllTypes(apiDef, "") {
@@ -218,13 +254,13 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 			for k := range tip.Properties {
 				propNames = append(propNames, k)
 			}
-			results, errGen = pc.generate(dir)
+			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:
 			if name == "UUID" {
 				continue
 			}
 			pc := newClassFromType(tip, name)
-			results, errGen = pc.generate(dir)
+			results, errGen = pc.generate(dir, template, templateName)
 		}
 
 		if errGen != nil {
@@ -239,7 +275,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 		}
 		if parents, isMult := rt.MultipleInheritance(); isMult {
 			pc := newClassFromType(rt, strings.Join(parents, ""))
-			results, err := pc.generate(dir)
+			results, err := pc.generate(dir, template, templateName)
 			if err != nil {
 				return names, err
 			}
@@ -249,4 +285,20 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 	}
 	return names, nil
 
+}
+
+// generate all mypy python classes from a RAML document type section.
+func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
+	// from types
+	for name, tip := range apiDef.Types {
+		if name == "UUID" {
+			continue
+		}
+		pc := newMyPyClassFromType(tip, name)
+		pc.MyPy = true
+		if _, errGen := pc.generate(dir, "./templates/python/class_python_mypy.tmpl", "class_python_mypy"); errGen != nil {
+			return errGen
+		}
+	}
+	return nil
 }

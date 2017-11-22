@@ -9,6 +9,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
+
 )
 
 func TestJSONSchema(t *testing.T) {
@@ -37,10 +39,10 @@ func TestJSONSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -65,10 +67,10 @@ func TestJSONSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -101,10 +103,10 @@ func TestJSONSchema(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, jsonSchemaDir(), f))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, jsonSchemaDir(), f))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

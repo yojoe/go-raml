@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/Jumpscale/go-raml/utils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -40,10 +41,10 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := testLoadFile(filepath.Join(targetDir, check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, check.Result))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -65,10 +66,10 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 
 			for _, file := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, file))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, file))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, file))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, file))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -90,10 +91,10 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -115,10 +116,10 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := testLoadFile(filepath.Join(targetDir, f))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
 				So(err, ShouldBeNil)
 
-				tmpl, err := testLoadFile(filepath.Join(rootFixture, f))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -129,9 +130,4 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 			os.RemoveAll(targetDir)
 		})
 	})
-}
-
-func testLoadFile(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	return string(b), err
 }

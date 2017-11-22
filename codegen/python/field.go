@@ -21,6 +21,7 @@ type pyimport struct {
 type field struct {
 	Name                    string
 	Type                    string
+	MyPyType string
 	Required                bool   // if the field itself is required
 	DataType                string // the python datatype (objmap) used in the template
 	HasChildProperties      bool
@@ -81,7 +82,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 		}
 	}
 
-	f.DataType, f.HasChildProperties = buildDataType(f, childProperties)
+	f.DataType, f.HasChildProperties, f.MyPyType = buildDataType(f, childProperties)
 
 	// I don't really understand why we need childRequired and mainRequired here.
 	// it is from the original code written by @razor-1
@@ -127,7 +128,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 	return f, nil
 }
 
-func buildDataType(f field, childProperties []objectProperty) (string, bool) {
+func buildDataType(f field, childProperties []objectProperty) (string, bool, string) {
 	/*
 		build a string for the 'datatype' key of an objmap for this property
 		a complete objmap looks like:
@@ -150,12 +151,19 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	*/
 
 	if len(f.UnionTypes) > 0 {
-		return strings.Join(f.UnionTypes, ", "), false
+		dataType := strings.Join(f.UnionTypes, ", ")
+		myPyType := fmt.Sprintf("Union[%s]", dataType)
+		return dataType, false, myPyType
 	}
 	if f.Type != "dict" || len(childProperties) == 0 {
-		return f.Type, false
+		if f.IsList{
+			return f.Type, false, fmt.Sprintf("List[%s]", f.Type)
+		}
+		return f.Type, false, f.Type
 	}
 
+	// @TODO: I think the part will never be reached. The type will only be dict if
+	// it doesnt have properties which means no children either. Sarah
 	// we have a dict with child properties of type 'object'. build the datatype string
 	// fmt.Println("childprops for", f.Type, childProperties)
 	var datatypes []string
@@ -171,13 +179,13 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 		childField.setType(objProp.datatype, "")
 		thisDatatype := childField.Type
 		if len(objProp.childProperties) > 0 {
-			thisDatatype, _ = buildDataType(childField, objProp.childProperties)
+			thisDatatype, _, _ = buildDataType(childField, objProp.childProperties)
 		}
 		thisProp := fmt.Sprintf("'%s': {'datatype': [%s], 'required': %s}", objProp.name, thisDatatype, reqstr)
 		datatypes = append(datatypes, thisProp)
 	}
 
-	return strings.Join(datatypes, ", "), true
+	return strings.Join(datatypes, ", "), true, ""
 }
 
 func (pf *field) addImport(module, name string) {
@@ -219,6 +227,8 @@ func (pf *field) setType(t, items string) {
 			pf.addImport("datetime", "datetime")
 		case "uuid":
 			pf.addImport("uuid", "UUID")
+		case "string":
+			pf.addImport("six", "string_types")
 		}
 	}
 
@@ -237,14 +247,28 @@ func (pf *field) setType(t, items string) {
 	case ramlType.IsArray(): // array
 		pf.IsList = true
 		pf.setType(ramlType.ArrayType(), "")
+		pf.addImport("typing", "List")
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
 	case ramlType.IsUnion():
 		// send the list of union types to the template
 		unionTypes, _ := ramlType.Union()
+		pf.addImport("typing", "Union")
 		for _, typename := range unionTypes {
-			pf.UnionTypes = append(pf.UnionTypes, typename)
-			pf.addImport("."+typename, typename)
+			if v, ok := typeMap[typename]; ok {
+				switch typename {
+				case "datetime":
+					pf.addImport("datetime", "datetime")
+				case "uuid":
+					pf.addImport("uuid", "UUID")
+				case "string":
+					pf.addImport("six", "string_types")
+				default:
+					pf.addImport("."+typename, typename)
+				}
+				pf.UnionTypes = append(pf.UnionTypes, v)
+			}
+
 			pf.Type = t
 		}
 	case strings.Index(t, ".") > 1:
@@ -268,4 +292,17 @@ var (
 func datetimeVariant(name string) bool {
 	_, ok := dateTimeVariantMap[name]
 	return ok
+}
+
+// covert all str to string_types
+func (f field) ConverDataTypes() string {
+	// split on ',' instead of replaying str in the whole string to make sure we don't conflict with any type
+	// starting with str
+	dataTypes := strings.Split(f.DataType, ",")
+	for i, dataType := range dataTypes {
+		if dataType == "str" {
+			dataTypes[i] = "string_types"
+		}
+	}
+	return strings.Join(dataTypes, ",")
 }
