@@ -53,6 +53,9 @@ func NormalizeURITitle(URI string) string {
 // ParseDescription create string slice from an RAML description.
 // each element is a  description line
 func ParseDescription(desc string) []string {
+	if desc == "" {
+		return nil
+	}
 	// we need to trim it because our parser usually give
 	// space after last newline
 	desc = strings.TrimSpace(desc)

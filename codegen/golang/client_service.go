@@ -11,7 +11,21 @@ import (
 type ClientService struct {
 	rootEndpoint string
 	PackageName  string
-	Methods      []resource.MethodInterface
+	Methods      []clientMethod
+}
+
+func newClientService(rootEndpoint, packageName string, resMethods []resource.Method) *ClientService {
+	var methods []clientMethod
+
+	for _, rm := range resMethods {
+		clientMeth := newClientMethod(rm)
+		methods = append(methods, clientMeth)
+	}
+	return &ClientService{
+		rootEndpoint: rootEndpoint,
+		PackageName:  packageName,
+		Methods:      methods,
+	}
 }
 
 // Name returns it's struct name
@@ -36,8 +50,7 @@ func (cs ClientService) filename(dir string) string {
 // NeedImportJSON returns true if this service need
 // to import encoding/json
 func (cs ClientService) NeedImportJSON() bool {
-	for _, v := range cs.Methods {
-		cm := v.(clientMethod)
+	for _, cm := range cs.Methods {
 		if cm.needImportEncodingJSON() {
 			return true
 		}
@@ -51,8 +64,8 @@ func (cs ClientService) LibImportPaths() map[string]struct{} {
 
 	var needImportGoraml bool
 	// methods
-	for _, v := range cs.Methods {
-		gm := v.(clientMethod)
+	for _, gm := range cs.Methods {
+		//gm := v.(clientMethod)
 		for lib := range gm.libImported(globRootImportPath) {
 			ip[lib] = struct{}{}
 		}

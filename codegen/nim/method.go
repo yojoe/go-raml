@@ -12,8 +12,13 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+// TODO : split between server & client struct
 type method struct {
-	*cr.Method
+	cr.Method
+	ResourcePath string
+	ReqBody      string
+	RespBody     string                  // TODO fix it as part of https://github.com/Jumpscale/go-raml/issues/350
+	SecuredBy    []raml.DefinitionChoice // TODO : only used by the server
 }
 
 func getMethodName(endpoint, displayName, verb string) string {
@@ -23,38 +28,36 @@ func getMethodName(endpoint, displayName, verb string) string {
 	return commons.NormalizeURI(formatProcName(endpoint)) + strings.Title(strings.ToLower(verb))
 }
 
-// creates new Nim method
-func newMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName string) (cr.MethodInterface, error) {
-
-	rm := cr.NewMethod(r, rd, m, methodName, setBodyName)
-
-	rm.MethodName = getMethodName(r.FullURI(), rm.DisplayName, methodName)
-
-	rm.ResourcePath = commons.ParamizingURI(rm.Endpoint, "&")
-	if apiDef != nil {
-		rm.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
-	}
-	return method{Method: &rm}, nil
-}
-
-// creates new client method
-func newClientMethod(r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName string) (cr.MethodInterface, error) {
-	return newMethod(nil, r, rd, m, methodName)
-}
-
-// creates new server method
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *cr.Resource, m *raml.Method,
-	methodName string) cr.MethodInterface {
-
-	// creates generic method
-	mi, err := newMethod(apiDef, r, rd, m, methodName)
-	if err != nil {
-		log.Fatalf("newServerMethod unexpected error:%v", err)
+func newMethod(rm cr.Method) method {
+	// response body
+	// TODO fix it as part of https://github.com/Jumpscale/go-raml/issues/350
+	var respBody string
+	for code, resp := range rm.Responses {
+		code := commons.AtoiOrPanic(string(code))
+		if code >= 200 && code < 300 {
+			respBody = setBodyName(resp.Bodies, rm.Endpoint+rm.VerbTitle(), commons.RespBodySuffix)
+			break
+		}
 	}
 
-	return mi
+	m := method{
+		Method:       rm,
+		ResourcePath: commons.ParamizingURI(rm.Endpoint, "&"),
+		ReqBody:      setBodyName(rm.Bodies, rm.Endpoint+rm.VerbTitle(), commons.ReqBodySuffix),
+		RespBody:     respBody,
+	}
+	m.MethodName = getMethodName(rm.Resource.FullURI(), rm.DisplayName, rm.VerbTitle())
+	return m
+}
+
+func newClientMethod(rm cr.Method) method {
+	return newMethod(rm)
+}
+
+func newServerMethod(apiDef *raml.APIDefinition, rm cr.Method) method {
+	meth := newMethod(rm)
+	meth.SecuredBy = security.GetMethodSecuredBy(apiDef, rm.Resource, rm.Method)
+	return meth
 }
 
 // JesterEndpoint returns endpoint in jester format
@@ -67,7 +70,7 @@ func (m method) JesterEndpoint() string {
 func (m method) ServerProcParams() string {
 	var params []string
 
-	for _, p := range cr.GetResourceParams(m.Resource()) {
+	for _, p := range cr.GetResourceParams(m.Resource) {
 		params = append(params, p+": string")
 	}
 
@@ -79,7 +82,7 @@ func (m method) ServerProcParams() string {
 func (m method) ServerCallParams() string {
 	var params []string
 
-	for _, p := range cr.GetResourceParams(m.Resource()) {
+	for _, p := range cr.GetResourceParams(m.Resource) {
 		params = append(params, fmt.Sprintf(`@"%v"`, p))
 	}
 
@@ -96,7 +99,7 @@ func (m method) ClientProcParams() string {
 	}
 
 	// resource params
-	for _, p := range cr.GetResourceParams(m.Resource()) {
+	for _, p := range cr.GetResourceParams(m.Resource) {
 		params = append(params, fmt.Sprintf("%v: string", p))
 	}
 

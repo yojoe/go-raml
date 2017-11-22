@@ -37,10 +37,9 @@ type Client struct {
 // NewClient creates a python Client
 func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool) Client {
 	services := map[string]*service{}
-	for k, v := range apiDef.Resources {
-		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), "")
-		rd.GenerateMethods(&v, "python", newServerMethodFlask, newClientMethod)
-		services[k] = newService(k, rd.Methods, unmarshallResponse)
+	for uri, res := range apiDef.Resources {
+		rd := resource.New(apiDef, &res, commons.NormalizeURITitle(apiDef.Title), false)
+		services[uri] = newService(uri, rd.Methods, unmarshallResponse)
 	}
 	switch kind {
 	case "":

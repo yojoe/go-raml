@@ -13,10 +13,37 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+type method struct {
+	resource.Method
+	ReqBody  string
+	RespBody string // TODO : fix it properly as part of https://github.com/Jumpscale/go-raml/issues/350
+}
+
+func newMethod(rm resource.Method) *method {
+	// resp body
+	// TODO : fix it properly as part of https://github.com/Jumpscale/go-raml/issues/350
+	var respBody string
+	for code, resp := range rm.Responses {
+		code := commons.AtoiOrPanic(string(code))
+		if code >= 200 && code < 300 {
+			respBody = setBodyName(resp.Bodies, rm.Endpoint+rm.VerbTitle(), commons.RespBodySuffix)
+			break
+		}
+	}
+
+	normalizedEndpoint := commons.NormalizeURITitle(rm.Endpoint)
+	return &method{
+		Method:   rm,
+		ReqBody:  setBodyName(rm.Bodies, normalizedEndpoint+rm.VerbTitle(), commons.ReqBodySuffix),
+		RespBody: respBody,
+	}
+}
+
 // python server method
 type serverMethod struct {
-	*resource.Method
+	*method
 	MiddlewaresArr []middleware
+	SecuredBy      []raml.DefinitionChoice
 }
 
 func setServerMethodName(displayName, verb string, resource *raml.Resource) string {
@@ -58,53 +85,37 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 	return nil
 }
 
-// create server resource's method
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName, kind string) resource.MethodInterface {
-
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-	method.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
-
-	pm := serverMethod{
-		Method: &method,
+func newServerMethod(apiDef *raml.APIDefinition, rd *resource.Resource, rm resource.Method, kind string) serverMethod {
+	meth := newMethod(rm)
+	sm := serverMethod{
+		method:    meth,
+		SecuredBy: security.GetMethodSecuredBy(apiDef, rm.Resource, rm.Method),
 	}
-	params := resource.GetResourceParams(r)
-	if kind == "sanic" {
+	params := resource.GetResourceParams(rm.Resource)
+	if kind == serverKindSanic {
 		params = append([]string{"request"}, params...)
 	}
-	pm.setup(apiDef, r, rd, params)
-	return pm
-}
+	sm.setup(apiDef, rm.Resource, rd, params)
+	return sm
 
-func newServerMethodFlask(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName string) resource.MethodInterface {
-	return newServerMethod(apiDef, r, rd, m, methodName, "flask")
-}
-
-func newServerMethodSanic(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName string) resource.MethodInterface {
-	return newServerMethod(apiDef, r, rd, m, methodName, "sanic")
 }
 
 // defines a python client lib method
 type clientMethod struct {
-	resource.Method
-	PRArgs string // python requests's args
-	PRCall string // the way we call python request
+	*method
+	ResourcePath string
+	PRArgs       string // python requests's args
+	PRCall       string // the way we call python request
 }
 
-func newClientMethod(r *raml.Resource, rd *resource.Resource, m *raml.Method, methodName string) (resource.MethodInterface, error) {
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-
-	method.ResourcePath = commons.ParamizingURI(method.Endpoint, "+")
-
-	name := commons.NormalizeURITitle(method.Endpoint)
-
-	method.ReqBody = setBodyName(m.Bodies, name+methodName, "ReqBody")
-
-	pcm := clientMethod{Method: method}
-	pcm.setup()
-	return pcm, nil
+func newClientMethod(rm resource.Method) clientMethod {
+	meth := newMethod(rm)
+	cm := clientMethod{
+		method:       meth,
+		ResourcePath: commons.ParamizingURI(rm.Endpoint, "+"),
+	}
+	cm.setup()
+	return cm
 }
 
 func (pcm *clientMethod) setup() {
@@ -124,7 +135,7 @@ func (pcm *clientMethod) setup() {
 	pcm.PRArgs = strings.Join(prArgs, ", ")
 
 	// construct method signature
-	params = append(params, resource.GetResourceParams(pcm.Resource())...)
+	params = append(params, resource.GetResourceParams(pcm.Resource)...)
 	params = append(params, "headers=None", "query_params=None", `content_type="application/json"`)
 	pcm.Params = strings.Join(params, ", ")
 
@@ -141,7 +152,7 @@ func (pcm *clientMethod) setup() {
 	if len(pcm.DisplayName) > 0 {
 		pcm.MethodName = commons.DisplayNameToFuncName(pcm.DisplayName)
 	} else {
-		pcm.MethodName = snakeCaseResourceURI(pcm.Resource()) + "_" + strings.ToLower(pcm.Verb())
+		pcm.MethodName = snakeCaseResourceURI(pcm.Resource) + "_" + strings.ToLower(pcm.Verb())
 	}
 }
 

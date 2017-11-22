@@ -10,6 +10,11 @@ var (
 	globLibRootURLs []string
 )
 
+const (
+	serverKindSanic = "sanic"
+	serverKindFlask = "flask"
+)
+
 // Server represents a python server
 type Server interface {
 	Generate(dir string) error
@@ -19,9 +24,9 @@ type Server interface {
 func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
 	withMain bool, libRootURLs []string) Server {
 	switch kind {
-	case "", "flask":
+	case "", serverKindFlask:
 		return NewFlaskServer(apiDef, apiDocsDir, withMain, libRootURLs)
-	case "sanic":
+	case serverKindSanic:
 		return NewSanicServer(apiDef, apiDocsDir, withMain)
 	default:
 		log.Fatalf("Invalid kind of python server : %v", kind)

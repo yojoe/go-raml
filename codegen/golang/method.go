@@ -10,93 +10,82 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-type serverMethod struct {
-	*resource.Method
-	Middlewares string
+// defines go method base object
+type method struct {
+	resource.Method
+	ResourcePath string
+	ReqBody      string
+	PackageName  string
+	resps        []respBody
 }
 
-func serverMethodName(endpoint, displayName, verb, resName string) string {
-	if len(displayName) > 0 {
-		return commons.DisplayNameToFuncName(displayName)
-	}
-	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(endpoint))
-	return name[len(resName):] + verb
+// TODO : move it to codegen/resource
+type respBody struct {
+	Code int
+	Type string
 }
 
-// setup go server method, initializes all needed variables
-func (gm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
-	gm.MethodName = serverMethodName(gm.Endpoint, gm.DisplayName, methodName, rd.Name)
-
-	// setting middlewares
-	middlewares := []string{}
-
-	// security middlewares
-	for _, v := range gm.SecuredBy {
-		if !security.ValidateScheme(v.Name, apiDef) {
-			continue
+func newMethod(resMeth resource.Method) *method {
+	var resps []respBody
+	// creates response body
+	for code, resp := range resMeth.Responses {
+		resp := respBody{
+			Code: commons.AtoiOrPanic(string(code)),
+			Type: setBodyName(resp.Bodies, resMeth.Endpoint+resMeth.VerbTitle(), commons.RespBodySuffix),
 		}
-		// oauth2 middleware
-		m, err := getOauth2MwrHandler(v)
-		if err != nil {
-			return err
-		}
-		middlewares = append(middlewares, m)
-	}
-
-	gm.Middlewares = strings.Join(middlewares, ", ")
-
-	return nil
-}
-
-// return all libs imported by this method
-func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
-	libs := map[string]struct{}{}
-
-	// req body
-	if lib := libImportPath(rootImportPath, gm.ReqBody, globLibRootURLs); lib != "" {
-		libs[lib] = struct{}{}
-	}
-	// resp body
-	if lib := libImportPath(rootImportPath, gm.RespBody, globLibRootURLs); lib != "" {
-		libs[lib] = struct{}{}
-	}
-	return libs
-}
-
-// Imports return all packages needed
-// by this method
-func (gm serverMethod) Imports() []string {
-	ip := map[string]struct{}{
-		"net/http": struct{}{},
-	}
-	if gm.RespBody != "" || gm.ReqBody != "" {
-		ip["encoding/json"] = struct{}{}
-	}
-	for lib := range gm.libImported(globRootImportPath) {
-		ip[lib] = struct{}{}
-	}
-	return sortImportPaths(ip)
-}
-
-// true if req body need validation code
-func (gm serverMethod) ReqBodyNeedValidation() bool {
-	// we can't use t.GetBuiltinType here because
-	// the reqBody type is already in Go type
-	getBuiltinType := func() string {
-		switch {
-		case strings.HasPrefix(gm.ReqBody, "[][]"): // bidimensional array
-			return strings.TrimPrefix(gm.ReqBody, "[][]")
-		case strings.HasPrefix(gm.ReqBody, "[]"): // array
-			return strings.TrimPrefix(gm.ReqBody, "[]")
-		default:
-			return gm.ReqBody
+		if resp.Type != "" {
+			resps = append(resps, resp)
 		}
 	}
-	t := raml.Type{
-		Type: getBuiltinType(),
-	}
 
-	return !t.IsBuiltin()
+	// normalized endpoint
+	normalizedEndpoint := commons.NormalizeURITitle(resMeth.Endpoint)
+
+	return &method{
+		Method:       resMeth,
+		ResourcePath: commons.ParamizingURI(resMeth.Endpoint, "+"),
+		ReqBody:      setBodyName(resMeth.Bodies, normalizedEndpoint+resMeth.VerbTitle(), commons.ReqBodySuffix),
+		resps:        resps,
+	}
+}
+
+func (m method) HasRespBody() bool {
+	return len(m.RespBodyTypes()) > 0
+}
+
+// RespBodyTypes returns all possible type of response body
+func (m method) RespBodyTypes() []respBody {
+	return m.resps
+}
+
+// FailedRespBodyTypes return all response body that considered a failed response
+// i.e. non 2xx status code
+func (m method) FailedRespBodyTypes() (resps []respBody) {
+	for _, resp := range m.RespBodyTypes() {
+		if resp.Code < 200 || resp.Code >= 300 {
+			resps = append(resps, resp)
+		}
+	}
+	return
+}
+
+// SuccessRespBodyTypes returns all response body that considered as success
+// i.e. 2xx status code
+func (m method) SuccessRespBodyTypes() (resps []respBody) {
+	for _, resp := range m.RespBodyTypes() {
+		if resp.Code >= 200 && resp.Code < 300 {
+			resps = append(resps, resp)
+		}
+	}
+	return
+}
+
+func (m method) firstSuccessRespBodyType() string {
+	resps := m.SuccessRespBodyTypes()
+	if len(resps) == 0 {
+		return ""
+	}
+	return resps[0].Type
 }
 
 // get oauth2 middleware handler from a security scheme
@@ -122,22 +111,6 @@ func getOauth2MwrHandler(ss raml.DefinitionChoice) (string, error) {
 		mwr = packageName + "." + mwr
 	}
 	return mwr, nil
-}
-
-// create server resource's method
-func newServerMethod(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, m *raml.Method,
-	methodName string) resource.MethodInterface {
-
-	method := resource.NewMethod(r, rd, m, methodName, setBodyName)
-
-	// security scheme
-	method.SecuredBy = security.GetMethodSecuredBy(apiDef, r, m)
-
-	gm := serverMethod{
-		Method: &method,
-	}
-	gm.setup(apiDef, r, rd, methodName)
-	return gm
 }
 
 // setBodyName set name of method's request/response body.

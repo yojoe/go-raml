@@ -15,10 +15,10 @@ type service struct {
 	UnmarshallResponse bool
 }
 
-func newService(endpoint string, methods []resource.MethodInterface, unmarshallResponse bool) *service {
+func newService(endpoint string, methods []resource.Method, unmarshallResponse bool) *service {
 	clientMethods := make([]clientMethod, 0, len(methods))
-	for _, m := range methods {
-		cm := m.(clientMethod)
+	for _, rm := range methods {
+		cm := newClientMethod(rm)
 		clientMethods = append(clientMethods, cm)
 	}
 
@@ -70,7 +70,7 @@ type byEndoint []clientMethod
 func (b byEndoint) Len() int      { return len(b) }
 func (b byEndoint) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
 func (b byEndoint) Less(i, j int) bool {
-	return b[i].EndpointStr()+b[i].Verb() < b[j].EndpointStr()+b[j].Verb()
+	return b[i].Endpoint+b[i].Verb() < b[j].Endpoint+b[j].Verb()
 }
 
 func (s *service) generate(tmpl clientTemplate, dir string) error {

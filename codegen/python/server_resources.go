@@ -22,9 +22,9 @@ func getServerResourcesDefs(apiDef *raml.APIDefinition) []resource.Resource {
 	sort.Strings(keys)
 
 	// create resource def
-	for _, k := range keys {
-		rd := resource.New(apiDef, k, "")
-		rd.IsServer = true
+	for _, endpoint := range keys {
+		res := rs[endpoint]
+		rd := resource.New(apiDef, &res, endpoint, false)
 		rds = append(rds, rd)
 	}
 	return rds

@@ -3,16 +3,11 @@ package golang
 import (
 	"fmt"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
-)
-
-const (
-	langGo = "go"
 )
 
 // Client represents a Golang client
@@ -31,26 +26,26 @@ type Client struct {
 // NewClient creates a new Golang client
 func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDir string,
 	libsRootURLs []string) (Client, error) {
+
 	// rootImportPath only needed if we use libraries
 	if rootImportPath == "" && len(apiDef.Libraries) > 0 {
 		return Client{}, fmt.Errorf("--import-path can't be empty when we use libraries")
 	}
 
+	// TODO : get rid of this global variable
 	rootImportPath = setRootImportPath(rootImportPath, targetDir)
 	globRootImportPath = rootImportPath
 	globAPIDef = apiDef
 	globLibRootURLs = libsRootURLs
 
+	// creates client services objects
 	services := map[string]*ClientService{}
-	for k, v := range apiDef.Resources {
-		rd := resource.New(apiDef, commons.NormalizeURITitle(apiDef.Title), packageName)
-		rd.GenerateMethods(&v, langGo, newServerMethod, newGoClientMethod)
-		services[k] = &ClientService{
-			rootEndpoint: k,
-			PackageName:  packageName,
-			Methods:      rd.Methods,
-		}
+	for k, res := range apiDef.Resources {
+		rd := resource.New(apiDef, &res, commons.NormalizeURITitle(apiDef.Title), true)
+		services[k] = newClientService(k, packageName, rd.Methods)
 	}
+
+	// creates client object
 	client := Client{
 		apiDef:         apiDef,
 		Name:           escapeIdentifier(commons.NormalizeURI(apiDef.Title)),
@@ -112,7 +107,7 @@ func (gc *Client) generateHelperFile(dir string) error {
 
 func (gc *Client) generateServices(dir string) error {
 	for _, s := range gc.Services {
-		sort.Sort(resource.ByEndpoint(s.Methods))
+		//sort.Sort(resource.ByEndpoint(s.Methods))
 		if err := commons.GenerateFile(s, "./templates/golang/client_service_go.tmpl", "client_service_go", s.filename(dir), false); err != nil {
 			return err
 		}

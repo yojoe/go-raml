@@ -12,25 +12,35 @@ import (
 
 type resource struct {
 	cr.Resource
+	Methods []method
 }
 
 func newResource(name string, apiDef *raml.APIDefinition, isServer bool) resource {
-	rd := cr.New(apiDef, name, "")
-	rd.IsServer = isServer
-	r := resource{
+	res := apiDef.Resources[name]
+
+	rd := cr.New(apiDef, &res, name, false)
+
+	nimRes := resource{
 		Resource: rd,
 	}
-	res := apiDef.Resources[name]
-	r.GenerateMethods(&res, "nim", newServerMethod, newClientMethod)
-	return r
+
+	for _, rm := range rd.Methods {
+		var meth method
+		if isServer {
+			meth = newServerMethod(apiDef, rm)
+		} else {
+			meth = newClientMethod(rm)
+		}
+		nimRes.Methods = append(nimRes.Methods, meth)
+	}
+	return nimRes
 }
 
 // get array of all imported modules
 func (r *resource) Imports() []string {
 	ip := map[string]struct{}{}
 
-	for _, mi := range r.Methods {
-		m := mi.(method)
+	for _, m := range r.Methods {
 		var names []string
 		if m.ReqBody != "" {
 			names = append(names, m.ReqBody)
@@ -60,8 +70,7 @@ func (r *resource) apiName() string {
 
 // NeedJWT returns true if this resource need JWT Library
 func (r *resource) NeedJWT() bool {
-	for _, mi := range r.Methods {
-		m := mi.(method)
+	for _, m := range r.Methods {
 		if m.Secured() {
 			return true
 		}

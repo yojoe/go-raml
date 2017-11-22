@@ -20,7 +20,7 @@ type SanicServer struct {
 func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *SanicServer {
 	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
-		pr := newResource(rd, apiDef, newServerMethodSanic)
+		pr := newResource(rd, apiDef, serverKindSanic)
 		prs = append(prs, pr)
 	}
 

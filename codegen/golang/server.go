@@ -26,7 +26,7 @@ var (
 // Server represents a Go server
 type Server struct {
 	apiDef           *raml.APIDefinition
-	ResourcesDef     []resource.ResourceInterface
+	ResourcesDef     []resource.Resource
 	PackageName      string // Name of the package this server resides in
 	APIDocsDir       string // apidocs directory. apidocs won't be generated if it is empty
 	withMain         bool   // true if we need to generate main file

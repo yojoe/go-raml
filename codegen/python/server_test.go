@@ -45,6 +45,7 @@ func TestServer(t *testing.T) {
 		})
 
 		Reset(func() {
+			return
 			os.RemoveAll(targetDir)
 		})
 	})

@@ -43,9 +43,7 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 	for _, pr := range s.ResourcesDef {
 		// create sanicRouteView objects
 		srvMap := map[string]sanicRouteView{}
-		for _, m := range pr.Methods {
-			pm := m.(serverMethod)
-
+		for _, pm := range pr.Methods {
 			srv, ok := srvMap[pm.Endpoint]
 			if !ok {
 				srv = newSanicRouteView(pm.Endpoint)
