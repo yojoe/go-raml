@@ -32,6 +32,10 @@ class MultipleInheritance:
         self.name = name  # type: str
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema MultipleInheritance.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/MultipleInheritance.capnp' % dir)
         return template.MultipleInheritance.new_message(**self.as_dict()).to_bytes()
 
@@ -46,6 +50,11 @@ class MultipleInheritanceCollection:
 
     @staticmethod
     def new(bin=None) -> MultipleInheritance:
+        """
+        Load the binary of MultipleInheritance.capnp into class MultipleInheritance
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: MultipleInheritance
+        """
         template = capnp.load('%s/MultipleInheritance.capnp' % dir)
         struct = template.MultipleInheritance.from_bytes(bin) if bin else template.MultipleInheritance.new_message()
         return MultipleInheritance(**struct.to_dict(verbose=True))

@@ -22,6 +22,10 @@ class Cat:
         self.kind = kind  # type: str
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema Cat.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/Cat.capnp' % dir)
         return template.Cat.new_message(**self.as_dict()).to_bytes()
 
@@ -36,6 +40,11 @@ class CatCollection:
 
     @staticmethod
     def new(bin=None) -> Cat:
+        """
+        Load the binary of Cat.capnp into class Cat
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: Cat
+        """
         template = capnp.load('%s/Cat.capnp' % dir)
         struct = template.Cat.from_bytes(bin) if bin else template.Cat.new_message()
         return Cat(**struct.to_dict(verbose=True))

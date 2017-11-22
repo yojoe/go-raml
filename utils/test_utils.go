@@ -7,7 +7,10 @@ import (
 
 func TestLoadFile(filename string) (string, error) {
 	b, err := ioutil.ReadFile(filename)
-	return string(b), err
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }
 
 
@@ -29,5 +32,8 @@ func removeID(s string) string {
 
 func TestLoadFileRemoveID(filename string) (string, error) {
 	file, err := TestLoadFile(filename)
-	return removeID(file), err
+	if err != nil {
+		return "", err
+	}
+	return removeID(file), nil
 }

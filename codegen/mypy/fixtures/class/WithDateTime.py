@@ -25,6 +25,10 @@ class WithDateTime:
         self.name = name  # type: str
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema WithDateTime.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/WithDateTime.capnp' % dir)
         return template.WithDateTime.new_message(**self.as_dict()).to_bytes()
 
@@ -39,6 +43,11 @@ class WithDateTimeCollection:
 
     @staticmethod
     def new(bin=None) -> WithDateTime:
+        """
+        Load the binary of WithDateTime.capnp into class WithDateTime
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: WithDateTime
+        """
         template = capnp.load('%s/WithDateTime.capnp' % dir)
         struct = template.WithDateTime.from_bytes(bin) if bin else template.WithDateTime.new_message()
         return WithDateTime(**struct.to_dict(verbose=True))

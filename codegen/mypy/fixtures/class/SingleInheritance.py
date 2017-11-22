@@ -30,6 +30,10 @@ class SingleInheritance:
         self.single = single  # type: bool
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema SingleInheritance.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/SingleInheritance.capnp' % dir)
         return template.SingleInheritance.new_message(**self.as_dict()).to_bytes()
 
@@ -44,6 +48,11 @@ class SingleInheritanceCollection:
 
     @staticmethod
     def new(bin=None) -> SingleInheritance:
+        """
+        Load the binary of SingleInheritance.capnp into class SingleInheritance
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: SingleInheritance
+        """
         template = capnp.load('%s/SingleInheritance.capnp' % dir)
         struct = template.SingleInheritance.from_bytes(bin) if bin else template.SingleInheritance.new_message()
         return SingleInheritance(**struct.to_dict(verbose=True))

@@ -25,6 +25,10 @@ class Cage:
         self.owner = owner  # type: Animal
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema Cage.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/Cage.capnp' % dir)
         return template.Cage.new_message(**self.as_dict()).to_bytes()
 
@@ -39,6 +43,11 @@ class CageCollection:
 
     @staticmethod
     def new(bin=None) -> Cage:
+        """
+        Load the binary of Cage.capnp into class Cage
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: Cage
+        """
         template = capnp.load('%s/Cage.capnp' % dir)
         struct = template.Cage.from_bytes(bin) if bin else template.Cage.new_message()
         return Cage(**struct.to_dict(verbose=True))

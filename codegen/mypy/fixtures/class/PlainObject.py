@@ -22,6 +22,10 @@ class PlainObject:
         self.obj = obj  # type: dict
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema PlainObject.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/PlainObject.capnp' % dir)
         return template.PlainObject.new_message(**self.as_dict()).to_bytes()
 
@@ -36,6 +40,11 @@ class PlainObjectCollection:
 
     @staticmethod
     def new(bin=None) -> PlainObject:
+        """
+        Load the binary of PlainObject.capnp into class PlainObject
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: PlainObject
+        """
         template = capnp.load('%s/PlainObject.capnp' % dir)
         struct = template.PlainObject.from_bytes(bin) if bin else template.PlainObject.new_message()
         return PlainObject(**struct.to_dict(verbose=True))

@@ -31,6 +31,10 @@ class {{.Name}}:
         {{- end }}
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema {{.Name}}.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/{{.Name}}.capnp' % dir)
         return template.{{.Name}}.new_message(**self.as_dict()).to_bytes()
 
@@ -45,6 +49,11 @@ class {{.Name}}Collection:
 
     @staticmethod
     def new(bin=None) -> {{.Name}}:
+        """
+        Load the binary of {{.Name}}.capnp into class {{.Name}}
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: {{.Name}}
+        """
         template = capnp.load('%s/{{.Name}}.capnp' % dir)
         struct = template.{{.Name}}.from_bytes(bin) if bin else template.{{.Name}}.new_message()
         return {{.Name}}(**struct.to_dict(verbose=True))

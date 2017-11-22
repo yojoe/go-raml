@@ -38,6 +38,10 @@ class NumberFormat:
         self.num = num  # type: float
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema NumberFormat.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/NumberFormat.capnp' % dir)
         return template.NumberFormat.new_message(**self.as_dict()).to_bytes()
 
@@ -52,6 +56,11 @@ class NumberFormatCollection:
 
     @staticmethod
     def new(bin=None) -> NumberFormat:
+        """
+        Load the binary of NumberFormat.capnp into class NumberFormat
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: NumberFormat
+        """
         template = capnp.load('%s/NumberFormat.capnp' % dir)
         struct = template.NumberFormat.from_bytes(bin) if bin else template.NumberFormat.new_message()
         return NumberFormat(**struct.to_dict(verbose=True))

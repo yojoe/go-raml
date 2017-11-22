@@ -7,7 +7,7 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// CapnpCommand is executed to generate capnpm model from RAML specification
+// MyPyCommand is executed to generate python class with mypy type checker from RAML specification
 type MyPyCommand struct {
 	Dir      string //target dir
 	RAMLFile string //raml file

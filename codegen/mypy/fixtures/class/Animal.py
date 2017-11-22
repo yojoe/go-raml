@@ -28,6 +28,10 @@ class Animal:
         self.name = name  # type: str
 
     def to_capnp(self):
+        """
+        Load the class in capnp schema Animal.capnp
+        :rtype bytes
+        """
         template = capnp.load('%s/Animal.capnp' % dir)
         return template.Animal.new_message(**self.as_dict()).to_bytes()
 
@@ -42,6 +46,11 @@ class AnimalCollection:
 
     @staticmethod
     def new(bin=None) -> Animal:
+        """
+        Load the binary of Animal.capnp into class Animal
+        :type bin: bytes. If none creates an empty capnp object.
+        rtype: Animal
+        """
         template = capnp.load('%s/Animal.capnp' % dir)
         struct = template.Animal.from_bytes(bin) if bin else template.Animal.new_message()
         return Animal(**struct.to_dict(verbose=True))
