@@ -13,6 +13,6 @@ go:
   - 1.9
 
 script:
-  - ./build_apidocs.sh
+  - make apidocs
   - make install
   - make test

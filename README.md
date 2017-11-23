@@ -75,7 +75,7 @@ Install go-bindata, we need it to compile all resource files to .go file
 To rebuild APIDocs files to .go file
 ```
 cd $GOPATH/src/github.com/Jumpscale/go-raml
-sh build_apidocs.sh
+make apidocs
 ```
 
 Build go-raml and all resource files
