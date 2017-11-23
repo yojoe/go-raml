@@ -1,8 +1,9 @@
-{{- define "client_service_python_aiohttp" -}}
+{{- define "client_service_aiohttp" -}}
 {{- range $k, $v := .Imports}}
 {{ $v }}
 {{- end}}
 {{ $UnmarshallResponse := .UnmarshallResponse}}
+
 class {{.Name}}:
     def __init__(self, client):
         self.client = client
@@ -18,20 +19,23 @@ class {{.Name}}:
         {{- if (and $v.HasRespBody $UnmarshallResponse ) }}
         resp = await self.client.{{$v.Verb | ToLower }}({{$v.PRArgs}})
         try:
-        {{- if $v.IsArrayResponse}}
-        	resps = []
-        	for elem in resp.json():
-        		resps.append({{$v.RespBodyBasicType}}(elem))
-        	return resps
-        {{- else }}
-        	return {{$v.RespBodyBasicType}}(await resp.json())
+        {{- range $k, $rbt := $v.SuccessRespBodyTypes }}
+            if resp.status_code == {{$rbt.Code}}:
+            {{- if $rbt.IsArray}}
+                resps = []
+                for elem in resp.json():
+                    resps.append({{$rbt.BasicType}}(elem))
+                return APIResponse(data=resps, response=resp)
+            {{- else}}
+                return APIResponse(data={{$rbt.BasicType}}(await resp.json()), response=resp)
+            {{- end}}
         {{- end }}
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
-        {{ else }}
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
+        {{- else }}
         return await self.client.{{$v.Verb | ToLower }}({{$v.PRArgs}})
         {{- end}}
-{{ end }}
+{{ end -}}
 {{- end -}}

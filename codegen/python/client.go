@@ -115,10 +115,15 @@ func (c Client) Generate(dir string) error {
 	}
 
 	if c.UnmarshallResponse {
-		if err := commons.GenerateFile(nil, "./templates/python/client_unmarshall_error_python.tmpl",
-			"client_unmarshall_error_python", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
+		if err := commons.GenerateFile(nil, "./templates/python/unmarshall_error.tmpl",
+			"unmarshall_error", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
 			return err
 		}
+		if err := commons.GenerateFile(nil, "./templates/python/unhandled_api_error.tmpl",
+			"unhandled_api_error", filepath.Join(dir, "unhandled_api_error.py"), false); err != nil {
+			return err
+		}
+
 		if err := commons.GenerateFile(nil, "./templates/python/api_response_python.tmpl",
 			"api_response_python", filepath.Join(dir, "api_response.py"), false); err != nil {
 			return err

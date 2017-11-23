@@ -2,7 +2,9 @@
 from .Address import Address
 from .City import City
 from .api_response import APIResponse
+from .unhandled_api_error import UnhandledAPIError
 from .unmarshall_error import UnmarshallError
+
 
 class UsersService:
     def __init__(self, client):
@@ -19,12 +21,12 @@ class UsersService:
         uri = self.client.base_url + "/users/"+userId+"/address/"+addressId
         resp = await self.client.get(uri, None, headers, query_params, content_type)
         try:
-        	return Address(await resp.json())
+            if resp.status_code == 200:
+                return APIResponse(data=Address(await resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
-        
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
 
     async def users_byUserId_delete(self, userId, headers=None, query_params=None, content_type="application/json"):
@@ -43,12 +45,12 @@ class UsersService:
         uri = self.client.base_url + "/users/"+userId
         resp = await self.client.get(uri, None, headers, query_params, content_type)
         try:
-        	return City(await resp.json())
+            if resp.status_code == 200:
+                return APIResponse(data=City(await resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
-        
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
 
     async def users_byUserId_post(self, data, userId, headers=None, query_params=None, content_type="application/json"):
@@ -68,12 +70,12 @@ class UsersService:
         uri = self.client.base_url + "/users"
         resp = await self.client.delete(uri, data, headers, query_params, content_type)
         try:
-        	return City(await resp.json())
+            if resp.status_code == 200:
+                return APIResponse(data=City(await resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
-        
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
 
     async def get_users(self, data, headers=None, query_params=None, content_type="application/json"):
@@ -102,9 +104,9 @@ class UsersService:
         uri = self.client.base_url + "/users"
         resp = await self.client.post(uri, data, headers, query_params, content_type)
         try:
-        	return City(await resp.json())
+            if resp.status_code == 200:
+                return APIResponse(data=City(await resp.json()), response=resp)
         except ValueError as msg:
-        	raise UnmarshallError(resp, msg)
-        except:
-        	raise UnmarshallError(resp)
-        
+            raise UnmarshallError(resp, msg)
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)

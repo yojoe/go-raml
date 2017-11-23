@@ -38,7 +38,7 @@ try:
     print(resp.data)
 except unmarshall_error.UnmarshallError as ue:
     print("response:", ue.response.text)
-    print("msg: ", ue.msg)
+    print("msg: ", ue.message)
 ```
 
 

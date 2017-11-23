@@ -1,14 +1,14 @@
-{{- define "client_service_python" -}}
+{{- define "client_service" -}}
 {{- range $k, $v := .Imports}}
 {{ $v }}
 {{- end}}
 {{ $UnmarshallResponse := .UnmarshallResponse}}
+
 class {{.Name}}:
     def __init__(self, client):
         self.client = client
 
 {{ range $k, $v := .Methods }}
-
     def {{$v.MethodName}}({{$v.Params}}):
         """{{ range $kf, $vf := $v.FuncComments }}
         {{$vf}}{{end}}
@@ -18,19 +18,28 @@ class {{.Name}}:
         {{- if (and $v.HasRespBody $UnmarshallResponse ) }}
         resp = {{$v.PRCall}}({{$v.PRArgs}})
         try:
-        {{- if $v.IsArrayResponse}}
-            resps = []
-            for elem in resp.json():
-                resps.append({{$v.RespBodyBasicType}}(elem))
-            return APIResponse(data=resps, response=resp)
-        {{- else }}
-            return APIResponse(data={{$v.RespBodyBasicType}}(resp.json()), response=resp)
-        {{- end }}
+        {{- range $k, $rbt := $v.SuccessRespBodyTypes }}
+            if resp.status_code == {{$rbt.Code}}:
+            {{- if $rbt.IsArray}}
+                resps = []
+                for elem in resp.json():
+                    resps.append({{$rbt.BasicType}}(elem))
+                return APIResponse(data=resps, response=resp)
+            {{- else}}
+                return APIResponse(data={{$rbt.BasicType}}(resp.json()), response=resp)
+            {{- end}}
+		{{- end }}
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
         except ValueError as msg:
             raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
         except Exception as e:
             raise UnmarshallError(resp, e.message)
-        {{ else }}
+        {{- else }}
         return {{$v.PRCall}}({{$v.PRArgs}})
         {{- end}}
 {{ end -}}

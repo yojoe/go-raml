@@ -28,8 +28,8 @@ func (c *Client) initTemplates() {
 
 func (c *Client) initTemplatesRequests() {
 	c.Template = clientTemplate{
-		serviceFile: "./templates/python/client_service_python.tmpl",
-		serviceName: "client_service_python",
+		serviceFile: "./templates/python/client_service.tmpl",
+		serviceName: "client_service",
 		oauth2File:  "./templates/python/oauth2_client_python.tmpl",
 		oauth2Name:  "oauth2_client_python",
 		initFile:    "./templates/python/client_initpy_python.tmpl",
@@ -41,8 +41,8 @@ func (c *Client) initTemplatesRequests() {
 
 func (c *Client) initTemplatesAioHTTP() {
 	c.Template = clientTemplate{
-		serviceFile: "./templates/python/client_service_python_aiohttp.tmpl",
-		serviceName: "client_service_python_aiohttp",
+		serviceFile: "./templates/python/client_service_aiohttp.tmpl",
+		serviceName: "client_service_aiohttp",
 		oauth2File:  "./templates/python/oauth2_client_python_aiohttp.tmpl",
 		oauth2Name:  "oauth2_client_python_aiohttp",
 		initFile:    "./templates/python/client_initpy_python_aiohttp.tmpl",

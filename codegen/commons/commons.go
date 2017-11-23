@@ -136,6 +136,7 @@ func isFileExist(filePath string) bool {
 // ParamizingURI creates parameterized URI
 // Input : raw string, ex : /users/{userId}/address/{addressId}
 // Output : "/users/"+userId+"/address/"+addressId
+// TODO : optimize with regex
 func ParamizingURI(URI, sep string) string {
 	uri := `"` + URI + `"`
 	// replace { with "+

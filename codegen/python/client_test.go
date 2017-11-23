@@ -11,7 +11,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGeneratePythonClientFromRaml(t *testing.T) {
+func TestClient(t *testing.T) {
 	Convey("Python client", t, func() {
 		apiDef := new(raml.APIDefinition)
 		err := raml.ParseFile("./fixtures/client/client.raml", apiDef)
@@ -62,6 +62,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				"__init__.py",
 				"users_service.py",
 				"unmarshall_error.py",
+				"unhandled_api_error.py",
 				"api_response.py",
 			}
 
@@ -112,6 +113,7 @@ func TestGeneratePythonClientFromRaml(t *testing.T) {
 				"__init__.py",
 				"users_service.py",
 				"unmarshall_error.py",
+				"unhandled_api_error.py",
 				"api_response.py",
 			}
 

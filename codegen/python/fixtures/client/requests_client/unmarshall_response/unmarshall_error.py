@@ -1,4 +1,4 @@
 class UnmarshallError(Exception):
-	def __init__(self, resp, msg=''):
-		self.response = resp
-		self.msg = msg
+    def __init__(self, resp, message=''):
+        self.response = resp
+        self.message = message
