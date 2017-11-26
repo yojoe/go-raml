@@ -28,6 +28,11 @@ Table of Contents
 * [RAML to Code Translation](#raml-to-code-translation)
 * [Tutorial](#tutorial)
 
+## planning
+
+- [kanban for 9.3.0 (includes jumpscale as well)](https://waffle.io/Jumpscale/home?milestone=9.3.0)
+- [kanban for 9.3.1 (includes jumpscale as well)](https://waffle.io/Jumpscale/home?milestone=9.3.1)
+- [kanban for 9.4.0 (includes jumpscale as well)](https://waffle.io/Jumpscale/home?milestone=9.4.0)
 
 ## What is go-raml
 
