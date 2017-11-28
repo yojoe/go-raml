@@ -16,7 +16,6 @@
 // codegen/templates/python/client_utils_python.tmpl
 // codegen/templates/python/enum_python.tmpl
 // codegen/templates/python/init_py.tmpl
-// codegen/templates/python/input_validators_python.tmpl
 // codegen/templates/python/oauth2_client_python.tmpl
 // codegen/templates/python/oauth2_client_python_aiohttp.tmpl
 // codegen/templates/python/oauth2_middleware_python.tmpl
@@ -441,26 +440,6 @@ func templatesPythonInit_pyTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "templates/python/init_py.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _templatesPythonInput_validators_pythonTmpl = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x5c\x8f\x41\x4b\x03\x31\x10\x85\xef\xf9\x15\xcf\xc2\x92\x0a\x52\x3c\x0b\x3d\x7a\xf4\xea\x75\x89\xcd\xc4\x0e\x6e\x92\x65\x32\xa9\xc8\xb2\xff\x5d\xd2\x2c\x56\x9d\x53\x18\xbe\x79\xdf\xcb\xb2\x78\x0a\x9c\x08\x3b\x4e\x73\xd5\xf1\xe2\x26\xf6\x4e\xb3\x94\x71\xfe\xd2\x73\x4e\xbb\x75\x35\x41\x72\xc4\xa7\x86\x2c\xb1\x1c\x6e\x04\x38\xce\x59\x14\xaf\x7d\xc3\x39\x3d\x8b\x64\x31\xc6\x53\x40\xac\x93\xf2\x3c\xd1\x98\xc3\xbe\xbd\xef\x9f\x0c\x00\x58\x6b\x71\x3a\xd3\xe9\x03\x1c\x70\x71\x53\x25\x70\xd9\x60\x42\xee\x77\xd6\x5a\x73\xa5\x23\x95\xe2\xde\x09\x47\xd8\x97\x5a\x14\x6f\xf4\x93\xdb\xd8\xc1\x5b\x0c\xe8\xf1\xfd\xa0\x99\xc7\xdf\xea\xd6\xf9\x01\x81\x69\xf2\x5b\x83\x36\x1c\xfa\xea\xe0\x9d\x3a\x0c\xd7\x50\xdc\x1d\xf1\x78\x43\xda\x88\xe3\x42\xff\xbf\xb7\xdf\x4a\x6d\x46\x21\xad\x92\xfe\x48\xcd\xb2\x50\xf2\xeb\x6a\xbe\x03\x00\x00\xff\xff\x71\x8f\x4e\xd5\x5d\x01\x00\x00")
-
-func templatesPythonInput_validators_pythonTmplBytes() ([]byte, error) {
-	return bindataRead(
-		_templatesPythonInput_validators_pythonTmpl,
-		"templates/python/input_validators_python.tmpl",
-	)
-}
-
-func templatesPythonInput_validators_pythonTmpl() (*asset, error) {
-	bytes, err := templatesPythonInput_validators_pythonTmplBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "templates/python/input_validators_python.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1353,7 +1332,6 @@ var _bindata = map[string]func() (*asset, error){
 	"templates/python/client_utils_python.tmpl": templatesPythonClient_utils_pythonTmpl,
 	"templates/python/enum_python.tmpl": templatesPythonEnum_pythonTmpl,
 	"templates/python/init_py.tmpl": templatesPythonInit_pyTmpl,
-	"templates/python/input_validators_python.tmpl": templatesPythonInput_validators_pythonTmpl,
 	"templates/python/oauth2_client_python.tmpl": templatesPythonOauth2_client_pythonTmpl,
 	"templates/python/oauth2_client_python_aiohttp.tmpl": templatesPythonOauth2_client_python_aiohttpTmpl,
 	"templates/python/oauth2_middleware_python.tmpl": templatesPythonOauth2_middleware_pythonTmpl,
@@ -1489,7 +1467,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"client_utils_python.tmpl": &bintree{templatesPythonClient_utils_pythonTmpl, map[string]*bintree{}},
 			"enum_python.tmpl": &bintree{templatesPythonEnum_pythonTmpl, map[string]*bintree{}},
 			"init_py.tmpl": &bintree{templatesPythonInit_pyTmpl, map[string]*bintree{}},
-			"input_validators_python.tmpl": &bintree{templatesPythonInput_validators_pythonTmpl, map[string]*bintree{}},
 			"oauth2_client_python.tmpl": &bintree{templatesPythonOauth2_client_pythonTmpl, map[string]*bintree{}},
 			"oauth2_client_python_aiohttp.tmpl": &bintree{templatesPythonOauth2_client_python_aiohttpTmpl, map[string]*bintree{}},
 			"oauth2_middleware_python.tmpl": &bintree{templatesPythonOauth2_middleware_pythonTmpl, map[string]*bintree{}},

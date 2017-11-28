@@ -44,12 +44,6 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 
 // Generate generates all python server files
 func (ps FlaskServer) Generate(dir string) error {
-	// generate input validators helper
-	if err := commons.GenerateFile(struct{}{}, "./templates/python/input_validators_python.tmpl", "input_validators_python",
-		filepath.Join(dir, "input_validators.py"), false); err != nil {
-		return err
-	}
-
 	if err := generateJSONSchema(ps.APIDef, dir); err != nil {
 		return err
 	}
