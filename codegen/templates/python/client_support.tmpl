@@ -1,4 +1,4 @@
-{{- define "client_support_python" -}}
+{{- define "client_support" -}}
 
 """
 support methods for python clients
@@ -110,7 +110,7 @@ def set_property(name, data, data_types, has_child_properties,
     required_error = '{cls}: missing required property {prop}'
     factory_value = None
     val = data.get(name)
-    if val:
+    if val is not None:
         try:
             if is_list:
                 factory_value = list_factory(val, data_types)
