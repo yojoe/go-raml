@@ -28,3 +28,12 @@ func GetBasicType(t string) string {
 		return t
 	}
 }
+
+// IsArrayType returns true if the given
+// string is a RAML array
+func IsArrayType(t string) bool {
+	tip := raml.Type{
+		Type: t,
+	}
+	return tip.IsArray()
+}

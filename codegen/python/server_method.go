@@ -26,16 +26,13 @@ func setServerMethodName(displayName, verb string, resource *raml.Resource) stri
 	return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
 }
 
-func setReqBodyName(methodName string) string {
-	return inflect.UpperCamelCase(methodName + "ReqBody")
-}
-
 // setup sets all needed variables
 func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, resourceParams []string) error {
 	sm.MethodName = setServerMethodName(sm.DisplayName, sm.Verb(), r)
 
 	if commons.HasJSONBody(&(sm.Bodies)) {
-		sm.ReqBody = setReqBodyName(sm.MethodName)
+		// TODO : make it to call proper func
+		sm.ReqBody = inflect.UpperCamelCase(sm.MethodName + commons.ReqBodySuffix)
 	}
 
 	sm.Params = strings.Join(resourceParams, ", ")
@@ -64,6 +61,8 @@ func newServerMethod(apiDef *raml.APIDefinition, rd *resource.Resource, rm resou
 		method:    meth,
 		SecuredBy: security.GetMethodSecuredBy(apiDef, rm.Resource, rm.Method),
 	}
+	sm.ReqBody = setServerReqBodyName(meth.ReqBody)
+
 	params := resource.GetResourceParams(rm.Resource)
 	if kind == serverKindSanic {
 		params = append([]string{"request"}, params...)
@@ -75,4 +74,11 @@ func newServerMethod(apiDef *raml.APIDefinition, rd *resource.Resource, rm resou
 
 func (sm *serverMethod) RespBody() string {
 	return sm.firstSuccessRespBodyType()
+}
+
+func setServerReqBodyName(bodyName string) string {
+	if !commons.IsArrayType(bodyName) {
+		return bodyName
+	}
+	return jsArrayName(bodyName)
 }

@@ -132,6 +132,19 @@ types:
         type: string
       birth:
         type: datetime
+
+/animals:
+  post:
+    description: create a user
+    body: 
+      application/json:
+        type: Animal[]
+    responses:
+      201:
+        body:
+          application/json:
+            type: Animal[]
+
 /users:
   post:
     description: create a user
@@ -177,3 +190,4 @@ types:
               properties:
                 age: integer
                 ID:
+

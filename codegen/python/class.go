@@ -248,8 +248,8 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
-			methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
-			pc := newClass(raml.Type{Type: "object"}, setReqBodyName(methodName), "", tip.Properties)
+			newTipName := genTypeName(tip)
+			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties)
 			propNames := []string{}
 			for k := range tip.Properties {
 				propNames = append(propNames, k)

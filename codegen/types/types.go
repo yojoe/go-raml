@@ -141,5 +141,8 @@ func singleLineNewType(tip string) bool {
 	if rt.IsUnion() {
 		return true
 	}
+	if rt.IsArray() {
+		return true
+	}
 	return false
 }

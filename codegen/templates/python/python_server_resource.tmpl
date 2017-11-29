@@ -10,7 +10,7 @@ import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 {{ range $k, $v := .ReqBodies }}
-{{$v}}_schema =  JSON.load(open('./schema/{{$v}}_schema.json'))
+{{$v}}_schema =  JSON.load(open(dir_path + '/schema/{{$v}}_schema.json'))
 {{$v}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$v}}_schema)
 {{$v}}_schema_validator = Draft4Validator({{$v}}_schema, resolver={{$v}}_schema_resolver)
 {{ end }}

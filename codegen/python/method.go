@@ -56,8 +56,7 @@ func newMethod(rm resource.Method) *method {
 	return &method{
 		Method:  rm,
 		ReqBody: setBodyName(rm.Bodies, normalizedEndpoint+rm.VerbTitle(), commons.ReqBodySuffix),
-		//RespBody: respBody,
-		resps: resps,
+		resps:   resps,
 	}
 }
 
