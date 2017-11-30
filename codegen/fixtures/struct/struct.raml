@@ -132,6 +132,10 @@ types:
         type: string
       birth:
         type: datetime
+  Tree:
+    properties:
+      name: string
+      right: Tree
 /users:
   post:
     description: create a user

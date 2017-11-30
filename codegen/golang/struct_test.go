@@ -11,7 +11,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGenerateStructFromRaml(t *testing.T) {
+func TestStruct(t *testing.T) {
 	Convey("generate struct from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
 
@@ -43,6 +43,7 @@ func TestGenerateStructFromRaml(t *testing.T) {
 				"PlainObject",
 				"NumberFormat",
 				"WithDateTime",
+				"Tree",
 			}
 
 			for _, f := range files {

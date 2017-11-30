@@ -207,7 +207,7 @@ func (pc *class) handleAdvancedType() {
 // return list of import statements
 func (pc class) Imports() []string {
 	// var imports []string
-	imports := make(map[string]bool)
+	imports := make(map[string]struct{})
 
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
@@ -215,16 +215,18 @@ func (pc class) Imports() []string {
 			if !pc.MyPy && imp.Module == "typing" || pc.MyPy && imp.Module == "six" {
 				continue
 			}
+
+			// do not import ourself
+			if imp.Name == pc.Name {
+				continue
+			}
+
 			importString := "from " + imp.Module + " import " + imp.Name
-			imports[importString] = true
+			imports[importString] = struct{}{}
 		}
 	}
-	var importStrings []string
-	for key := range imports {
-		importStrings = append(importStrings, key)
-	}
-	sort.Strings(importStrings)
-	return importStrings
+
+	return commons.MapToSortedStrings(imports)
 }
 
 // generate all python classes from a RAML document
