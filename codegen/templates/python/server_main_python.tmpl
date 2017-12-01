@@ -16,9 +16,12 @@ def send_js(path):
     return send_from_directory('{{.APIDocsDir}}', path)
 {{ end }}
 
+dirpath="../generated/server/"
+dirpath="" #comment this when in js9 ramlserver
+
 @app.route('/', methods=['GET'])
 def home():
-    return send_file('index.html')
+    return send_file('%sindex.html'%dirpath)
 
 if __name__ == "__main__":
     app.run(debug=True)
