@@ -6,6 +6,9 @@ from {{.Name | ToLower}}_api import {{.Name | ToLower}}_api
 
 app = Flask(__name__)
 
+dirpath="../generated/server/"
+dirpath="" #comment this when in js9 ramlserver
+
 {{range $k, $v := .ResourcesDef -}}
 app.register_blueprint({{.Name | ToLower }}_api)
 {{end}}
@@ -13,11 +16,8 @@ app.register_blueprint({{.Name | ToLower }}_api)
 {{ if .APIDocsDir }}
 @app.route('/{{.APIDocsDir}}/<path:path>')
 def send_js(path):
-    return send_from_directory('{{.APIDocsDir}}', path)
+    return send_from_directory('%s{{.APIDocsDir}}'%dirpath, path)
 {{ end }}
-
-dirpath="../generated/server/"
-dirpath="" #comment this when in js9 ramlserver
 
 @app.route('/', methods=['GET'])
 def home():
