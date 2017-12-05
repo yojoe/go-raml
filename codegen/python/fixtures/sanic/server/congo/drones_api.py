@@ -7,7 +7,7 @@ from jsonschema import Draft4Validator
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-User_schema =  JSON.load(open('./schema/User_schema.json'))
+User_schema =  JSON.load(open(dir_path + '/schema/User_schema.json'))
 User_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', User_schema)
 User_schema_validator = Draft4Validator(User_schema, resolver=User_schema_resolver)
 

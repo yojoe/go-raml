@@ -55,7 +55,7 @@ func TestServerMethodWithComplexBody(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		apiDef := new(raml.APIDefinition)
-		err = raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
+		err = raml.ParseFile("../fixtures/body.raml", apiDef)
 		So(err, ShouldBeNil)
 
 		fs := NewFlaskServer(apiDef, "apidocs", true, nil)

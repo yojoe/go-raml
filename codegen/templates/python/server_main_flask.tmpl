@@ -1,4 +1,4 @@
-{{- define "server_main_python" -}}
+{{- define "server_main_flask" -}}
 from flask import Flask, send_from_directory, send_file
 {{ range $k, $v := .ResourcesDef -}}
 from {{.Name | ToLower}}_api import {{.Name | ToLower}}_api
@@ -20,7 +20,7 @@ def send_js(path):
 
 @app.route('/', methods=['GET'])
 def home():
-    return send_file('%sindex.html'%dirpath)
+    return send_file(dir_path + '/index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

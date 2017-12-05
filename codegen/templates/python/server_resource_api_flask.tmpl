@@ -1,4 +1,4 @@
-{{- define "resource_python_template" -}}
+{{- define "server_resource_api_flask" -}}
 {{- $apiName := .Name -}}
 import json as JSON
 import jsonschema
@@ -8,8 +8,7 @@ from flask import Blueprint, jsonify, request
 import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
 
 import os
-dir_path = os.path.dirname(os.path.realpath(__file__)) 
-
+dir_path = os.path.dirname(os.path.realpath(__file__))
 {{ range $k, $v := .ReqBodies }}
 {{$v}}_schema =  JSON.load(open(dir_path + '/schema/{{$v}}_schema.json'))
 {{$v}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$v}}_schema)
