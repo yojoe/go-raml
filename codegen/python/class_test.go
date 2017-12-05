@@ -11,7 +11,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGeneratePythonClass(t *testing.T) {
+func TestClass(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
 		targetDir, err := ioutil.TempDir("", "")
@@ -42,6 +42,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				"UsersByIdGetRespBody.py",
 				"UsersPostReqBody.py",
 				"WithDateTime.py",
+				"Tree.py",
 			}
 
 			for _, f := range files {

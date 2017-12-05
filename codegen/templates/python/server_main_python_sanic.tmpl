@@ -12,8 +12,11 @@ app = Sanic(__name__)
 app.blueprint({{.Name | ToLower }}_if)
 {{end}}
 
-app.static('/apidocs', './apidocs')
-app.static('/', './index.html')
+dirpath="../generated/server/"
+dirpath="./" #comment this when in js9 ramlserver
+
+app.static('/apidocs', '%sapidocs'%dirpath)
+app.static('/', '%sindex.html'%dirpath)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, workers=2)
