@@ -76,7 +76,7 @@ func (ps FlaskServer) Generate(dir string) error {
 			return err
 		}
 		// main file
-		return commons.GenerateFile(ps, "./templates/python/server_main_python.tmpl", "server_main_python", filepath.Join(dir, "app.py"), true)
+		return commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true)
 	}
 	return nil
 

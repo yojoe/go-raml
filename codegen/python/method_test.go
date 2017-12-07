@@ -48,3 +48,39 @@ func TestMethod(t *testing.T) {
 		})
 	})
 }
+
+func TestServerMethodWithComplexBody(t *testing.T) {
+	Convey("TestServerMethodWithComplexBody", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/body.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		fs := NewFlaskServer(apiDef, "apidocs", true, nil)
+
+		err = fs.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/server/complex_body"
+		files := []string{
+			"animals_api.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

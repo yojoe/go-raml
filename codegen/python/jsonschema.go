@@ -41,18 +41,21 @@ func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 		switch tip := t.Type.(type) {
 		case string:
 			rt := raml.Type{Type: tip}
-			if rt.IsMultipleInheritance() {
+
+			switch {
+			case rt.IsMultipleInheritance():
 				delayedMI = append(delayedMI, tip)
-			}
-		case types.TypeInBody:
-			if tip.ReqResp == types.HTTPRequest {
-				methodName := setServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
-				typeObj := raml.Type{
-					Properties: tip.Properties,
-				}
-				js := raml.NewJSONSchemaFromProps(&typeObj, tip.Properties, "object", setReqBodyName(methodName))
+			case rt.IsArray():
+				js := raml.NewJSONSchema(rt, jsArrayName(tip))
 				jsObjects[js.Name] = js
 			}
+		case types.TypeInBody:
+			typeObj := raml.Type{
+				Properties: tip.Properties,
+			}
+			newTipName := genTypeName(tip)
+			js := raml.NewJSONSchemaFromProps(&typeObj, tip.Properties, "object", newTipName)
+			jsObjects[js.Name] = js
 		case raml.Type:
 			js := raml.NewJSONSchema(tip, name)
 			jsObjects[js.Name] = js
@@ -108,8 +111,20 @@ func getParentsObjs(parents []string) []raml.JSONSchema {
 	return objs
 }
 
+// returns json schema name of the new schema
+// that inherited from parents
 func jsMultipleInheritanceName(parents []string) string {
 	return strings.Join(parents, "")
+}
+
+// return jsonschema name of new schema
+// that created from an array
+func jsArrayName(tip string) string {
+	if !commons.IsArrayType(tip) {
+		// make sure it is an array
+		return tip
+	}
+	return "List_" + commons.GetBasicType(tip)
 }
 
 // Generate generates a json file of this schema

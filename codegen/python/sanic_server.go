@@ -58,6 +58,6 @@ func (s *SanicServer) generateMain(dir string) error {
 		return err
 	}
 
-	return commons.GenerateFile(s, "./templates/python/server_main_python_sanic.tmpl", "server_main_python_sanic",
+	return commons.GenerateFile(s, "./templates/python/server_main_sanic.tmpl", "server_main_sanic",
 		filepath.Join(dir, "app.py"), true)
 }
