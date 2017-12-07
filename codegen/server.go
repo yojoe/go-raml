@@ -11,6 +11,7 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/python"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/jumpscale/go-raml/codegen/tarantool"
 )
 
 var (
@@ -52,6 +53,9 @@ func (s *Server) Generate() error {
 	case langNim:
 		ns := nim.NewServer(apiDef, s.APIDocsDir, s.Dir)
 		err = ns.Generate()
+	case langTarantool:
+		ts := tarantool.NewServer(apiDef, s.APIDocsDir, s.Dir)
+		err = ts.Generate()
 	default:
 		return errInvalidLang
 	}

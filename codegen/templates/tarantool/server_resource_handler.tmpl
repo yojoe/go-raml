@@ -1,0 +1,21 @@
+{{- define "server_resource_handler" -}}
+function {{.Resource.Handler}}(request)
+{{ range $k, $v := .Resource.Methods }}
+    if req.method == {{$v.Verb}} then
+        return {{$v.Handler}}(request)
+    end
+{{- end}}
+
+    return {
+        status = 404
+    }
+end
+
+{{ range $k, $v := .Resource.Methods }}
+function {{$v.Handler}}(request)
+
+end
+{{ end}}
+{{- end -}}
+
+
