@@ -10,7 +10,6 @@ import (
 
 	"github.com/Jumpscale/go-raml/raml"
 	"github.com/Jumpscale/go-raml/utils"
-
 )
 
 func TestJSONSchema(t *testing.T) {
@@ -82,8 +81,7 @@ func TestJSONSchema(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true)
-			err = server.Generate(targetDir)
+			err = generateJSONSchema(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/json_schema/struct"
@@ -93,7 +91,7 @@ func TestJSONSchema(t *testing.T) {
 				"Cage_schema.json",
 				"SingleInheritance_schema.json",
 				"Dashed_schema.json",
-				//"PlainObject_schema.json",
+				"PlainObject_schema.json",
 				"NumberFormat_schema.json",
 				"Cat_schema.json",
 				"MultipleInheritance_schema.json",
