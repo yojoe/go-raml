@@ -7,11 +7,18 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+type response struct {
+	Code     int
+	BodyType string
+}
+
 // Method is a tarantool code representation of a method
 type Method struct {
 	RamlMethod *raml.Method
 	Verb       string
 	EndPoint   string
+	ReqBody    string
+	Responses  []response
 }
 
 // Resource is tarantool code representation of a resource
@@ -34,11 +41,18 @@ func (b ResourceByURI) Less(i, j int) bool {
 
 // Handler returns the name of the function that handles requests for this method
 func (m *Method) Handler() string {
+
 	if len(m.RamlMethod.DisplayName) > 0 {
 		return commons.DisplayNameToFuncName(m.RamlMethod.DisplayName)
 	}
 	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(m.EndPoint))
 	return name + m.Verb
+}
+
+// URI returns the tarantool URI of the fullURI
+func (m *Method) URI() string {
+	return strings.Replace(strings.Replace(m.EndPoint, "{", ":", -1), "}", "", -1)
+
 }
 
 // URI returns the tarantool URI of the fullURI
@@ -62,7 +76,33 @@ func (r *Resource) addMethod(m *raml.Method, methodName string) {
 	if m == nil {
 		return
 	}
-	r.Methods = append(r.Methods, &Method{RamlMethod: m, Verb: methodName, EndPoint: r.RamlResource.FullURI()})
+	endPoint := r.RamlResource.FullURI()
+	verbTitle := strings.Title(strings.ToLower(methodName))
+	normalizedEndpoint := commons.NormalizeURITitle(endPoint)
+	reqBody := setBodyName(
+		m.Bodies, normalizedEndpoint+verbTitle, commons.ReqBodySuffix)
+
+	responses := make([]response, 0)
+	for code, methodResponse := range m.Responses {
+		bodyType := setBodyName(methodResponse.Bodies, endPoint+verbTitle, commons.RespBodySuffix)
+		if bodyType == "" {
+			continue
+		}
+		resp := response{
+			Code:     commons.AtoiOrPanic(string(code)),
+			BodyType: bodyType,
+		}
+		responses = append(responses, resp)
+
+	}
+	method := &Method{
+		RamlMethod: m,
+		Verb:       methodName,
+		EndPoint:   endPoint,
+		ReqBody:    reqBody,
+		Responses:  responses,
+	}
+	r.Methods = append(r.Methods, method)
 }
 
 // generateMethods generates all methods of a resource
@@ -98,4 +138,34 @@ func (tr *TarantoolResources) AddNested(resource *raml.Resource) {
 		}
 		tr.AddNested(nestedResource)
 	}
+}
+
+// setBodyName set name of method's request/response body.
+//
+// Rules:
+//  - use bodies.Type if not empty and not `object`
+//  - use bodies.ApplicationJSON.Type if not empty and not `object`
+//  - use prefix+suffix if:
+//      - not meet previous rules
+//      - previous rules produces JSON string
+func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
+	var bodyName string
+	prefix = commons.NormalizeURITitle(prefix)
+
+	if len(bodies.Type) > 0 && bodies.Type != "object" {
+		bodyName = bodies.Type
+	} else if bodies.ApplicationJSON != nil {
+		if bodies.ApplicationJSON.TypeString() != "" && bodies.ApplicationJSON.TypeString() != "object" {
+			bodyName = bodies.ApplicationJSON.TypeString()
+		} else {
+			bodyName = prefix + suffix
+		}
+	}
+
+	if commons.IsJSONString(bodyName) {
+		bodyName = prefix + suffix
+	}
+
+	return bodyName
+
 }

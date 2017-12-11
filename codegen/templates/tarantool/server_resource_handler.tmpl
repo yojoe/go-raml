@@ -3,6 +3,13 @@ schema = require("schemas.schema")
 
 {{ range $k, $v := .Resource.Methods }}
 function {{$v.Handler}}(request)
+    -- handler for {{$v.Verb}} {{$v.URI}}
+    {{- if $v.ReqBody}}
+    -- request body should match schema.{{$v.ReqBody}}
+    {{end}}
+    {{- range $i, $j := $v.Responses}}
+    -- response body for {{$j.Code}} should match schema.{{$j.BodyType}}
+    {{end}}
 
 end
 {{ end}}

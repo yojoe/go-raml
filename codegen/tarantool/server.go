@@ -66,6 +66,7 @@ func (s *Server) generateSchemas() error {
 		return err
 	}
 
+	// lua generator used the name of the first file in the list to determine the name of the compiled lua file
 	compiledFile := strings.Replace(args[0], ".capnp", "_capnp.lua", 1)
 
 	args = append([]string{"compile", "-olua"}, args...)
@@ -80,6 +81,7 @@ func (s *Server) generateSchemas() error {
 			"Can't find the compiled lua schema file expected at %v", compiledFile)
 	}
 
+	// rename the compiled lua file to a more generic name
 	err = os.Rename(compiledFile, path.Join(
 		schemasPath, "schema.lua"))
 	if err != nil {
