@@ -1,13 +1,19 @@
 package tarantool
 
 import (
+	"os/exec"
+	"path"
+	"sort"
+
+	"fmt"
+
+	"path/filepath"
+
 	"github.com/Jumpscale/go-raml/codegen/capnp"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
-	"path"
-	"sort"
-	"os/exec"
-	"fmt"
+	"os"
+	"strings"
 )
 
 // Server represents a tarantool server
@@ -49,19 +55,37 @@ func (s *Server) Generate() error {
 }
 
 func (s *Server) generateSchemas() error {
-	err := capnp.GenerateCapnp(s.apiDef, path.Join(s.TargetDir, "capnp"), "plain", "")
+	schemasPath := path.Join(s.TargetDir, "schemas")
+	err := capnp.GenerateCapnp(s.apiDef, schemasPath, "plain", "")
 	if err != nil {
 		return err
 	}
-	// generate types
-	for name := range s.apiDef.Types {
-		input := path.Join(s.TargetDir, "capnp", fmt.Sprintf("%v.capnp", name))
-		cmd := exec.Command(fmt.Sprintf("capnp compile -olua %v", input))
-		err = cmd.Run()
-		if err != nil {
-			return err
-		}
+
+	args, err := filepath.Glob(path.Join(schemasPath, "*.capnp"))
+	if err != nil {
+		return err
 	}
+
+	compiledFile := strings.Replace(args[0], ".capnp", "_capnp.lua", 1)
+
+	args = append([]string{"compile", "-olua"}, args...)
+	cmd := exec.Command("capnp", args...)
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	if _, err = os.Stat(compiledFile); os.IsNotExist(err) {
+		return fmt.Errorf(
+			"Can't find the compiled lua schema file expected at %v", compiledFile)
+	}
+
+	err = os.Rename(compiledFile, path.Join(
+		schemasPath, "schema.lua"))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

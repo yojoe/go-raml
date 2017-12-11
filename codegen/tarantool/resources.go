@@ -81,7 +81,9 @@ func flattenResources(resources map[string]raml.Resource) TarantoolResources {
 		r := resource
 		tResource := Resource{RamlResource: &r}
 		tResource.generateMethods()
-		tarantoolResources.Resources = append(tarantoolResources.Resources, &tResource)
+		if len(tResource.Methods) > 0 {
+			tarantoolResources.Resources = append(tarantoolResources.Resources, &tResource)
+		}
 		tarantoolResources.AddNested(&r)
 	}
 	return tarantoolResources
@@ -91,7 +93,9 @@ func (tr *TarantoolResources) AddNested(resource *raml.Resource) {
 	for _, nestedResource := range resource.Nested {
 		tResource := Resource{RamlResource: nestedResource}
 		tResource.generateMethods()
-		tr.Resources = append(tr.Resources, &tResource)
+		if len(tResource.Methods) > 0 {
+			tr.Resources = append(tr.Resources, &tResource)
+		}
 		tr.AddNested(nestedResource)
 	}
 }
