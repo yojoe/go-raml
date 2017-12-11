@@ -20,6 +20,7 @@ type Struct struct {
 	T             raml.Type
 	lang          string
 	pkg           string
+	Enum  *enum
 }
 
 func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
@@ -42,6 +43,9 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 		pkg:         pkg,
 		lang:        lang,
 	}
+	if s.T.Enum != nil {
+		s.Enum = newEnumFromType(name, s.T, lang, pkg)
+	}
 	if err := s.checkValidCapnp(); err != nil {
 		return s, err
 	}
@@ -53,6 +57,10 @@ func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
 
 // Generate generates struct code
 func (s *Struct) Generate(dir string) error {
+	if s.Enum != nil {
+		return s.Enum.generate(dir)
+	}
+
 	if err := s.generateEnums(dir); err != nil {
 		return err
 	}
