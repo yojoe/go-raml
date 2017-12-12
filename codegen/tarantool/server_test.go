@@ -1,8 +1,9 @@
 package tarantool
 
 import (
-	"github.com/Jumpscale/go-raml/codegen"
+	"github.com/Jumpscale/go-raml/raml"
 	"github.com/Jumpscale/go-raml/utils"
+
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,17 +14,22 @@ import (
 
 func TestServer(t *testing.T) {
 	Convey("server generator", t, func() {
-		targetdir, err := ioutil.TempDir("", "")
+		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 		Convey("Tarantool server", func() {
-			s := codegen.Server{
-				RAMLFile:   "../fixtures/server/user_api/api.raml",
-				Kind:       "",
-				Dir:        targetdir,
-				Lang:       "tarantool",
+			apiDef := new(raml.APIDefinition)
+			err = raml.ParseFile("../fixtures/server/user_api/api.raml", apiDef)
+			So(err, ShouldBeNil)
+
+			s := Server{
+				apiDef:     apiDef,
+				TargetDir:  targetDir,
 				APIDocsDir: "apidocs",
 			}
-			err := s.Generate()
+			s.generateResources()
+			err := s.generateMain()
+			So(err, ShouldBeNil)
+			err = s.generateHandlers()
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server/"
@@ -33,13 +39,9 @@ func TestServer(t *testing.T) {
 				"handlers/users_handler.lua",
 				"handlers/usersuserId_handler.lua",
 				"handlers/usersuserIdaddressaddressId_handler.lua",
-				"schemas/Address.capnp",
-				"schemas/EnumUserNames.capnp",
-				"schemas/User.capnp",
-				//"schemas/schema.lua",
 			}
 			for _, check := range checks {
-				s, err := utils.TestLoadFileRemoveID(filepath.Join(targetdir, check))
+				s, err := utils.TestLoadFileRemoveID(filepath.Join(targetDir, check))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFileRemoveID(filepath.Join(rootFixture, check))
@@ -51,7 +53,7 @@ func TestServer(t *testing.T) {
 		})
 
 		Reset(func() {
-			os.RemoveAll(targetdir)
+			os.RemoveAll(targetDir)
 		})
 	})
 }
