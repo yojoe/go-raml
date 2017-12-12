@@ -11,7 +11,7 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/nim"
 	"github.com/Jumpscale/go-raml/codegen/python"
 	"github.com/Jumpscale/go-raml/raml"
-	"github.com/jumpscale/go-raml/codegen/tarantool"
+	"github.com/Jumpscale/go-raml/codegen/tarantool"
 )
 
 var (

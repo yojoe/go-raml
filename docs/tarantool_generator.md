@@ -23,3 +23,5 @@ the generator will generate capnp files for all the raml types then compile it i
 - main.lua: the main server file, it contains all the initialization and start of the server as well as all registering all the routes.
 - handlers: a directory containing all the routes handlers. For each end point there is one handler file which contains a handler function for each request method.
 - schemas: a directory containing all the generated capnp files and schema.lua which contains the compiled lua.
+
+Running `tarantool main.lua` will start the tarantool server.
