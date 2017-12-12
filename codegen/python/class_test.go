@@ -39,7 +39,7 @@ func TestClass(t *testing.T) {
 				"EnumString.py",
 				"petshop.py",
 				"Catanimal.py",
-				"UsersByIdGetReqBody.py",
+				"UsersByIdGetRespBody.py",
 				"UsersPostReqBody.py",
 				"WithDateTime.py",
 				"Tree.py",

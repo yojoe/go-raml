@@ -199,6 +199,8 @@ func newProperty(rp Property) property {
 			"long":   "integer",
 			"float":  "number",
 			"double": "number",
+
+			"object": "object",
 		}
 		if v, ok := typeMap[t]; ok {
 			return v

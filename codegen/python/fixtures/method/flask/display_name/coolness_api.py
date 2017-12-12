@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-CreateSomethingCoolReqBody_schema =  JSON.load(open('./schema/CreateSomethingCoolReqBody_schema.json'))
+CreateSomethingCoolReqBody_schema =  JSON.load(open(dir_path + '/schema/CreateSomethingCoolReqBody_schema.json'))
 CreateSomethingCoolReqBody_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', CreateSomethingCoolReqBody_schema)
 CreateSomethingCoolReqBody_schema_validator = Draft4Validator(CreateSomethingCoolReqBody_schema, resolver=CreateSomethingCoolReqBody_schema_resolver)
 

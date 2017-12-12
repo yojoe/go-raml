@@ -1,12 +1,12 @@
 """
-Auto-generated class for UsersByIdGetReqBody
+Auto-generated class for UsersByIdGetRespBody
 """
 from six import string_types
 
 from . import client_support
 
 
-class UsersByIdGetReqBody(object):
+class UsersByIdGetRespBody(object):
     """
     auto-generated. don't touch.
     """
@@ -16,16 +16,16 @@ class UsersByIdGetReqBody(object):
         """
         :type ID: str
         :type age: int
-        :rtype: UsersByIdGetReqBody
+        :rtype: UsersByIdGetRespBody
         """
 
-        return UsersByIdGetReqBody(**kwargs)
+        return UsersByIdGetRespBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'UsersByIdGetReqBody'
+        class_name = 'UsersByIdGetRespBody'
         data = json or kwargs
 
         # set attributes

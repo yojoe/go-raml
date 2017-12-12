@@ -64,6 +64,8 @@ var (
 		"long":   true,
 		"float":  true,
 		"double": true,
+
+		"object": true,
 	}
 )
 

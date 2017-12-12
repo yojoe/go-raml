@@ -1,0 +1,27 @@
+#%RAML 1.0
+title: Struct API Test
+mediaType: application/json
+types:
+  animal:
+    type: object
+    properties:
+      name?: string
+      colours:
+        type: array
+        items: string
+      cities:
+        type: EnumCity[]
+        minItems: 1
+        maxItems: 10
+
+/animals:
+  post:
+    description: create a user
+    body: 
+      application/json:
+        type: Animal[]
+    responses:
+      201:
+        body:
+          application/json:
+            type: Animal[]

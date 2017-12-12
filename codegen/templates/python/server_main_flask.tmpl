@@ -1,13 +1,12 @@
-{{- define "server_main_python" -}}
+{{- define "server_main_flask" -}}
 from flask import Flask, send_from_directory, send_file
 {{ range $k, $v := .ResourcesDef -}}
 from {{.Name | ToLower}}_api import {{.Name | ToLower}}_api
 {{end }}
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 app = Flask(__name__)
-
-dirpath="../generated/server/"
-dirpath="" #comment this when in js9 ramlserver
 
 {{range $k, $v := .ResourcesDef -}}
 app.register_blueprint({{.Name | ToLower }}_api)
@@ -16,12 +15,12 @@ app.register_blueprint({{.Name | ToLower }}_api)
 {{ if .APIDocsDir }}
 @app.route('/{{.APIDocsDir}}/<path:path>')
 def send_js(path):
-    return send_from_directory('%s{{.APIDocsDir}}'%dirpath, path)
+    return send_from_directory(dir_path + '/' + '{{.APIDocsDir}}', path)
 {{ end }}
 
 @app.route('/', methods=['GET'])
 def home():
-    return send_file('%sindex.html'%dirpath)
+    return send_file(dir_path + '/index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

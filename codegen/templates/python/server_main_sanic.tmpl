@@ -1,10 +1,12 @@
-{{- define "server_main_python_sanic" -}}
+{{- define "server_main_sanic" -}}
 from sanic import Sanic
 from sanic.response import json
 
 {{ range $k, $v := .ResourcesDef -}}
 from {{.Name | ToLower}}_if import {{.Name | ToLower}}_if
 {{end }}
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 app = Sanic(__name__)
 
@@ -12,11 +14,8 @@ app = Sanic(__name__)
 app.blueprint({{.Name | ToLower }}_if)
 {{end}}
 
-dirpath="../generated/server/"
-dirpath="./" #comment this when in js9 ramlserver
-
-app.static('/apidocs', '%sapidocs'%dirpath)
-app.static('/', '%sindex.html'%dirpath)
+app.static('/apidocs', dir_path + '/apidocs')
+app.static('/', dir_path + '/index.html')
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, workers=2)
