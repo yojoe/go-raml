@@ -1,14 +1,14 @@
 schema = require("schemas.schema")
 
 
-function usersGET(request)
+function users_get(request)
     -- handler for GET /users
     -- response body for 200 should match schema.UsersGetRespBody
     
 
 end
 
-function usersPOST(request)
+function users_post(request)
     -- handler for POST /users
     -- request body should match schema.User
     

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 type response struct {
@@ -43,22 +44,26 @@ func (b ResourceByURI) Less(i, j int) bool {
 func (m *Method) Handler() string {
 
 	if len(m.RamlMethod.DisplayName) > 0 {
-		return commons.DisplayNameToFuncName(m.RamlMethod.DisplayName)
+		return casee.ToSnakeCase(commons.DisplayNameToFuncName(m.RamlMethod.DisplayName))
 	}
 	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(m.EndPoint))
-	return name + m.Verb
+	return casee.ToSnakeCase(name + m.Verb)
+}
+
+func formatUri(uri string) string {
+	return strings.Replace(strings.Replace(uri, "{", ":", -1), "}", "", -1)
 }
 
 // URI returns the tarantool URI of the fullURI
 func (m *Method) URI() string {
-	return strings.Replace(strings.Replace(m.EndPoint, "{", ":", -1), "}", "", -1)
+	return formatUri(m.EndPoint)
 
 }
 
 // URI returns the tarantool URI of the fullURI
 func (r *Resource) URI() string {
 	fullURI := r.RamlResource.FullURI()
-	return strings.Replace(strings.Replace(fullURI, "{", ":", -1), "}", "", -1)
+	return formatUri(fullURI)
 
 }
 

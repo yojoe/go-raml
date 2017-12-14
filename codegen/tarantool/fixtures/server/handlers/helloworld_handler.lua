@@ -1,7 +1,7 @@
 schema = require("schemas.schema")
 
 
-function helloworldGET(request)
+function helloworld_get(request)
     -- handler for GET /helloworld
     -- response body for 200 should match schema.HelloworldGetRespBody
     

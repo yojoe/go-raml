@@ -7,14 +7,14 @@ require("handlers.usersuserIdaddressaddressId_handler")
 httpd = require('http.server').new("0.0.0.0", 5000)
 
 
-httpd:route({ path = '/helloworld', method = 'GET'}, helloworldGET)
+httpd:route({ path = '/helloworld', method = 'GET'}, helloworld_get)
 
-httpd:route({ path = '/users', method = 'GET'}, usersGET)
-httpd:route({ path = '/users', method = 'POST'}, usersPOST)
+httpd:route({ path = '/users', method = 'GET'}, users_get)
+httpd:route({ path = '/users', method = 'POST'}, users_post)
 
-httpd:route({ path = '/users/:userId', method = 'GET'}, usersuserIdGET)
-httpd:route({ path = '/users/:userId', method = 'DELETE'}, usersuserIdDELETE)
+httpd:route({ path = '/users/:userId', method = 'GET'}, usersuser_id_get)
+httpd:route({ path = '/users/:userId', method = 'DELETE'}, usersuser_id_delete)
 
-httpd:route({ path = '/users/:userId/address/:addressId', method = 'GET'}, getUserAddressByID)
+httpd:route({ path = '/users/:userId/address/:addressId', method = 'GET'}, get_user_address_by_id)
 
 httpd:start()
