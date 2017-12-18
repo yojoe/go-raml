@@ -34,6 +34,23 @@ func newEnum(structName string, prop raml.Property, lang, pkg string) *enum {
 	return &e
 }
 
+func newEnumFromType(structName string, t raml.Type, lang, pkg string) *enum {
+	e := enum{
+		ID:   getID(),
+		Name: strings.Title(structName),
+		lang: lang,
+		pkg:  pkg,
+	}
+	for k, v := range t.Enum.([]interface{}) {
+		f := field{
+			Name: v.(string),
+			Num:  k,
+		}
+		e.Fields = append(e.Fields, f)
+	}
+	return &e
+}
+
 func (e *enum) generate(dir string) error {
 	filename := filepath.Join(dir, e.Name+".capnp")
 	return commons.GenerateFile(e, "./templates/capnp/enum_capnp.tmpl", "enum_capnp", filename, true)

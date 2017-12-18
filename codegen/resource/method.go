@@ -40,7 +40,7 @@ func newMethod(r *raml.Resource, rd *Resource, m *raml.Method, methodName string
 	return method
 }
 
-// bvEndpoint implements sort interface to sort methods
+// byEndpoint implements sort interface to sort methods
 // based on its endpoint address
 type byEndpoint []Method
 

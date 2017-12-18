@@ -1,0 +1,14 @@
+{{- define "server_main" -}}
+{{- range $k, $v := .Resources.Resources }}
+require("handlers.{{$v.Handler}}")
+{{- end }}
+
+httpd = require('http.server').new("0.0.0.0", 5000)
+{{ range $k, $v := .Resources.Resources }}
+{{ range $i, $j := $v.Methods }}
+httpd:route({ path = '{{$v.URI}}', method = '{{$j.Verb}}'}, {{$j.Handler}})
+{{- end }}
+{{- end }}
+
+httpd:start()
+{{- end -}}
