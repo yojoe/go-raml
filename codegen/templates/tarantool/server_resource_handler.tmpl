@@ -6,11 +6,14 @@ function {{$v.Handler}}(request)
     -- handler for {{$v.Verb}} {{$v.URI}}
     {{- if $v.ReqBody}}
     -- request body should match schema.{{$v.ReqBody}}
-    {{end}}
+    {{- end}}
     {{- range $i, $j := $v.Responses}}
     -- response body for {{$j.Code}} should match schema.{{$j.BodyType}}
-    {{end}}
+    {{- end}}
 
+    local resp = {
+    }
+    return resp
 end
 {{ end}}
 {{- end -}}
