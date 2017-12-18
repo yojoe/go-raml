@@ -44,6 +44,18 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 
 // Generate generates all python server files
 func (ps FlaskServer) Generate(dir string) error {
+	// python classes and it's helper
+	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
+		"client_support", filepath.Join(dir, "client_support.py"), false); err != nil {
+		return err
+	}
+
+	_, err := generateAllClasses(ps.APIDef, dir)
+	if err != nil {
+		return err
+	}
+
+	// json schema
 	if err := generateJSONSchema(ps.APIDef, dir); err != nil {
 		return err
 	}

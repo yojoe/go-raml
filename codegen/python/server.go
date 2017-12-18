@@ -27,7 +27,7 @@ func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
 	case "", serverKindFlask:
 		return NewFlaskServer(apiDef, apiDocsDir, withMain, libRootURLs)
 	case serverKindSanic:
-		return NewSanicServer(apiDef, apiDocsDir, withMain)
+		return NewSanicServer(apiDef, apiDocsDir, withMain, libRootURLs)
 	default:
 		log.Fatalf("Invalid kind of python server : %v", kind)
 		return nil
