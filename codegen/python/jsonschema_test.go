@@ -23,7 +23,7 @@ func TestJSONSchema(t *testing.T) {
 			err := raml.ParseFile("../fixtures/raml-examples/typesystem/array-type.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true)
+			server := NewSanicServer(apiDef, "apidocs", true, nil)
 			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
 
@@ -53,7 +53,7 @@ func TestJSONSchema(t *testing.T) {
 			err := raml.ParseFile("../fixtures/raml-examples/typesystem/simple.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true)
+			server := NewSanicServer(apiDef, "apidocs", true, nil)
 			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
 

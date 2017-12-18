@@ -22,7 +22,7 @@ func TestSanicServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/helloworld/helloworld.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true)
+			server := NewSanicServer(apiDef, "apidocs", true, nil)
 			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
 
@@ -54,7 +54,7 @@ func TestSanicServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true)
+			server := NewSanicServer(apiDef, "apidocs", true, nil)
 			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
 
@@ -77,6 +77,16 @@ func TestSanicServer(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
+			}
+
+			// test that this file exist
+			files = []string{
+				"User.py",
+				"client_support.py",
+			}
+			for _, f := range files {
+				_, err := os.Stat(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
 			}
 
 		})

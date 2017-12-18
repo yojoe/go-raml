@@ -17,12 +17,17 @@ type SanicServer struct {
 }
 
 // NewSanicServer creates new sanic server from an RAML file
-func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool) *SanicServer {
+func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool,
+	libRootURLs []string) *SanicServer {
 	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
 		pr := newResource(rd, apiDef, serverKindSanic)
 		prs = append(prs, pr)
 	}
+
+	// TODO : get rid of this global variables
+	globAPIDef = apiDef
+	globLibRootURLs = libRootURLs
 
 	return &SanicServer{
 		APIDef:       apiDef,
@@ -44,6 +49,18 @@ func (s *SanicServer) Generate(dir string) error {
 	if err := s.generateOauth2(s.APIDef.SecuritySchemes, dir); err != nil {
 		return err
 	}
+
+	// python classes and it's helper
+	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
+		"client_support", filepath.Join(dir, "client_support.py"), false); err != nil {
+		return err
+	}
+
+	_, err := generateAllClasses(s.APIDef, dir)
+	if err != nil {
+		return err
+	}
+
 	return s.generateMain(dir)
 }
 
