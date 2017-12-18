@@ -42,6 +42,16 @@ func TestServer(t *testing.T) {
 
 				So(s, ShouldEqual, tmpl)
 			}
+
+			// test that this file exist
+			files = []string{
+				"User.py",
+				"client_support.py",
+			}
+			for _, f := range files {
+				_, err := os.Stat(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
+			}
 		})
 
 		Reset(func() {
