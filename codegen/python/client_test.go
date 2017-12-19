@@ -27,28 +27,41 @@ func TestClient(t *testing.T) {
 
 			rootFixture := "./fixtures/client/requests_client"
 			// cek with generated with fixtures
-			checks := []struct {
-				Result   string
-				Expected string
-			}{
-				{"client.py", "client.py"},
-				{"__init__.py", "__init__.py"},
-				{"client_utils.py", "client_utils.py"},
-				{"users_service.py", "users_service.py"},
-				{"Address.py", "Address.py"},
-				{"City.py", "City.py"},
-				{"GetUsersReqBody.py", "GetUsersReqBody.py"},
+			files := []string{
+				"client.py",
+				"__init__.py",
+				"client_utils.py",
+				"users_service.py",
+				"Address.py",
+				"City.py",
+				"GetUsersReqBody.py",
 			}
 
-			for _, check := range checks {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, check.Result))
+			for _, file := range files {
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, file))
 				So(err, ShouldBeNil)
 
-				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, file))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
 			}
+		})
+
+		Convey("requests gevent client", func() {
+			client := NewClient(apiDef, "gevent-requests", false)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/requests_client"
+
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, "client.py"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, "gevent_client.py"))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
 		})
 
 		Convey("requests client with unmarshall response", func() {

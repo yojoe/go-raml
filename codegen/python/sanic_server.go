@@ -56,7 +56,7 @@ func (s *SanicServer) Generate(dir string) error {
 		return err
 	}
 
-	_, err := generateAllClasses(s.APIDef, dir)
+	_, err := GenerateAllClasses(s.APIDef, dir, false)
 	if err != nil {
 		return err
 	}

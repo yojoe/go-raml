@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all(subprocess=False) # setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+
 import requests
 
 from .users_service import UsersService

@@ -1,4 +1,4 @@
-package mypy
+package python
 
 import (
 	"io/ioutil"
@@ -12,20 +12,20 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGeneratePythonClass(t *testing.T) {
+func TestGeneratePythonCapnpClasses(t *testing.T) {
 	Convey("generate python class from raml", t, func() {
 		apiDef := new(raml.APIDefinition)
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
 		Convey("python class from raml Types", func() {
-			err := raml.ParseFile("./fixtures/types.raml", apiDef)
+			err := raml.ParseFile("./fixtures/python_capnp/types.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = GenerateMyPy(apiDef, targetDir)
+			err = GeneratePythonCapnpClasses(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/"
+			rootFixture := "./fixtures/python_capnp/"
 			files := []string{
 				"EnumCity.%s",
 				"Animal.%s",
@@ -45,7 +45,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				s, err := utils.TestLoadFile(filepath.Join(targetDir, class))
 				So(err, ShouldBeNil)
 
-				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, "class", class))
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, class))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)
@@ -55,7 +55,7 @@ func TestGeneratePythonClass(t *testing.T) {
 				s, err = utils.TestLoadFileRemoveID(filepath.Join(targetDir, schema))
 				So(err, ShouldBeNil)
 
-				tmpl, err = utils.TestLoadFileRemoveID(filepath.Join(rootFixture, "capnp", schema))
+				tmpl, err = utils.TestLoadFileRemoveID(filepath.Join(rootFixture, schema))
 				So(err, ShouldBeNil)
 
 				So(s, ShouldEqual, tmpl)

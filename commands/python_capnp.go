@@ -7,21 +7,21 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
-// MyPyCommand is executed to generate python class with mypy type checker from RAML specification
-type MyPyCommand struct {
+// PythonCapnp is executed to generate python class with capnp loader from RAML specification
+type PythonCapnp struct {
 	Dir      string //target dir
 	RAMLFile string //raml file
 }
 
 //Execute generates a client from a RAML specification
-func (command *MyPyCommand) Execute() error {
+func (command *PythonCapnp) Execute() error {
 	var apiDef raml.APIDefinition
 
-	log.Debug("Generating mypy models")
+	log.Debug("Generating python classes with capnp conversion")
 
 	err := raml.ParseFile(command.RAMLFile, &apiDef)
 	if err != nil {
 		return err
 	}
-	return codegen.GenerateMyPy(&apiDef, command.Dir)
+	return codegen.GeneratePythonCapnp(&apiDef, command.Dir)
 }

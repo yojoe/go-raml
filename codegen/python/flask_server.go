@@ -16,11 +16,12 @@ type FlaskServer struct {
 	ResourcesDef []pythonResource
 	WithMain     bool
 	APIDocsDir   string
+	Gevent       bool
 }
 
 // NewFlaskServer creates new flask server from an RAML file
 func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
-	withMain bool, libRootURLs []string) *FlaskServer {
+	withMain bool, libRootURLs []string, gevent bool) *FlaskServer {
 
 	// TODO : get rid of this global variables
 	globAPIDef = apiDef
@@ -39,6 +40,7 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 		APIDocsDir:   apiDocsDir,
 		WithMain:     withMain,
 		ResourcesDef: prs,
+		Gevent:       gevent,
 	}
 }
 
@@ -50,9 +52,19 @@ func (ps FlaskServer) Generate(dir string) error {
 		return err
 	}
 
-	_, err := generateAllClasses(ps.APIDef, dir)
-	if err != nil {
-		return err
+	if ps.Gevent {
+		if err := commons.GenerateFile(ps, "./templates/python/server_gevent.tmpl", "server_gevent", filepath.Join(dir, "server.py"), true); err != nil {
+			return err
+		}
+
+		if err := GeneratePythonCapnpClasses(ps.APIDef, dir); err != nil {
+			return nil
+		}
+	} else {
+		_, err := GenerateAllClasses(ps.APIDef, dir, ps.Gevent)
+		if err != nil {
+			return err
+		}
 	}
 
 	// json schema
@@ -77,7 +89,8 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// requirements.txt file
-	if err := commons.GenerateFile(nil, "./templates/python/requirements_python.tmpl", "requirements_python", filepath.Join(dir, "requirements.txt"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/python/requirements_python.tmpl", "requirements_python",
+		filepath.Join(dir, "requirements.txt"), false); err != nil {
 		return err
 	}
 
@@ -88,8 +101,9 @@ func (ps FlaskServer) Generate(dir string) error {
 			return err
 		}
 		// main file
-		return commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true)
+		commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true)
 	}
+
 	return nil
 
 }

@@ -247,13 +247,11 @@ func (pf *field) setType(t, items string) {
 	case ramlType.IsArray(): // array
 		pf.IsList = true
 		pf.setType(ramlType.ArrayType(), "")
-		pf.addImport("typing", "List")
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
 	case ramlType.IsUnion():
 		// send the list of union types to the template
 		unionTypes, _ := ramlType.Union()
-		pf.addImport("typing", "Union")
 		for _, typename := range unionTypes {
 			if v, ok := typeMap[typename]; ok {
 				switch typename {

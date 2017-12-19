@@ -17,12 +17,11 @@ var Version = "0.1-Dev"
 var ApplicationName = "RAML code generation toolset"
 
 var (
-	serverCommand = &commands.ServerCommand{}
-	clientCommand = &commands.ClientCommand{}
-	capnpCommand  = &commands.CapnpCommand{}
-	specCommand   = &commands.SpecCommand{}
-	docsCommand   = &commands.DocsCommand{}
-	mypyCommand   = &commands.MyPyCommand{}
+	serverCommand      = &commands.ServerCommand{}
+	clientCommand      = &commands.ClientCommand{}
+	capnpCommand       = &commands.CapnpCommand{}
+	docsCommand        = &commands.DocsCommand{}
+	pythonCapnpCommand = &commands.PythonCapnp{}
 )
 
 func main() {
@@ -210,25 +209,25 @@ func main() {
 				log.Error(err)
 			},
 		}, {
-			Name:  "mypy",
-			Usage: "Create mypy models",
+			Name:  "python-capnp",
+			Usage: "Create python classes for raml types with capnp conversion",
 
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "dir",
 					Value:       ".",
 					Usage:       "target directory",
-					Destination: &mypyCommand.Dir,
+					Destination: &pythonCapnpCommand.Dir,
 				},
 				cli.StringFlag{
 					Name:        "ramlfile",
 					Value:       ".",
 					Usage:       "Source raml file",
-					Destination: &mypyCommand.RAMLFile,
+					Destination: &pythonCapnpCommand.RAMLFile,
 				},
 			},
 			Action: func(c *cli.Context) {
-				if err := mypyCommand.Execute(); err != nil {
+				if err := pythonCapnpCommand.Execute(); err != nil {
 					log.Error(err)
 				}
 			},

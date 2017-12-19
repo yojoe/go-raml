@@ -16,6 +16,7 @@ import (
 
 const (
 	clientNameRequests = "requests"
+	clientNameGeventRequests = "gevent-requests"
 	clientNameAiohttp  = "aiohttp"
 )
 
@@ -44,7 +45,7 @@ func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool)
 	switch kind {
 	case "":
 		kind = clientNameRequests
-	case clientNameRequests, clientNameAiohttp:
+	case clientNameRequests, clientNameAiohttp, clientNameGeventRequests:
 	default:
 		log.Fatalf("invalid client kind:%v", kind)
 	}
@@ -69,20 +70,8 @@ func generateEmptyInitPy(dir string) error {
 	return commons.GenerateFile(nil, "./templates/python/init_py.tmpl", "init_py", filepath.Join(dir, "__init__.py"), false)
 }
 
-func (c Client) GenerateMyPyClasses(dir string) error {
-	globAPIDef = c.APIDef
-	// helper for python classes
-	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
-		"client_support", filepath.Join(dir, "client_support.py"), false); err != nil {
-		return err
-	}
-
-	if err := generateEmptyInitPy(dir); err != nil {
-		return err
-	}
-
-	// python classes
-	return generateMyPyClasses(c.APIDef, dir)
+func (c Client) ClientKind() string {
+	return c.Kind
 }
 
 // Generate generates python client library files
@@ -103,7 +92,7 @@ func (c Client) Generate(dir string) error {
 	}
 
 	// python classes
-	classes, err := generateAllClasses(c.APIDef, dir)
+	classes, err := GenerateAllClasses(c.APIDef, dir, false)
 	if err != nil {
 		return err
 	}

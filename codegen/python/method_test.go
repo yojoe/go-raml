@@ -22,7 +22,7 @@ func TestMethod(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/display_name/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			fs := NewFlaskServer(apiDef, "apidocs", true, nil)
+			fs := NewFlaskServer(apiDef, "apidocs", true, nil, false)
 
 			err = fs.Generate(targetDir)
 			So(err, ShouldBeNil)
@@ -58,7 +58,7 @@ func TestServerMethodWithComplexBody(t *testing.T) {
 		err = raml.ParseFile("../fixtures/body.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		fs := NewFlaskServer(apiDef, "apidocs", true, nil)
+		fs := NewFlaskServer(apiDef, "apidocs", true, nil, false)
 
 		err = fs.Generate(targetDir)
 		So(err, ShouldBeNil)

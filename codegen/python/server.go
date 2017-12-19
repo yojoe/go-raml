@@ -11,8 +11,9 @@ var (
 )
 
 const (
-	serverKindSanic = "sanic"
-	serverKindFlask = "flask"
+	serverKindSanic       = "sanic"
+	serverKindFlask       = "flask"
+	serverKindGeventFlask = "gevent-flask"
 )
 
 // Server represents a python server
@@ -25,7 +26,9 @@ func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
 	withMain bool, libRootURLs []string) Server {
 	switch kind {
 	case "", serverKindFlask:
-		return NewFlaskServer(apiDef, apiDocsDir, withMain, libRootURLs)
+		return NewFlaskServer(apiDef, apiDocsDir, withMain, libRootURLs, false)
+	case serverKindGeventFlask:
+		return NewFlaskServer(apiDef, apiDocsDir, true, libRootURLs, true)
 	case serverKindSanic:
 		return NewSanicServer(apiDef, apiDocsDir, withMain, libRootURLs)
 	default:

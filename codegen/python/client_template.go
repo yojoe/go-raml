@@ -17,7 +17,7 @@ type clientTemplate struct {
 
 func (c *Client) initTemplates() {
 	switch c.Kind {
-	case clientNameRequests:
+	case clientNameRequests, clientNameGeventRequests:
 		c.initTemplatesRequests()
 	case clientNameAiohttp:
 		c.initTemplatesAioHTTP()

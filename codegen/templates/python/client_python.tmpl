@@ -1,14 +1,19 @@
 {{- define "client_python" -}}
+{{- if eq .ClientKind "gevent-requests" -}}
+from gevent import monkey
+monkey.patch_all(subprocess=False) # setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+
+{{ end -}}
 import requests
 {{ range $k, $v := .Services }}
-from .{{$v.FilenameNoExt}} import {{$v.Name}} {{end}}
+from .{{$v.FilenameNoExt}} import {{$v.Name}}{{end}}
 
 
 class Client:
     def __init__(self, base_uri="{{.BaseURI}}"):
         self.base_url = base_uri
         self.session = requests.Session()
-        {{ range $k, $v := .Services }}
+        {{- range $k, $v := .Services }}
         self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
 
     def is_goraml_class(self, data):
@@ -66,5 +71,4 @@ class Client:
 
     def delete(self, uri, data, headers, params, content_type):
         return self._handle_data(uri, data, headers, params, content_type, self.session.delete)
-
-{{- end -}}
+{{ end }}

@@ -17,45 +17,54 @@ func TestServer(t *testing.T) {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)
 
-		Convey("Congo python server", func() {
-			apiDef := new(raml.APIDefinition)
-			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
-			So(err, ShouldBeNil)
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
+		So(err, ShouldBeNil)
+		rootFixture := "../fixtures/congo/python_server"
+		files := []string{
+			"drones_api.py",
+			"deliveries_api.py",
+			"app.py",
+		}
 
-			server := NewFlaskServer(apiDef, "apidocs", true, nil)
+		Convey("Congo python server", func() {
+			server := NewFlaskServer(apiDef, "apidocs", true, nil, false)
 			err = server.Generate(targetDir)
 			So(err, ShouldBeNil)
-
-			rootFixture := "../fixtures/congo/python_server"
-			files := []string{
-				"drones_api.py",
-				"deliveries_api.py",
-				"app.py",
-			}
-
-			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
-				So(err, ShouldBeNil)
-
-				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
-				So(err, ShouldBeNil)
-
-				So(s, ShouldEqual, tmpl)
-			}
-
+			validateFiles(files, targetDir, rootFixture)
 			// test that this file exist
-			files = []string{
+			filesExist := []string{
 				"User.py",
 				"client_support.py",
 			}
-			for _, f := range files {
+			for _, f := range filesExist {
 				_, err := os.Stat(filepath.Join(targetDir, f))
 				So(err, ShouldBeNil)
 			}
+		})
+
+		Convey("Congo gevent python server", func() {
+			files = append(files, "server.py")
+			server := NewFlaskServer(apiDef, "apidocs", true, nil, true)
+			err = server.Generate(targetDir)
+			So(err, ShouldBeNil)
+			validateFiles(files, targetDir, rootFixture)
 		})
 
 		Reset(func() {
 			os.RemoveAll(targetDir)
 		})
 	})
+}
+
+func validateFiles(files []string, targetDir string, rootFixture string) {
+	for _, f := range files {
+		s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+		So(err, ShouldBeNil)
+
+		tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+		So(err, ShouldBeNil)
+
+		So(s, ShouldEqual, tmpl)
+	}
 }

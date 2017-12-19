@@ -2,10 +2,9 @@ package python
 
 import (
 	"path/filepath"
-	"sort"
 	"strings"
 
-	"fmt"
+	"github.com/Jumpscale/go-raml/codegen/capnp"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
@@ -13,13 +12,12 @@ import (
 
 // class defines a python class
 type class struct {
-	T                 raml.Type
-	Name              string
-	Description       []string
-	Fields            map[string]field
-	Enum              *enum
-	CreateParamString string
-	MyPy              bool
+	T           raml.Type
+	Name        string
+	Description []string
+	Fields      map[string]field
+	Enum        *enum
+	Capnp       bool
 }
 
 type objectProperty struct {
@@ -30,12 +28,13 @@ type objectProperty struct {
 }
 
 // create a python class representations
-func newClass(T raml.Type, name string, description string, properties map[string]interface{}) class {
+func newClass(T raml.Type, name string, description string, properties map[string]interface{}, capnp bool) class {
 	pc := class{
 		Name:        name,
 		Description: commons.ParseDescription(description),
 		Fields:      map[string]field{},
 		T:           T,
+		Capnp:       capnp,
 	}
 	types := globAPIDef.Types
 
@@ -138,16 +137,8 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 	return properties
 }
 
-func newMyPyClassFromType(T raml.Type, name string) class {
-	pc := newClass(T, name, T.Description, T.Properties)
-	pc.T = T
-	pc.handleAdvancedType()
-	pc.createParamString()
-	return pc
-}
-
-func newClassFromType(T raml.Type, name string) class {
-	pc := newClass(T, name, T.Description, T.Properties)
+func newClassFromType(T raml.Type, name string, capnp bool) class {
+	pc := newClass(T, name, T.Description, T.Properties, capnp)
 	pc.T = T
 	pc.handleAdvancedType()
 	return pc
@@ -176,25 +167,6 @@ func (pc *class) generate(dir string, template string, name string) ([]string, e
 	return typeNames, commons.GenerateFile(pc, template, name, fileName, false)
 }
 
-func (pc *class) createParamString() {
-	// build the CreateParamString, used as part of the create() staticmethod
-	// which is a convenience initializer for the class
-	requiredFields := make([]string, 0)
-	optionalFields := make([]string, 0)
-
-	for fieldName, field := range pc.Fields {
-		if field.Required {
-			requiredFields = append(requiredFields, fmt.Sprintf("%s: %s", fieldName, field.MyPyType))
-		} else {
-			optionalFields = append(optionalFields, fmt.Sprintf("%s: %s=None", fieldName, field.MyPyType))
-		}
-	}
-	// sort them so we have some stability in param order (important for requiredFields)
-	sort.Strings(requiredFields)
-	sort.Strings(optionalFields)
-	pc.CreateParamString = strings.Join(append(requiredFields, optionalFields...), ", ")
-}
-
 func (pc *class) handleAdvancedType() {
 	if pc.T.Type == nil {
 		pc.T.Type = "object"
@@ -211,11 +183,6 @@ func (pc class) Imports() []string {
 
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
-			// Ignore mypy imports if this is not a mypy class
-			if !pc.MyPy && imp.Module == "typing" || pc.MyPy && imp.Module == "six" {
-				continue
-			}
-
 			// do not import ourself
 			if imp.Name == pc.Name {
 				continue
@@ -230,7 +197,7 @@ func (pc class) Imports() []string {
 }
 
 // generate all python classes from a RAML document
-func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error) {
+func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]string, error) {
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
@@ -251,7 +218,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 			}
 		case types.TypeInBody:
 			newTipName := genTypeName(tip)
-			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties)
+			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
 			propNames := []string{}
 			for k := range tip.Properties {
 				propNames = append(propNames, k)
@@ -261,7 +228,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 			if name == "UUID" {
 				continue
 			}
-			pc := newClassFromType(tip, name)
+			pc := newClassFromType(tip, name, capnp)
 			results, errGen = pc.generate(dir, template, templateName)
 		}
 
@@ -276,7 +243,7 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 			Type: tip,
 		}
 		if parents, isMult := rt.MultipleInheritance(); isMult {
-			pc := newClassFromType(rt, strings.Join(parents, ""))
+			pc := newClassFromType(rt, strings.Join(parents, ""), capnp)
 			results, err := pc.generate(dir, template, templateName)
 			if err != nil {
 				return names, err
@@ -289,18 +256,16 @@ func generateAllClasses(apiDef *raml.APIDefinition, dir string) ([]string, error
 
 }
 
-// generate all mypy python classes from a RAML document type section.
-func generateMyPyClasses(apiDef *raml.APIDefinition, dir string) error {
-	// from types
-	for name, tip := range apiDef.Types {
-		if name == "UUID" {
-			continue
-		}
-		pc := newMyPyClassFromType(tip, name)
-		pc.MyPy = true
-		if _, errGen := pc.generate(dir, "./templates/python/class_python_mypy.tmpl", "class_python_mypy"); errGen != nil {
-			return errGen
-		}
+// GeneratePythonCapnpClasses generates python classes from a raml definition along with function to load binaries from/to capnp
+// and generates the needed capnp schemas
+func GeneratePythonCapnpClasses(apiDef *raml.APIDefinition, dir string) error {
+	// TODO : get rid of this global variables
+	globAPIDef = apiDef
+	
+	if err := capnp.GenerateCapnp(apiDef, dir, "", ""); err != nil {
+		return err
 	}
-	return nil
+
+	_, err := GenerateAllClasses(apiDef, dir, true)
+	return err
 }

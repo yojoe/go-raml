@@ -23,7 +23,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			fs := NewFlaskServer(apiDef, "", true, nil)
+			fs := NewFlaskServer(apiDef, "", true, nil, false)
 			err = fs.generateOauth2(fs.APIDef.SecuritySchemes, targetdir)
 			So(err, ShouldBeNil)
 
@@ -51,7 +51,7 @@ func TestOauth2Middleware(t *testing.T) {
 			err := raml.ParseFile("../fixtures/security/dropbox.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			fs := NewFlaskServer(apiDef, "apidocs", true, nil)
+			fs := NewFlaskServer(apiDef, "apidocs", true, nil, false)
 			err = fs.generateResources(targetdir)
 			So(err, ShouldBeNil)
 
