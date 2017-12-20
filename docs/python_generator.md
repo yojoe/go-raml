@@ -1,5 +1,9 @@
 # Python Code Generator
 
+## Requirements
+
+- [autopep8](https://pypi.python.org/pypi/autopep8) for automatic code formatting
+
 ## Server
 
 Generated server code use these libraries:

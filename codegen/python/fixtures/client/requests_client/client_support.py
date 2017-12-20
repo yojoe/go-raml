@@ -65,7 +65,9 @@ def dict_factory(val, objmap):
                 except Exception:
                     pass
             if objdict.get(attrname) is None:
-                raise ValueError('dict_factory: {attr}: unable to instantiate with any supplied type'.format(attr=attrname))
+                raise ValueError(
+                    'dict_factory: {attr}: unable to instantiate with any supplied type'.format(
+                        attr=attrname))
         elif attrdict.get('required'):
             raise ValueError('dict_factory: {attr} is required'.format(attr=attrname))
 
@@ -108,7 +110,7 @@ def set_property(name, data, data_types, has_child_properties,
     required_error = '{cls}: missing required property {prop}'
     factory_value = None
     val = data.get(name)
-    if val:
+    if val is not None:
         try:
             if is_list:
                 factory_value = list_factory(val, data_types)

@@ -1,5 +1,6 @@
 import aiohttp
 
+
 class Oauth2ClientItsyouonline():
     def __init__(self, access_token_uri='https://itsyou.online/v1/oauth/access_token?response_type=id_token'):
         self.access_token_uri = access_token_uri
