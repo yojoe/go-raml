@@ -8,11 +8,9 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-
 async def helloworld_get(request):
     '''
     It is handler for GET /helloworld
     '''
-    
-    return json({})
 
+    return json({})

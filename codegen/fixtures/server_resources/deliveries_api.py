@@ -17,7 +17,7 @@ def deliveries_get():
     Get a list of deliveries
     It is handler for GET /deliveries
     '''
-    
+
     return jsonify()
 
 
@@ -27,7 +27,7 @@ def deliveries_post():
     Create/request a new delivery
     It is handler for POST /deliveries
     '''
-    
+
     return jsonify()
 
 
@@ -37,7 +37,7 @@ def getDeliveriesByDeliveryID(deliveryId):
     Get information on a specific delivery
     It is handler for GET /deliveries/<deliveryId>
     '''
-    
+
     return jsonify()
 
 
@@ -47,7 +47,7 @@ def deliveries_byDeliveryId_patch(deliveryId):
     Update the information on a specific delivery
     It is handler for PATCH /deliveries/<deliveryId>
     '''
-    
+
     return jsonify()
 
 
@@ -57,5 +57,5 @@ def deliveries_byDeliveryId_delete(deliveryId):
     Cancel a specific delivery
     It is handler for DELETE /deliveries/<deliveryId>
     '''
-    
+
     return jsonify()

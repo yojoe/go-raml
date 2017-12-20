@@ -33,9 +33,11 @@ class EnumCity(object):
 
         # set attributes
         data_types = [EnumEnumCityEnum_homeNum]
-        self.enum_homeNum = client_support.set_property('enum_homeNum', data, data_types, False, [], False, True, class_name)
+        self.enum_homeNum = client_support.set_property(
+            'enum_homeNum', data, data_types, False, [], False, True, class_name)
         data_types = [EnumEnumCityEnum_parks]
-        self.enum_parks = client_support.set_property('enum_parks', data, data_types, False, [], False, True, class_name)
+        self.enum_parks = client_support.set_property(
+            'enum_parks', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
 
