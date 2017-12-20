@@ -109,8 +109,11 @@ func GenerateFile(data interface{}, tmplFile, tmplName, filename string, overrid
 		return err
 	}
 
-	if strings.HasSuffix(filename, ".go") {
+	switch {
+	case strings.HasSuffix(filename, ".go"):
 		return runGoFmt(filename)
+	case strings.HasSuffix(filename, ".py"):
+		return runAutoPep8(filename)
 	}
 	return nil
 }
@@ -159,11 +162,31 @@ func ParamizingURI(URI, sep string) string {
 
 // run `go fmt` command to a file
 func runGoFmt(filePath string) error {
-	args := []string{"-w", filePath}
+	args := []string{
+		"-w",
+		filePath,
+	}
 
 	if out, err := exec.Command("gofmt", args...).CombinedOutput(); err != nil {
 		log.Errorf("Error running go fmt on '%s' failed:\n%s", filePath, string(out))
 		return errors.New("go fmt failed")
+	}
+	return nil
+}
+
+func runAutoPep8(filename string) error {
+	args := []string{
+		"-a",
+		"-a",
+		"--in-place",
+		"--max-line-length",
+		"120",
+		filename,
+	}
+	if out, err := exec.Command("autopep8", args...).CombinedOutput(); err != nil {
+		log.Errorf("Error running autopep8 on '%s' failed:\n%s",
+			filename, string(out))
+		return errors.New("autopep8 failed: make sure you have it installed")
 	}
 	return nil
 }

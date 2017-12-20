@@ -1,5 +1,6 @@
 from gevent import monkey
-monkey.patch_all(subprocess=False) # setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+# setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+monkey.patch_all(subprocess=False)
 
 import requests
 
@@ -46,7 +47,7 @@ class Client:
             res = method(uri, files=data, headers=headers, params=params)
         elif data is None:
             res = method(uri, headers=headers, params=params)
-        elif type(data) is str:
+        elif isinstance(data, str):
             res = method(uri, data=data, headers=headers, params=params)
         else:
             res = method(uri, json=data, headers=headers, params=params)

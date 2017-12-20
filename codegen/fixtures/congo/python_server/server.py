@@ -7,7 +7,8 @@ from gevent import monkey
 
 import signal
 
-monkey.patch_all(subprocess=False) # setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+# setting it to False will block gevent and setting it to True breaks js9. @TODO investigate why it breaks js9.
+monkey.patch_all(subprocess=False)
 
 
 server = WSGIServer(('', 5000), app, spawn=Pool(None))
