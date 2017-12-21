@@ -1,17 +1,17 @@
 import json
 import aiohttp
 
-from .users_service import  UsersService 
+from .users_service import UsersService
 
 
 class Client:
-    def __init__(self, loop, base_uri = "http://localhost:5000"):
+    def __init__(self, loop, base_uri="http://localhost:5000"):
         self.base_url = base_uri
         self.session = aiohttp.ClientSession(loop=loop)
         self.headers = {"Content-Type": "application/json"}
-        
+
         self.users = UsersService(self)
-    
+
     def set_auth_header(self, val):
         ''' set authorization header value'''
         self.headers["Authorization"] = val
@@ -40,7 +40,7 @@ class Client:
 
     async def post(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
-        if type(data) is not str:
+        if not isinstance(data, str):
             data = json.dumps(data)
 
         res = await self.session.post(uri, data=data, headers=hdrs, params=params)
@@ -49,7 +49,7 @@ class Client:
 
     async def put(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
-        if type(data) is not str:
+        if not isinstance(data, str):
             data = json.dumps(data)
 
         res = await self.session.put(uri, data=data, headers=hdrs, params=params)
@@ -58,9 +58,9 @@ class Client:
 
     async def patch(self, uri, data, headers, params, content_type):
         hdrs = self.build_header(headers)
-        if type(data) is not str:
+        if not isinstance(data, str):
             data = json.dumps(data)
-        
+
         res = await self.session.patch(uri, data=data, headers=hdrs, params=params)
         res.raise_for_status()
         return res

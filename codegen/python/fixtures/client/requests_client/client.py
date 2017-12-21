@@ -43,7 +43,7 @@ class Client:
             res = method(uri, files=data, headers=headers, params=params)
         elif data is None:
             res = method(uri, headers=headers, params=params)
-        elif type(data) is str:
+        elif isinstance(data, str):
             res = method(uri, data=data, headers=headers, params=params)
         else:
             res = method(uri, json=data, headers=headers, params=params)

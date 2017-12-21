@@ -7,6 +7,7 @@ oauth2_server_pub_key = """"""
 
 token_prefix = "Bearer "
 
+
 def get_jwt_scopes(token, audience):
     if token.startswith(token_prefix):
         token = token[len(token_prefix):]
@@ -14,12 +15,13 @@ def get_jwt_scopes(token, audience):
     else:
         raise Exception('invalid token')
 
+
 class oauth2_Facebook:
-    def __init__(self, scopes=None, audience= None):
-        
+    def __init__(self, scopes=None, audience=None):
+
         self.described_by = "headers"
         self.field = "Authorization"
-        
+
         self.allowed_scopes = scopes
         if audience is None:
             self.audience = ''
