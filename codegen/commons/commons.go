@@ -14,6 +14,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/templates"
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 var (
@@ -212,4 +213,42 @@ func ReplaceNonAlphanumerics(s string) string {
 func DisplayNameToFuncName(str string) string {
 	str = strings.Replace(str, " ", "", -1) // remove the space
 	return ReplaceNonAlphanumerics(str)     // change the other to _
+}
+
+func SetServerMethodName(displayName, verb string, resource *raml.Resource) string {
+	if len(displayName) > 0 {
+		return DisplayNameToFuncName(displayName)
+	}
+	return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
+}
+
+// create snake case function name from a resource URI
+func snakeCaseResourceURI(r *raml.Resource) string {
+	return _snakeCaseResourceURI(r, "")
+}
+
+func _snakeCaseResourceURI(r *raml.Resource, completeURI string) string {
+	if r == nil {
+		return completeURI
+	}
+	var snake string
+	if len(r.URI) > 0 {
+		uri := NormalizeURI(r.URI)
+		if len(uri) > 0 {
+			if r.Parent != nil { // not root resource, need to add "_"
+				snake = "_"
+			}
+
+			if strings.HasPrefix(r.URI, "/{") {
+				snake += "by" + strings.ToUpper(uri[:1])
+			} else {
+				snake += strings.ToLower(uri[:1])
+			}
+
+			if len(uri) > 1 { // append with the rest of uri
+				snake += uri[1:]
+			}
+		}
+	}
+	return _snakeCaseResourceURI(r.Parent, snake+completeURI)
 }

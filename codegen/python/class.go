@@ -222,12 +222,8 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
-			newTipName := genTypeName(tip)
+			newTipName := types.GenTypeName(tip)
 			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
-			propNames := []string{}
-			for k := range tip.Properties {
-				propNames = append(propNames, k)
-			}
 			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:
 			if name == "UUID" {

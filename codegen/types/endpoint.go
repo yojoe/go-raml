@@ -3,7 +3,9 @@ package types
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 const (
@@ -74,4 +76,15 @@ func getEndpointsOfResource(parentPath string, r *raml.Resource, endpoints map[s
 	for _, v := range r.Nested {
 		getEndpointsOfResource(parentPath+r.URI, v, endpoints)
 	}
+}
+
+// generate type name for
+// inline type declared in request/response body
+func GenTypeName(tip TypeInBody) string {
+	methodName := commons.SetServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+	suffix := commons.ReqBodySuffix
+	if tip.ReqResp == HTTPResponse {
+		suffix = commons.RespBodySuffix
+	}
+	return casee.ToPascalCase(methodName + suffix)
 }
