@@ -2,6 +2,8 @@ package capnp
 
 import (
 	"strings"
+
+	"github.com/pinzolo/casee"
 )
 
 var (
@@ -20,6 +22,10 @@ var (
 		"int16":     "Int16",
 		"int32":     "Int32",
 		"int64":     "Int64",
+		"uint8":     "UInt8",
+		"uint16":    "UInt16",
+		"uint32":    "UInt32",
+		"uint64":    "UInt64",
 		"int":       "Int16",
 		"float":     "Float64",
 		"long":      "Int32",
@@ -31,7 +37,7 @@ func builtinType(t string) (string, bool) {
 	if v, ok := typeMap[t]; ok {
 		return v, ok
 	}
-	return t, false
+	return casee.ToPascalCase(t), false
 }
 
 func toCapnpType(t, capnpType string, itemsType string) (string, string) {
@@ -63,5 +69,5 @@ func toCapnpType(t, capnpType string, itemsType string) (string, string) {
 		return "List", v
 	}
 
-	return t, ""
+	return casee.ToPascalCase(t), ""
 }

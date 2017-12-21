@@ -76,5 +76,5 @@ class SingleInheritanceCollection:
         rtype: SingleInheritance
         """
         template = capnp.load('%s/SingleInheritance.capnp' % dir)
-        struct = template.SingleInheritance.from_bytes(binary) if bin else template.SingleInheritance.new_message()
+        struct = template.SingleInheritance.from_bytes(binary) if binary else template.SingleInheritance.new_message()
         return SingleInheritance(**struct.to_dict(verbose=True))

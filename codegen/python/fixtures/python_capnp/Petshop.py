@@ -70,5 +70,5 @@ class PetshopCollection:
         rtype: Petshop
         """
         template = capnp.load('%s/Petshop.capnp' % dir)
-        struct = template.Petshop.from_bytes(binary) if bin else template.Petshop.new_message()
+        struct = template.Petshop.from_bytes(binary) if binary else template.Petshop.new_message()
         return Petshop(**struct.to_dict(verbose=True))

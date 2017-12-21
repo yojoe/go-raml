@@ -3,10 +3,10 @@ package capnp
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 type enum struct {
@@ -20,13 +20,13 @@ type enum struct {
 func newEnum(structName string, prop raml.Property, lang, pkg string) *enum {
 	e := enum{
 		ID:   getID(),
-		Name: "Enum" + strings.Title(structName) + strings.Title(prop.Name),
+		Name: "Enum" + structName + casee.ToPascalCase(prop.Name),
 		lang: lang,
 		pkg:  pkg,
 	}
 	for k, v := range prop.Enum.([]interface{}) {
 		f := field{
-			Name: v.(string),
+			Name: casee.ToCamelCase(v.(string)),
 			Num:  k,
 		}
 		e.Fields = append(e.Fields, f)
@@ -37,13 +37,13 @@ func newEnum(structName string, prop raml.Property, lang, pkg string) *enum {
 func newEnumFromType(structName string, t raml.Type, lang, pkg string) *enum {
 	e := enum{
 		ID:   getID(),
-		Name: strings.Title(structName),
+		Name: structName,
 		lang: lang,
 		pkg:  pkg,
 	}
 	for k, v := range t.Enum.([]interface{}) {
 		f := field{
-			Name: v.(string),
+			Name: casee.ToCamelCase(v.(string)),
 			Num:  k,
 		}
 		e.Fields = append(e.Fields, f)

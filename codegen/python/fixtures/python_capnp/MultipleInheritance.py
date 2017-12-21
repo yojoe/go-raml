@@ -79,5 +79,5 @@ class MultipleInheritanceCollection:
         rtype: MultipleInheritance
         """
         template = capnp.load('%s/MultipleInheritance.capnp' % dir)
-        struct = template.MultipleInheritance.from_bytes(binary) if bin else template.MultipleInheritance.new_message()
+        struct = template.MultipleInheritance.from_bytes(binary) if binary else template.MultipleInheritance.new_message()
         return MultipleInheritance(**struct.to_dict(verbose=True))
