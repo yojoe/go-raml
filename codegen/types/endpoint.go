@@ -3,7 +3,9 @@ package types
 import (
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 const (
@@ -74,4 +76,14 @@ func getEndpointsOfResource(parentPath string, r *raml.Resource, endpoints map[s
 	for _, v := range r.Nested {
 		getEndpointsOfResource(parentPath+r.URI, v, endpoints)
 	}
+}
+
+// PascalCaseTypeName generates pascalcase type name from snackcase method name
+func PascalCaseTypeName(tip TypeInBody) string {
+	methodName := commons.SnackCaseServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+	suffix := commons.ReqBodySuffix
+	if tip.ReqResp == HTTPResponse {
+		suffix = commons.RespBodySuffix
+	}
+	return casee.ToPascalCase(methodName + suffix)
 }

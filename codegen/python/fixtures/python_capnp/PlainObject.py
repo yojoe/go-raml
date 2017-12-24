@@ -65,5 +65,5 @@ class PlainObjectCollection:
         rtype: PlainObject
         """
         template = capnp.load('%s/PlainObject.capnp' % dir)
-        struct = template.PlainObject.from_bytes(binary) if bin else template.PlainObject.new_message()
+        struct = template.PlainObject.from_bytes(binary) if binary else template.PlainObject.new_message()
         return PlainObject(**struct.to_dict(verbose=True))

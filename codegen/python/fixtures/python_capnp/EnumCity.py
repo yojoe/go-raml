@@ -70,5 +70,5 @@ class EnumCityCollection:
         rtype: EnumCity
         """
         template = capnp.load('%s/EnumCity.capnp' % dir)
-        struct = template.EnumCity.from_bytes(binary) if bin else template.EnumCity.new_message()
+        struct = template.EnumCity.from_bytes(binary) if binary else template.EnumCity.new_message()
         return EnumCity(**struct.to_dict(verbose=True))

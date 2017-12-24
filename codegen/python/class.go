@@ -8,6 +8,7 @@ import (
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 // class defines a python class
@@ -196,6 +197,10 @@ func (pc class) Imports() []string {
 	return commons.MapToSortedStrings(imports)
 }
 
+func (pc class) CapnpName() string {
+	return casee.ToPascalCase(pc.Name)
+}
+
 // generate all python classes from a RAML document
 func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]string, error) {
 	// array of tip that need to be generated in the end of this
@@ -217,12 +222,8 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
-			newTipName := genTypeName(tip)
+			newTipName := types.PascalCaseTypeName(tip)
 			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
-			propNames := []string{}
-			for k := range tip.Properties {
-				propNames = append(propNames, k)
-			}
 			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:
 			if name == "UUID" {
@@ -261,7 +262,7 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 func GeneratePythonCapnpClasses(apiDef *raml.APIDefinition, dir string) error {
 	// TODO : get rid of this global variables
 	globAPIDef = apiDef
-	
+
 	if err := capnp.GenerateCapnp(apiDef, dir, "", ""); err != nil {
 		return err
 	}

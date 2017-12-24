@@ -20,10 +20,12 @@ type Struct struct {
 	T             raml.Type
 	lang          string
 	pkg           string
-	Enum  *enum
+	Enum          *enum
 }
 
 func NewStruct(t raml.Type, name, lang, pkg string) (Struct, error) {
+	name = casee.ToPascalCase(name)
+
 	// generate fields from type properties
 	fields := make(map[string]field)
 	fieldNames := []string{}

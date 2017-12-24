@@ -171,6 +171,6 @@ func setBodyName(bodies raml.Bodies, prefix, suffix string) string {
 		bodyName = prefix + suffix
 	}
 
-	return bodyName
+	return casee.ToPascalCase(bodyName)
 
 }

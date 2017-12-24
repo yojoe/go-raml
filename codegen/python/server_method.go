@@ -4,12 +4,12 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/chuckpreslar/inflect"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 // python server method
@@ -19,20 +19,13 @@ type serverMethod struct {
 	SecuredBy      []raml.DefinitionChoice
 }
 
-func setServerMethodName(displayName, verb string, resource *raml.Resource) string {
-	if len(displayName) > 0 {
-		return commons.DisplayNameToFuncName(displayName)
-	}
-	return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
-}
-
 // setup sets all needed variables
 func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, resourceParams []string) error {
-	sm.MethodName = setServerMethodName(sm.DisplayName, sm.Verb(), r)
+	sm.MethodName = commons.SnackCaseServerMethodName(sm.DisplayName, sm.Verb(), r)
 
 	if commons.HasJSONBody(&(sm.Bodies)) {
 		// TODO : make it to call proper func
-		sm.ReqBody = inflect.UpperCamelCase(sm.MethodName + commons.ReqBodySuffix)
+		sm.ReqBody = casee.ToPascalCase(sm.MethodName + commons.ReqBodySuffix)
 	}
 
 	sm.Params = strings.Join(resourceParams, ", ")

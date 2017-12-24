@@ -70,5 +70,5 @@ class CageCollection:
         rtype: Cage
         """
         template = capnp.load('%s/Cage.capnp' % dir)
-        struct = template.Cage.from_bytes(binary) if bin else template.Cage.new_message()
+        struct = template.Cage.from_bytes(binary) if binary else template.Cage.new_message()
         return Cage(**struct.to_dict(verbose=True))

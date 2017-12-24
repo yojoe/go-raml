@@ -2,6 +2,7 @@ package capnp
 
 import (
 	"github.com/Jumpscale/go-raml/raml"
+	"github.com/pinzolo/casee"
 )
 
 type field struct {
@@ -15,7 +16,7 @@ type field struct {
 func newField(structName string, prop raml.Property, lang, pkg string) field {
 	capnpType, items := toCapnpType(prop.TypeString(), prop.CapnpType, prop.Items.Type)
 	fd := field{
-		Name:  prop.Name,
+		Name:  casee.ToCamelCase(prop.Name),
 		Type:  capnpType,
 		Items: items,
 	}

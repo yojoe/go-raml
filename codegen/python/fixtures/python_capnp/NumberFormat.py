@@ -89,5 +89,5 @@ class NumberFormatCollection:
         rtype: NumberFormat
         """
         template = capnp.load('%s/NumberFormat.capnp' % dir)
-        struct = template.NumberFormat.from_bytes(binary) if bin else template.NumberFormat.new_message()
+        struct = template.NumberFormat.from_bytes(binary) if binary else template.NumberFormat.new_message()
         return NumberFormat(**struct.to_dict(verbose=True))

@@ -73,5 +73,5 @@ class AnimalCollection:
         rtype: Animal
         """
         template = capnp.load('%s/Animal.capnp' % dir)
-        struct = template.Animal.from_bytes(binary) if bin else template.Animal.new_message()
+        struct = template.Animal.from_bytes(binary) if binary else template.Animal.new_message()
         return Animal(**struct.to_dict(verbose=True))

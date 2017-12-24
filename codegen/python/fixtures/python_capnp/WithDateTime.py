@@ -70,5 +70,5 @@ class WithDateTimeCollection:
         rtype: WithDateTime
         """
         template = capnp.load('%s/WithDateTime.capnp' % dir)
-        struct = template.WithDateTime.from_bytes(binary) if bin else template.WithDateTime.new_message()
+        struct = template.WithDateTime.from_bytes(binary) if binary else template.WithDateTime.new_message()
         return WithDateTime(**struct.to_dict(verbose=True))

@@ -64,11 +64,11 @@ class {{.Name}}(object):
 
     def to_capnp(self):
         """
-        Load the class in capnp schema {{.Name}}.capnp
+        Load the class in capnp schema {{.CapnpName}}.capnp
         :rtype bytes
         """
-        template = capnp.load('%s/{{.Name}}.capnp' % dir)
-        return template.{{.Name}}.new_message(**self.as_dict()).to_bytes()
+        template = capnp.load('%s/{{.CapnpName}}.capnp' % dir)
+        return template.{{.CapnpName}}.new_message(**self.as_dict()).to_bytes()
 
 
 class {{.Name}}Collection:
@@ -79,12 +79,12 @@ class {{.Name}}Collection:
     @staticmethod
     def new(binary=None):
         """
-        Load the binary of {{.Name}}.capnp into class {{.Name}}
+        Load the binary of {{.CapnpName}}.capnp into class {{.Name}}
         :type binary: bytes. If none creates an empty capnp object.
         rtype: {{.Name}}
         """
-        template = capnp.load('%s/{{.Name}}.capnp' % dir)
-        struct = template.{{.Name}}.from_bytes(binary) if bin else template.{{.Name}}.new_message()
+        template = capnp.load('%s/{{.CapnpName}}.capnp' % dir)
+        struct = template.{{.CapnpName}}.from_bytes(binary) if binary else template.{{.CapnpName}}.new_message()
         return {{.Name}}(**struct.to_dict(verbose=True))
 {{- end}}
 {{ end -}}

@@ -66,5 +66,5 @@ class CatCollection:
         rtype: Cat
         """
         template = capnp.load('%s/Cat.capnp' % dir)
-        struct = template.Cat.from_bytes(binary) if bin else template.Cat.new_message()
+        struct = template.Cat.from_bytes(binary) if binary else template.Cat.new_message()
         return Cat(**struct.to_dict(verbose=True))
