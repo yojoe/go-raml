@@ -21,7 +21,7 @@ type serverMethod struct {
 
 // setup sets all needed variables
 func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, resourceParams []string) error {
-	sm.MethodName = commons.SetServerMethodName(sm.DisplayName, sm.Verb(), r)
+	sm.MethodName = commons.SnackCaseServerMethodName(sm.DisplayName, sm.Verb(), r)
 
 	if commons.HasJSONBody(&(sm.Bodies)) {
 		// TODO : make it to call proper func

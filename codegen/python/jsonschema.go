@@ -53,7 +53,7 @@ func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 			typeObj := raml.Type{
 				Properties: tip.Properties,
 			}
-			newTipName := types.GenTypeName(tip)
+			newTipName := types.PascalCaseTypeName(tip)
 			js := raml.NewJSONSchemaFromProps(&typeObj, tip.Properties, "object", newTipName)
 			jsObjects[js.Name] = js
 		case raml.Type:

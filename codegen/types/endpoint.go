@@ -78,10 +78,9 @@ func getEndpointsOfResource(parentPath string, r *raml.Resource, endpoints map[s
 	}
 }
 
-// generate type name for
-// inline type declared in request/response body
-func GenTypeName(tip TypeInBody) string {
-	methodName := commons.SetServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
+// PascalCaseTypeName generates pascalcase type name from snackcase method name
+func PascalCaseTypeName(tip TypeInBody) string {
+	methodName := commons.SnackCaseServerMethodName(tip.Endpoint.Method.DisplayName, tip.Endpoint.Verb, tip.Endpoint.Resource)
 	suffix := commons.ReqBodySuffix
 	if tip.ReqResp == HTTPResponse {
 		suffix = commons.RespBodySuffix

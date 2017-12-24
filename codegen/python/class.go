@@ -222,7 +222,7 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 				delayedMI = append(delayedMI, tip)
 			}
 		case types.TypeInBody:
-			newTipName := types.GenTypeName(tip)
+			newTipName := types.PascalCaseTypeName(tip)
 			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
 			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:

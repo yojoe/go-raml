@@ -14,6 +14,14 @@ go-raml server -l python --ramlfile ../api.raml  --dir flask
 
 You can find all Flask files in `flask` directory.
 
+Generate a Gevent Flask server code by using this command
+
+```
+go-raml server -l python --ramlfile ../api.raml  --dir gevent --kind gevent-flask
+```
+
+You can find all Flask files in `gevent` directory.
+
 Generate Sanic code by using this command
 
 ```

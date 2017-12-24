@@ -18,7 +18,7 @@ func GenerateCapnp(apiDef *raml.APIDefinition, dir, lang, pkg string) error {
 			// @todo could also be a case of inheritance, do we need to handle this?
 			continue
 		case types.TypeInBody:
-			name = types.GenTypeName(apiType)
+			name = types.PascalCaseTypeName(apiType)
 			ramlType = raml.Type{Type: "object"}
 			properties := map[string]interface{}{}
 			for k, v := range apiType.Properties {

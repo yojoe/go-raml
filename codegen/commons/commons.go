@@ -238,7 +238,7 @@ func DisplayNameToFuncName(str string) string {
 	return ReplaceNonAlphanumerics(str)     // change the other to _
 }
 
-func SetServerMethodName(displayName, verb string, resource *raml.Resource) string {
+func SnackCaseServerMethodName(displayName, verb string, resource *raml.Resource) string {
 	if len(displayName) > 0 {
 		return DisplayNameToFuncName(displayName)
 	}
