@@ -14,9 +14,10 @@ types:
         minItems: 1
         maxItems: 10
 
-/animals:
+
+/arrays:
   post:
-    description: create a user
+    description: handle array
     body: 
       application/json:
         type: Animal[]
@@ -25,3 +26,17 @@ types:
         body:
           application/json:
             type: Animal[]
+  put:
+    description: another form of array
+    body:
+      application/json:
+        type: array
+        items:
+          type: Animal
+    responses:
+      200:
+        body:
+          application/json:
+            type: array
+            items:
+              type: Animal

@@ -573,7 +573,6 @@ func (t Type) IsArray() bool {
 		return false
 	}
 	return t.TypeString() == arrayType || strings.HasSuffix(t.TypeString(), "[]")
-	//return strings.HasSuffix(t.TypeString(), "[]")
 }
 
 // ArrayType returns type of the array
@@ -789,6 +788,8 @@ type BodiesProperty struct {
 	Properties map[string]interface{} `yaml:"properties"`
 
 	Type interface{}
+
+	Items interface{}
 }
 
 // TypeString returns string representation of the type of the body
@@ -804,4 +805,46 @@ func (bp BodiesProperty) GetProperty(name string) Property {
 		panic(fmt.Errorf("can't find property name %v", name))
 	}
 	return toProperty(name, p)
+}
+
+// - normalize inline array definition
+// - TODO : handle inlined type definition as part of
+//	 https://github.com/Jumpscale/go-raml/issues/96
+func (bp *BodiesProperty) postProcess() {
+	bp.normalizeArray()
+}
+
+// change this form
+// type: array
+// items:
+//   type: something
+//
+// to this form
+// type: something[]
+func (bp *BodiesProperty) normalizeArray() {
+	// `type` and `items` can't be nil
+	if bp.Type == nil || bp.Items == nil {
+		return
+	}
+
+	// make sure `type` value = 'array'
+	typeStr, ok := bp.Type.(string)
+	if !ok && typeStr != arrayType {
+		return
+	}
+
+	// check items value
+	switch item := bp.Items.(type) {
+	case string:
+		bp.Type = item + "[]"
+		bp.Items = nil
+	case map[interface{}]interface{}:
+		tip, ok := item["type"].(string)
+		if !ok {
+			return
+		}
+		bp.Type = tip + "[]"
+		delete(item, "type")
+		bp.Items = item
+	}
 }

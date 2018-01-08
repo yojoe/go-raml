@@ -65,7 +65,7 @@ func TestServerMethodWithComplexBody(t *testing.T) {
 
 		rootFixture := "./fixtures/method/server/complex_body"
 		files := []string{
-			"animals_api.py",
+			"arrays_api.py",
 		}
 
 		for _, f := range files {
