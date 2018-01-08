@@ -69,6 +69,17 @@ func (m *Method) postProcess(r *Resource, name string, traitsMap map[string]Trai
 	m.Name = name
 	m.inheritFromTraits(r, append(r.Is, m.Is...), traitsMap, apiDef)
 	r.Methods = append(r.Methods, m)
+
+	// post process the responses
+	resps := make(map[HTTPCode]Response)
+	for code, resp := range m.Responses {
+		resp.postProcess()
+		resps[code] = resp
+	}
+	m.Responses = resps
+
+	// post process request body
+	m.Bodies.postProcess()
 }
 
 // inherit from resource type
@@ -251,6 +262,10 @@ type Response struct {
 	Bodies Bodies `yaml:"body"`
 }
 
+func (resp *Response) postProcess() {
+	resp.Bodies.postProcess()
+}
+
 // inherit from parent response
 func (resp *Response) inherit(parent Response, dicts map[string]interface{}, rtName string,
 	apiDef *APIDefinition) {
@@ -386,4 +401,12 @@ func (b *Bodies) inherit(parent Bodies, dicts map[string]interface{}, rtName str
 	}
 
 	// TODO : formimeytype
+}
+
+func (b *Bodies) postProcess() {
+	if b.ApplicationJSON == nil {
+		return
+	}
+
+	b.ApplicationJSON.postProcess()
 }
