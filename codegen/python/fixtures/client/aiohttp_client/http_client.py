@@ -1,18 +1,15 @@
-{{- define "client_python_aiohttp" -}}
 import json
 import aiohttp
-{{ range $k, $v := .Services }}
-from .{{$v.FilenameNoExt}} import  {{$v.Name}} {{end}}
 
 
-class Client:
-    def __init__(self, loop, base_uri = "{{.BaseURI}}"):
+class HTTPClient:
+    def __init__(self, loop, base_uri="<no value>", token=None):
         self.base_url = base_uri
         self.session = aiohttp.ClientSession(loop=loop)
         self.headers = {"Content-Type": "application/json"}
-        {{ range $k, $v := .Services }}
-        self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
-    
+        if token is not None:
+            self.set_auth_header('Bearer %s' % token)
+
     def set_auth_header(self, val):
         ''' set authorization header value'''
         self.headers["Authorization"] = val
@@ -65,4 +62,3 @@ class Client:
         res = await self.session.patch(uri, data=data, headers=hdrs, params=params)
         res.raise_for_status()
         return res
-{{- end -}}

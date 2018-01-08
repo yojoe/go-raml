@@ -1,20 +1,13 @@
-{{- define "client_python" -}}
-{{- if eq .ClientKind "gevent-requests" -}}
-from gevent import monkey
-monkey.patch_all()
-
-{{ end -}}
+{{- define "httpclient_python" -}}
 import requests
-{{ range $k, $v := .Services }}
-from .{{$v.FilenameNoExt}} import {{$v.Name}}{{end}}
 
 
-class Client:
-    def __init__(self, base_uri="{{.BaseURI}}"):
+class HTTPClient:
+    def __init__(self, base_uri, token=None):
         self.base_url = base_uri
         self.session = requests.Session()
-        {{- range $k, $v := .Services }}
-        self.{{$v.EndpointName}} = {{$v.Name}}(self){{end}}
+        if token is not None:
+            self.set_auth_header('Bearer %s' % token)
 
     def is_goraml_class(self, data):
         # check if a data is go-raml generated class
@@ -28,6 +21,9 @@ class Client:
     def set_auth_header(self, val):
         ''' set authorization header value'''
         self.session.headers.update({"Authorization": val})
+
+    def close(self):
+        self.session.close()
 
     def _get_headers(self, headers, content_type):
         if content_type:

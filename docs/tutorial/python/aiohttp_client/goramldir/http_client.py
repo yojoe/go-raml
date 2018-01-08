@@ -1,16 +1,14 @@
 import json
 import aiohttp
 
-from .users_service import UsersService
 
-
-class Client:
-    def __init__(self, loop, base_uri="http://localhost:5000"):
+class HTTPClient:
+    def __init__(self, loop, base_uri="<no value>", token=None):
         self.base_url = base_uri
         self.session = aiohttp.ClientSession(loop=loop)
         self.headers = {"Content-Type": "application/json"}
-
-        self.users = UsersService(self)
+        if token is not None:
+            self.set_auth_header('Bearer %s' % token)
 
     def set_auth_header(self, val):
         ''' set authorization header value'''

@@ -28,7 +28,7 @@ func TestClient(t *testing.T) {
 			rootFixture := "./fixtures/client/requests_client"
 			// cek with generated with fixtures
 			files := []string{
-				"client.py",
+				"http_client.py",
 				"__init__.py",
 				"client_utils.py",
 				"users_service.py",
@@ -55,7 +55,7 @@ func TestClient(t *testing.T) {
 
 			rootFixture := "./fixtures/client/requests_client"
 
-			s, err := utils.TestLoadFile(filepath.Join(targetDir, "client.py"))
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, "__init__.py"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, "gevent_client.py"))
@@ -98,7 +98,7 @@ func TestClient(t *testing.T) {
 			rootFixture := "./fixtures/client/aiohttp_client"
 			// cek with generated with fixtures
 			files := []string{
-				"client.py",
+				"http_client.py",
 				"__init__.py",
 				"client_utils.py",
 				"users_service.py",
