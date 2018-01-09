@@ -34,8 +34,8 @@ func (c *Client) initTemplatesRequests() {
 		oauth2Name:  "oauth2_client_python",
 		initFile:    "./templates/python/client_initpy_python.tmpl",
 		initName:    "client_initpy_python",
-		httpClientFile: "./templates/python/httpclient_python.tmpl",
-		httpClientName: "httpclient_python",
+		httpClientFile: "./templates/python/httpclient_requests.tmpl",
+		httpClientName: "httpclient_requests",
 	}
 }
 
@@ -47,8 +47,8 @@ func (c *Client) initTemplatesAioHTTP() {
 		oauth2Name:     "oauth2_client_python_aiohttp",
 		initFile:       "./templates/python/client_initpy_python_aiohttp.tmpl",
 		initName:       "client_initpy_python_aiohttp",
-		httpClientFile: "./templates/python/httpclient_python_aiohttp.tmpl",
-		httpClientName: "httpclient_python_aiohttp",
+		httpClientFile: "./templates/python/httpclient_aiohttp.tmpl",
+		httpClientName: "httpclient_aiohttp",
 	}
 
 }

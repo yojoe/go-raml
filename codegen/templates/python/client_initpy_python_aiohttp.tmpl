@@ -9,18 +9,18 @@ from .http_client import HTTPClient
 
 
 class Client:
-    def __init__(self,loop, base_uri="{{.BaseURI}}", token=None):
-        http_client = HTTPClient(loop, base_uri, token)
+    def __init__(self,loop, base_uri="{{.BaseURI}}"):
+        http_client = HTTPClient(loop, base_uri)
         {{- if .Securities}}
-        self.security_schemes = Security() {{end}}
+        self.security_schemes = Security(http_client) {{end}}
         {{ range $k, $v := .Services }}
         self.{{$v.EndpointName}} = {{$v.Name}}(http_client){{end}}
         self.close = http_client.close
 
 {{ if .Securities}}
 class Security:
-    def __init__(self):
+    def __init__(self, http_client):
         {{- range $k, $v := .Securities}}
-        self.{{$v.ModuleName}} = {{$v.Name}}(){{end}}
+        self.{{$v.ModuleName}} = {{$v.Name}}(http_client){{end}}
 {{ end }}
 {{- end -}}

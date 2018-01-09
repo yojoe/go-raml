@@ -3,12 +3,10 @@ import aiohttp
 
 
 class HTTPClient:
-    def __init__(self, loop, base_uri="<no value>", token=None):
+    def __init__(self, loop, base_uri="<no value>"):
         self.base_url = base_uri
         self.session = aiohttp.ClientSession(loop=loop)
         self.headers = {"Content-Type": "application/json"}
-        if token is not None:
-            self.set_auth_header('Bearer %s' % token)
 
     def set_auth_header(self, val):
         ''' set authorization header value'''

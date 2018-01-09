@@ -2,8 +2,12 @@ import aiohttp
 
 
 class Oauth2ClientItsyouonline():
-    def __init__(self, access_token_uri='https://itsyou.online/v1/oauth/access_token?response_type=id_token'):
+    def __init__(
+            self,
+            http_client,
+            access_token_uri='https://itsyou.online/v1/oauth/access_token?response_type=id_token'):
         self.access_token_uri = access_token_uri
+        self._http_client = http_client
 
     async def get_access_token(self, client_id, client_secret, scopes=[], audiences=[]):
         params = {
@@ -18,3 +22,6 @@ class Oauth2ClientItsyouonline():
 
         async with aiohttp.ClientSession() as session:
             return await session.post(self.access_token_uri, params=params)
+
+    def set_auth_header(self, val):
+        return self._http_client.set_auth_header('Bearer %s' % val)

@@ -13,10 +13,10 @@ async def main(app_id, app_secret, loop):
     print("jwt_token=", jwt_token)
 
     # Set our goramldir client to use JWT token from itsyou.online
-    client.api.set_auth_header("Bearer " + jwt_token)
+    client.oauth2_client_itsyouonline.set_auth_header("Bearer " + jwt_token)
 
     # try to make simple GET call to goramldir server
-    resp = await client.api.users.users_get()
+    resp = await client.users.users_get()
     print("resp body =",await resp.text())
 
     client.close()

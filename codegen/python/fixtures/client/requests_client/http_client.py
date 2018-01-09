@@ -2,11 +2,9 @@ import requests
 
 
 class HTTPClient:
-    def __init__(self, base_uri, token=None):
+    def __init__(self, base_uri):
         self.base_url = base_uri
         self.session = requests.Session()
-        if token is not None:
-            self.set_auth_header('Bearer %s' % token)
 
     def is_goraml_class(self, data):
         # check if a data is go-raml generated class
