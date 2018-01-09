@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
@@ -116,7 +117,8 @@ func getTypesOfBody(ep Endpoint, body *raml.Bodies, pkg string,
 // get properties of a body
 // TODO : move it to 'raml' package
 func getBodyPropertiesDescription(body *raml.Bodies) (map[string]interface{}, string) {
-	if body.ApplicationJSON.TypeString() == "" {
+	tipStr := body.ApplicationJSON.TypeString()
+	if tipStr == "" || strings.ToLower(tipStr) == "object" {
 		return body.ApplicationJSON.Properties, ""
 	}
 
