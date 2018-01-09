@@ -1,14 +1,10 @@
 import requests
 
-from .users_service import UsersService 
 
-
-class Client:
-    def __init__(self, base_uri="http://localhost:5000"):
+class HTTPClient:
+    def __init__(self, base_uri):
         self.base_url = base_uri
         self.session = requests.Session()
-        
-        self.users = UsersService(self)
 
     def is_goraml_class(self, data):
         # check if a data is go-raml generated class
@@ -22,6 +18,9 @@ class Client:
     def set_auth_header(self, val):
         ''' set authorization header value'''
         self.session.headers.update({"Authorization": val})
+
+    def close(self):
+        self.session.close()
 
     def _get_headers(self, headers, content_type):
         if content_type:
@@ -44,7 +43,7 @@ class Client:
             res = method(uri, files=data, headers=headers, params=params)
         elif data is None:
             res = method(uri, headers=headers, params=params)
-        elif type(data) is str:
+        elif isinstance(data, str):
             res = method(uri, data=data, headers=headers, params=params)
         else:
             res = method(uri, json=data, headers=headers, params=params)

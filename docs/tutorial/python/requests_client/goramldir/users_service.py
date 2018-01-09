@@ -1,17 +1,16 @@
+
+
 class UsersService:
     def __init__(self, client):
         self.client = client
-
-
 
     def users_byUsername_get(self, username, headers=None, query_params=None, content_type="application/json"):
         """
         Get information on a specific user
         It is method for GET /users/{username}
         """
-        uri = self.client.base_url + "/users/"+username
+        uri = self.client.base_url + "/users/" + username
         return self.client.get(uri, None, headers, query_params, content_type)
-
 
     def users_get(self, headers=None, query_params=None, content_type="application/json"):
         """
@@ -20,7 +19,6 @@ class UsersService:
         """
         uri = self.client.base_url + "/users"
         return self.client.get(uri, None, headers, query_params, content_type)
-
 
     def users_post(self, data, headers=None, query_params=None, content_type="application/json"):
         """

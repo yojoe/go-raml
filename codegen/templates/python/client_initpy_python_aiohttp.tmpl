@@ -1,15 +1,26 @@
 {{- define "client_initpy_python_aiohttp" -}}
-from .client import Client as APIClient
-{{ range $k, $v := .Securities}}
+
+{{ range $k, $v := .Services }}
+from .{{$v.FilenameNoExt}} import  {{$v.Name}} {{end}}
+{{- range $k, $v := .Securities}}
 from .{{$v.ModuleName}} import {{$v.Name}}{{end}}
 
+from .http_client import HTTPClient
+
+
 class Client:
-    def __init__(self, base_uri="{{.BaseURI}}"):
-        self.api = APIClient(base_uri)
-        {{ range $k, $v := .Securities}}
-        self.{{$v.ModuleName}} = {{$v.Name}}(){{end}}
+    def __init__(self,loop, base_uri="{{.BaseURI}}"):
+        http_client = HTTPClient(loop, base_uri)
+        {{- if .Securities}}
+        self.security_schemes = Security(http_client) {{end}}
+        {{ range $k, $v := .Services }}
+        self.{{$v.EndpointName}} = {{$v.Name}}(http_client){{end}}
+        self.close = http_client.close
 
-    def close(self):
-        self.api.close()
-
+{{ if .Securities}}
+class Security:
+    def __init__(self, http_client):
+        {{- range $k, $v := .Securities}}
+        self.{{$v.ModuleName}} = {{$v.Name}}(http_client){{end}}
+{{ end }}
 {{- end -}}
