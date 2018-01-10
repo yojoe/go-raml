@@ -25,6 +25,8 @@ func TestServer(t *testing.T) {
 			"drones_api.py",
 			"deliveries_api.py",
 			"app.py",
+			"handlers/__init__.py",
+			"handlers/drones_postHandler.py",
 		}
 
 		Convey("Congo python server", func() {
@@ -36,6 +38,17 @@ func TestServer(t *testing.T) {
 			filesExist := []string{
 				"types/User.py",
 				"types/client_support.py",
+				"handlers/deliveries_getHandler.py",
+				"handlers/deliveries_postHandler.py",
+				"handlers/deliveries_byDeliveryId_getHandler.py",
+				"handlers/deliveries_byDeliveryId_patchHandler.py",
+				"handlers/deliveries_byDeliveryId_deleteHandler.py",
+				"handlers/drones_getHandler.py",
+				"handlers/drones_postHandler.py",
+				"handlers/drones_byDroneId_getHandler.py",
+				"handlers/drones_byDroneId_patchHandler.py",
+				"handlers/drones_byDroneId_deleteHandler.py",
+				"handlers/drones_byDroneId_deliveries_getHandler.py",
 			}
 			for _, f := range filesExist {
 				_, err := os.Stat(filepath.Join(targetDir, f))
