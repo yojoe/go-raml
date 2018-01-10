@@ -25,16 +25,19 @@ class HTTPClient:
         return hdrs
 
     async def get(self, uri, data, headers, params, content_type):
+        uri = uri.encode('utf-8')
         res = await self.session.get(uri, data=data, headers=self.build_header(headers), params=params)
         res.raise_for_status()
         return res
 
     async def delete(self, uri, data, headers, params, content_type):
+        uri = uri.encode('utf-8')
         res = await self.session.delete(uri, data=data, headers=self.build_header(headers), params=params)
         res.raise_for_status()
         return res
 
     async def post(self, uri, data, headers, params, content_type):
+        uri = uri.encode('utf-8')
         hdrs = self.build_header(headers)
         if not isinstance(data, str):
             data = json.dumps(data)
@@ -44,6 +47,7 @@ class HTTPClient:
         return res
 
     async def put(self, uri, data, headers, params, content_type):
+        uri = uri.encode('utf-8')
         hdrs = self.build_header(headers)
         if not isinstance(data, str):
             data = json.dumps(data)
@@ -53,6 +57,7 @@ class HTTPClient:
         return res
 
     async def patch(self, uri, data, headers, params, content_type):
+        uri = uri.encode('utf-8')
         hdrs = self.build_header(headers)
         if not isinstance(data, str):
             data = json.dumps(data)

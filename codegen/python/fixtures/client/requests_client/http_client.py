@@ -32,6 +32,8 @@ class HTTPClient:
         return headers
 
     def _handle_data(self, uri, data, headers, params, content_type, method):
+        uri = uri.encode('utf-8')
+
         headers = self._get_headers(headers, content_type)
         if self.is_goraml_class(data):
             data = data.as_json()

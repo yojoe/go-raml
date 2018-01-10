@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jumpscale/go-raml/raml"
 	"github.com/Jumpscale/go-raml/utils"
+	log "github.com/Sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -21,6 +22,7 @@ func TestClient(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("requests client", func() {
+			log.Info("requests client")
 			client := NewClient(apiDef, "", false)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
@@ -49,6 +51,7 @@ func TestClient(t *testing.T) {
 		})
 
 		Convey("requests gevent client", func() {
+			log.Info("requests gevent client")
 			client := NewClient(apiDef, "gevent-requests", false)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
@@ -65,6 +68,7 @@ func TestClient(t *testing.T) {
 		})
 
 		Convey("requests client with unmarshall response", func() {
+			log.Info("requests client with unmarshall_response")
 			client := NewClient(apiDef, "", true)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
@@ -91,6 +95,7 @@ func TestClient(t *testing.T) {
 		})
 
 		Convey("aiohttp client", func() {
+			log.Info("aiohttp client")
 			client := NewClient(apiDef, clientNameAiohttp, false)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
@@ -116,6 +121,7 @@ func TestClient(t *testing.T) {
 		})
 
 		Convey("aiohttp client with unmarshall response", func() {
+			log.Info("aiohttp client with unmarshall response")
 			client := NewClient(apiDef, clientNameAiohttp, true)
 			err = client.Generate(targetDir)
 			So(err, ShouldBeNil)
