@@ -18,7 +18,7 @@ class Cat(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type kind: str
+        :type kind: string_types
         :rtype: Cat
         """
 

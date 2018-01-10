@@ -20,7 +20,7 @@ class EnumCity(object):
     def create(**kwargs):
         """
         :type enumParks: EnumEnumCityEnumParks
-        :type name: str
+        :type name: string_types
         :rtype: EnumCity
         """
 

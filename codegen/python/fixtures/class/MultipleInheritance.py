@@ -16,10 +16,10 @@ class MultipleInheritance(object):
     def create(**kwargs):
         """
         :type cities: list[EnumCity]
-        :type color: str
-        :type colours: list[str]
-        :type kind: str
-        :type name: str
+        :type color: string_types
+        :type colours: list[string_types]
+        :type kind: string_types
+        :type name: string_types
         :rtype: MultipleInheritance
         """
 

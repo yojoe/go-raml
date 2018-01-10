@@ -14,7 +14,7 @@ class Tree(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type name: str
+        :type name: string_types
         :type right: Tree
         :rtype: Tree
         """

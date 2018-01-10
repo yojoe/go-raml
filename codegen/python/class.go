@@ -19,6 +19,8 @@ type class struct {
 	Fields      map[string]field
 	Enum        *enum
 	Capnp       bool
+	AliasOf     string
+	imports     map[string]struct{}
 }
 
 type objectProperty struct {
@@ -36,7 +38,15 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 		Fields:      map[string]field{},
 		T:           T,
 		Capnp:       capnp,
+		imports:     make(map[string]struct{}),
 	}
+
+	if pc.T.IsAlias() {
+		return pc
+	}
+
+	// initialize the fields
+
 	types := globAPIDef.Types
 
 	typeHierarchy := getTypeHierarchy(name, T, types)
@@ -62,6 +72,13 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 		pc.Fields[field.Name] = field
 	}
 
+	return pc
+}
+
+func newClassFromType(T raml.Type, name string, capnp bool) class {
+	pc := newClass(T, name, T.Description, T.Properties, capnp)
+	pc.T = T
+	pc.handleAdvancedType()
 	return pc
 }
 
@@ -138,15 +155,15 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 	return properties
 }
 
-func newClassFromType(T raml.Type, name string, capnp bool) class {
-	pc := newClass(T, name, T.Description, T.Properties, capnp)
-	pc.T = T
-	pc.handleAdvancedType()
-	return pc
-}
-
 // generate a python class file
-func (pc *class) generate(dir string, template string, name string) ([]string, error) {
+func (pc *class) generate(dir, template, name string) ([]string, error) {
+	fileName := filepath.Join(dir, pc.Name+".py")
+
+	if pc.AliasOf != "" {
+		return []string{pc.Name}, commons.GenerateFile(pc, "./templates/python/class_alias.tmpl",
+			"class_alias", fileName, true)
+	}
+
 	// generate enums
 	typeNames := make([]string, 0)
 	for _, f := range pc.Fields {
@@ -163,7 +180,6 @@ func (pc *class) generate(dir string, template string, name string) ([]string, e
 		return typeNames, pc.Enum.generate(dir)
 	}
 
-	fileName := filepath.Join(dir, pc.Name+".py")
 	typeNames = append(typeNames, pc.Name)
 	return typeNames, commons.GenerateFile(pc, template, name, fileName, false)
 }
@@ -172,31 +188,50 @@ func (pc *class) handleAdvancedType() {
 	if pc.T.Type == nil {
 		pc.T.Type = "object"
 	}
-	if pc.T.IsEnum() {
+	switch {
+	case pc.T.IsEnum():
 		pc.Enum = newEnumFromClass(pc)
+	case pc.T.IsAlias():
+		pc.createTypeAlias()
 	}
 }
 
-// return list of import statements
-func (pc class) Imports() []string {
-	// var imports []string
-	imports := make(map[string]struct{})
+func (pc *class) createTypeAlias() {
+	typeStr := pc.T.TypeString()
 
+	pt := toPythonType(typeStr)
+	if pt != nil { // from builtin type
+		pc.AliasOf = pt.name
+		if pt.importName != "" {
+			pc.addImport(pt.importModule, pt.importName)
+		}
+		return
+	}
+
+	// from another type
+	pc.AliasOf = typeStr
+	pc.addImport(".", typeStr)
+}
+
+// return list of import statements
+func (pc *class) Imports() []string {
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
 			// do not import ourself
 			if imp.Name == pc.Name {
 				continue
 			}
-
-			importString := "from " + imp.Module + " import " + imp.Name
-			imports[importString] = struct{}{}
+			pc.addImport(imp.Module, imp.Name)
 		}
 	}
 
-	return commons.MapToSortedStrings(imports)
+	return commons.MapToSortedStrings(pc.imports)
 }
 
+func (pc *class) addImport(mod, name string) {
+	importString := "from " + mod + " import " + name
+	pc.imports[importString] = struct{}{}
+}
 func (pc class) CapnpName() string {
 	return casee.ToPascalCase(pc.Name)
 }

@@ -19,7 +19,7 @@ class Cage(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type colours: str
+        :type colours: string_types
         :type owner: Animal
         :rtype: Cage
         """

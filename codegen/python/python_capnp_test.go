@@ -37,6 +37,7 @@ func TestGeneratePythonCapnpClasses(t *testing.T) {
 				"MultipleInheritance.%s",
 				"Petshop.%s",
 				"WithDateTime.%s",
+				"EnumEnumCityEnumParks.%s",
 			}
 
 			for _, f := range files {
@@ -64,7 +65,6 @@ func TestGeneratePythonCapnpClasses(t *testing.T) {
 		})
 
 		Reset(func() {
-			return
 			os.RemoveAll(targetDir)
 		})
 

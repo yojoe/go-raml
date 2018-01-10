@@ -20,7 +20,7 @@ class Petshop(object):
     def create(**kwargs):
         """
         :type cats: list[Cat]
-        :type name: str
+        :type name: string_types
         :rtype: Petshop
         """
 

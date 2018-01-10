@@ -16,7 +16,7 @@ class WithDateTime(object):
     def create(**kwargs):
         """
         :type birth: datetime
-        :type name: str
+        :type name: string_types
         :rtype: WithDateTime
         """
 

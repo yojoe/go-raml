@@ -18,7 +18,7 @@ class EnumCity(object):
         """
         :type enum_homeNum: EnumEnumCityEnum_homeNum
         :type enum_parks: EnumEnumCityEnum_parks
-        :type name: str
+        :type name: string_types
         :rtype: EnumCity
         """
 

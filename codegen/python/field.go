@@ -21,7 +21,7 @@ type pyimport struct {
 type field struct {
 	Name                    string
 	Type                    string
-	MyPyType string
+	MyPyType                string
 	Required                bool   // if the field itself is required
 	DataType                string // the python datatype (objmap) used in the template
 	HasChildProperties      bool
@@ -156,7 +156,7 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool, str
 		return dataType, false, myPyType
 	}
 	if f.Type != "dict" || len(childProperties) == 0 {
-		if f.IsList{
+		if f.IsList {
 			return f.Type, false, fmt.Sprintf("List[%s]", f.Type)
 		}
 		return f.Type, false, f.Type
@@ -202,38 +202,13 @@ func (pf *field) addImport(module, name string) {
 
 // convert from raml Type to python type
 func (pf *field) setType(t, items string) {
-	typeMap := map[string]string{
-		"string":   "str",
-		"integer":  "int",
-		"int":      "int",
-		"int8":     "int",
-		"int16":    "int",
-		"int32":    "int",
-		"int64":    "int",
-		"long":     "int",
-		"number":   "float",
-		"double":   "float",
-		"float":    "float",
-		"boolean":  "bool",
-		"datetime": "datetime",
-		"object":   "dict",
-		"UUID":     "UUID",
-	}
-
-	if v, ok := typeMap[t]; ok {
-		pf.Type = v
-		switch t {
-		case "datetime":
-			pf.addImport("datetime", "datetime")
-		case "uuid":
-			pf.addImport("uuid", "UUID")
-		case "string":
-			pf.addImport("six", "string_types")
+	pt := toPythonType(t)
+	if pt != nil {
+		pf.Type = pt.name
+		if pt.importName != "" {
+			pf.addImport(pt.importModule, pt.importName)
 		}
-	}
-
-	if pf.Type != "" { // type already set, no need to go down
-		return
+		return // type already set, no need to go down
 	}
 
 	ramlType := raml.Type{
@@ -290,17 +265,4 @@ var (
 func datetimeVariant(name string) bool {
 	_, ok := dateTimeVariantMap[name]
 	return ok
-}
-
-// covert all str to string_types
-func (f field) ConverDataTypes() string {
-	// split on ',' instead of replaying str in the whole string to make sure we don't conflict with any type
-	// starting with str
-	dataTypes := strings.Split(f.DataType, ",")
-	for i, dataType := range dataTypes {
-		if dataType == "str" {
-			dataTypes[i] = "string_types"
-		}
-	}
-	return strings.Join(dataTypes, ",")
 }
