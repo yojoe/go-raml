@@ -14,6 +14,7 @@ type SanicServer struct {
 	ResourcesDef []pythonResource
 	withMain     bool
 	APIDocsDir   string
+	Template     serverTemplate
 }
 
 // NewSanicServer creates new sanic server from an RAML file
@@ -29,18 +30,21 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 	globAPIDef = apiDef
 	globLibRootURLs = libRootURLs
 
+	templates := templates(serverKindSanic)
+
 	return &SanicServer{
 		APIDef:       apiDef,
 		Title:        apiDef.Title,
 		APIDocsDir:   apiDocsDir,
 		withMain:     withMain,
 		ResourcesDef: prs,
+		Template:     templates,
 	}
 }
 
 // Generate generates sanic server code
 func (s *SanicServer) Generate(dir string) error {
-	if err := generateJSONSchema(s.APIDef, dir); err != nil {
+	if err := generateJSONSchema(s.APIDef, filepath.Join(dir, handlersDir())); err != nil {
 		return err
 	}
 	if err := s.generateResources(dir); err != nil {
@@ -52,11 +56,11 @@ func (s *SanicServer) Generate(dir string) error {
 
 	// python classes and it's helper
 	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
-		"client_support", filepath.Join(dir, "client_support.py"), false); err != nil {
+		"client_support", filepath.Join(dir, "types", "client_support.py"), true); err != nil {
 		return err
 	}
 
-	_, err := GenerateAllClasses(s.APIDef, dir, false)
+	_, err := GenerateAllClasses(s.APIDef, filepath.Join(dir, typesDir()), false)
 	if err != nil {
 		return err
 	}
@@ -71,7 +75,7 @@ func (s *SanicServer) generateMain(dir string) error {
 
 	// html front page
 	if err := commons.GenerateFile(s, "./templates/index.html.tmpl", "index.html",
-		filepath.Join(dir, "index.html"), false); err != nil {
+		filepath.Join(dir, "index.html"), true); err != nil {
 		return err
 	}
 

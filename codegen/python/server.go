@@ -36,3 +36,11 @@ func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
 		return nil
 	}
 }
+
+func typesDir() string {
+	return "types"
+}
+
+func handlersDir() string {
+	return "handlers"
+}

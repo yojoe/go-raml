@@ -38,7 +38,7 @@ func TestJSONSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, handlersDir(), jsonSchemaDir(), check.Result))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))
@@ -66,7 +66,7 @@ func TestJSONSchema(t *testing.T) {
 			}
 
 			for _, check := range checks {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, jsonSchemaDir(), check.Result))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, handlersDir(), jsonSchemaDir(), check.Result))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, check.Expected))

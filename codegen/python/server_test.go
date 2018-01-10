@@ -34,8 +34,8 @@ func TestServer(t *testing.T) {
 			validateFiles(files, targetDir, rootFixture)
 			// test that this file exist
 			filesExist := []string{
-				"User.py",
-				"client_support.py",
+				"types/User.py",
+				"types/client_support.py",
 			}
 			for _, f := range filesExist {
 				_, err := os.Stat(filepath.Join(targetDir, f))

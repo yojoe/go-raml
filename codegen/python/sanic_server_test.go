@@ -66,7 +66,7 @@ func TestSanicServer(t *testing.T) {
 				"deliveries_if.py",
 				"drones_api.py",
 				"drones_if.py",
-				"schema/User_schema.json",
+				"handlers/schema/User_schema.json",
 			}
 
 			for _, filename := range files {
@@ -81,8 +81,8 @@ func TestSanicServer(t *testing.T) {
 
 			// test that this file exist
 			files = []string{
-				"User.py",
-				"client_support.py",
+				"types/User.py",
+				"types/client_support.py",
 			}
 			for _, f := range files {
 				_, err := os.Stat(filepath.Join(targetDir, f))

@@ -76,7 +76,7 @@ func (b byEndoint) Less(i, j int) bool {
 
 func (s *service) generate(tmpl clientTemplate, dir string) error {
 	sort.Sort(byEndoint(s.Methods))
-	return commons.GenerateFile(s, tmpl.serviceFile, tmpl.serviceName, s.filename(dir), false)
+	return commons.GenerateFile(s, tmpl.serviceFile, tmpl.serviceName, s.filename(dir), true)
 }
 
 func sortImportPaths(ip map[string]struct{}) []string {

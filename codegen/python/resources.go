@@ -3,15 +3,53 @@ package python
 import (
 	"sort"
 
+	"fmt"
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
+	"path/filepath"
+	"strings"
 )
 
 type pythonResource struct {
 	*resource.Resource
 	MiddlewaresArr []middleware
 	Methods        []serverMethod
+}
+
+func generateResources(resources []pythonResource, templates serverTemplate, dir string) error {
+	allMethods := make([]serverMethod, 0)
+	handlersPath := filepath.Join(dir, handlersDir())
+
+	for _, pr := range resources {
+		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_api.py")
+		if err := pr.generate(filename, templates.apiFile, templates.apiName, dir); err != nil {
+			return err
+		}
+
+		// Generate resource handlers
+		for _, method := range pr.Methods {
+			allMethods = append(allMethods, method)
+
+			fileName := fmt.Sprintf("%vHandler.py", method.MethodName)
+			if err := commons.GenerateFile(method, templates.handlerFile, templates.handlerName, filepath.Join(handlersPath, fileName), false); err != nil {
+				return err
+			}
+		}
+	}
+
+	methods := struct {
+		Methods []serverMethod
+	}{
+		Methods: allMethods,
+	}
+
+	// Generate handlers init file
+	if err := commons.GenerateFile(methods, "./templates/python/server_handlers_init.tmpl", "server_handlers_init", filepath.Join(handlersPath, "__init__.py"), true); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (pr *pythonResource) addMiddleware(mwr middleware) {
@@ -50,7 +88,7 @@ func (pr *pythonResource) setMiddlewares() {
 // generate flask representation of an RAML resource
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(fileName, tmplFile, tmplName, dir string) error {
-	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, false)
+	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, true)
 }
 
 // return array of request body in this resource
