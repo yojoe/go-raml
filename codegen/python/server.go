@@ -14,6 +14,8 @@ const (
 	serverKindSanic       = "sanic"
 	serverKindFlask       = "flask"
 	serverKindGeventFlask = "gevent-flask"
+	typesDir              = "types"
+	handlersDir           = "handlers"
 )
 
 // Server represents a python server
@@ -35,12 +37,4 @@ func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
 		log.Fatalf("Invalid kind of python server : %v", kind)
 		return nil
 	}
-}
-
-func typesDir() string {
-	return "types"
-}
-
-func handlersDir() string {
-	return "handlers"
 }

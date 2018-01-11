@@ -1,14 +1,13 @@
 package python
 
 import (
-	"sort"
-
 	"fmt"
+	"path/filepath"
+	"strings"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
-	"path/filepath"
-	"strings"
 )
 
 type pythonResource struct {
@@ -19,7 +18,7 @@ type pythonResource struct {
 
 func generateResources(resources []pythonResource, templates serverTemplate, dir string) error {
 	allMethods := make([]serverMethod, 0)
-	handlersPath := filepath.Join(dir, handlersDir())
+	handlersPath := filepath.Join(dir, handlersDir)
 
 	for _, pr := range resources {
 		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_api.py")
@@ -38,10 +37,8 @@ func generateResources(resources []pythonResource, templates serverTemplate, dir
 		}
 	}
 
-	methods := struct {
-		Methods []serverMethod
-	}{
-		Methods: allMethods,
+	methods := map[string]interface{}{
+		"Methods": allMethods,
 	}
 
 	// Generate handlers init file
@@ -89,16 +86,4 @@ func (pr *pythonResource) setMiddlewares() {
 // It has one file : an API route and implementation
 func (pr *pythonResource) generate(fileName, tmplFile, tmplName, dir string) error {
 	return commons.GenerateFile(pr, tmplFile, tmplName, fileName, true)
-}
-
-// return array of request body in this resource
-func (pr pythonResource) ReqBodies() []string {
-	var reqs []string
-	for _, pm := range pr.Methods {
-		if pm.ReqBody != "" && !commons.IsStrInArray(reqs, pm.ReqBody) {
-			reqs = append(reqs, pm.ReqBody)
-		}
-	}
-	sort.Strings(reqs)
-	return reqs
 }

@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	jsFileSuffix = "_schema.json" // json schema file suffix
+	jsFileSuffix  = "_schema.json" // json schema file suffix
+	jsonSchemaDir = "schema"
 )
 
 // just a convenience type
@@ -26,16 +27,13 @@ func init() {
 	jsObjects = map[string]raml.JSONSchema{}
 }
 
-func jsonSchemaDir() string {
-	return "schema"
-}
 func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 
 	// array of tip that need to be generated in the end of this
 	// process. because it needs other object to be registered first
 	delayedMI := []string{} // delayed multiple inheritance
 
-	sDir := filepath.Join(dir, jsonSchemaDir())
+	sDir := filepath.Join(dir, jsonSchemaDir)
 
 	for name, t := range types.AllTypes(apiDef, "") {
 		switch tip := t.Type.(type) {

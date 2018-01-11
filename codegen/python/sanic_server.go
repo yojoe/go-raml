@@ -44,7 +44,7 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 
 // Generate generates sanic server code
 func (s *SanicServer) Generate(dir string) error {
-	if err := generateJSONSchema(s.APIDef, filepath.Join(dir, handlersDir())); err != nil {
+	if err := generateJSONSchema(s.APIDef, filepath.Join(dir, handlersDir)); err != nil {
 		return err
 	}
 	if err := s.generateResources(dir); err != nil {
@@ -60,7 +60,7 @@ func (s *SanicServer) Generate(dir string) error {
 		return err
 	}
 
-	_, err := GenerateAllClasses(s.APIDef, filepath.Join(dir, typesDir()), false)
+	_, err := GenerateAllClasses(s.APIDef, filepath.Join(dir, typesDir), false)
 	if err != nil {
 		return err
 	}

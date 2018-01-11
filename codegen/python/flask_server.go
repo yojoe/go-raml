@@ -51,7 +51,7 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 // Generate generates all python server files
 func (ps FlaskServer) Generate(dir string) error {
 	// python classes and it's helper
-	typesPath := filepath.Join(dir, typesDir())
+	typesPath := filepath.Join(dir, typesDir)
 
 	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
 		"client_support", filepath.Join(typesPath, "client_support.py"), true); err != nil {
@@ -74,7 +74,7 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// json schema
-	if err := generateJSONSchema(ps.APIDef, filepath.Join(dir, handlersDir())); err != nil {
+	if err := generateJSONSchema(ps.APIDef, filepath.Join(dir, handlersDir)); err != nil {
 		return err
 	}
 
