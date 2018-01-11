@@ -22,8 +22,8 @@ class SingleInheritance(object):
     def create(**kwargs):
         """
         :type cities: list[EnumCity]
-        :type colours: list[str]
-        :type name: str
+        :type colours: list[string_types]
+        :type name: string_types
         :type single: bool
         :rtype: SingleInheritance
         """

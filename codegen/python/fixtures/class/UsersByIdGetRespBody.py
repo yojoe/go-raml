@@ -16,7 +16,7 @@ class UsersByIdGetRespBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type ID: str
+        :type ID: string_types
         :type age: int
         :rtype: UsersByIdGetRespBody
         """

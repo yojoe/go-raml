@@ -625,6 +625,15 @@ func (t Type) Union() ([]string, bool) {
 	return tips, true
 }
 
+// IsAlias returns true if this Type is
+// alias of another Type
+func (t Type) IsAlias() bool {
+	if t.IsMultipleInheritance() || t.IsArray() || t.IsUnion() || t.TypeString() == "object" {
+		return false
+	}
+	return t.TypeString() != "" && len(t.Properties) == 0
+}
+
 // see if the 'Type' field is a JSON schema
 func (t *Type) postProcess(name string, apiDef *APIDefinition) error {
 	t.Name = name
