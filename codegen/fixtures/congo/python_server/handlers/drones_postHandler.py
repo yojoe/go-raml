@@ -17,6 +17,7 @@ User_schema_validator = Draft4Validator(User_schema, resolver=User_schema_resolv
 def drones_postHandler():
 
     inputs = request.get_json()
+
     try:
         User_schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:
