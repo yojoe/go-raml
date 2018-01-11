@@ -181,7 +181,7 @@ func (pc *class) generate(dir, template, name string) ([]string, error) {
 	}
 
 	typeNames = append(typeNames, pc.Name)
-	return typeNames, commons.GenerateFile(pc, template, name, fileName, false)
+	return typeNames, commons.GenerateFile(pc, template, name, fileName, true)
 }
 
 func (pc *class) handleAdvancedType() {

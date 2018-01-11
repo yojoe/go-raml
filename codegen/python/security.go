@@ -35,7 +35,7 @@ func getOauth2Defs(schemes map[string]raml.SecurityScheme) []pythonSecurity {
 // generate security schheme representation in python.
 // security scheme is generated as a middleware
 func (ps *pythonSecurity) generate(fileName, tmplFile, tmplName string) error {
-	return commons.GenerateFile(ps, tmplFile, tmplName, fileName, false)
+	return commons.GenerateFile(ps, tmplFile, tmplName, fileName, true)
 }
 
 type middleware struct {

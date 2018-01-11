@@ -232,6 +232,7 @@ Generated code details:
 - one bluperint/module for each root RAML resource
 - helper file
 - requirements.txt which contains list of packages needed to run the app.
+- all files are overwritten when the server is regenerated even if they exist except for the handlers files under handlers/
 
 Install needed packages
 ```
@@ -261,6 +262,7 @@ We provide two kind of clients:
 - async client using `aiohttp` library, this client will give more performance
 
 It has `set_auth_header` method to set `Authorization` header value on each request.
+All files are overwritten when the client is regenerated.
 
 ## Specification file
 

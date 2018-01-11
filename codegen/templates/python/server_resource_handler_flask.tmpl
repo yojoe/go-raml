@@ -1,0 +1,27 @@
+{{- define "server_resource_handler_flask" -}}
+# THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+
+from flask import jsonify, request
+{{ if $.ReqBody }}
+import json as JSON
+import jsonschema
+from jsonschema import Draft4Validator
+
+import os
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+{{$.ReqBody}}_schema =  JSON.load(open(dir_path + '/schema/{{$.ReqBody}}_schema.json'))
+{{$.ReqBody}}_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', {{$.ReqBody}}_schema)
+{{$.ReqBody}}_schema_validator = Draft4Validator({{$.ReqBody}}_schema, resolver={{$.ReqBody}}_schema_resolver)
+{{ end }}
+
+def {{$.MethodName}}Handler({{$.Params}}):
+    {{ if $.ReqBody }}
+    inputs = request.get_json()
+    try:
+        {{$.ReqBody}}_schema_validator.validate(inputs)
+    except jsonschema.ValidationError as e:
+        return jsonify(errors="bad request body"), 400
+    {{ end }}
+    return jsonify()
+{{end -}}

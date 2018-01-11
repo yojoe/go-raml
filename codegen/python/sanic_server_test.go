@@ -66,7 +66,9 @@ func TestSanicServer(t *testing.T) {
 				"deliveries_if.py",
 				"drones_api.py",
 				"drones_if.py",
-				"schema/User_schema.json",
+				"handlers/schema/User_schema.json",
+				"handlers/__init__.py",
+				"handlers/drones_postHandler.py",
 			}
 
 			for _, filename := range files {
@@ -81,8 +83,19 @@ func TestSanicServer(t *testing.T) {
 
 			// test that this file exist
 			files = []string{
-				"User.py",
-				"client_support.py",
+				"types/User.py",
+				"types/client_support.py",
+				"handlers/deliveries_getHandler.py",
+				"handlers/deliveries_postHandler.py",
+				"handlers/deliveries_byDeliveryId_getHandler.py",
+				"handlers/deliveries_byDeliveryId_patchHandler.py",
+				"handlers/deliveries_byDeliveryId_deleteHandler.py",
+				"handlers/drones_getHandler.py",
+				"handlers/drones_postHandler.py",
+				"handlers/drones_byDroneId_getHandler.py",
+				"handlers/drones_byDroneId_patchHandler.py",
+				"handlers/drones_byDroneId_deleteHandler.py",
+				"handlers/drones_byDroneId_deliveries_getHandler.py",
 			}
 			for _, f := range files {
 				_, err := os.Stat(filepath.Join(targetDir, f))
