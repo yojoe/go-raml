@@ -102,7 +102,7 @@ func (c Client) Generate(dir string) error {
 	globAPIDef = c.APIDef
 
 	// generate helper
-	if err := commons.GenerateFile(nil, "./templates/python/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), false); err != nil {
+	if err := commons.GenerateFile(nil, "./templates/python/client_utils_python.tmpl", "client_utils_python", filepath.Join(dir, "client_utils.py"), true); err != nil {
 		return err
 	}
 
@@ -127,22 +127,22 @@ func (c Client) Generate(dir string) error {
 
 	// helper for python classes
 	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
-		"client_support", filepath.Join(dir, "client_support.py"), false); err != nil {
+		"client_support", filepath.Join(dir, "client_support.py"), true); err != nil {
 		return err
 	}
 
 	if c.UnmarshallResponse {
 		if err := commons.GenerateFile(nil, "./templates/python/unmarshall_error.tmpl",
-			"unmarshall_error", filepath.Join(dir, "unmarshall_error.py"), false); err != nil {
+			"unmarshall_error", filepath.Join(dir, "unmarshall_error.py"), true); err != nil {
 			return err
 		}
 		if err := commons.GenerateFile(nil, "./templates/python/unhandled_api_error.tmpl",
-			"unhandled_api_error", filepath.Join(dir, "unhandled_api_error.py"), false); err != nil {
+			"unhandled_api_error", filepath.Join(dir, "unhandled_api_error.py"), true); err != nil {
 			return err
 		}
 
 		if err := commons.GenerateFile(nil, "./templates/python/api_response_python.tmpl",
-			"api_response_python", filepath.Join(dir, "api_response.py"), false); err != nil {
+			"api_response_python", filepath.Join(dir, "api_response.py"), true); err != nil {
 			return err
 		}
 
@@ -150,7 +150,7 @@ func (c Client) Generate(dir string) error {
 
 	sort.Strings(classes)
 	c.Classes = classes
-	return commons.GenerateFile(c, c.Template.initFile, c.Template.initName, filepath.Join(dir, "__init__.py"), false)
+	return commons.GenerateFile(c, c.Template.initFile, c.Template.initName, filepath.Join(dir, "__init__.py"), true)
 }
 
 func (c Client) generateServices(dir string) error {

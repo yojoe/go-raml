@@ -32,7 +32,7 @@ func TestGenerateClassFromBody(t *testing.T) {
 				Result   string
 				Expected string
 			}{
-				{"schema/UsersPostReqBody_schema.json", "UsersPostReqBody_schema.json"},
+				{"handlers/schema/UsersPostReqBody_schema.json", "UsersPostReqBody_schema.json"},
 			}
 
 			for _, check := range checks {
@@ -60,7 +60,7 @@ func TestGenerateClassFromBody(t *testing.T) {
 				Result   string
 				Expected string
 			}{
-				{"schema/PersonPostReqBody_schema.json", "PersonPostReqBody_schema.json"},
+				{"handlers/schema/PersonPostReqBody_schema.json", "PersonPostReqBody_schema.json"},
 			}
 
 			for _, check := range checks {

@@ -14,6 +14,8 @@ const (
 	serverKindSanic       = "sanic"
 	serverKindFlask       = "flask"
 	serverKindGeventFlask = "gevent-flask"
+	typesDir              = "types"
+	handlersDir           = "handlers"
 )
 
 // Server represents a python server

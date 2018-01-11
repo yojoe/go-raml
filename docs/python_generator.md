@@ -95,6 +95,8 @@ Resources in the server are mapped to:
 
 - a flask blueprint module
 
+The generated server contains a handlers directory, the python handlers files are the only files that are not overwritten by a regeneration. Each api method has a generated handler file, this is where the user should add the implementation for each method.
+
 ### Client
 
 Resourcess in the client are implemented as services.

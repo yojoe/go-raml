@@ -29,7 +29,7 @@ func newSanicRouteView(endpoint string) sanicRouteView {
 	}
 }
 func (s SanicServer) generateResources(dir string) error {
-	if err := s.generateResourcesAPIImpl(dir); err != nil {
+	if err := generateResources(s.ResourcesDef, s.Template, dir); err != nil {
 		return err
 	}
 	if err := s.generateResourcesAPIIface(dir); err != nil {
@@ -65,15 +65,5 @@ func (s SanicServer) generateResourcesAPIIface(dir string) error {
 		}
 	}
 
-	return nil
-}
-
-func (s SanicServer) generateResourcesAPIImpl(dir string) error {
-	for _, pr := range s.ResourcesDef {
-		filename := filepath.Join(dir, strings.ToLower(pr.Name)+"_api.py")
-		if err := pr.generate(filename, "./templates/python/server_resource_api_sanic.tmpl", "server_resource_api_sanic", dir); err != nil {
-			return err
-		}
-	}
 	return nil
 }
