@@ -26,40 +26,34 @@ class HTTPClient:
             hdrs[key] = headers[key]
         return hdrs
 
-    async def get(self, uri, data, headers, params, content_type):
-        res = await self.session.get(uri, data=data, headers=self.build_header(headers), params=params)
+    async def do_request(self, uri, data, headers, params, content_type, method):
+        hdrs = self.build_header(headers)
+        if not isinstance(data, str):
+            data = json.dumps(data)
+
+        if content_type == "multipart/form-data":
+            # when content type is multipart/formdata remove the content-type header
+            # as requests will set this itself with correct boundary
+            headers.pop('Content-Type')
+            res = await method(uri, files=data, headers=headers, params=params)
+        else:
+            res = await method(uri, data=data, headers=hdrs, params=params)
+
         res.raise_for_status()
         return res
+
+    async def get(self, uri, data, headers, params, content_type):
+        return await self.do_request(uri, data, headers, params, content_type, self.session.get)
 
     async def delete(self, uri, data, headers, params, content_type):
-        res = await self.session.delete(uri, data=data, headers=self.build_header(headers), params=params)
-        res.raise_for_status()
-        return res
+        return await self.do_request(uri, data, headers, params, content_type, self.session.delete)
 
     async def post(self, uri, data, headers, params, content_type):
-        hdrs = self.build_header(headers)
-        if not isinstance(data, str):
-            data = json.dumps(data)
-
-        res = await self.session.post(uri, data=data, headers=hdrs, params=params)
-        res.raise_for_status()
-        return res
+        return await self.do_request(uri, data, headers, params, content_type, self.session.post)
 
     async def put(self, uri, data, headers, params, content_type):
-        hdrs = self.build_header(headers)
-        if not isinstance(data, str):
-            data = json.dumps(data)
-
-        res = await self.session.put(uri, data=data, headers=hdrs, params=params)
-        res.raise_for_status()
-        return res
+        return await self.do_request(uri, data, headers, params, content_type, self.session.put)
 
     async def patch(self, uri, data, headers, params, content_type):
-        hdrs = self.build_header(headers)
-        if not isinstance(data, str):
-            data = json.dumps(data)
-
-        res = await self.session.patch(uri, data=data, headers=hdrs, params=params)
-        res.raise_for_status()
-        return res
+        return await self.do_request(uri, data, headers, params, content_type, self.session.patch)
 {{- end -}}
