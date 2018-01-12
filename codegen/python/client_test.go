@@ -87,7 +87,6 @@ func TestClient(t *testing.T) {
 				"users_service.py",
 				"unmarshall_error.py",
 				"unhandled_api_error.py",
-				"api_response.py",
 			}
 
 			for _, file := range files {
@@ -140,7 +139,6 @@ func TestClient(t *testing.T) {
 				"users_service.py",
 				"unmarshall_error.py",
 				"unhandled_api_error.py",
-				"api_response.py",
 			}
 
 			for _, f := range files {

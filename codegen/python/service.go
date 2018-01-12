@@ -52,7 +52,6 @@ func (s service) Imports() []string {
 
 	ipMap := map[string]struct{}{
 		"from .unmarshall_error import UnmarshallError":      struct{}{},
-		"from .api_response import APIResponse":              struct{}{},
 		"from .unhandled_api_error import UnhandledAPIError": struct{}{},
 	}
 	for _, m := range s.Methods {
