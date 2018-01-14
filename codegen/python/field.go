@@ -197,38 +197,13 @@ func (pf *field) addImport(module, name string) {
 
 // convert from raml Type to python type
 func (pf *field) setType(t, items string) {
-	typeMap := map[string]string{
-		"string":   "str",
-		"integer":  "int",
-		"int":      "int",
-		"int8":     "int",
-		"int16":    "int",
-		"int32":    "int",
-		"int64":    "int",
-		"long":     "int",
-		"number":   "float",
-		"double":   "float",
-		"float":    "float",
-		"boolean":  "bool",
-		"datetime": "datetime",
-		"object":   "dict",
-		"UUID":     "UUID",
-	}
-
-	if v, ok := typeMap[t]; ok {
-		pf.Type = v
-		switch t {
-		case "datetime":
-			pf.addImport("datetime", "datetime")
-		case "uuid":
-			pf.addImport("uuid", "UUID")
-		case "string":
-			pf.addImport("six", "string_types")
+	pt := toPythonType(t)
+	if pt != nil {
+		pf.Type = pt.name
+		if pt.importName != "" {
+			pf.addImport(pt.importModule, pt.importName)
 		}
-	}
-
-	if pf.Type != "" { // type already set, no need to go down
-		return
+		return // type already set, no need to go down
 	}
 
 	ramlType := raml.Type{
@@ -285,17 +260,4 @@ var (
 func datetimeVariant(name string) bool {
 	_, ok := dateTimeVariantMap[name]
 	return ok
-}
-
-// covert all str to string_types
-func (f field) ConverDataTypes() string {
-	// split on ',' instead of replaying str in the whole string to make sure we don't conflict with any type
-	// starting with str
-	dataTypes := strings.Split(f.DataType, ",")
-	for i, dataType := range dataTypes {
-		if dataType == "str" {
-			dataTypes[i] = "string_types"
-		}
-	}
-	return strings.Join(dataTypes, ",")
 }

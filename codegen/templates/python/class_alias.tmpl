@@ -1,0 +1,11 @@
+{{- define "class_alias" -}}
+"""
+Auto-generated class for {{.Name}}
+"""
+{{range $k, $v := .Imports -}}
+{{$v}}
+{{end}}
+
+{{.Name}} = {{.AliasOf}}
+
+{{end}}

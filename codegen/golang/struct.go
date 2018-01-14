@@ -151,24 +151,23 @@ func (sd *structDef) handleAdvancedType() {
 		sd.T.Type = "object"
 	}
 
-	strType := sd.T.TypeString()
 	parents, isMultipleInherit := sd.T.MultipleInheritance()
 	parent, isSingleInherit := sd.T.SingleInheritance()
 
 	switch {
-	case isMultipleInherit: //multiple inheritance
+	case isMultipleInherit:
 		sd.addMultipleInheritance(parents)
 	case sd.T.IsUnion():
 		sd.buildUnion()
-	case sd.T.IsArray(): // arary type
+	case sd.T.IsArray():
 		sd.buildArray()
-	case strings.ToLower(strType) == "object": // plain type
+	case strings.ToLower(sd.T.TypeString()) == "object": // plain type
 		return
-	case sd.T.IsEnum(): // enum
+	case sd.T.IsEnum():
 		sd.buildEnum()
-	case strType != "" && len(sd.T.Properties) == 0: // type alias
+	case sd.T.IsAlias():
 		sd.buildTypeAlias()
-	case isSingleInherit: // single inheritance
+	case isSingleInherit:
 		sd.addSingleInheritance(parent)
 	}
 }

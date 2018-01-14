@@ -16,10 +16,10 @@ class UsersPostReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type ID: str
+        :type ID: string_types
         :type age: int
         :type grades: list[int]
-        :type item: str
+        :type item: string_types
         :rtype: UsersPostReqBody
         """
 

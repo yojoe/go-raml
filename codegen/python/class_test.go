@@ -43,6 +43,8 @@ func TestClass(t *testing.T) {
 				"UsersPostReqBody.py",
 				"WithDateTime.py",
 				"Tree.py",
+				"Alias.py",
+				"AliasBuiltin.py",
 			}
 
 			for _, f := range files {

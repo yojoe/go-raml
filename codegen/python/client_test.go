@@ -34,9 +34,6 @@ func TestClient(t *testing.T) {
 				"__init__.py",
 				"client_utils.py",
 				"users_service.py",
-				"Address.py",
-				"City.py",
-				"GetUsersReqBody.py",
 			}
 
 			for _, file := range files {
@@ -48,6 +45,16 @@ func TestClient(t *testing.T) {
 
 				So(s, ShouldEqual, tmpl)
 			}
+			filesExist := []string{
+				"Address.py",
+				"City.py",
+				"GetUsersReqBody.py",
+			}
+			for _, f := range filesExist {
+				_, err := os.Stat(filepath.Join(targetDir, f))
+				So(err, ShouldBeNil)
+			}
+
 		})
 
 		Convey("requests gevent client", func() {
