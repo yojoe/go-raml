@@ -61,23 +61,24 @@ RAML Enum become python enum as described in https://docs.python.org/3/library/e
 
 ## Input Validation
 
-go-raml use python-jsonschema for request body validation.
+Except for builtin types, generated server use python-jsonschema for request body validation.
 
-    Validation              | Python
---------------------------- | ------
- minLength                  |   v
- maxLength                  |   v
- pattern                    |   v
- minimum                    |   v
- maximum                    |   v
- format                     |   x
- multipleOf                 |   v
- array field minItems       |   v
- array field maxItems       |   v
- array field uniqueItems    |   x
- array Type minItems        |   x
- array Type maxItems        |   x
- array Type uniqueItems     |   x
+
+ |   Validation               | Status
+ | -------------------------- | ------
+ | minLength                  |   v
+ | maxLength                  |   v
+ | pattern                    |   v
+ | minimum                    |   v
+ | maximum                    |   v
+ | format                     |   x
+ | multipleOf                 |   v
+ | array field minItems       |   v
+ | array field maxItems       |   v
+ | array field uniqueItems    |   x
+ | array Type minItems        |   x
+ | array Type maxItems        |   x
+ | array Type uniqueItems     |   x
 
 
 ## Bodies

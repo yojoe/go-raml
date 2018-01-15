@@ -1,6 +1,7 @@
 package python
 
 import (
+	"encoding/json"
 	"path/filepath"
 	"strings"
 
@@ -14,9 +15,35 @@ const (
 	jsonSchemaDir = "schema"
 )
 
-// just a convenience type
 type jsonSchema struct {
 	*raml.JSONSchema
+	Alias jsAlias
+}
+
+func (js *jsonSchema) isAlias() bool {
+	return js.Alias.Type != ""
+}
+
+func (js jsonSchema) String() string {
+	if !js.isAlias() {
+		return js.JSONSchema.String()
+	}
+
+	content := map[string]interface{}{
+		"$ref": js.Alias.Type + jsFileSuffix,
+	}
+
+	b, err := json.MarshalIndent(content, "", "\t")
+	if err != nil {
+		return "{}"
+	}
+	return string(b)
+
+}
+
+type jsAlias struct {
+	Type    string
+	Builtin bool
 }
 
 var (
@@ -87,12 +114,16 @@ func generateJSONSchema(apiDef *raml.APIDefinition, dir string) error {
 // this func is ugly, it should be part of raml.JSONSchema class
 // or we inherit that class
 func (js *jsonSchema) HandleAdvancedType() {
-	rt := raml.Type{Type: js.Type}
-	parent, isSingleInherit := rt.SingleInheritance()
+	parent, isSingleInherit := js.T.SingleInheritance()
 	switch {
-	case rt.IsMultipleInheritance():
-		parents, _ := rt.MultipleInheritance()
+	case js.T.IsMultipleInheritance():
+		parents, _ := js.T.MultipleInheritance()
 		js.Inherit(getParentsObjs(parents))
+	case js.T.IsAlias():
+		js.Alias = jsAlias{
+			Type:    js.T.TypeString(),
+			Builtin: js.T.IsBuiltin(),
+		}
 	case isSingleInherit:
 		js.Inherit(getParentsObjs([]string{parent}))
 	}
@@ -127,6 +158,10 @@ func jsArrayName(tip string) string {
 
 // Generate generates a json file of this schema
 func (js jsonSchema) Generate(dir string) error {
+	if js.Alias.Builtin {
+		return nil // plain builtin type can't be a JSON
+	}
+
 	filename := filepath.Join(dir, js.Name+jsFileSuffix)
 	ctx := map[string]interface{}{
 		"Content": js.String(),

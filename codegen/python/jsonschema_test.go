@@ -95,9 +95,10 @@ func TestJSONSchema(t *testing.T) {
 				"NumberFormat_schema.json",
 				"Cat_schema.json",
 				"MultipleInheritance_schema.json",
-				"EnumString_schema.json",
+				//"EnumString_schema.json",
 				"Catanimal_schema.json",
 				"UsersPostReqBody_schema.json",
+				"Alias_schema.json",
 			}
 
 			for _, f := range files {
