@@ -1,0 +1,19 @@
+#%RAML 1.0
+title: goraml dir
+description: goraml developers directory
+baseUri: http://localhost:5000
+mediaType: application/json
+
+types:
+  Animal:
+    properties:
+        name:
+          type: string
+/animals/{id}:
+  description: test generated code handle multiple slash
+  get:
+    description: get animal
+    responses:
+      200:
+        body:
+          type: Animal

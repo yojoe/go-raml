@@ -159,3 +159,43 @@ func TestClient(t *testing.T) {
 		})
 	})
 }
+
+func TestClientMultislash(t *testing.T) {
+	Convey("Python client with multislash root endpoint", t, func() {
+		apiDef := new(raml.APIDefinition)
+		err := raml.ParseFile("../fixtures/client_resources/multislash.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		Convey("requests client", func() {
+			log.Info("requests client")
+			client := NewClient(apiDef, "", false)
+			err = client.Generate(targetDir)
+			So(err, ShouldBeNil)
+
+			rootFixture := "./fixtures/client/multislash/"
+			// cek with generated with fixtures
+			files := []string{
+				"__init__.py",
+				"animalsid_service.py",
+			}
+
+			for _, file := range files {
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, file))
+				So(err, ShouldBeNil)
+
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, file))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+		})
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+}

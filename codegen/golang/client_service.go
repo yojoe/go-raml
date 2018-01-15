@@ -9,9 +9,9 @@ import (
 
 // ClientService represents a root endpoint of an API
 type ClientService struct {
-	rootEndpoint string
-	PackageName  string
-	Methods      []clientMethod
+	resource.ClientService
+	PackageName string
+	Methods     []clientMethod
 }
 
 func newClientService(rootEndpoint, packageName string, resMethods []resource.Method) *ClientService {
@@ -21,29 +21,18 @@ func newClientService(rootEndpoint, packageName string, resMethods []resource.Me
 		clientMeth := newClientMethod(rm)
 		methods = append(methods, clientMeth)
 	}
+
+	cs := resource.NewClientService(rootEndpoint)
+	cs.EndpointName = strings.Title(cs.EndpointName)
 	return &ClientService{
-		rootEndpoint: rootEndpoint,
-		PackageName:  packageName,
-		Methods:      methods,
+		ClientService: cs,
+		PackageName:   packageName,
+		Methods:       methods,
 	}
 }
 
-// Name returns it's struct name
-func (cs ClientService) Name() string {
-	return strings.Title(cs.rootEndpoint[1:]) + "Service"
-}
-
-// EndpointName returns root endpoint name
-func (cs ClientService) EndpointName() string {
-	return strings.Title(cs.rootEndpoint[1:])
-}
-
-// FilenameNoExt return filename without extension
-func (cs ClientService) FilenameNoExt() string {
-	return cs.rootEndpoint[1:] + "_service"
-}
 func (cs ClientService) filename(dir string) string {
-	name := filepath.Join(dir, cs.FilenameNoExt())
+	name := filepath.Join(dir, cs.FilenameNoExt)
 	return name + ".go"
 }
 

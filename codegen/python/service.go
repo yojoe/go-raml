@@ -3,14 +3,13 @@ package python
 import (
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 type service struct {
-	rootEndpoint       string
+	resource.ClientService
 	Methods            []clientMethod
 	UnmarshallResponse bool
 }
@@ -23,26 +22,10 @@ func newService(endpoint string, methods []resource.Method, unmarshallResponse b
 	}
 
 	return &service{
-		rootEndpoint:       endpoint,
+		ClientService:      resource.NewClientService(endpoint),
 		Methods:            clientMethods,
 		UnmarshallResponse: unmarshallResponse,
 	}
-}
-
-// Name returns it's struct name
-func (s service) Name() string {
-	return strings.Title(s.rootEndpoint[1:]) + "Service"
-}
-
-// EndpointName returns root endpoint name
-func (s service) EndpointName() string {
-	return s.rootEndpoint[1:]
-}
-
-// FilenameNoExt return filename without extension
-// this function is needed by template
-func (s service) FilenameNoExt() string {
-	return s.rootEndpoint[1:] + "_service"
 }
 
 func (s service) Imports() []string {
@@ -62,7 +45,7 @@ func (s service) Imports() []string {
 	return sortImportPaths(ipMap)
 }
 func (s service) filename(dir string) string {
-	return filepath.Join(dir, s.FilenameNoExt()) + ".py"
+	return filepath.Join(dir, s.FilenameNoExt) + ".py"
 }
 
 type byEndoint []clientMethod
