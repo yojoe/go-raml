@@ -11,6 +11,9 @@ func newArraySchema(t *Type, typ, name string) JSONSchema {
 		Schema: schemaVer,
 		Type:   "array",
 		Items:  newArrayItem(getArrayItemsType(t, typ)),
+		T: &Type{
+			Type: "array",
+		},
 	}
 	if t == nil {
 		return js

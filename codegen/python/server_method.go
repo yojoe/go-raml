@@ -69,6 +69,18 @@ func (sm *serverMethod) RespBody() string {
 	return sm.firstSuccessRespBodyType()
 }
 
+// HasReqValidator returns true if this method
+// has request body validator:
+// if request body is not builtin type
+func (sm serverMethod) HasReqValidator() bool {
+	jsObj, ok := jsObjects[sm.ReqBody]
+	if !ok {
+		return false
+	}
+
+	return !commons.IsBuiltinType(jsObj.T.TypeString())
+}
+
 func setServerReqBodyName(bodyName string) string {
 	if !commons.IsArrayType(bodyName) {
 		return bodyName

@@ -62,6 +62,16 @@ func TestGeneratePythonCapnpClasses(t *testing.T) {
 				So(s, ShouldEqual, tmpl)
 			}
 
+			// make sure these files are not exists
+			filesNotExist := []string{
+				"Alias.capnp",     // alias of non builtin type, use .capnp of aliased type
+				"AliasBuiltin.py", // no support for builtin type
+			}
+			for _, f := range filesNotExist {
+				_, err := os.Stat(filepath.Join(targetDir, f))
+				So(err, ShouldNotBeNil)
+			}
+
 		})
 
 		Reset(func() {

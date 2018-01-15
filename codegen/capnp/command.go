@@ -27,6 +27,11 @@ func GenerateCapnp(apiDef *raml.APIDefinition, dir, lang, pkg string) error {
 			}
 			ramlType.Properties = properties
 		case raml.Type:
+			if apiType.IsAlias() {
+				// no need to generate capnp of type alias.
+				// it will use capnp of the aliased type
+				continue
+			}
 			ramlType = apiType
 		}
 
