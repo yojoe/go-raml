@@ -21,7 +21,6 @@ type pyimport struct {
 type field struct {
 	Name                    string
 	Type                    string
-	MyPyType                string
 	Required                bool   // if the field itself is required
 	DataType                string // the python datatype (objmap) used in the template
 	HasChildProperties      bool
@@ -82,7 +81,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 		}
 	}
 
-	f.DataType, f.HasChildProperties, f.MyPyType = buildDataType(f, childProperties)
+	f.DataType, f.HasChildProperties = buildDataType(f, childProperties)
 
 	// I don't really understand why we need childRequired and mainRequired here.
 	// it is from the original code written by @razor-1
@@ -128,7 +127,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 	return f, nil
 }
 
-func buildDataType(f field, childProperties []objectProperty) (string, bool, string) {
+func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	/*
 		build a string for the 'datatype' key of an objmap for this property
 		a complete objmap looks like:
@@ -152,14 +151,10 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool, str
 
 	if len(f.UnionTypes) > 0 {
 		dataType := strings.Join(f.UnionTypes, ", ")
-		myPyType := fmt.Sprintf("Union[%s]", dataType)
-		return dataType, false, myPyType
+		return dataType, false
 	}
 	if f.Type != "dict" || len(childProperties) == 0 {
-		if f.IsList {
-			return f.Type, false, fmt.Sprintf("List[%s]", f.Type)
-		}
-		return f.Type, false, f.Type
+		return f.Type, false
 	}
 
 	// @TODO: I think the part will never be reached. The type will only be dict if
@@ -179,13 +174,13 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool, str
 		childField.setType(objProp.datatype, "")
 		thisDatatype := childField.Type
 		if len(objProp.childProperties) > 0 {
-			thisDatatype, _, _ = buildDataType(childField, objProp.childProperties)
+			thisDatatype, _ = buildDataType(childField, objProp.childProperties)
 		}
 		thisProp := fmt.Sprintf("'%s': {'datatype': [%s], 'required': %s}", objProp.name, thisDatatype, reqstr)
 		datatypes = append(datatypes, thisProp)
 	}
 
-	return strings.Join(datatypes, ", "), true, ""
+	return strings.Join(datatypes, ", "), true
 }
 
 func (pf *field) addImport(module, name string) {

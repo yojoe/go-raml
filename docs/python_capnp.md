@@ -3,7 +3,7 @@
 Table of Contents
 =================
 
-* [Install pycapnp](#install-mypy)
+* [Install pycapnp](#install-pycapnp)
 * [Generation](#generation)
 
 
