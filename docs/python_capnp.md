@@ -159,3 +159,11 @@ struct Animal {
 }
 
 ```
+
+## Notes on type alias
+
+No capnp will be generated for type alias:
+- alias of builtin type: capnp doesn't support it
+- alias of non builtin type: use capnp of the aliased type.
+
+In the python class of builtin type alias,  there will be no functions to load from/to python/capnp like we have when we generate a gevent client/server.

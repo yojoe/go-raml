@@ -2,7 +2,7 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
 from sanic.response import json, text
-{{ if $.ReqBody }}
+{{ if .HasReqValidator }}
 import json as JSON
 import jsonschema
 from jsonschema import Draft4Validator
@@ -18,6 +18,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 def {{$.MethodName}}Handler({{$.Params}}):
     {{ if $.ReqBody }}
     inputs = request.json
+    {{ end }}
+    {{ if .HasReqValidator}}
     try:
         {{$.ReqBody}}_schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:

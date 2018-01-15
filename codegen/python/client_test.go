@@ -45,6 +45,8 @@ func TestClient(t *testing.T) {
 
 				So(s, ShouldEqual, tmpl)
 			}
+
+			// make sure these files are exists
 			filesExist := []string{
 				"Address.py",
 				"City.py",

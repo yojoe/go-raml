@@ -16,6 +16,7 @@ type JSONSchema struct {
 	Name        string              `json:"-"`
 	Description string              `json:"description,omitempty"`
 	Type        string              `json:"type"`
+	T           *Type               `json:"-"` // underlying RAML type
 	Items       *arrayItem          `json:"items,omitempty"`
 	Properties  map[string]property `json:"properties,omitempty"`
 	Required    []string            `json:"required,omitempty"`
@@ -61,13 +62,21 @@ func NewJSONSchemaFromProps(t *Type, properties map[string]interface{}, typ, nam
 
 	// we need it to be sorted for testing purpose
 	sort.Strings(required)
-	return JSONSchema{
+	js := JSONSchema{
 		Schema:     schemaVer,
 		Name:       name,
 		Type:       typ,
+		T:          t,
 		Properties: props,
 		Required:   required,
 	}
+	if js.T == nil {
+		js.T = &Type{
+			Type:       typ,
+			Properties: properties,
+		}
+	}
+	return js
 }
 
 // Inherit inherits JSON schema from the parents
