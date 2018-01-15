@@ -22,14 +22,14 @@ class {{.Name}}:
         resp = await self.client.{{$v.Verb | ToLower }}({{$v.PRArgs}})
         try:
         {{- range $k, $rbt := $v.SuccessRespBodyTypes }}
-            if resp.status_code == {{$rbt.Code}}:
+            if resp.status == {{$rbt.Code}}:
             {{- if $rbt.IsArray}}
                 resps = []
                 for elem in resp.json():
                     resps.append({{$rbt.BasicType}}(elem))
-                return APIResponse(data=resps, response=resp)
+                return resps, resp
             {{- else}}
-                return APIResponse(data={{$rbt.BasicType}}(await resp.json()), response=resp)
+                return {{$rbt.BasicType}}(await resp.json()),    resp
             {{- end}}
         {{- end }}
         except ValueError as msg:

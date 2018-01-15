@@ -26,9 +26,9 @@ class {{.Name}}:
                 resps = []
                 for elem in resp.json():
                     resps.append({{$rbt.BasicType}}(elem))
-                return APIResponse(data=resps, response=resp)
+                return resps, resp
             {{- else}}
-                return APIResponse(data={{$rbt.BasicType}}(resp.json()), response=resp)
+                return {{$rbt.BasicType}}(resp.json()), resp
             {{- end}}
 		{{- end }}
 

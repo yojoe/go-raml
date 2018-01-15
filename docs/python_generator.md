@@ -28,9 +28,9 @@ It is currently disabled by default and could be enabled by setting this option
 ```
 in the `go-raml client` command line option.
 
-In case of success unmarshal, the generated client returns named tuple with two fields:
+In case of success unmarshal, the generated client returns two values:
 - data : python class constructed by unmarshalling the response body
-- response: response object
+- response: python-requests's response object
 
 otherwise it returns exception.
 
@@ -38,8 +38,8 @@ Usage example:
 
 ```python
 try:
-    resp = client.api.network.getNetwork("my_net_id")
-    print(resp.data)
+    data, resp = client.api.network.getNetwork("my_net_id")
+    print(resp)
 except unmarshall_error.UnmarshallError as ue:
     print("response:", ue.response.text)
     print("msg: ", ue.message)
