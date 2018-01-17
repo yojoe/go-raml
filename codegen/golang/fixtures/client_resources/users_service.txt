@@ -53,7 +53,7 @@ func (s *UsersService) UsersUserIdAddressPost(userId string, body UsersUserIdAdd
 func (s *UsersService) UsersUserIdDelete(userId string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+userId, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+userId, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
