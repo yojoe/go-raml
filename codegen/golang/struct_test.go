@@ -44,6 +44,7 @@ func TestStruct(t *testing.T) {
 				"NumberFormat",
 				"WithDateTime",
 				"Tree",
+				"Animal_2_0",
 			}
 
 			for _, f := range files {

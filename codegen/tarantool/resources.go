@@ -46,7 +46,7 @@ func (m *Method) Handler() string {
 	if len(m.RamlMethod.DisplayName) > 0 {
 		return casee.ToSnakeCase(commons.DisplayNameToFuncName(m.RamlMethod.DisplayName))
 	}
-	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(m.EndPoint))
+	name := commons.NormalizeIdentifier(commons.NormalizeURI(m.EndPoint))
 	return casee.ToSnakeCase(name + m.Verb)
 }
 
@@ -72,7 +72,7 @@ func (r *Resource) Handler() string {
 	if len(r.RamlResource.DisplayName) > 0 {
 		return commons.DisplayNameToFuncName(r.RamlResource.DisplayName) + "_handler"
 	}
-	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(r.RamlResource.FullURI()))
+	name := commons.NormalizeIdentifier(commons.NormalizeURI(r.RamlResource.FullURI()))
 	return name + "_handler"
 }
 

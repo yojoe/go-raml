@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	reResource = regexp.MustCompile("({{1}[\\w\\s]+}{1})")
+	//reResource      = regexp.MustCompile(`({{1}[\w\s]+}{1})`)
+	reResourceParam = regexp.MustCompile(`\{(.*?)\}`)
 )
 
 // Resource is Go code representation of a resource
@@ -63,9 +64,10 @@ func _getResourceParams(r *raml.Resource, params []string) []string {
 		return params
 	}
 
-	matches := reResource.FindAllString(r.URI, -1)
-	for _, v := range matches {
-		params = append(params, v[1:len(v)-1])
+	matches := reResourceParam.FindAllString(r.URI, -1)
+	for _, match := range matches {
+		matchEscaped := commons.NormalizeIdentifier(match[1 : len(match)-1])
+		params = append(params, matchEscaped)
 	}
 
 	return _getResourceParams(r.Parent, params)

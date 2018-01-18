@@ -1,0 +1,11 @@
+package main
+
+import ()
+
+// type with special characters
+type Animal_2_0 animal
+
+func (s Animal_2_0) Validate() error {
+
+	return nil
+}

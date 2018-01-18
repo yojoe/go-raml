@@ -156,13 +156,17 @@ func jsArrayName(tip string) string {
 	return "List_" + commons.GetBasicType(tip)
 }
 
+func (js jsonSchema) filename() string {
+	return commons.NormalizeIdentifier(js.Name) + jsFileSuffix
+}
+
 // Generate generates a json file of this schema
 func (js jsonSchema) Generate(dir string) error {
 	if js.Alias.Builtin {
 		return nil // plain builtin type can't be a JSON
 	}
 
-	filename := filepath.Join(dir, js.Name+jsFileSuffix)
+	filename := filepath.Join(dir, js.filename())
 	ctx := map[string]interface{}{
 		"Content": js.String(),
 	}

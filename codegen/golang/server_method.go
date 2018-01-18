@@ -30,7 +30,7 @@ func serverMethodName(endpoint, displayName, verb, resName string) string {
 	if len(displayName) > 0 {
 		return commons.DisplayNameToFuncName(displayName)
 	}
-	name := commons.ReplaceNonAlphanumerics(commons.NormalizeURI(endpoint))
+	name := commons.NormalizeIdentifier(commons.NormalizeURI(endpoint))
 	return name[len(resName):] + verb
 }
 
@@ -68,7 +68,7 @@ func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, gm.ReqBody, globLibRootURLs); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.reqBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
@@ -84,7 +84,7 @@ func (gm serverMethod) Imports() []string {
 	ip := map[string]struct{}{
 		"net/http": struct{}{},
 	}
-	if gm.firstSuccessRespBodyType() != "" || gm.ReqBody != "" {
+	if gm.firstSuccessRespBodyType() != "" || gm.reqBody != "" {
 		ip["encoding/json"] = struct{}{}
 	}
 	for lib := range gm.libImported(globRootImportPath) {
@@ -99,12 +99,12 @@ func (gm serverMethod) ReqBodyNeedValidation() bool {
 	// the reqBody type is already in Go type
 	getBuiltinType := func() string {
 		switch {
-		case strings.HasPrefix(gm.ReqBody, "[][]"): // bidimensional array
-			return strings.TrimPrefix(gm.ReqBody, "[][]")
-		case strings.HasPrefix(gm.ReqBody, "[]"): // array
-			return strings.TrimPrefix(gm.ReqBody, "[]")
+		case strings.HasPrefix(gm.reqBody, "[][]"): // bidimensional array
+			return strings.TrimPrefix(gm.reqBody, "[][]")
+		case strings.HasPrefix(gm.reqBody, "[]"): // array
+			return strings.TrimPrefix(gm.reqBody, "[]")
 		default:
-			return gm.ReqBody
+			return gm.reqBody
 		}
 	}
 	t := raml.Type{

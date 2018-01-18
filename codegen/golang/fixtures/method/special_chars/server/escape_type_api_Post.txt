@@ -1,0 +1,21 @@
+package main
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// Post is the handler for POST /escape_type
+func (api Escape_typeAPI) Post(w http.ResponseWriter, r *http.Request) {
+	var reqBody User2_0
+
+	// decode request
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	var respBody User2_0
+	json.NewEncoder(w).Encode(&respBody)
+}

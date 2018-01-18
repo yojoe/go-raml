@@ -41,7 +41,7 @@ func newEnumFromClass(pc *class) *enum {
 		Name: "",
 		Enum: pc.T.Enum,
 	}
-	return newEnum(pc.Name, prop, true)
+	return newEnum(pc.Name(), prop, true)
 }
 
 func newEnumField(f interface{}, e enum) enumField {

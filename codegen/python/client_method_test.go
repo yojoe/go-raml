@@ -47,3 +47,42 @@ func TestClientMethodWithComplexBody(t *testing.T) {
 	})
 
 }
+
+func TestClientMethodWithSpecialChars(t *testing.T) {
+	Convey("TestClientMethodWithSpecialChars", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/special_chars.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		client := NewClient(apiDef, clientNameRequests, true)
+
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/special_chars/client"
+		files := []string{
+			"__init__.py",
+			"escape_type_service.py",
+			"uri_service.py",
+			"User2_0.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

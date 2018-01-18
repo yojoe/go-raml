@@ -60,7 +60,7 @@ func (pcm *clientMethod) setup() {
 	if len(pcm.DisplayName) > 0 {
 		pcm.MethodName = commons.DisplayNameToFuncName(pcm.DisplayName)
 	} else {
-		pcm.MethodName = snakeCaseResourceURI(pcm.Resource) + "_" + strings.ToLower(pcm.Verb())
+		pcm.MethodName = commons.NormalizeIdentifier(snakeCaseResourceURI(pcm.Resource) + "_" + strings.ToLower(pcm.Verb()))
 	}
 }
 

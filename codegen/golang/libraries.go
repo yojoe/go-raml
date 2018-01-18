@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
-
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/libraries"
 	"github.com/Jumpscale/go-raml/raml"
@@ -114,7 +112,7 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 	libDir, libFile := globAPIDef.FindLibFile(commons.DenormalizePkgName(libName))
 
 	if libFile == "" {
-		log.Fatalf("can't find library : %v", libName)
+		return ""
 	}
 
 	libPath := libraries.JoinPath(libDir, libFile, libRootURLs)

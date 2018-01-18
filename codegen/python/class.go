@@ -14,13 +14,17 @@ import (
 // class defines a python class
 type class struct {
 	T           raml.Type
-	Name        string
+	name        string
 	Description []string
 	Fields      map[string]field
 	Enum        *enum
 	Capnp       bool
 	AliasOf     string
 	imports     map[string]struct{}
+}
+
+func (pc class) Name() string {
+	return commons.NormalizeIdentifier(pc.name)
 }
 
 type objectProperty struct {
@@ -33,7 +37,7 @@ type objectProperty struct {
 // create a python class representations
 func newClass(T raml.Type, name string, description string, properties map[string]interface{}, capnp bool) class {
 	pc := class{
-		Name:        name,
+		name:        name,
 		Description: commons.ParseDescription(description),
 		Fields:      map[string]field{},
 		T:           T,
@@ -157,10 +161,10 @@ func getTypeProperties(typelist []raml.Type) map[string]raml.Property {
 
 // generate a python class file
 func (pc *class) generate(dir, template, name string) ([]string, error) {
-	fileName := filepath.Join(dir, pc.Name+".py")
+	fileName := filepath.Join(dir, pc.Name()+".py")
 
 	if pc.AliasOf != "" {
-		return []string{pc.Name}, commons.GenerateFile(pc, "./templates/python/class_alias.tmpl",
+		return []string{pc.Name()}, commons.GenerateFile(pc, "./templates/python/class_alias.tmpl",
 			"class_alias", fileName, true)
 	}
 
@@ -180,7 +184,7 @@ func (pc *class) generate(dir, template, name string) ([]string, error) {
 		return typeNames, pc.Enum.generate(dir)
 	}
 
-	typeNames = append(typeNames, pc.Name)
+	typeNames = append(typeNames, pc.Name())
 	return typeNames, commons.GenerateFile(pc, template, name, fileName, true)
 }
 
@@ -218,7 +222,7 @@ func (pc *class) Imports() []string {
 	for _, field := range pc.Fields {
 		for _, imp := range field.imports {
 			// do not import ourself
-			if imp.Name == pc.Name {
+			if imp.Name == pc.Name() {
 				continue
 			}
 			pc.addImport(imp.Module, imp.Name)
@@ -233,7 +237,7 @@ func (pc *class) addImport(mod, name string) {
 	pc.imports[importString] = struct{}{}
 }
 func (pc class) CapnpName() string {
-	return casee.ToPascalCase(pc.Name)
+	return casee.ToPascalCase(pc.Name())
 }
 
 // generate all python classes from a RAML document

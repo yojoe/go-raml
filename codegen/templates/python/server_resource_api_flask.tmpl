@@ -11,7 +11,7 @@ import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}
 
-@{{$apiName | ToLower}}_api.route('{{$v.Endpoint}}', methods=['{{$v.Verb}}'])
+@{{$apiName | ToLower}}_api.route('{{$v.EscapedEndpoint}}', methods=['{{$v.Verb}}'])
 {{range $km, $vm := $v.MiddlewaresArr -}}
 @{{$vm.Name}}.{{$vm.Name}}([{{$vm.Args}}])
 {{end -}}
