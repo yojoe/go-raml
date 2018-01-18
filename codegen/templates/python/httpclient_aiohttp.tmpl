@@ -9,10 +9,14 @@ class HTTPClient:
         self.base_url = base_uri
         self.session = aiohttp.ClientSession(loop=loop)
         self.headers = {"Content-Type": "application/json"}
-    
+
     def set_auth_header(self, val):
-        ''' set authorization header value'''
+        """ set authorization header value """
         self.headers["Authorization"] = val
+
+    def set_header(self, header, val):
+        """ set header """
+        self.headers[header] = val
 
     def close(self):
         self.session.close()
