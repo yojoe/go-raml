@@ -23,7 +23,7 @@ func (s *{{$serviceiName}}) {{$v.MethodName}}({{$v.Params}}){{$v.ReturnTypes}} {
 		{{ end }}
 
     	{{ if or (eq $v.Verb "GET") (eq $v.Verb "DELETE") }}
-        resp, err := s.client.doReqNoBody("GET", s.client.BaseURI {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
+        resp, err := s.client.doReqNoBody("{{$v.Verb}}", s.client.BaseURI {{if ne $v.ResourcePath "" }} + {{end}} {{$v.ResourcePath}}, headers, queryParams)
 		{{- else }}
         resp, err := s.client.doReqWithBody("{{$v.Verb}}", s.client.BaseURI{{if ne $v.ResourcePath "" }} + {{end}}{{$v.ResourcePath}}, {{if ne $v.ReqBody ""}}&body{{else}}nil{{end}}, headers, queryParams)
 		{{- end }}
