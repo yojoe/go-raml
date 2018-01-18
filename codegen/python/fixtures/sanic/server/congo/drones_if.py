@@ -3,7 +3,7 @@
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import text
-import drones_api
+from . import drones_api
 
 
 drones_if = Blueprint('drones_if')

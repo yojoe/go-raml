@@ -3,10 +3,10 @@
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import text
-import users_api
+from . import users_api
 
 
-from oauth2_itsyouonline import oauth2_itsyouonline
+from .oauth2_itsyouonline import oauth2_itsyouonline
 
 users_if = Blueprint('users_if')
 

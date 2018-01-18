@@ -3,7 +3,7 @@
 from sanic import Sanic
 from sanic.response import json
 
-from users_if import users_if
+from .users_if import users_if
 
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))

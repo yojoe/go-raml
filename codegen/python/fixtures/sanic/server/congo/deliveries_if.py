@@ -3,7 +3,7 @@
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import text
-import deliveries_api
+from . import deliveries_api
 
 
 deliveries_if = Blueprint('deliveries_if')

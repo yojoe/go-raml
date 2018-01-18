@@ -224,11 +224,11 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"date_only.go":        date_onlyGo,
-	"datetime.go":         datetimeGo,
-	"datetime_only.go":    datetime_onlyGo,
+	"date_only.go": date_onlyGo,
+	"datetime.go": datetimeGo,
+	"datetime_only.go": datetime_onlyGo,
 	"datetime_rfc2616.go": datetime_rfc2616Go,
-	"time_only.go":        time_onlyGo,
+	"time_only.go": time_onlyGo,
 }
 
 // AssetDir returns the file names below a certain
@@ -270,13 +270,12 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
-	"date_only.go":        &bintree{date_onlyGo, map[string]*bintree{}},
-	"datetime.go":         &bintree{datetimeGo, map[string]*bintree{}},
-	"datetime_only.go":    &bintree{datetime_onlyGo, map[string]*bintree{}},
+	"date_only.go": &bintree{date_onlyGo, map[string]*bintree{}},
+	"datetime.go": &bintree{datetimeGo, map[string]*bintree{}},
+	"datetime_only.go": &bintree{datetime_onlyGo, map[string]*bintree{}},
 	"datetime_rfc2616.go": &bintree{datetime_rfc2616Go, map[string]*bintree{}},
-	"time_only.go":        &bintree{time_onlyGo, map[string]*bintree{}},
+	"time_only.go": &bintree{time_onlyGo, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
@@ -325,3 +324,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

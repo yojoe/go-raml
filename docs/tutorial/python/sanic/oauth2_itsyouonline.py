@@ -14,10 +14,6 @@ token_prefix = 'Bearer '
 
 class oauth2_itsyouonline:
     def __init__(self, scopes=None, audience=None):
-
-        self.described_by = "headers"
-        self.field = "Authorization"
-
         self.allowed_scopes = scopes
         if audience is None:
             self.audience = ''
@@ -38,7 +34,7 @@ class oauth2_itsyouonline:
         # check provided token
         token = self.get_token(request)
 
-        if len(token) == 0:
+        if not token:
             return False
 
         if not await self.check_jwt_scopes(token):
@@ -64,13 +60,14 @@ class oauth2_itsyouonline:
         return False
 
     def get_token(self, request):
-        if self.described_by == 'headers':
-            header = request.headers.get(self.field, '')
-            if header.startswith(token_prefix):
-                return header[len(token_prefix):]
-            else:
-                return ''
-        elif self.described_by == 'queryParameters':
-            return request.args.get("access_token", "")
-        else:
-            return ''
+        headers = ["Authorization", ]
+        for header in headers:
+            token = request.headers.get(header, "")
+            if token.startswith(token_prefix):
+                return token[len(token_prefix):]
+
+        query_params = ["access_token", ]
+        for param in query_params:
+            token = request.args.get(param, "")
+            if token:
+                return token
