@@ -3,7 +3,7 @@
 
 from flask import Flask, send_from_directory, send_file
 {{ range $k, $v := .ResourcesDef -}}
-from {{.Name | ToLower}}_api import {{.Name | ToLower}}_api
+from .{{.Name | ToLower}}_api import {{.Name | ToLower}}_api
 {{end }}
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))

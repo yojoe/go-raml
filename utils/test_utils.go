@@ -13,7 +13,6 @@ func TestLoadFile(filename string) (string, error) {
 	return string(b), nil
 }
 
-
 // remove capnp ID from a file, we need it for the test.
 // because capnp ID will always produce different value
 // this func is not elegant

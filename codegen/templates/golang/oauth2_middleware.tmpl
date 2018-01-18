@@ -13,8 +13,6 @@ import (
 
 // Oauth2{{.Name}}Middleware is oauth2 middleware for {{.Name}}
 type Oauth2{{.Name}}Middleware struct {
-	describedBy string
-	field       string
 	scopes      []string
 }
 
@@ -42,13 +40,6 @@ func NewOauth2{{.Name}}Middleware(scopes []string) *Oauth2{{.Name}}Middleware {
     om := Oauth2{{.Name}}Middleware{
 		scopes:      scopes,
 	}
-    {{ if .Header}}
-    om.describedBy = "headers"
-    om.field = "{{.Header.Name}}"
-    {{ else if .QueryParams }}
-    om.describedBy = "queryParameters"
-    om.field = "{{.QueryParams.Name}}"
-    {{ end }}
     return &om
 }
 
@@ -75,11 +66,7 @@ func (om *Oauth2{{.Name}}Middleware) Handler(next http.Handler) http.Handler {
         var err error
 
 		// access token checking
-		if om.describedBy == "queryParameters" {
-			accessToken = r.URL.Query().Get(om.field)
-		} else if om.describedBy == "headers" {
-			accessToken = r.Header.Get(om.field)
-		}
+		accessToken = om.getToken(r)
 		if accessToken == "" {
 			w.WriteHeader(401)
 			return
@@ -129,4 +116,34 @@ func (om *Oauth2{{.Name}}Middleware) checkJWTGetScope(tokenStr string) ([]string
 	}
 	return scopes, nil
 }
+
+// get token from supported headers and query parameters
+func (om *Oauth2{{.Name}}Middleware) getToken(r *http.Request) string {
+    {{- if .Headers}}
+    headers := []string{
+    {{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}
+    }
+    {{- else}}
+    headers := []string{"Authorization"}
+    {{ end }}
+    for _, header := range headers {
+        token := r.Header.Get(header)
+        if token != "" {
+            return token
+        }
+    }
+    {{if .QueryParams}}
+    query_params := []string{
+    {{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}
+    }
+    for _, param := range query_params {
+        token := r.URL.Query().Get(param)
+        if token != "" {
+            return token
+        }
+    }
+    {{ end }}
+    return ""
+}
+
 {{- end -}}

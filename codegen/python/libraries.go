@@ -70,8 +70,7 @@ func (l *library) generate() error {
 	}
 
 	// security schemes
-	fs := FlaskServer{}
-	if err := fs.generateOauth2(l.SecuritySchemes, l.dir); err != nil {
+	if err := generateServerSecurity(l.SecuritySchemes, templates(serverKindFlask), l.dir); err != nil {
 		return err
 	}
 

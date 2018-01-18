@@ -3,8 +3,8 @@
 
 import aiohttp
 
-class {{.Name}}():
-    def __init__(self, http_client, access_token_uri='{{.AccessTokenURI}}'):
+class {{.ClassName}}:
+    def __init__(self, http_client, access_token_uri='{{.Settings.accessTokenUri}}'):
         self.access_token_uri = access_token_uri
         self._http_client = http_client
 
@@ -21,7 +21,15 @@ class {{.Name}}():
 
         async with aiohttp.ClientSession() as session:
             return await session.post(self.access_token_uri, params=params)
-
-    def set_auth_header(self, val):
-        return self._http_client.set_auth_header('Bearer %s' % val)
+    {{ if .Headers}}
+    {{ range $k, $v := .Headers}}
+    def set_{{ToLower $v.Name}}_header(self, val):
+        """" Set header {{$v.Name}} to 'Bearer <val>'"""
+        return self._http_client.set_header("{{$v.Name}}", 'Bearer %s' % val)
+    {{ end }}
+    {{ else }}
+    def set_authorization_header(self, val):
+        """" Set header Authorization to 'Bearer <val>'"""
+        return self._http_client.set_header("Authorization", 'Bearer %s' % val)
+    {{ end }}
 {{- end -}}
