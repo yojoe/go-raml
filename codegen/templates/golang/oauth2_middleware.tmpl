@@ -14,6 +14,8 @@ import (
 // Oauth2{{.Name}}Middleware is oauth2 middleware for {{.Name}}
 type Oauth2{{.Name}}Middleware struct {
 	scopes      []string
+	headers     []string
+	queryParams []string
 }
 
 var JWTPublicKey *ecdsa.PublicKey
@@ -37,8 +39,26 @@ func init() {
 
 // NewOauth2{{.Name}}Middlewarecreate new Oauth2{{.Name}}Middleware struct
 func NewOauth2{{.Name}}Middleware(scopes []string) *Oauth2{{.Name}}Middleware {
+    {{- if .Headers}}
+    headers := []string{
+    {{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}
+    }
+    {{- else}}
+    headers := []string{
+    "Authorization",
+    }
+    {{- end }}
+    {{- if .QueryParams}}
+    queryParams := []string{
+    {{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}
+    }
+    {{- else }}
+    queryParams := []string{}
+    {{ end }}
     om := Oauth2{{.Name}}Middleware{
 		scopes:      scopes,
+		headers:     headers,
+		queryParams: queryParams,
 	}
     return &om
 }
@@ -119,30 +139,18 @@ func (om *Oauth2{{.Name}}Middleware) checkJWTGetScope(tokenStr string) ([]string
 
 // get token from supported headers and query parameters
 func (om *Oauth2{{.Name}}Middleware) getToken(r *http.Request) string {
-    {{- if .Headers}}
-    headers := []string{
-    {{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}
-    }
-    {{- else}}
-    headers := []string{"Authorization"}
-    {{ end }}
-    for _, header := range headers {
+    for _, header := range om.headers {
         token := r.Header.Get(header)
         if token != "" {
             return token
         }
     }
-    {{if .QueryParams}}
-    query_params := []string{
-    {{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}
-    }
-    for _, param := range query_params {
+    for _, param := range om.queryParams {
         token := r.URL.Query().Get(param)
         if token != "" {
             return token
         }
     }
-    {{ end }}
     return ""
 }
 

@@ -20,6 +20,16 @@ class oauth2_{{.Name}}:
             self.audience = ''
         else:
             self.audience = ",".join(audience)
+    {{- if .Headers}}
+        self.headers = [{{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}]
+    {{- else}}
+        self.headers = ["Authorization"]
+    {{- end }}
+    {{- if .QueryParams}}
+        self.query_params = [{{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}]
+    {{- else}}
+        self.query_params = []
+    {{- end }}
 
     def __call__(self, f):
         @wraps(f)
@@ -50,20 +60,12 @@ class oauth2_{{.Name}}:
         return False
 
     def get_token(self):
-    {{- if .Headers}}
-        headers = [{{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}]
-    {{- else}}
-        headers = ["Authorization"]
-    {{ end }}
-        for header in headers:
+        for header in self.headers:
             token = request.headers.get(header, "")
             if token.startswith(token_prefix):
                 return token[len(token_prefix):]
-    {{if .QueryParams}}
-        query_params = [{{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}]
-        for param in query_params:
+        for param in self.query_params:
             token = request.args.get(param, "")
             if token:
                 return token
-    {{ end }}
 {{- end -}}

@@ -26,8 +26,8 @@ class Oauth2ClientItsyouonline:
 
     def set_authorization_header(self, val):
         """" Set header Authorization to 'Bearer <val>'"""
-        return self._http_client.set_header('Authorization', 'Bearer %s' % val)
+        self._http_client.set_header('Authorization', 'Bearer %s' % val)
 
     def set_anotherauthorization_header(self, val):
         """" Set header AnotherAuthorization to 'Bearer <val>'"""
-        return self._http_client.set_header('AnotherAuthorization', 'Bearer %s' % val)
+        self._http_client.set_header('AnotherAuthorization', 'Bearer %s' % val)

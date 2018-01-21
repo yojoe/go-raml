@@ -21,6 +21,8 @@ class oauth2_Facebook:
             self.audience = ''
         else:
             self.audience = ",".join(audience)
+        self.headers = ["Authorization", ]
+        self.query_params = []
 
     def __call__(self, f):
         @wraps(f)
@@ -51,8 +53,11 @@ class oauth2_Facebook:
         return False
 
     def get_token(self):
-        headers = ["Authorization", ]
-        for header in headers:
+        for header in self.headers:
             token = request.headers.get(header, "")
             if token.startswith(token_prefix):
                 return token[len(token_prefix):]
+        for param in self.query_params:
+            token = request.args.get(param, "")
+            if token:
+                return token

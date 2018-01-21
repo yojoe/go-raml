@@ -55,8 +55,6 @@ func Supported(ss raml.SecurityScheme) bool {
 	case Oauth2:
 		_, ok := ss.Settings["accessTokenUri"]
 		return ok
-	case BasicAuthentication:
-		return true
 	default:
 		return false
 	}

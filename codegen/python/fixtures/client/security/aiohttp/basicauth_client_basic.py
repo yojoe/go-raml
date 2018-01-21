@@ -10,4 +10,4 @@ class BasicAuthClientBasic:
     def set_authorization_header(self, username, password):
         """"Hash username:password and set header Authorization to 'Basic <hash>'"""
         val = base64.b64encode('%s:%s' % (username, password))
-        return self._http_client.set_header('Authorization', 'Basic %s' % val)
+        self._http_client.set_header('Authorization', 'Basic %s' % val)
