@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/Jumpscale/go-raml/commands"
@@ -10,11 +11,13 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-//Version define software version
-var Version = "0.1-Dev"
+var (
+	//Version define software version
+	Version = "v1.1.0"
 
-//ApplicationName is the name of the application
-var ApplicationName = "RAML code generation toolset"
+	//ApplicationName is the name of the application
+	ApplicationName = "RAML code generation toolset"
+)
 
 var (
 	serverCommand      = &commands.ServerCommand{}
@@ -25,6 +28,11 @@ var (
 )
 
 func main() {
+	cli.VersionPrinter = func(c *cli.Context) {
+		fmt.Printf("Version: %v\nCommit Hash: %v\nBuild Date:%v\n",
+			Version, commands.CommitHash, commands.BuildDate)
+	}
+
 	app := cli.NewApp()
 	app.Name = ApplicationName
 	app.Version = Version
