@@ -42,7 +42,7 @@ func newStructDef(name, packageName, description string, properties map[string]i
 		fields[prop.Name] = newFieldDef(name, prop, packageName)
 	}
 	return structDef{
-		Name:        name,
+		Name:        commons.NormalizeIdentifier(name),
 		PackageName: packageName,
 		Fields:      fields,
 		Description: commons.ParseDescription(description),

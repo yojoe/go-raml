@@ -1,0 +1,29 @@
+#%RAML 1.0
+title: goraml dir
+description: goraml developers directory
+baseUri: http://localhost:5000
+mediaType: application/json
+
+types:
+  User2.0:
+    properties:
+        name:
+          type: string
+/uri:
+  /{users-id}:
+    description: with special char in uri
+    get:
+      responses:
+        200:
+          body:
+            type: User2.0
+
+/escape_type:
+  description: request and response use type with special chars
+  post:
+    body:
+      type: User2.0
+    responses:
+      200:
+        body:
+          type: User2.0

@@ -25,7 +25,7 @@ func (sm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *
 
 	if commons.HasJSONBody(&(sm.Bodies)) {
 		// TODO : make it to call proper func
-		sm.ReqBody = casee.ToPascalCase(sm.MethodName + commons.ReqBodySuffix)
+		sm.reqBody = casee.ToPascalCase(sm.MethodName + commons.ReqBodySuffix)
 	}
 
 	sm.Params = strings.Join(resourceParams, ", ")
@@ -54,7 +54,7 @@ func newServerMethod(apiDef *raml.APIDefinition, rd *resource.Resource, rm resou
 		method:    meth,
 		SecuredBy: security.GetMethodSecuredBy(apiDef, rm.Resource, rm.Method),
 	}
-	sm.ReqBody = setServerReqBodyName(meth.ReqBody)
+	sm.reqBody = setServerReqBodyName(meth.reqBody)
 
 	params := resource.GetResourceParams(rm.Resource)
 	if kind == serverKindSanic {
@@ -73,7 +73,7 @@ func (sm *serverMethod) RespBody() string {
 // has request body validator:
 // if request body is not builtin type
 func (sm serverMethod) HasReqValidator() bool {
-	jsObj, ok := jsObjects[sm.ReqBody]
+	jsObj, ok := jsObjects[sm.reqBody]
 	if !ok {
 		return false
 	}

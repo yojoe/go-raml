@@ -14,15 +14,23 @@ import (
 type method struct {
 	resource.Method
 	ResourcePath string
-	ReqBody      string
+	reqBody      string // type of the request body
 	PackageName  string
 	resps        []respBody
 }
 
+func (m method) ReqBody() string {
+	return commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef)
+}
+
 // TODO : move it to codegen/resource
 type respBody struct {
-	Code int
-	Type string
+	Code     int
+	respType string
+}
+
+func (rb respBody) Type() string {
+	return commons.NormalizeIdentifierWithLib(rb.respType, globAPIDef)
 }
 
 func newMethod(resMeth resource.Method) *method {
@@ -30,10 +38,10 @@ func newMethod(resMeth resource.Method) *method {
 	// creates response body
 	for code, resp := range resMeth.Responses {
 		resp := respBody{
-			Code: commons.AtoiOrPanic(string(code)),
-			Type: setBodyName(resp.Bodies, resMeth.Endpoint+resMeth.VerbTitle(), commons.RespBodySuffix),
+			Code:     commons.AtoiOrPanic(string(code)),
+			respType: setBodyName(resp.Bodies, resMeth.Endpoint+resMeth.VerbTitle(), commons.RespBodySuffix),
 		}
-		if resp.Type != "" {
+		if resp.respType != "" {
 			resps = append(resps, resp)
 		}
 	}
@@ -44,7 +52,7 @@ func newMethod(resMeth resource.Method) *method {
 	return &method{
 		Method:       resMeth,
 		ResourcePath: commons.ParamizingURI(resMeth.Endpoint, "+"),
-		ReqBody:      setBodyName(resMeth.Bodies, normalizedEndpoint+resMeth.VerbTitle(), commons.ReqBodySuffix),
+		reqBody:      setBodyName(resMeth.Bodies, normalizedEndpoint+resMeth.VerbTitle(), commons.ReqBodySuffix),
 		resps:        resps,
 	}
 }
@@ -85,7 +93,7 @@ func (m method) firstSuccessRespBodyType() string {
 	if len(resps) == 0 {
 		return ""
 	}
-	return resps[0].Type
+	return resps[0].Type()
 }
 
 // get oauth2 middleware handler from a security scheme

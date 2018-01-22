@@ -18,7 +18,11 @@ import (
 )
 
 var (
-	regNonAlphanum = regexp.MustCompile("[^A-Za-z0-9]+")
+	regValidIdentifier = regexp.MustCompile(`[^A-Za-z0-9\[\]]+`)
+)
+
+const (
+	underscore = "_"
 )
 
 const (
@@ -158,7 +162,7 @@ func ParamizingURI(URI, sep string) string {
 	if strings.HasSuffix(uri, sep+`"`) {
 		uri = uri[:len(uri)-2]
 	}
-	return uri
+	return postProcessParamURI(uri, sep)
 }
 
 // run `go fmt` command to a file
@@ -229,20 +233,45 @@ func IsStrInArray(arr []string, str string) bool {
 	return false
 }
 
-// ReplaceNonAlphanumerics replaces non alphanumerics with "_"
-func ReplaceNonAlphanumerics(s string) string {
-	return strings.Trim(regNonAlphanum.ReplaceAllString(s, "_"), "_")
+// NormalizeIdentifier change invalid character in identifier
+// to `_`.
+// Edge cases:
+// - If started with invalid char, we prepend with `The_`
+// - don't replace `.` if it means a library
+func NormalizeIdentifier(s string) string {
+	str := regValidIdentifier.ReplaceAllString(s, underscore)
+	if strings.HasPrefix(str, underscore) {
+		str = "The_" + str
+	}
+	return str
 }
+
+func NormalizeIdentifierWithLib(s string, apiDef *raml.APIDefinition) string {
+	if strings.Index(s, ".") < 0 {
+		return NormalizeIdentifier(s)
+	}
+	splitted := strings.Split(s, ".")
+	if len(splitted) != 2 {
+		log.Fatalf("libImportPath invalid:%v", s)
+	}
+
+	if _, libFile := apiDef.FindLibFile(DenormalizePkgName(splitted[0])); libFile == "" {
+		// the '.' doesn't mean library
+		return NormalizeIdentifier(s)
+	}
+	return splitted[0] + ". " + NormalizeIdentifier(splitted[1])
+}
+
 func DisplayNameToFuncName(str string) string {
 	str = strings.Replace(str, " ", "", -1) // remove the space
-	return ReplaceNonAlphanumerics(str)     // change the other to _
+	return NormalizeIdentifier(str)         // change the other to _
 }
 
 func SnackCaseServerMethodName(displayName, verb string, resource *raml.Resource) string {
 	if len(displayName) > 0 {
 		return DisplayNameToFuncName(displayName)
 	}
-	return snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb)
+	return NormalizeIdentifier(snakeCaseResourceURI(resource) + "_" + strings.ToLower(verb))
 }
 
 // create snake case function name from a resource URI
@@ -274,4 +303,15 @@ func _snakeCaseResourceURI(r *raml.Resource, completeURI string) string {
 		}
 	}
 	return _snakeCaseResourceURI(r.Parent, snake+completeURI)
+}
+
+func postProcessParamURI(uri, sep string) string {
+	arrs := strings.Split(uri, sep)
+	for i, elem := range arrs {
+		if strings.HasPrefix(elem, `"`) {
+			continue
+		}
+		arrs[i] = NormalizeIdentifier(elem)
+	}
+	return strings.Join(arrs, sep)
 }

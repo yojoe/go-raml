@@ -1,6 +1,7 @@
 package python
 
 import (
+	"regexp"
 	"sort"
 	"strings"
 
@@ -9,15 +10,27 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+var (
+	reEndpoint = regexp.MustCompile(`[^/<A-Za-z0-9>]+`)
+)
+
 type method struct {
 	resource.Method
-	ReqBody string
+	reqBody string
 	resps   []respBody
 }
 
+func (m method) ReqBody() string {
+	return commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef)
+}
+
+func (m method) EscapedEndpoint() string {
+	return reEndpoint.ReplaceAllString(m.Endpoint, "_")
+}
+
 type respBody struct {
-	Code int
-	typ  string
+	Code     int
+	respType string
 }
 
 // byStatusCode implements sorter interface which sort resp body by status code
@@ -30,12 +43,12 @@ func (b byStatusCode) Less(i, j int) bool {
 }
 
 func (rb *respBody) IsArray() bool {
-	t := raml.Type{Type: rb.typ}
+	t := raml.Type{Type: rb.respType}
 	return t.IsArray() || t.IsBidimensiArray()
 }
 
 func (rb *respBody) BasicType() string {
-	return commons.GetBasicType(rb.typ)
+	return commons.NormalizeIdentifierWithLib(commons.GetBasicType(rb.respType), globAPIDef)
 }
 
 func newMethod(rm resource.Method) *method {
@@ -43,10 +56,10 @@ func newMethod(rm resource.Method) *method {
 	// creates response body
 	for code, resp := range rm.Responses {
 		resp := respBody{
-			Code: commons.AtoiOrPanic(string(code)),
-			typ:  setBodyName(resp.Bodies, rm.Endpoint+rm.VerbTitle(), commons.RespBodySuffix),
+			Code:     commons.AtoiOrPanic(string(code)),
+			respType: setBodyName(resp.Bodies, rm.Endpoint+rm.VerbTitle(), commons.RespBodySuffix),
 		}
-		if resp.typ != "" {
+		if resp.respType != "" {
 			resps = append(resps, resp)
 		}
 	}
@@ -55,7 +68,7 @@ func newMethod(rm resource.Method) *method {
 	normalizedEndpoint := commons.NormalizeURITitle(rm.Endpoint)
 	return &method{
 		Method:  rm,
-		ReqBody: setBodyName(rm.Bodies, normalizedEndpoint+rm.VerbTitle(), commons.ReqBodySuffix),
+		reqBody: setBodyName(rm.Bodies, normalizedEndpoint+rm.VerbTitle(), commons.ReqBodySuffix),
 		resps:   resps,
 	}
 }
@@ -75,7 +88,7 @@ func (m method) firstSuccessRespBodyType() string {
 	if len(resps) == 0 {
 		return ""
 	}
-	return resps[0].typ
+	return resps[0].respType
 }
 
 // create snake case function name from a resource URI

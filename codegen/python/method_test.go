@@ -82,5 +82,45 @@ func TestServerMethodWithComplexBody(t *testing.T) {
 			os.RemoveAll(targetDir)
 		})
 	})
+}
+
+func TestServerMethodWithSpecialChars(t *testing.T) {
+	Convey("TestServerMethodWithSpecialChars", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/special_chars.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		fs := NewFlaskServer(apiDef, "apidocs", true, nil, false)
+
+		err = fs.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/special_chars/server"
+		files := []string{
+			"uri_api.py",
+			"escape_type_api.py",
+			"handlers/escape_type_postHandler.py",
+			"handlers/__init__.py",
+			"handlers/uri_byUsers_id_getHandler.py",
+			"handlers/schema/User2_0_schema.json",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
 
 }

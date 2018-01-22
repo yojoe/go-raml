@@ -51,10 +51,10 @@ func (gcm *clientMethod) setup(methodName string) {
 	} else {
 		gcm.MethodName = name + methodName
 	}
-	gcm.MethodName = commons.ReplaceNonAlphanumerics(strings.Title(gcm.MethodName))
+	gcm.MethodName = commons.NormalizeIdentifier(strings.Title(gcm.MethodName))
 
 	// method param
-	gcm.Params = buildParams(gcm.Resource, gcm.ReqBody)
+	gcm.Params = buildParams(gcm.Resource, gcm.ReqBody())
 }
 
 // return true if this method need to import encoding/json
@@ -66,12 +66,12 @@ func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
 	libs := map[string]struct{}{}
 
 	// req body
-	if lib := libImportPath(rootImportPath, gcm.ReqBody, globLibRootURLs); lib != "" {
+	if lib := libImportPath(rootImportPath, gcm.reqBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	// resp body
 	for _, resp := range gcm.RespBodyTypes() {
-		if lib := libImportPath(rootImportPath, resp.Type, globLibRootURLs); lib != "" {
+		if lib := libImportPath(rootImportPath, resp.respType, globLibRootURLs); lib != "" {
 			libs[lib] = struct{}{}
 		}
 
@@ -83,7 +83,7 @@ func (gcm clientMethod) libImported(rootImportPath string) map[string]struct{} {
 func (gcm clientMethod) ReturnTypes() string {
 	var types []string
 	for _, resp := range gcm.SuccessRespBodyTypes() {
-		types = append(types, resp.Type)
+		types = append(types, resp.Type())
 	}
 	types = append(types, []string{"*http.Response", "error"}...)
 

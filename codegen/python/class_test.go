@@ -45,6 +45,7 @@ func TestClass(t *testing.T) {
 				"Tree.py",
 				"Alias.py",
 				"AliasBuiltin.py",
+				"Animal_2_0.py",
 			}
 
 			for _, f := range files {
