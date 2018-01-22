@@ -25,10 +25,10 @@ class Oauth2ClientItsyouonline:
         async with aiohttp.ClientSession() as session:
             return await session.post(self.access_token_uri, params=params)
 
-    def set_authorization_header(self, val):
-        """" Set header Authorization to 'Bearer <val>'"""
-        self._http_client.set_header("Authorization", 'Bearer %s' % val)
-
     def set_anotherauthorization_header(self, val):
         """" Set header AnotherAuthorization to 'Bearer <val>'"""
         self._http_client.set_header("AnotherAuthorization", 'Bearer %s' % val)
+
+    def set_authorization_header(self, val):
+        """" Set header Authorization to 'Bearer <val>'"""
+        self._http_client.set_header("Authorization", 'Bearer %s' % val)

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"sort"
 )
 
 const (
@@ -38,6 +39,7 @@ func New(ss raml.SecurityScheme, name, packageName string) Security {
 		header.Name = string(k)
 		sd.Headers = append(sd.Headers, &header)
 	}
+	sort.SliceStable(sd.Headers, func(i, j int) bool { return sd.Headers[i].Name < sd.Headers[j].Name })
 
 	// assign query params if any
 	for k, v := range sd.DescribedBy.QueryParameters {
@@ -45,6 +47,7 @@ func New(ss raml.SecurityScheme, name, packageName string) Security {
 		queryParam.Name = string(k)
 		sd.QueryParams = append(sd.QueryParams, &queryParam)
 	}
+	sort.SliceStable(sd.QueryParams, func(i, j int) bool { return sd.QueryParams[i].Name < sd.QueryParams[j].Name })
 
 	return sd
 }
