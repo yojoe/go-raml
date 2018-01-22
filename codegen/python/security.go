@@ -3,6 +3,8 @@ package python
 import (
 	"strings"
 
+	"path/filepath"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
@@ -15,9 +17,14 @@ const (
 // python representation of a security scheme
 type pythonSecurity struct {
 	*security.Security
+	ClassName    string
+	FileName     string
+	ModuleName   string
+	template     string
+	templateName string
 }
 
-func getOauth2Defs(schemes map[string]raml.SecurityScheme) []pythonSecurity {
+func getServerSecurityDefs(schemes map[string]raml.SecurityScheme, templates serverTemplate) []pythonSecurity {
 	var defs []pythonSecurity
 
 	// generate oauth2 middleware
@@ -25,17 +32,62 @@ func getOauth2Defs(schemes map[string]raml.SecurityScheme) []pythonSecurity {
 		if ss.Type != security.Oauth2 { // only support oauth2 now
 			continue
 		}
-		sd := security.New(&ss, k, "")
+		sd := security.New(ss, k, "")
+		ps := pythonSecurity{Security: &sd}
+		title := strings.Title(ps.Name)
 
-		defs = append(defs, pythonSecurity{Security: &sd})
+		ps.ClassName = "Oauth2" + title
+		ps.ModuleName = "oauth2_" + ps.Name
+		ps.template = templates.middlewareFile
+		ps.templateName = templates.middlewareName
+		ps.FileName = ps.ModuleName + ".py"
+
+		defs = append(defs, ps)
 	}
 	return defs
 }
 
-// generate security schheme representation in python.
+func getClientSecurityDefs(schemes map[string]raml.SecurityScheme, templates clientTemplate) []pythonSecurity {
+	var defs []pythonSecurity
+
+	// generate oauth2, Basic Authentication and Pass Through clients
+	for k, ss := range schemes {
+		if ss.Type != security.Oauth2 && ss.Type != security.BasicAuthentication && ss.Type != security.PassThrough {
+			continue
+		}
+		sd := security.New(ss, k, "")
+		ps := pythonSecurity{Security: &sd}
+		title := strings.Title(ps.Name)
+
+		switch ps.Type {
+		case security.BasicAuthentication:
+			ps.ClassName = "BasicAuthClient" + title
+			ps.ModuleName = "basicauth_client_" + ps.Name
+			ps.template = templates.basicAuthFile
+			ps.templateName = templates.basicAuthName
+		case security.Oauth2:
+			ps.ClassName = "Oauth2Client" + title
+			ps.ModuleName = "oauth2_client_" + ps.Name
+			ps.template = templates.oauth2File
+			ps.templateName = templates.oauth2Name
+		case security.PassThrough:
+			ps.ClassName = "PassThroughClient" + title
+			ps.ModuleName = "passthrough_client_" + ps.Name
+			ps.template = templates.passThroughFile
+			ps.templateName = templates.passThroughName
+		}
+		ps.FileName = ps.ModuleName + ".py"
+
+		defs = append(defs, ps)
+	}
+	return defs
+}
+
+// generate security scheme representation in python.
 // security scheme is generated as a middleware
-func (ps *pythonSecurity) generate(fileName, tmplFile, tmplName string) error {
-	return commons.GenerateFile(ps, tmplFile, tmplName, fileName, true)
+func (ps *pythonSecurity) generate(dir string) error {
+	filename := filepath.Join(dir, ps.FileName)
+	return commons.GenerateFile(ps, ps.template, ps.templateName, filename, true)
 }
 
 type middleware struct {
@@ -65,10 +117,12 @@ func pythonOauth2libImportPath(typ string) (string, string) {
 	return libImportPath(security.SecuritySchemeName(typ), "oauth2_")
 }
 
-func oauth2ClientName(schemeName string) string {
-	return "Oauth2Client" + strings.Title(schemeName)
-}
-
-func oauth2ClientFilename(schemeName string) string {
-	return "oauth2_client_" + schemeName + ".py"
+func generateServerSecurity(schemas map[string]raml.SecurityScheme, templates serverTemplate, dir string) error {
+	securities := getServerSecurityDefs(schemas, templates)
+	for _, s := range securities {
+		if err := s.generate(dir); err != nil {
+			return err
+		}
+	}
+	return nil
 }

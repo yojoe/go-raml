@@ -16,8 +16,8 @@ class User(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type name: str
-        :type username: str
+        :type name: string_types
+        :type username: string_types
         :rtype: User
         """
 

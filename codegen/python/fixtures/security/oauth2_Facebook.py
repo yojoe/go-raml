@@ -11,35 +11,25 @@ token_prefix = "Bearer "
 
 
 def get_jwt_scopes(token, audience):
-    if token.startswith(token_prefix):
-        token = token[len(token_prefix):]
-        return jwt.decode(token, oauth2_server_pub_key, audience=audience)["scope"]
-    else:
-        raise Exception('invalid token')
+    return jwt.decode(token, oauth2_server_pub_key, audience=audience)["scope"]
 
 
 class oauth2_Facebook:
     def __init__(self, scopes=None, audience=None):
-
-        self.described_by = "headers"
-        self.field = "Authorization"
-
         self.allowed_scopes = scopes
         if audience is None:
             self.audience = ''
         else:
             self.audience = ",".join(audience)
+        self.headers = ["Authorization", ]
+        self.query_params = []
 
     def __call__(self, f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            token = ""
-            if self.described_by == "headers":
-                token = request.headers.get(self.field, "")
-            elif self.described_by == "queryParameters":
-                token = request.args.get("access_token", "")
+            token = self.get_token()
 
-            if token == "":
+            if not token:
                 return jsonify(), 401
 
             g.access_token = token
@@ -61,3 +51,13 @@ class oauth2_Facebook:
                     return True
 
         return False
+
+    def get_token(self):
+        for header in self.headers:
+            token = request.headers.get(header, "")
+            if token.startswith(token_prefix):
+                return token[len(token_prefix):]
+        for param in self.query_params:
+            token = request.args.get(param, "")
+            if token:
+                return token

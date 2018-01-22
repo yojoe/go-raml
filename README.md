@@ -61,7 +61,7 @@ Currently there are still some [limitations](docs/limitations.md) on the RAML 1.
 
 ## Install
 
-make sure you have at least go 1.6 installed !
+make sure you have at least go 1.8 installed !
 
 `go get -u github.com/Jumpscale/go-raml`
 

@@ -5,11 +5,13 @@ import (
 	"strings"
 
 	"github.com/Jumpscale/go-raml/raml"
+	"sort"
 )
 
 const (
-	// Oauth2 string
-	Oauth2 = "OAuth 2.0"
+	Oauth2              = "OAuth 2.0"
+	BasicAuthentication = "Basic Authentication"
+	PassThrough         = "Pass Through"
 )
 
 // security define a security scheme, we only support oauth2 now.
@@ -18,43 +20,47 @@ type Security struct {
 	*raml.SecurityScheme
 	Name        string
 	PackageName string
-	Header      *raml.Header
-	QueryParams *raml.NamedParameter
+	Headers     []*raml.Header
+	QueryParams []*raml.NamedParameter
 	//apiDef      *raml.APIDefinition
 }
 
 // New creates a security struct
-func New(ss *raml.SecurityScheme, name, packageName string) Security {
+func New(ss raml.SecurityScheme, name, packageName string) Security {
 	sd := Security{
-		SecurityScheme: ss,
+		SecurityScheme: &ss,
 	}
 	sd.Name = SecuritySchemeName(name)
 	sd.PackageName = packageName
 
 	// assign header, if any
 	for k, v := range sd.DescribedBy.Headers {
-		sd.Header = &v
-		sd.Header.Name = string(k)
-		break
+		header := v
+		header.Name = string(k)
+		sd.Headers = append(sd.Headers, &header)
 	}
+	sort.SliceStable(sd.Headers, func(i, j int) bool { return sd.Headers[i].Name < sd.Headers[j].Name })
 
 	// assign query params if any
 	for k, v := range sd.DescribedBy.QueryParameters {
-		sd.QueryParams = &v
-		sd.QueryParams.Name = string(k)
-		break
+		queryParam := v
+		queryParam.Name = string(k)
+		sd.QueryParams = append(sd.QueryParams, &queryParam)
 	}
+	sort.SliceStable(sd.QueryParams, func(i, j int) bool { return sd.QueryParams[i].Name < sd.QueryParams[j].Name })
 
 	return sd
 }
 
 // Supported returns true if the security scheme is supported by go-raml
 func Supported(ss raml.SecurityScheme) bool {
-	if ss.Type != Oauth2 {
+	switch ss.Type {
+	case Oauth2:
+		_, ok := ss.Settings["accessTokenUri"]
+		return ok
+	default:
 		return false
 	}
-	_, ok := ss.Settings["accessTokenUri"]
-	return ok
 }
 
 // GetMethodSecuredBy get SecuredBy field of a method

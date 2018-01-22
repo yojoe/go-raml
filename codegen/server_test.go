@@ -1,11 +1,11 @@
 package codegen
 
 import (
+	"github.com/Jumpscale/go-raml/utils"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-	"github.com/Jumpscale/go-raml/utils"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -63,4 +63,3 @@ func TestServer(t *testing.T) {
 		})
 	})
 }
-

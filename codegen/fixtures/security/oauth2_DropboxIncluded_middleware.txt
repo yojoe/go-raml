@@ -12,9 +12,9 @@ import (
 
 // Oauth2DropboxIncludedMiddleware is oauth2 middleware for DropboxIncluded
 type Oauth2DropboxIncludedMiddleware struct {
-	describedBy string
-	field       string
 	scopes      []string
+	headers     []string
+	queryParams []string
 }
 
 var JWTPublicKey *ecdsa.PublicKey
@@ -38,13 +38,16 @@ func init() {
 
 // NewOauth2DropboxIncludedMiddlewarecreate new Oauth2DropboxIncludedMiddleware struct
 func NewOauth2DropboxIncludedMiddleware(scopes []string) *Oauth2DropboxIncludedMiddleware {
-	om := Oauth2DropboxIncludedMiddleware{
-		scopes: scopes,
+	headers := []string{
+		"Authorization",
 	}
+	queryParams := []string{}
 
-	om.describedBy = "headers"
-	om.field = "Authorization"
-
+	om := Oauth2DropboxIncludedMiddleware{
+		scopes:      scopes,
+		headers:     headers,
+		queryParams: queryParams,
+	}
 	return &om
 }
 
@@ -71,11 +74,7 @@ func (om *Oauth2DropboxIncludedMiddleware) Handler(next http.Handler) http.Handl
 		var err error
 
 		// access token checking
-		if om.describedBy == "queryParameters" {
-			accessToken = r.URL.Query().Get(om.field)
-		} else if om.describedBy == "headers" {
-			accessToken = r.Header.Get(om.field)
-		}
+		accessToken = om.getToken(r)
 		if accessToken == "" {
 			w.WriteHeader(401)
 			return
@@ -123,4 +122,21 @@ func (om *Oauth2DropboxIncludedMiddleware) checkJWTGetScope(tokenStr string) ([]
 		scopes = append(scopes, v.(string))
 	}
 	return scopes, nil
+}
+
+// get token from supported headers and query parameters
+func (om *Oauth2DropboxIncludedMiddleware) getToken(r *http.Request) string {
+	for _, header := range om.headers {
+		token := r.Header.Get(header)
+		if token != "" {
+			return token
+		}
+	}
+	for _, param := range om.queryParams {
+		token := r.URL.Query().Get(param)
+		if token != "" {
+			return token
+		}
+	}
+	return ""
 }

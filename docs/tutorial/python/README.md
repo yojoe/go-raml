@@ -63,10 +63,19 @@ Then you can find client code in `requests_client` directory.
 You will need to install `requests` library to use the client.
 
 
+Generate `gevent requests` based client code by using this command
+
+```
+go-raml client --ramlfile ../api.raml --dir gevent_client/goramldir -l python --kind gevent-requests
+```
+Then you can find client code in `gevent_client` directory.
+You will need to install `requests` and `gevent` library to use the client.
+
+
 You can also generate `aiohttp` asyncio based client code by using this command
 
 ```
-go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python -kind aiohttp
+go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python --kind aiohttp
 ```
 
 Then you can find client code in `aiohttp_client` directory.

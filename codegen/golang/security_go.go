@@ -30,7 +30,7 @@ func generateSecurity(schemes map[string]raml.SecurityScheme, dir, packageName s
 			continue
 		}
 
-		sd := security.New(&ss, k, packageName)
+		sd := security.New(ss, k, packageName)
 
 		gss := goSecurity{Security: &sd}
 		err = gss.generate(dir)

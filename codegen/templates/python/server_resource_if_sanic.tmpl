@@ -4,10 +4,10 @@
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import text
-import {{.Name}}_api
+from . import {{.Name}}_api
 
 {{ range $k, $v := .PR.MiddlewaresArr}}
-from {{$v.ImportPath}} import {{$v.Name}}{{ end }}
+from .{{$v.ImportPath}} import {{$v.Name}}{{ end }}
 
 {{.Name}}_if = Blueprint('{{.Name}}_if')
 {{$resName := .Name}}

@@ -50,7 +50,9 @@ func (s *SanicServer) Generate(dir string) error {
 	if err := s.generateResources(dir); err != nil {
 		return err
 	}
-	if err := s.generateOauth2(s.APIDef.SecuritySchemes, dir); err != nil {
+
+	// security scheme
+	if err := generateServerSecurity(s.APIDef.SecuritySchemes, s.Template, dir); err != nil {
 		return err
 	}
 
@@ -65,7 +67,11 @@ func (s *SanicServer) Generate(dir string) error {
 		return err
 	}
 
-	return s.generateMain(dir)
+	if err := s.generateMain(dir); err != nil {
+		return err
+	}
+
+	return generateEmptyInitPy(dir)
 }
 
 func (s *SanicServer) generateMain(dir string) error {

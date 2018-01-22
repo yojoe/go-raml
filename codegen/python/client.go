@@ -1,7 +1,6 @@
 package python
 
 import (
-	"fmt"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
-	"github.com/Jumpscale/go-raml/codegen/security"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -24,12 +22,6 @@ var (
 	globAPIDef *raml.APIDefinition
 )
 
-type oauth2Client struct {
-	Name       string
-	ModuleName string
-	Filename   string
-}
-
 // Client represents a python client
 type Client struct {
 	Name               string
@@ -40,7 +32,7 @@ type Client struct {
 	Kind               string
 	Template           clientTemplate
 	UnmarshallResponse bool // true if response body should be unmarshalled into python class
-	Securities         []oauth2Client
+	Securities         []pythonSecurity
 }
 
 // NewClient creates a python Client
@@ -58,20 +50,6 @@ func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool)
 		log.Fatalf("invalid client kind:%v", kind)
 	}
 
-	var securities []oauth2Client
-
-	for name, ss := range apiDef.SecuritySchemes {
-		if !security.Supported(ss) {
-			continue
-		}
-		s := oauth2Client{
-			Name:     oauth2ClientName(name),
-			Filename: oauth2ClientFilename(name),
-		}
-		s.ModuleName = strings.TrimSuffix(s.Filename, ".py")
-		securities = append(securities, s)
-	}
-
 	c := Client{
 		Name:               commons.NormalizeURI(apiDef.Title),
 		APIDef:             apiDef,
@@ -79,12 +57,13 @@ func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool)
 		Services:           services,
 		Kind:               kind,
 		UnmarshallResponse: unmarshallResponse,
-		Securities:         securities,
 	}
 	if strings.Index(c.BaseURI, "{version}") > 0 {
 		c.BaseURI = strings.Replace(c.BaseURI, "{version}", apiDef.Version, -1)
 	}
 	c.initTemplates()
+	c.Securities = getClientSecurityDefs(apiDef.SecuritySchemes, c.Template)
+
 	return c
 }
 
@@ -157,16 +136,8 @@ func (c Client) generateServices(dir string) error {
 }
 
 func (c Client) generateSecurity(dir string) error {
-	for name, ss := range c.APIDef.SecuritySchemes {
-		if !security.Supported(ss) {
-			continue
-		}
-		ctx := map[string]string{
-			"Name":           oauth2ClientName(name),
-			"AccessTokenURI": fmt.Sprintf("%v", ss.Settings["accessTokenUri"]),
-		}
-		filename := filepath.Join(dir, oauth2ClientFilename(name))
-		if err := commons.GenerateFile(ctx, c.Template.oauth2File, c.Template.oauth2Name, filename, true); err != nil {
+	for _, s := range c.Securities {
+		if err := s.generate(dir); err != nil {
 			return err
 		}
 	}

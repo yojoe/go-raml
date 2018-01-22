@@ -14,67 +14,69 @@ token_prefix = 'Bearer '
 
 class oauth2_{{.Name}}:
     def __init__(self, scopes=None, audience= None):
-        {{if .Header}}
-        self.described_by = "headers"
-        self.field = "{{.Header.Name}}"
-        {{else if .QueryParams}}
-        self.described_by = "headers"
-        self.field = "{{.QueryParams.Name}}"
-        {{ end }}
         self.allowed_scopes = scopes
         if audience is None:
             self.audience = ''
         else:
             self.audience = ",".join(audience)
+    {{- if .Headers}}
+        self.headers = [{{ range $k, $v := .Headers}}"{{$v.Name}}",{{end}}]
+    {{- else}}
+        self.headers = ["Authorization"]
+    {{- end }}
+    {{- if .QueryParams}}
+        self.query_params = [{{ range $k, $v := .QueryParams}}"{{$v.Name}}",{{end}}]
+    {{- else}}
+        self.query_params = []
+    {{- end }}
 
     def __call__(self, f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not self.check_token(args[1]):
-            	return text("", 401)
+                return text("", 401)
             
             return f(*args, **kwargs)
         
         return decorated_function
 
     async def check_token(self, request):
-    	# check provided token
-    	token = self.get_token(request)
+        # check provided token
+        token = self.get_token(request)
 
-    	if len(token) == 0:
-    		return False
+        if not token:
+            return False
 
-    	if not await self.check_jwt_scopes(token):
-    		return False
+        if not await self.check_jwt_scopes(token):
+            return False
 
-    	return True
+        return True
 
     async def check_jwt_scopes(self, token):
-    	if len(oauth2_server_pub_key) == 0:
-    		return True
+        if len(oauth2_server_pub_key) == 0:
+            return True
 
-    	#scopes = jwt.decode(token, oauth2_server_pub_key, audience=self.audience)["scope"]
-    	scopes = (await get_event_loop().run_in_executor(None, jwt.decode, token, oauth2_server_pub_key, None, None, self.audience))['scope']
-    	
-    	if len(self.allowed_scopes) == 0:
-    		return True
+        #scopes = jwt.decode(token, oauth2_server_pub_key, audience=self.audience)["scope"]
+        scopes = (await get_event_loop().run_in_executor(None, jwt.decode, token, oauth2_server_pub_key, None, None, self.audience))['scope']
 
-    	for allowed in self.allowed_scopes:
-    		for s in scopes:
-    			if s == allowed:
-    				return True
+        if len(self.allowed_scopes) == 0:
+            return True
 
-    	return False
+        for allowed in self.allowed_scopes:
+            for s in scopes:
+                if s == allowed:
+                    return True
+
+        return False
 
     def get_token(self, request):
-    	if self.described_by == 'headers':
-    		header = request.headers.get(self.field, '')
-    		if header.startswith(token_prefix):
-    			return header[len(token_prefix):]
-    		else:
-    			return ''
-    	elif self.described_by == 'queryParameters':
-    		return request.args.get("access_token", "")
-    	else:
-    		return ''
+        for header in self.headers:
+            token = request.headers.get(header, "")
+            if token.startswith(token_prefix):
+                return token[len(token_prefix):]
+
+        for param in self.query_params:
+            token = request.args.get(param, "")
+            if token:
+                return token
 {{- end -}}

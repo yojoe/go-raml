@@ -11,7 +11,7 @@ from .{{$class}} import {{$class}}
 {{ range $k, $v := .Services }}
 from .{{$v.FilenameNoExt}} import {{$v.Name}}{{end}}
 {{ range $k, $v := .Securities}}
-from .{{$v.ModuleName}} import {{$v.Name}}{{end}}
+from .{{$v.ModuleName}} import {{$v.ClassName}}{{end}}
 from .http_client import HTTPClient
 
 class Client:
@@ -27,7 +27,7 @@ class Client:
 class Security:
     def __init__(self, http_client):
         {{- range $k, $v := .Securities}}
-        self.{{$v.ModuleName}} = {{$v.Name}}(http_client){{end}}
+        self.{{$v.ModuleName}} = {{$v.ClassName}}(http_client){{end}}
 {{ end }}
 
 {{- end -}}

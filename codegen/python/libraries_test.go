@@ -10,7 +10,6 @@ import (
 
 	"github.com/Jumpscale/go-raml/raml"
 	"github.com/Jumpscale/go-raml/utils"
-
 )
 
 // TODO FIXME : it disabled because this test is failed and WTF support is planned to be removed

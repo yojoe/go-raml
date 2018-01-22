@@ -1,9 +1,9 @@
 package codegen
 
 const (
-	langGo     = "go"
-	langPython = "python"
-	langNim    = "nim"
+	langGo        = "go"
+	langPython    = "python"
+	langNim       = "nim"
 	langTarantool = "tarantool"
 )
 

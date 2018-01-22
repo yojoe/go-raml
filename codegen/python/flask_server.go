@@ -49,7 +49,7 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 }
 
 // Generate generates all python server files
-func (ps FlaskServer) Generate(dir string) error {
+func (ps *FlaskServer) Generate(dir string) error {
 	// python classes and it's helper
 	typesPath := filepath.Join(dir, typesDir)
 
@@ -79,12 +79,12 @@ func (ps FlaskServer) Generate(dir string) error {
 	}
 
 	// security scheme
-	if err := ps.generateOauth2(ps.APIDef.SecuritySchemes, dir); err != nil {
+	if err := generateServerSecurity(ps.APIDef.SecuritySchemes, ps.Template, dir); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
 
-	// genereate resources
+	// generate resources
 	if err := generateResources(ps.ResourcesDef, ps.Template, dir); err != nil {
 		return err
 	}
@@ -107,9 +107,10 @@ func (ps FlaskServer) Generate(dir string) error {
 			return err
 		}
 		// main file
-		commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true)
+		if err := commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true); err != nil {
+			return err
+		}
 	}
 
-	return nil
-
+	return generateEmptyInitPy(dir)
 }
