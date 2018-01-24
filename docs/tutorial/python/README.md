@@ -81,6 +81,34 @@ go-raml client --ramlfile ../api.raml --dir aiohttp_client/goramldir -l python -
 Then you can find client code in `aiohttp_client` directory.
 You will need to install `aiohttp` and `aiodns` library to use the client.
 
+### Unmarshall response
+
+Client generator has an option to generate client code that unmarshall the response
+body into the generated client class.
+It is currently disabled by default and could be enabled by setting this option `--python-unmarshall-response` in the `go-raml client` command line option.
+
+```
+go-raml client --ramlfile ../api.raml --dir requests_client/goramldir -l python --python-unmarshall-response
+```
+
+
+In case of success unmarshal, the generated client returns two values:
+- data : python class constructed by unmarshalling the response body
+- response: python-requests's response object
+
+otherwise it returns exception.
+
+Usage example:
+
+```python
+try:
+    data, resp = client.network.getNetwork("my_net_id")
+    print(resp)
+except unmarshall_error.UnmarshallError as ue:
+    print("response:", ue.response.text)
+    print("msg: ", ue.message)
+```
+
 
 **simple client main code**
 
