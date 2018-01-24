@@ -321,7 +321,9 @@ Short descriptions about how the generator generates the code from raml file are
  Tutorial for Go, Python, and Nim is available at [docs/tutorial directory](./docs/tutorial)
  
  Check all the available go commands [here](./docs/tutorial/go/README.md)
+ 
  Check all the available python commands [here](./docs/tutorial/python/README.md)
+ 
  Check all the available nim commands [here](./docs/tutorial/nim/README.md)
 
 ## CREDITS
