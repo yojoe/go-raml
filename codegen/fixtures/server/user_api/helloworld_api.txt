@@ -1,7 +1,8 @@
-package main
+package helloworld
 
 import (
 	"encoding/json"
+	"examples.com/ramlcode/types"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ type HelloworldAPI struct {
 
 // Get is the handler for GET /helloworld
 func (api HelloworldAPI) Get(w http.ResponseWriter, r *http.Request) {
-	var respBody HelloworldGetRespBody
+	var respBody types.HelloworldGetRespBody
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }

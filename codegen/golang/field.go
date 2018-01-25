@@ -10,7 +10,7 @@ import (
 // FieldDef defines a field of a struct
 type fieldDef struct {
 	Name          string // field name
-	Type          string // field type
+	fieldType     string // field type
 	IsComposition bool   // composition type
 	IsOmitted     bool   // omitted empty
 	UniqueItems   bool
@@ -22,16 +22,32 @@ type fieldDef struct {
 func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
 	fd := fieldDef{
 		Name:      formatFieldName(prop.Name),
-		Type:      convertToGoType(prop.TypeString(), prop.Items.Type),
+		fieldType: convertToGoType(prop.TypeString(), prop.Items.Type),
 		IsOmitted: !prop.Required,
 	}
 	fd.buildValidators(prop)
 	if prop.IsEnum() {
 		fd.Enum = newEnum(structName, prop, pkg, false)
-		fd.Type = fd.Enum.Name
+		fd.fieldType = fd.Enum.Name
 	}
 
 	return fd
+}
+
+func (fd fieldDef) Type() string {
+	// doesn't have "." -> doesnt import from other package
+	if strings.Index(fd.fieldType, ".") < 0 {
+		return fd.fieldType
+	}
+
+	elems := strings.Split(fd.fieldType, ".")
+
+	// import goraml or json package
+	if elems[0] == "goraml" || elems[0] == "json" {
+		return fd.fieldType
+	}
+
+	return fmt.Sprintf("%v_%v.%v", elems[0], typePackage, elems[1])
 }
 
 func (fd *fieldDef) buildValidators(p raml.Property) {
@@ -78,7 +94,7 @@ func (fd *fieldDef) buildValidators(p raml.Property) {
 	}
 
 	// Required
-	if !fd.IsOmitted && fd.Type != "bool" {
+	if !fd.IsOmitted && fd.fieldType != "bool" {
 		addVal("nonzero")
 	}
 

@@ -243,7 +243,7 @@ func NormalizeIdentifier(s string) string {
 	if strings.HasPrefix(str, underscore) {
 		str = "The_" + str
 	}
-	return str
+	return strings.Trim(str, "_")
 }
 
 func NormalizeIdentifierWithLib(s string, apiDef *raml.APIDefinition) string {
@@ -259,7 +259,7 @@ func NormalizeIdentifierWithLib(s string, apiDef *raml.APIDefinition) string {
 		// the '.' doesn't mean library
 		return NormalizeIdentifier(s)
 	}
-	return splitted[0] + ". " + NormalizeIdentifier(splitted[1])
+	return splitted[0] + "." + NormalizeIdentifier(splitted[1])
 }
 
 func DisplayNameToFuncName(str string) string {

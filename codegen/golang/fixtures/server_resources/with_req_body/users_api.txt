@@ -1,7 +1,8 @@
-package main
+package users
 
 import (
 	"encoding/json"
+	"examples.com/libro/types"
 	"net/http"
 )
 
@@ -9,9 +10,9 @@ import (
 type UsersAPI struct {
 }
 
-// createUsers is the handler for POST /users
-func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
-	var reqBody User
+// CreateUsers is the handler for POST /users
+func (api UsersAPI) CreateUsers(w http.ResponseWriter, r *http.Request) {
+	var reqBody types.User
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {

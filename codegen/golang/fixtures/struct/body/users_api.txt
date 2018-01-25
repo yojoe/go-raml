@@ -1,7 +1,8 @@
-package main
+package users
 
 import (
 	"encoding/json"
+	"examples.com/types"
 	"net/http"
 )
 
@@ -9,19 +10,19 @@ import (
 type UsersAPI struct {
 }
 
-// idGet is the handler for GET /users/{id}
+// IdGet is the handler for GET /users/{id}
 // get id of users.
 // This method will be return single user object.
 // Replace ID with user defined field.
-func (api UsersAPI) idGet(w http.ResponseWriter, r *http.Request) {
-	var respBody UsersIdGetRespBody
+func (api UsersAPI) IdGet(w http.ResponseWriter, r *http.Request) {
+	var respBody types.UsersIdGetRespBody
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }
 
-// idPut is the handler for PUT /users/{id}
-func (api UsersAPI) idPut(w http.ResponseWriter, r *http.Request) {
-	var reqBody Catanimal
+// IdPut is the handler for PUT /users/{id}
+func (api UsersAPI) IdPut(w http.ResponseWriter, r *http.Request) {
+	var reqBody types.Catanimal
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -35,7 +36,7 @@ func (api UsersAPI) idPut(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
 	}
-	var respBody UnionCatanimal
+	var respBody types.UnionCatanimal
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }
@@ -43,7 +44,7 @@ func (api UsersAPI) idPut(w http.ResponseWriter, r *http.Request) {
 // Post is the handler for POST /users
 // create a user
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
-	var reqBody UsersPostReqBody
+	var reqBody types.UsersPostReqBody
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {

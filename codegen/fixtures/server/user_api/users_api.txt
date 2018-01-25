@@ -1,7 +1,8 @@
-package main
+package users
 
 import (
 	"encoding/json"
+	"examples.com/ramlcode/types"
 	"net/http"
 )
 
@@ -9,22 +10,22 @@ import (
 type UsersAPI struct {
 }
 
-// getUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
+// GetUserAddressByID is the handler for GET /users/{userId}/address/{addressId}
 // get address id
-func (api UsersAPI) getUserAddressByID(w http.ResponseWriter, r *http.Request) {
-	var respBody Address
+func (api UsersAPI) GetUserAddressByID(w http.ResponseWriter, r *http.Request) {
+	var respBody types.Address
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }
 
-// userIdDelete is the handler for DELETE /users/{userId}
-func (api UsersAPI) userIdDelete(w http.ResponseWriter, r *http.Request) {
+// UserIdDelete is the handler for DELETE /users/{userId}
+func (api UsersAPI) UserIdDelete(w http.ResponseWriter, r *http.Request) {
 }
 
-// userIdGet is the handler for GET /users/{userId}
+// UserIdGet is the handler for GET /users/{userId}
 // get id
-func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
-	var respBody User
+func (api UsersAPI) UserIdGet(w http.ResponseWriter, r *http.Request) {
+	var respBody types.User
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }
@@ -32,7 +33,7 @@ func (api UsersAPI) userIdGet(w http.ResponseWriter, r *http.Request) {
 // Get is the handler for GET /users
 // Get a list of test
 func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req.FormValue("name")
-	var respBody UsersGetRespBody
+	var respBody types.UsersGetRespBody
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }
@@ -40,7 +41,7 @@ func (api UsersAPI) Get(w http.ResponseWriter, r *http.Request) { // name := req
 // Post is the handler for POST /users
 // create users
 func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
-	var reqBody User
+	var reqBody types.User
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -54,7 +55,7 @@ func (api UsersAPI) Post(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
 	}
-	var respBody User
+	var respBody types.User
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&respBody)
 }

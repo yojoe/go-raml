@@ -1,0 +1,10 @@
+package deliveries
+
+import (
+	"net/http"
+)
+
+// DeliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
+// Cancel a specific delivery
+func (api DeliveriesAPI) DeliveryIdDelete(w http.ResponseWriter, r *http.Request) {
+}

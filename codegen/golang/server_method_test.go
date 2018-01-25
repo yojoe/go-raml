@@ -27,8 +27,8 @@ func TestServerMethodWithSpecialChars(t *testing.T) {
 
 		rootFixture := "./fixtures/method/special_chars/server"
 		files := []string{
-			"escape_type_api_Post",
-			"uri_api_users_idGet",
+			filepath.Join(serverAPIDir, "escape_type", "escape_type_api_Post"),
+			filepath.Join(serverAPIDir, "uri", "uri_api_Users_idGet"),
 			"uri_if",
 		}
 

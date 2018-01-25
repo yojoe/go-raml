@@ -22,7 +22,7 @@ func TestStruct(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateStructs(apiDef.Types, targetDir, "main")
+			err = generateStructs(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct"
@@ -48,7 +48,7 @@ func TestStruct(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, typeDir, f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
@@ -63,10 +63,10 @@ func TestStruct(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateStructs(apiDef.Types, targetDir, "main")
+			err = generateStructs(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			err = generateAllStructs(apiDef, targetDir, "main")
+			err = generateAllStructs(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct/json"
@@ -78,7 +78,7 @@ func TestStruct(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, typeDir, f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))

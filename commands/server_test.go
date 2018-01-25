@@ -28,7 +28,7 @@ func TestServerGeneration(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// check users api implementation
-			s, err := utils.TestLoadFile(filepath.Join(targetdir, "users_api.go"))
+			s, err := utils.TestLoadFile(filepath.Join(targetdir, "handlers", "users", "users_api.go"))
 			So(err, ShouldBeNil)
 
 			tmpl, err := utils.TestLoadFile("../codegen/fixtures/server/user_api/users_api.txt")

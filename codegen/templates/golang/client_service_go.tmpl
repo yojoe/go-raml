@@ -7,8 +7,8 @@ import (
 	{{ if .NeedImportJSON}}"encoding/json"{{end}}
 	"net/http"
 
-    {{ range $k, $v := .LibImportPaths -}}
-    "{{$k}}"
+    {{ range $k, $v := .Imports -}}
+     {{$v}}
     {{end -}}
 )
 

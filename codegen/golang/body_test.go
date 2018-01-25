@@ -26,17 +26,30 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			err := s.Generate()
 			So(err, ShouldBeNil)
 
-			rootFixture := "./fixtures/struct"
-			files := []string{
+			rootFixture := "./fixtures/struct/body"
+			typeFiles := []string{
 				"UsersIdGetRespBody",
 				"UsersPostReqBody",
 				"Catanimal",
-				"users_api",
 				"UnionCatanimal",
 			}
 
-			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+			for _, f := range typeFiles {
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, typeDir, f+".go"))
+				So(err, ShouldBeNil)
+
+				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
+				So(err, ShouldBeNil)
+
+				So(s, ShouldEqual, tmpl)
+			}
+
+			apiFiles := []string{
+				"users_api",
+			}
+
+			for _, f := range apiFiles {
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, serverAPIDir, "users", f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
@@ -60,7 +73,7 @@ func TestGenerateStructBodyFromRaml(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, serverAPIDir, "builtin", f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))

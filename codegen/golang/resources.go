@@ -2,7 +2,6 @@ package golang
 
 import (
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -13,6 +12,10 @@ import (
 const (
 	resourceIfTemplate  = "./templates/golang/server_resources_interface.tmpl" // resource interface template
 	resourceAPITemplate = "./templates/golang/server_resources_api.tmpl"       // resource API template
+)
+
+const (
+	serverAPIDir = "handlers" // dir on which we put our server API implementation
 )
 
 type goResource struct {
@@ -56,7 +59,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 
 	mainFile := filepath.Join(dir, strings.ToLower(gr.Name)+"_api")
 	if err := commons.GenerateFile(mainCtx, "./templates/golang/server_resource_api_main_go.tmpl",
-		"server_resource_api_main_go", mainFile+".go", false); err != nil {
+		"server_resource_api_main_go", mainFile+".go", true); err != nil {
 		return err
 	}
 
@@ -86,14 +89,15 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 //		Don't generate if the file already exist
 func (gr *goResource) generate(r *raml.Resource, URI, dir string,
 	apiFilePerMethod bool, libRootURLs []string) error {
-	//gr.GenerateMethods(r, "go", nil, nil)
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
+
+	apiDir := filepath.Join(dir, serverAPIDir, gr.PackageName)
 	if !apiFilePerMethod {
-		return gr.generateAPIFile(dir)
+		return gr.generateAPIFile(apiDir)
 	}
-	return gr.generateAPIImplementations(dir)
+	return gr.generateAPIImplementations(apiDir)
 }
 
 // InterfaceImportPaths returns all packages imported by
@@ -117,7 +121,7 @@ func (gr goResource) InterfaceImportPaths() []string {
 	}
 	// return sorted array for predictable order
 	// we need it for unit test to always return same order
-	return sortImportPaths(ip)
+	return commons.MapToSortedStrings(ip)
 }
 
 // APIImportPaths returns all packages that need to be imported
@@ -134,14 +138,5 @@ func (gr goResource) APILibImportPaths() []string {
 
 	// return sorted array for predictable order
 	// we need it for unit test to always return same order
-	return sortImportPaths(ip)
-}
-
-func sortImportPaths(ip map[string]struct{}) []string {
-	libs := []string{}
-	for k := range ip {
-		libs = append(libs, k)
-	}
-	sort.Strings(libs)
-	return libs
+	return commons.MapToSortedStrings(ip)
 }

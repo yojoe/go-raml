@@ -1,13 +1,14 @@
-package main
+package escape_type
 
 import (
 	"encoding/json"
+	"examples.com/libro/types"
 	"net/http"
 )
 
 // Post is the handler for POST /escape_type
 func (api Escape_typeAPI) Post(w http.ResponseWriter, r *http.Request) {
-	var reqBody User2_0
+	var reqBody types.User2_0
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -16,6 +17,6 @@ func (api Escape_typeAPI) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	var respBody User2_0
+	var respBody types.User2_0
 	json.NewEncoder(w).Encode(&respBody)
 }

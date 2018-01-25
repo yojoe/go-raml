@@ -6,14 +6,14 @@ import (
 	"net/http"
 
 	"examples.com/theclient/goraml"
-	"examples.com/theclient/libraries/files"
+	files_types "examples.com/theclient/libraries/files/types"
 )
 
 type DirsService service
 
-func (s *DirsService) DirsGet(headers, queryParams map[string]interface{}) (files.Directory, *http.Response, error) {
+func (s *DirsService) DirsGet(headers, queryParams map[string]interface{}) (files_types.Directory, *http.Response, error) {
 	var err error
-	var respBody200 files.Directory
+	var respBody200 files_types.Directory
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/dirs", headers, queryParams)
 	if err != nil {

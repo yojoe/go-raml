@@ -77,14 +77,16 @@ func (sd structDef) generate(dir string) error {
 	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, true)
 }
 
-func generateStructs(types map[string]raml.Type, dir, pkgName string) error {
+func generateStructs(types map[string]raml.Type, dir string) error {
 	apiDef := raml.APIDefinition{
 		Types: types,
 	}
-	return generateAllStructs(&apiDef, dir, pkgName)
+	return generateAllStructs(&apiDef, dir)
 }
 
-func generateAllStructs(apiDef *raml.APIDefinition, dir, pkgName string) error {
+func generateAllStructs(apiDef *raml.APIDefinition, dir string) error {
+	pkgName := typePackage
+	dir = filepath.Join(dir, typeDir)
 	for _, t := range types.AllTypes(apiDef, pkgName) {
 		switch tip := t.Type.(type) {
 		case string:
@@ -115,27 +117,27 @@ func generateAllStructs(apiDef *raml.APIDefinition, dir, pkgName string) error {
 	return nil
 }
 
-// ImportPaths returns all packages that
+// Imports returns all packages that
 // need to be imported by this struct
-func (sd structDef) ImportPaths() map[string]struct{} {
+func (sd structDef) Imports() []string {
 	ip := map[string]struct{}{}
 
 	if sd.needFmt() {
-		ip["fmt"] = struct{}{}
+		ip[`"fmt"`] = struct{}{}
 	}
 	if sd.OneLineDef == "" {
-		ip["gopkg.in/validator.v2"] = struct{}{}
+		ip[`"gopkg.in/validator.v2"`] = struct{}{}
 	}
 
 	// libraries
 	for _, fd := range sd.Fields {
-		if fd.Type == "json.RawMessage" {
-			ip["encoding/json"] = struct{}{}
-		} else if lib := libImportPath(globRootImportPath, fd.Type, globLibRootURLs); lib != "" {
+		if fd.fieldType == "json.RawMessage" {
+			ip[`"encoding/json"`] = struct{}{}
+		} else if lib := libImportPath(globRootImportPath, fd.fieldType, globLibRootURLs); lib != "" {
 			ip[lib] = struct{}{}
 		}
 	}
-	return ip
+	return commons.MapToSortedStrings(ip)
 }
 
 // handle advance type type into structField

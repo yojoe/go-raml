@@ -20,7 +20,7 @@ type method struct {
 }
 
 func (m method) ReqBody() string {
-	return commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef)
+	return addPackage(typePackage, commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef))
 }
 
 // TODO : move it to codegen/resource
@@ -30,7 +30,36 @@ type respBody struct {
 }
 
 func (rb respBody) Type() string {
-	return commons.NormalizeIdentifierWithLib(rb.respType, globAPIDef)
+	return addPackage(typePackage, commons.NormalizeIdentifierWithLib(rb.respType, globAPIDef))
+}
+
+// add package name to the request and response body
+func addPackage(pkgName, typeStr string) string {
+	if typeStr == "" {
+		return ""
+	}
+
+	// we can't use raml package to get basic type and decide whether it is array
+	// or not because in this phase the type is already Go type, not RAML type
+	switch {
+	case strings.HasPrefix(typeStr, "[][]"): // bidimensi array
+		return "[][]" + addPackage(pkgName, strings.TrimPrefix(typeStr, "[][]"))
+	case strings.HasPrefix(typeStr, "[]"): // array array
+		return "[]" + addPackage(pkgName, strings.TrimPrefix(typeStr, "[]"))
+	default:
+		return aliasPackage(fmt.Sprintf("%v.%v", pkgName, typeStr))
+	}
+}
+
+func aliasPackage(typeStr string) string {
+	if typeStr == "" || strings.Index(typeStr, ".") < 0 {
+		return typeStr
+	}
+	pkgs := strings.Split(typeStr, ".")
+	if len(pkgs) != 3 {
+		return typeStr
+	}
+	return fmt.Sprintf("%v_%v.%v", pkgs[1], pkgs[0], pkgs[2])
 }
 
 func newMethod(resMeth resource.Method) *method {
@@ -94,6 +123,40 @@ func (m method) firstSuccessRespBodyType() string {
 		return ""
 	}
 	return resps[0].Type()
+}
+
+func (m method) firstSuccessRespBodyRawType() string {
+	resps := m.SuccessRespBodyTypes()
+	if len(resps) == 0 {
+		return ""
+	}
+	return resps[0].respType
+}
+
+// returns true if need to import goraml generated types
+func (m method) needImportGoramlTypes() bool {
+	pkgPrefix := typePackage + "."
+	needImport := func(typeStr string) bool {
+		switch {
+		case strings.HasPrefix(typeStr, "[][]"+pkgPrefix):
+			return true
+		case strings.HasPrefix(typeStr, "[]"+pkgPrefix):
+			return true
+		case strings.HasPrefix(typeStr, pkgPrefix):
+			return true
+		default:
+			return false
+		}
+	}
+	if needImport(m.ReqBody()) {
+		return true
+	}
+	for _, resp := range m.RespBodyTypes() {
+		if needImport(resp.Type()) {
+			return true
+		}
+	}
+	return false
 }
 
 // get oauth2 middleware handler from a security scheme

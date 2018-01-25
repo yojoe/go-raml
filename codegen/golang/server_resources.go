@@ -2,13 +2,15 @@ package golang
 
 import (
 	"sort"
+	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
 // generate Server's Go representation of RAML resources
-func (s *Server) generateServerResources(dir string) ([]resource.Resource, error) {
-	var rds []resource.Resource
+func (s *Server) generateServerResources(dir string) ([]*goResource, error) {
+	var serverResources []*goResource
 
 	resources := s.apiDef.Resources
 
@@ -26,12 +28,13 @@ func (s *Server) generateServerResources(dir string) ([]resource.Resource, error
 	for _, endpoint := range keys {
 		r := resources[endpoint]
 		rd := resource.New(s.apiDef, &r, endpoint, true)
-		gr := newGoResource(&rd, s.PackageName)
+		pkgName := strings.ToLower(commons.NormalizeIdentifier(rd.Name))
+		gr := newGoResource(&rd, pkgName)
 		err = gr.generate(&r, endpoint, dir, s.APIFilePerMethod, s.libsRootURLs)
 		if err != nil {
-			return rds, err
+			return nil, err
 		}
-		rds = append(rds, rd)
+		serverResources = append(serverResources, gr)
 	}
-	return rds, nil
+	return serverResources, nil
 }

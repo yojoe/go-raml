@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/resource"
 )
 
@@ -48,13 +49,12 @@ func (cs ClientService) NeedImportJSON() bool {
 }
 
 // LibImportPaths returns all imported lib
-func (cs ClientService) LibImportPaths() map[string]struct{} {
+func (cs ClientService) libImportPaths() map[string]struct{} {
 	ip := map[string]struct{}{}
 
 	var needImportGoraml bool
 	// methods
 	for _, gm := range cs.Methods {
-		//gm := v.(clientMethod)
 		for lib := range gm.libImported(globRootImportPath) {
 			ip[lib] = struct{}{}
 		}
@@ -63,7 +63,18 @@ func (cs ClientService) LibImportPaths() map[string]struct{} {
 		}
 	}
 	if needImportGoraml {
-		ip[joinImportPath(globRootImportPath, "goraml")] = struct{}{}
+		ip[`"`+joinImportPath(globRootImportPath, "goraml")+`"`] = struct{}{}
 	}
 	return ip
+}
+
+func (cs ClientService) Imports() []string {
+	imports := cs.libImportPaths()
+	for _, m := range cs.Methods {
+		if m.needImportGoramlTypes() {
+			imports[`"`+globRootImportPath+"/"+typePackage+`"`] = struct{}{}
+			break
+		}
+	}
+	return commons.MapToSortedStrings(imports)
 }

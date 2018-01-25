@@ -1,7 +1,8 @@
-package main
+package builtin
 
 import (
 	"encoding/json"
+	"examples.com/types"
 	"net/http"
 )
 
@@ -9,9 +10,9 @@ import (
 type BuiltinAPI struct {
 }
 
-// scalartype is the handler for POST /builtin
-func (api BuiltinAPI) scalartype(w http.ResponseWriter, r *http.Request) {
-	var reqBody string
+// Scalartype is the handler for POST /builtin
+func (api BuiltinAPI) Scalartype(w http.ResponseWriter, r *http.Request) {
+	var reqBody types.string
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -21,9 +22,9 @@ func (api BuiltinAPI) scalartype(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// morecomplextype is the handler for PUT /builtin
-func (api BuiltinAPI) morecomplextype(w http.ResponseWriter, r *http.Request) {
-	var reqBody [][]string
+// Morecomplextype is the handler for PUT /builtin
+func (api BuiltinAPI) Morecomplextype(w http.ResponseWriter, r *http.Request) {
+	var reqBody [][]types.string
 
 	// decode request
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {

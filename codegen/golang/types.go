@@ -5,6 +5,11 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+const (
+	typeDir     = "types" // directory of the generated types
+	typePackage = "types" // package name of the generated types
+)
+
 var (
 	typeMap = map[string]string{
 		"string":  "string",

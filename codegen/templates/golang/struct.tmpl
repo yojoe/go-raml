@@ -3,8 +3,8 @@
 package {{.PackageName}}
 
 import (
-    {{ range $k, $v := .ImportPaths -}}
-        "{{ $k }}"
+    {{ range $k, $v := .Imports -}}
+        {{ $v }}
     {{ end -}}
 )
 

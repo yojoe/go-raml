@@ -76,7 +76,7 @@ func (gc Client) Generate() error {
 	}
 
 	// generate struct
-	if err := generateAllStructs(gc.apiDef, gc.TargetDir, gc.PackageName); err != nil {
+	if err := generateAllStructs(gc.apiDef, gc.TargetDir); err != nil {
 		return err
 	}
 

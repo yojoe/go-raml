@@ -7,7 +7,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
-	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -26,7 +25,7 @@ var (
 // Server represents a Go server
 type Server struct {
 	apiDef           *raml.APIDefinition
-	ResourcesDef     []resource.Resource
+	ResourcesDef     []*goResource
 	PackageName      string // Name of the package this server resides in
 	APIDocsDir       string // apidocs directory. apidocs won't be generated if it is empty
 	withMain         bool   // true if we need to generate main file
@@ -72,7 +71,7 @@ func (gs Server) Generate() error {
 		return err
 	}
 
-	if err := generateAllStructs(gs.apiDef, gs.TargetDir, gs.PackageName); err != nil {
+	if err := generateAllStructs(gs.apiDef, gs.TargetDir); err != nil {
 		return err
 	}
 
@@ -110,4 +109,16 @@ func (gs Server) Generate() error {
 // Title returns title of this server
 func (gs Server) Title() string {
 	return gs.apiDef.Title
+}
+
+func (gs Server) Imports() []string {
+	imports := make(map[string]struct{})
+
+	imports[gs.RootImportPath+"/goraml"] = struct{}{} // goraml helper
+
+	baseAPIDir := filepath.Join(gs.RootImportPath, serverAPIDir)
+	for _, rd := range gs.ResourcesDef {
+		imports[baseAPIDir+"/"+rd.PackageName] = struct{}{}
+	}
+	return commons.MapToSortedStrings(imports)
 }

@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"path"
 	"path/filepath"
 	"strings"
@@ -70,7 +71,7 @@ func generateLibraries(libraries map[string]*raml.Library, baseDir string, libsR
 // generate code of this library
 func (gl *goLibrary) generate() error {
 	// generate all Type structs
-	if err := generateStructs(gl.Types, gl.targetDir(), gl.PackageName); err != nil {
+	if err := generateStructs(gl.Types, gl.targetDir()); err != nil {
 		return err
 	}
 
@@ -98,14 +99,14 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 	}
 
 	if strings.Index(typ, "json.RawMessage") >= 0 {
-		return "encoding/json"
+		return `"encoding/json"`
 	}
 
 	// library name in the current document
 	libName := strings.Split(typ, ".")[0]
 
 	if libName == "goraml" { // special package name, reserved for goraml
-		return joinImportPath(rootImportPath, "goraml")
+		return fmt.Sprintf(`"%s"`, joinImportPath(rootImportPath, "goraml"))
 	}
 
 	// raml file of this lib
@@ -117,7 +118,22 @@ func libImportPath(rootImportPath, typ string, libRootURLs []string) string {
 
 	libPath := libraries.JoinPath(libDir, libFile, libRootURLs)
 
-	return joinImportPath(rootImportPath, goLibPackageDir(libName, libPath))
+	importPath := joinImportPath(rootImportPath, path.Join(goLibPackageDir(libName, libPath), typeDir))
+	return aliasLibTypeImportPath(importPath)
+}
+
+// generate import line with alias style
+// example:
+//  a.com/libraries/libname/types ->  libname_types "a.com/libraries/libname/types"
+// because we generate all raml Types under `types` directory and package,
+// all types from libraries is going to have import line with this format:
+//    root_import_path/libraries/libname/types
+// we create the alias to avoid conflict with other `types` directory/package.
+func aliasLibTypeImportPath(path string) string {
+	elems := strings.Split(path, "/")
+	n := len(elems)
+
+	return fmt.Sprintf(`%v_%v "%v"`, elems[n-2], elems[n-1], path)
 }
 
 // returns Go package directory of a library

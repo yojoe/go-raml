@@ -6,14 +6,15 @@ import (
 	"net/http"
 
 	"examples.com/libro/goraml"
+	"examples.com/libro/types"
 )
 
 type AnimalsidService service
 
 // get animal
-func (s *AnimalsidService) AnimalsIdGet(id string, headers, queryParams map[string]interface{}) (Animal, *http.Response, error) {
+func (s *AnimalsidService) AnimalsIdGet(id string, headers, queryParams map[string]interface{}) (types.Animal, *http.Response, error) {
 	var err error
-	var respBody200 Animal
+	var respBody200 types.Animal
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/animals/"+id, headers, queryParams)
 	if err != nil {

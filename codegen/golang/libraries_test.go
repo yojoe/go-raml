@@ -18,7 +18,7 @@ var (
 	}
 )
 
-func TestGoLibrary(t *testing.T) {
+func TestLibrary(t *testing.T) {
 	Convey("Library usage in server", t, func() {
 		var apiDef raml.APIDefinition
 
@@ -38,9 +38,9 @@ func TestGoLibrary(t *testing.T) {
 			Result   string
 			Expected string
 		}{
-			{"Place.go", "Place.txt"},
-			{"dirs_api.go", "dirs_api.txt"},
-			{"configs_api.go", "configs_api.txt"},
+			{filepath.Join(typeDir, "Place.go"), "Place.txt"},
+			{filepath.Join(serverAPIDir, "dirs", "dirs_api.go"), "dirs_api.txt"},
+			{filepath.Join(serverAPIDir, "configs", "configs_api.go"), "configs_api.txt"},
 		}
 
 		for _, check := range checks {
@@ -77,7 +77,7 @@ func TestGoLibrary(t *testing.T) {
 			Result   string
 			Expected string
 		}{
-			{"Place.go", "Place.txt"},
+			{filepath.Join(typeDir, "Place.go"), "Place.txt"},
 			{"client_exampleapi.go", "client_exampleapi.txt"},
 			{"client_utils.go", "client_utils.txt"},
 			{"dirs_service.go", "dirs_service.txt"},
@@ -104,6 +104,7 @@ func TestGoLibrary(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("server", func() {
+
 			var apiDef raml.APIDefinition
 
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
@@ -118,8 +119,8 @@ func TestGoLibrary(t *testing.T) {
 				Result   string
 				Expected string
 			}{
-				{"person_api.go", "person_api.txt"},
-				{"types_lib/Person.go", "types_lib/Person.txt"},
+				{filepath.Join(serverAPIDir, "person", "person_api.go"), "person_api.txt"},
+				{filepath.Join("types_lib", typeDir, "Person.go"), "types_lib/Person.txt"},
 			}
 
 			for _, check := range checks {
@@ -151,7 +152,7 @@ func TestGoLibrary(t *testing.T) {
 				Expected string
 			}{
 				{"person_service.go", "person_service.txt"},
-				{"types_lib/Person.go", "types_lib/Person.txt"},
+				{filepath.Join("types_lib", typeDir, "Person.go"), "types_lib/Person.txt"},
 			}
 
 			for _, check := range checks {
@@ -170,4 +171,21 @@ func TestGoLibrary(t *testing.T) {
 		})
 	})
 
+}
+
+func TestAliasLibTypeImportPath(t *testing.T) {
+	Convey("TestAliasLibTypeImportPath", t, func() {
+		tests := []struct {
+			path    string
+			aliased string
+		}{
+			{"a.com/libraries/libname/types", `libname_types "a.com/libraries/libname/types"`},
+			{"a.com/libname/types", `libname_types "a.com/libname/types"`},
+		}
+
+		for _, test := range tests {
+			aliased := aliasLibTypeImportPath(test.path)
+			So(aliased, ShouldEqual, test.aliased)
+		}
+	})
 }

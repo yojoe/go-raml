@@ -1,4 +1,4 @@
-package main
+package deliveries
 
 import (
 	"net/http"
@@ -8,19 +8,19 @@ import (
 type DeliveriesAPI struct {
 }
 
-// deliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
+// DeliveryIdDelete is the handler for DELETE /deliveries/{deliveryId}
 // Cancel a specific delivery
-func (api DeliveriesAPI) deliveryIdDelete(w http.ResponseWriter, r *http.Request) {
+func (api DeliveriesAPI) DeliveryIdDelete(w http.ResponseWriter, r *http.Request) {
 }
 
-// getDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
+// GetDeliveriesByDeliveryID is the handler for GET /deliveries/{deliveryId}
 // Get information on a specific delivery
-func (api DeliveriesAPI) getDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
+func (api DeliveriesAPI) GetDeliveriesByDeliveryID(w http.ResponseWriter, r *http.Request) {
 }
 
-// deliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
+// DeliveryIdPatch is the handler for PATCH /deliveries/{deliveryId}
 // Update the information on a specific delivery
-func (api DeliveriesAPI) deliveryIdPatch(w http.ResponseWriter, r *http.Request) {
+func (api DeliveriesAPI) DeliveryIdPatch(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get is the handler for GET /deliveries

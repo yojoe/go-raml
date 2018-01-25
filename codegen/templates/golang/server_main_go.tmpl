@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 
-    "{{.RootImportPath}}/goraml"
+    {{ range $k, $v := .Imports -}}
+        "{{$v}}"
+    {{ end -}}
 
 	"github.com/gorilla/mux"
     "gopkg.in/validator.v2"
@@ -28,7 +30,7 @@ func main() {
     {{ end }}
 
 	{{ range $k, $v := .ResourcesDef }}
-	{{.Name}}InterfaceRoutes(r, {{.Name}}API{})
+	{{.Name}}InterfaceRoutes(r, {{.PackageName}}.{{.Name}}API{})
 	{{ end }}
 
 	log.Println("starting server")
