@@ -74,7 +74,7 @@ func (sd structDef) generate(dir string) error {
 		return sd.Enum.generate(dir)
 	}
 	fileName := filepath.Join(dir, sd.Name+".go")
-	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, false)
+	return commons.GenerateFile(sd, structTemplateLocation, "struct_template", fileName, true)
 }
 
 func generateStructs(types map[string]raml.Type, dir, pkgName string) error {

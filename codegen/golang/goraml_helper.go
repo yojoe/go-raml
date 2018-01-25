@@ -44,7 +44,7 @@ func (gh goramlHelper) generate(dir string) error {
 		PackageName: gh.packageName,
 	}
 	if err := commons.GenerateFile(ctx, "./templates/golang/goraml_go_api_error.tmpl", "goraml_go_api_error",
-		filepath.Join(pkgDir, "api_error.go"), false); err != nil {
+		filepath.Join(pkgDir, "api_error.go"), true); err != nil {
 		return err
 	}
 	return nil

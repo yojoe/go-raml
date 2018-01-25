@@ -34,7 +34,7 @@ func (dg dateGen) generate(dir string) error {
 			"Content":     string(b),
 		}
 
-		err = commons.GenerateFile(ctx, "./templates/golang/date.tmpl", "date", filepath.Join(dir, d.FileName), false)
+		err = commons.GenerateFile(ctx, "./templates/golang/date.tmpl", "date", filepath.Join(dir, d.FileName), true)
 		if err != nil {
 			return err
 		}
