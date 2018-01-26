@@ -144,7 +144,7 @@ func goLibPackageDir(name, filename string) string {
 
 	// escape last dir element
 	elems := strings.Split(dir, "/")
-	elems[len(elems)-1] = escapeIdentifier(elems[len(elems)-1])
+	elems[len(elems)-1] = commons.NormalizeIdentifier(elems[len(elems)-1])
 	return strings.Join(elems, "/")
 }
 

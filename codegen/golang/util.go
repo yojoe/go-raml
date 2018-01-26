@@ -1,11 +1,13 @@
 package golang
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-	"unicode"
+
+	"github.com/Jumpscale/go-raml/raml"
 )
 
 // try to set root import path based on target dir
@@ -46,15 +48,25 @@ func setRootImportPath(importPath, targetDir string) string {
 	return path.Join(strings.Split(newImportPath, string(filepath.Separator))...)
 }
 
-// escape identifier to meet this spec
-// https://golang.org/ref/spec#Identifiers
-// - firstChar need to be letter, prepend "The_" if it is not
-// - replace "-" with "_"
-func escapeIdentifier(str string) string {
-	r := []rune(str)
-	if !unicode.IsLetter(r[0]) {
-		r = append([]rune("The_"), r...)
+// check that the API definition has duplicated types
+// of the title case version of the types.
+// title case = first letter become uppercase
+// example of non duplicate:
+//  - One & Two
+//  - One & oNe = One & ONe -> N is uppercase
+// example of duplicate
+// - One & one = One & One
+func checkDuplicatedTitleTypes(apiDef *raml.APIDefinition) error {
+	var title string
+
+	for name := range apiDef.Types {
+		title = strings.Title(name)
+		if title == name {
+			continue
+		}
+		if _, duplicate := apiDef.Types[title]; duplicate {
+			return fmt.Errorf("types conflict: %s with %v", name, title)
+		}
 	}
-	str = string(r)
-	return strings.Replace(str, "-", "_", -1)
+	return nil
 }

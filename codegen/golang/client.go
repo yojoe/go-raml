@@ -48,7 +48,7 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 	// creates client object
 	client := Client{
 		apiDef:         apiDef,
-		Name:           escapeIdentifier(commons.NormalizeURI(apiDef.Title)),
+		Name:           commons.NormalizeIdentifier(commons.NormalizeURI(apiDef.Title)),
 		BaseURI:        apiDef.BaseURI,
 		libraries:      apiDef.Libraries,
 		PackageName:    packageName,
@@ -66,6 +66,9 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 
 // Generate generates all Go client files
 func (gc Client) Generate() error {
+	if err := checkDuplicatedTitleTypes(gc.apiDef); err != nil {
+		return err
+	}
 	// helper package
 	gh := goramlHelper{
 		packageName: "goraml",

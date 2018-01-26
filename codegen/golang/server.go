@@ -58,6 +58,9 @@ func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPa
 
 // Generate generates all Go server files
 func (gs Server) Generate() error {
+	if err := checkDuplicatedTitleTypes(gs.apiDef); err != nil {
+		return err
+	}
 	if gs.RootImportPath == "" {
 		return fmt.Errorf("invalid import path = empty. please set --import-path or set target dir under gopath")
 	}
