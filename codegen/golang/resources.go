@@ -42,12 +42,6 @@ func (gr *goResource) generateInterfaceFile(directory string) error {
 	return commons.GenerateFile(gr, resourceIfTemplate, "resource_if_template", filename, true)
 }
 
-// generate API file of a resource
-func (gr *goResource) generateAPIFile(dir string) error {
-	filename := filepath.Join(dir, strings.ToLower(gr.Name)+"_api.go")
-	return commons.GenerateFile(gr, resourceAPITemplate, "resource_api_template", filename, false)
-}
-
 // generate API implementation in one file per method mode
 func (gr *goResource) generateAPIImplementations(dir string) error {
 	// generate the main API impl file, which only contains struct
@@ -59,7 +53,7 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 
 	mainFile := filepath.Join(dir, strings.ToLower(gr.Name)+"_api")
 	if err := commons.GenerateFile(mainCtx, "./templates/golang/server_resource_api_main_go.tmpl",
-		"server_resource_api_main_go", mainFile+".go", true); err != nil {
+		"server_resource_api_main_go", mainFile+".go", false); err != nil {
 		return err
 	}
 
@@ -87,16 +81,12 @@ func (gr *goResource) generateAPIImplementations(dir string) error {
 // - API implementation
 //		implementation of the API interface.
 //		Don't generate if the file already exist
-func (gr *goResource) generate(r *raml.Resource, URI, dir string,
-	apiFilePerMethod bool, libRootURLs []string) error {
+func (gr *goResource) generate(r *raml.Resource, URI, dir string, libRootURLs []string) error {
 	if err := gr.generateInterfaceFile(dir); err != nil {
 		return err
 	}
 
 	apiDir := filepath.Join(dir, serverAPIDir, gr.PackageName)
-	if !apiFilePerMethod {
-		return gr.generateAPIFile(apiDir)
-	}
 	return gr.generateAPIImplementations(apiDir)
 }
 

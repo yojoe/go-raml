@@ -1,0 +1,10 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package configs
+
+import (
+	"net/http"
+)
+
+// Put is the handler for PUT /configs
+func (api ConfigsAPI) Put(w http.ResponseWriter, r *http.Request) {
+}

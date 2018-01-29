@@ -1,13 +1,12 @@
 {{- define "server_main_go" -}}
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 package {{.PackageName}}
 
 import (
 	"log"
 	"net/http"
 
-    {{ range $k, $v := .Imports -}}
-        "{{$v}}"
-    {{ end -}}
+    "{{.RootImportPath}}/goraml"
 
 	"github.com/gorilla/mux"
     "gopkg.in/validator.v2"
@@ -29,9 +28,7 @@ func main() {
     r.PathPrefix("/{{.APIDocsDir}}/").Handler(http.StripPrefix("/{{.APIDocsDir}}/", http.FileServer(http.Dir("./apidocs/"))))
     {{ end }}
 
-	{{ range $k, $v := .ResourcesDef }}
-	{{.Name}}InterfaceRoutes(r, {{.PackageName}}.{{.Name}}API{})
-	{{ end }}
+    initRoutes(r)
 
 	log.Println("starting server")
 	http.ListenAndServe(":5000", r)

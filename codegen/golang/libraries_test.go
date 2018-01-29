@@ -28,7 +28,7 @@ func TestLibrary(t *testing.T) {
 		err = raml.ParseFile("../fixtures/libraries/api.raml", &apiDef)
 		So(err, ShouldBeNil)
 
-		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true, false,
+		server := NewServer(&apiDef, "main", "apidocs", "examples.com/ramlcode", true,
 			targetDir, testLibRootURLs)
 		err = server.Generate()
 		So(err, ShouldBeNil)
@@ -41,6 +41,9 @@ func TestLibrary(t *testing.T) {
 			{filepath.Join(typeDir, "Place.go"), "Place.txt"},
 			{filepath.Join(serverAPIDir, "dirs", "dirs_api.go"), "dirs_api.txt"},
 			{filepath.Join(serverAPIDir, "configs", "configs_api.go"), "configs_api.txt"},
+			{filepath.Join(serverAPIDir, "configs", "configs_api_Put.go"), "configs_api_Put.txt"},
+			{filepath.Join(serverAPIDir, "configs", "configs_api_Post.go"), "configs_api_Post.txt"},
+			{filepath.Join(serverAPIDir, "configs", "configs_api_Get.go"), "configs_api_Get.txt"},
 		}
 
 		for _, check := range checks {
@@ -110,7 +113,7 @@ func TestLibrary(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/libraries/api.raml", &apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
+			server := NewServer(&apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			err = server.Generate()
 			So(err, ShouldBeNil)
 

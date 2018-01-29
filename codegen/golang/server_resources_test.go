@@ -18,17 +18,16 @@ func TestResource(t *testing.T) {
 
 		apiDef := new(raml.APIDefinition)
 
-		Convey("simple resource", func() {
+		Convey("interface of simple resource", func() {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server_resources/simple"
 			files := []string{
-				filepath.Join(serverAPIDir, "deliveries", "deliveries_api"),
 				"deliveries_if",
 			}
 			for _, f := range files {
@@ -47,7 +46,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -76,7 +75,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/grid/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -99,12 +98,13 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server_resources/with_req_body"
 			files := []string{
+				"users_api_CreateUsers",
 				"users_api",
 			}
 			for _, f := range files {

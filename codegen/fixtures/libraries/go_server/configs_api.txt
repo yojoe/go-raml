@@ -1,31 +1,6 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 package configs
-
-import (
-	"encoding/json"
-	file_type_types "examples.com/ramlcode/libraries/filelib/file_type/types"
-	"examples.com/ramlcode/types"
-	"net/http"
-)
 
 // ConfigsAPI is API implementation of /configs root endpoint
 type ConfigsAPI struct {
-}
-
-// Get is the handler for GET /configs
-// get config files
-func (api ConfigsAPI) Get(w http.ResponseWriter, r *http.Request) {
-	var respBody file_type_types.File
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&respBody)
-}
-
-// Post is the handler for POST /configs
-func (api ConfigsAPI) Post(w http.ResponseWriter, r *http.Request) {
-	var respBody types.Place
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&respBody)
-}
-
-// Put is the handler for PUT /configs
-func (api ConfigsAPI) Put(w http.ResponseWriter, r *http.Request) {
 }

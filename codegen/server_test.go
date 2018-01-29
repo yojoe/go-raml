@@ -34,6 +34,7 @@ func TestServer(t *testing.T) {
 				Expected string
 			}{
 				{"main.go", "main.txt"},
+				{"routes.go", "routes.txt"},
 				{"users_if.go", "users_if.txt"},
 				{filepath.Join("handlers", "users", "users_api.go"), "users_api.txt"},
 				{"helloworld_if.go", "helloworld_if.txt"},

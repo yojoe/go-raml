@@ -66,7 +66,7 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 
 // Generate generates all Go client files
 func (gc Client) Generate() error {
-	if err := checkDuplicatedTitleTypes(gc.apiDef); err != nil {
+	if err := commons.CheckDuplicatedTitleTypes(gc.apiDef); err != nil {
 		return err
 	}
 	// helper package

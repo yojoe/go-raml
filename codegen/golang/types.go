@@ -1,6 +1,8 @@
 package golang
 
 import (
+	"strings"
+
 	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
@@ -11,6 +13,14 @@ const (
 )
 
 var (
+	dateMap = map[string]string{
+		"date":          "Date",
+		"date-only":     "DateOnly",
+		"time-only":     "TimeOnly",
+		"datetime-only": "DatetimeOnly",
+		"datetime":      "DateTime",
+	}
+
 	typeMap = map[string]string{
 		"string":  "string",
 		"file":    "string",
@@ -29,26 +39,49 @@ var (
 	}
 )
 
+func mapDate(tip string) string {
+	v, ok := dateMap[tip]
+	if !ok {
+		return ""
+	}
+	return goramlPkgDir() + v
+}
+
+// returns true if `tip` is:
+// - builtin go type
+// - builtin goraml type
+func isBuiltinOrGoramlType(tip string) bool {
+	switch {
+	case strings.HasPrefix(tip, "[][]"):
+		tip = strings.TrimPrefix(tip, "[][]")
+	case strings.HasPrefix(tip, "[]"):
+		tip = strings.TrimPrefix(tip, "[]")
+	}
+	for _, t := range typeMap {
+		if t == tip {
+			return true
+		}
+	}
+	if mapDate(tip) != "" {
+		return true
+	}
+	return false
+}
+
+func goramlPkgDir() string {
+	if globGoramlPkgDir == "" {
+		return "goraml."
+	}
+	return globGoramlPkgDir + "."
+}
+
 // convert from raml type to go type
 func convertToGoType(tip, items string) string {
 	if v, ok := typeMap[tip]; ok {
 		return v
 	}
-	goramlPkgDir := func() string {
-		if globGoramlPkgDir == "" {
-			return ""
-		}
-		return globGoramlPkgDir + "."
-	}()
-	dateMap := map[string]string{
-		"date":          goramlPkgDir + "Date",
-		"date-only":     goramlPkgDir + "DateOnly",
-		"time-only":     goramlPkgDir + "TimeOnly",
-		"datetime-only": goramlPkgDir + "DatetimeOnly",
-		"datetime":      goramlPkgDir + "DateTime",
-	}
 
-	if v, ok := dateMap[tip]; ok {
+	if v := mapDate(tip); v != "" {
 		return v
 	}
 

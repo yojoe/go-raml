@@ -31,12 +31,12 @@ func TestStruct(t *testing.T) {
 				"MultipleInheritance",
 				"ArrayOfCats",
 				"BidimensionalArrayOfCats",
-				"petshop",          // using map type & testing case sensitive type name
+				"Petshop",          // using map type & testing case sensitive type name
 				"Pet",              // Union
 				"ArrayOfPets",      // Array of union
 				"Specialization",   // Specialization
 				"EnumCity",         // Enum Field
-				"animal",           // using enum
+				"Animal",           // using enum
 				"EnumString",       // Enum type
 				"ValidationString", // validation
 				"Dashed",           // field with dash

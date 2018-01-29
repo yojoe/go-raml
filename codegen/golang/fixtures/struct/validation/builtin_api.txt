@@ -1,35 +1,6 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 package builtin
-
-import (
-	"encoding/json"
-	"examples.com/types"
-	"net/http"
-)
 
 // BuiltinAPI is API implementation of /builtin root endpoint
 type BuiltinAPI struct {
-}
-
-// Scalartype is the handler for POST /builtin
-func (api BuiltinAPI) Scalartype(w http.ResponseWriter, r *http.Request) {
-	var reqBody types.string
-
-	// decode request
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		w.WriteHeader(400)
-		return
-	}
-
-}
-
-// Morecomplextype is the handler for PUT /builtin
-func (api BuiltinAPI) Morecomplextype(w http.ResponseWriter, r *http.Request) {
-	var reqBody [][]types.string
-
-	// decode request
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		w.WriteHeader(400)
-		return
-	}
-
 }

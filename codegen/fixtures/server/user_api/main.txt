@@ -1,3 +1,4 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 package main
 
 import (
@@ -5,8 +6,7 @@ import (
 	"net/http"
 
 	"examples.com/ramlcode/goraml"
-	"examples.com/ramlcode/handlers/helloworld"
-	"examples.com/ramlcode/handlers/users"
+
 	"github.com/gorilla/mux"
 	"gopkg.in/validator.v2"
 )
@@ -25,9 +25,7 @@ func main() {
 	// apidocs
 	r.PathPrefix("/apidocs/").Handler(http.StripPrefix("/apidocs/", http.FileServer(http.Dir("./apidocs/"))))
 
-	HelloworldInterfaceRoutes(r, helloworld.HelloworldAPI{})
-
-	UsersInterfaceRoutes(r, users.UsersAPI{})
+	initRoutes(r)
 
 	log.Println("starting server")
 	http.ListenAndServe(":5000", r)

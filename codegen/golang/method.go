@@ -20,7 +20,7 @@ type method struct {
 }
 
 func (m method) ReqBody() string {
-	return addPackage(typePackage, commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef))
+	return formatReqRespBody(m.reqBody)
 }
 
 // TODO : move it to codegen/resource
@@ -30,7 +30,24 @@ type respBody struct {
 }
 
 func (rb respBody) Type() string {
-	return addPackage(typePackage, commons.NormalizeIdentifierWithLib(rb.respType, globAPIDef))
+	return formatReqRespBody(rb.respType)
+}
+
+func formatReqRespBody(tip string) string {
+	// if builtin type, no need for further processing
+	if isBuiltinOrGoramlType(tip) {
+		return tip
+	}
+
+	// normalize the identifier name
+	normType := commons.NormalizeIdentifierWithLib(tip, globAPIDef)
+
+	// convert type name (last elem) to Title case
+	elems := strings.Split(normType, ".")
+	lastIdx := len(elems) - 1
+	elems[lastIdx] = strings.Title(elems[lastIdx])
+
+	return addPackage(typePackage, strings.Join(elems, "."))
 }
 
 // add package name to the request and response body

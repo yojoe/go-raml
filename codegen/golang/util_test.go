@@ -5,8 +5,6 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
-	"github.com/Jumpscale/go-raml/raml"
 )
 
 func TestSetImportPath(t *testing.T) {
@@ -22,41 +20,5 @@ func TestSetImportPath(t *testing.T) {
 		Reset(func() {
 			os.Setenv("GOPATH", oriGoPath)
 		})
-	})
-}
-
-func TestCheckDuplicatedTitleTypes(t *testing.T) {
-	Convey("TestCheckDuplicatedTitleTypes", t, func() {
-		tests := []struct {
-			apiDef *raml.APIDefinition
-			err    bool
-		}{
-			{
-				&raml.APIDefinition{
-					Types: map[string]raml.Type{
-						"One": raml.Type{},
-						"one": raml.Type{},
-					},
-				}, true,
-			},
-			{
-				&raml.APIDefinition{
-					Types: map[string]raml.Type{
-						"One": raml.Type{},
-						"oNe": raml.Type{},
-					},
-				}, false,
-			},
-		}
-
-		for _, test := range tests {
-			err := checkDuplicatedTitleTypes(test.apiDef)
-			if test.err {
-				So(err, ShouldNotBeNil)
-			} else {
-				So(err, ShouldBeNil)
-			}
-		}
-
 	})
 }

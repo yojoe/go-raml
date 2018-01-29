@@ -106,11 +106,6 @@ func main() {
 					Usage:       "import path of the generated code. Set automatically if target dir under $GOPATH",
 					Destination: &serverCommand.ImportPath,
 				},
-				cli.BoolFlag{
-					Name:        "api-file-per-method",
-					Usage:       "Generate one API implementation file per method (only for Go)",
-					Destination: &serverCommand.APIFilePerMethod,
-				},
 				cli.StringFlag{
 					Name:        "lib-root-urls",
 					Usage:       "Array of libraries root URLs",

@@ -1,12 +1,17 @@
 package capnp
 
 import (
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/codegen/types"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
 func GenerateCapnp(apiDef *raml.APIDefinition, dir, lang, pkg string) error {
 	structs := []Struct{}
+
+	if err := commons.CheckDuplicatedTitleTypes(apiDef); err != nil {
+		return err
+	}
 
 	// generate types
 	for name, t := range types.AllTypes(apiDef, "") {
