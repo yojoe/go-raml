@@ -34,10 +34,11 @@ func TestServer(t *testing.T) {
 				Expected string
 			}{
 				{"main.go", "main.txt"},
+				{"routes.go", "routes.txt"},
 				{"users_if.go", "users_if.txt"},
-				{"users_api.go", "users_api.txt"},
+				{filepath.Join("handlers", "users", "users_api.go"), "users_api.txt"},
 				{"helloworld_if.go", "helloworld_if.txt"},
-				{"helloworld_api.go", "helloworld_api.txt"},
+				{filepath.Join("handlers", "helloworld", "helloworld_api.go"), "helloworld_api.txt"},
 				// goraml package
 				{"goraml/datetime.go", "goraml/datetime.txt"},
 				{"goraml/date_only.go", "goraml/date_only.txt"},

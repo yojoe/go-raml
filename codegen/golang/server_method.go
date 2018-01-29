@@ -40,7 +40,7 @@ func (gm serverMethod) RespBody() string {
 
 // setup go server method, initializes all needed variables
 func (gm *serverMethod) setup(apiDef *raml.APIDefinition, r *raml.Resource, rd *resource.Resource, methodName string) error {
-	gm.MethodName = serverMethodName(gm.Endpoint, gm.DisplayName, methodName, rd.Name)
+	gm.MethodName = strings.Title(serverMethodName(gm.Endpoint, gm.DisplayName, methodName, rd.Name))
 
 	// setting middlewares
 	middlewares := []string{}
@@ -71,8 +71,9 @@ func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
 	if lib := libImportPath(rootImportPath, gm.reqBody, globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
+
 	// resp body
-	if lib := libImportPath(rootImportPath, gm.firstSuccessRespBodyType(), globLibRootURLs); lib != "" {
+	if lib := libImportPath(rootImportPath, gm.firstSuccessRespBodyRawType(), globLibRootURLs); lib != "" {
 		libs[lib] = struct{}{}
 	}
 	return libs
@@ -82,15 +83,18 @@ func (gm serverMethod) libImported(rootImportPath string) map[string]struct{} {
 // by this method
 func (gm serverMethod) Imports() []string {
 	ip := map[string]struct{}{
-		"net/http": struct{}{},
+		`"net/http"`: struct{}{},
 	}
 	if gm.firstSuccessRespBodyType() != "" || gm.reqBody != "" {
-		ip["encoding/json"] = struct{}{}
+		ip[`"encoding/json"`] = struct{}{}
+	}
+	if gm.needImportGoramlTypes() {
+		ip[`"`+globRootImportPath+"/types"+`"`] = struct{}{}
 	}
 	for lib := range gm.libImported(globRootImportPath) {
 		ip[lib] = struct{}{}
 	}
-	return sortImportPaths(ip)
+	return commons.MapToSortedStrings(ip)
 }
 
 // true if req body need validation code

@@ -1,18 +1,6 @@
-package main
-
-import (
-	"encoding/json"
-	"examples.com/ramlcode/libraries/files"
-	"net/http"
-)
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package dirs
 
 // DirsAPI is API implementation of /dirs root endpoint
 type DirsAPI struct {
-}
-
-// Get is the handler for GET /dirs
-func (api DirsAPI) Get(w http.ResponseWriter, r *http.Request) {
-	var respBody files.Directory
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&respBody)
 }

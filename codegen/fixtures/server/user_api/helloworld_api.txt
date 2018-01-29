@@ -1,17 +1,6 @@
-package main
-
-import (
-	"encoding/json"
-	"net/http"
-)
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package helloworld
 
 // HelloworldAPI is API implementation of /helloworld root endpoint
 type HelloworldAPI struct {
-}
-
-// Get is the handler for GET /helloworld
-func (api HelloworldAPI) Get(w http.ResponseWriter, r *http.Request) {
-	var respBody HelloworldGetRespBody
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&respBody)
 }

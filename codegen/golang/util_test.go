@@ -7,8 +7,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestUtil(t *testing.T) {
-	Convey("TestUtil", t, func() {
+func TestSetImportPath(t *testing.T) {
+	Convey("TestSetImportPath", t, func() {
 		oriGoPath := os.Getenv("GOPATH")
 		Convey("users api", func() {
 			fakeGopath := "/gopath"

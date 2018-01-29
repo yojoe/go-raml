@@ -18,33 +18,16 @@ func TestResource(t *testing.T) {
 
 		apiDef := new(raml.APIDefinition)
 
-		Convey("simple resource", func() {
+		Convey("interface of simple resource", func() {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
-			// check interface file
-			s, err := utils.TestLoadFile(filepath.Join(targetDir, "deliveries_if.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err := utils.TestLoadFile("./fixtures/server_resources/simple/deliveries_if.txt")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
-			// check api implemetation file
-			s, err = utils.TestLoadFile(filepath.Join(targetDir, "deliveries_api.go"))
-			So(err, ShouldBeNil)
-
-			tmpl, err = utils.TestLoadFile("./fixtures/server_resources/simple/deliveries_api.txt")
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, tmpl)
-
 			rootFixture := "./fixtures/server_resources/simple"
 			files := []string{
-				"deliveries_api",
 				"deliveries_if",
 			}
 			for _, f := range files {
@@ -63,7 +46,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/deliveries.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -72,13 +55,12 @@ func TestResource(t *testing.T) {
 				"deliveries_api",
 				"deliveries_api_Get",
 				"deliveries_api_Post",
-				"deliveries_api_deliveryIdDelete",
-				"deliveries_api_deliveryIdPatch",
-				"deliveries_api_getDeliveriesByDeliveryID",
-				"deliveries_if",
+				"deliveries_api_DeliveryIdDelete",
+				"deliveries_api_DeliveryIdPatch",
+				"deliveries_api_GetDeliveriesByDeliveryID",
 			}
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, serverAPIDir, "deliveries", f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
@@ -93,7 +75,7 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/grid/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
@@ -116,17 +98,17 @@ func TestResource(t *testing.T) {
 			err := raml.ParseFile("../fixtures/server_resources/usergroups.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, false, targetDir, nil)
+			gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 			_, err = gs.generateServerResources(targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server_resources/with_req_body"
 			files := []string{
-				"users_if",
+				"users_api_CreateUsers",
 				"users_api",
 			}
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, serverAPIDir, "users", f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))

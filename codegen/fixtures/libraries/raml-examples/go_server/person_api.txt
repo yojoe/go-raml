@@ -1,18 +1,6 @@
-package main
-
-import (
-	"encoding/json"
-	"examples.com/libro/types_lib"
-	"net/http"
-)
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package person
 
 // PersonAPI is API implementation of /person root endpoint
 type PersonAPI struct {
-}
-
-// Get is the handler for GET /person
-func (api PersonAPI) Get(w http.ResponseWriter, r *http.Request) {
-	var respBody types_lib.Person
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&respBody)
 }

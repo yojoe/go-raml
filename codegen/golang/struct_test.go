@@ -22,7 +22,7 @@ func TestStruct(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/struct.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateStructs(apiDef.Types, targetDir, "main")
+			err = generateStructs(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct"
@@ -31,12 +31,12 @@ func TestStruct(t *testing.T) {
 				"MultipleInheritance",
 				"ArrayOfCats",
 				"BidimensionalArrayOfCats",
-				"petshop",          // using map type & testing case sensitive type name
+				"Petshop",          // using map type & testing case sensitive type name
 				"Pet",              // Union
 				"ArrayOfPets",      // Array of union
 				"Specialization",   // Specialization
 				"EnumCity",         // Enum Field
-				"animal",           // using enum
+				"Animal",           // using enum
 				"EnumString",       // Enum type
 				"ValidationString", // validation
 				"Dashed",           // field with dash
@@ -48,7 +48,7 @@ func TestStruct(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, typeDir, f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
@@ -63,10 +63,10 @@ func TestStruct(t *testing.T) {
 			err := raml.ParseFile("../fixtures/struct/json/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			err = generateStructs(apiDef.Types, targetDir, "main")
+			err = generateStructs(apiDef.Types, targetDir)
 			So(err, ShouldBeNil)
 
-			err = generateAllStructs(apiDef, targetDir, "main")
+			err = generateAllStructs(apiDef, targetDir)
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/struct/json"
@@ -78,7 +78,7 @@ func TestStruct(t *testing.T) {
 			}
 
 			for _, f := range files {
-				s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+				s, err := utils.TestLoadFile(filepath.Join(targetDir, typeDir, f+".go"))
 				So(err, ShouldBeNil)
 
 				tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))

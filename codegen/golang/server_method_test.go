@@ -21,14 +21,14 @@ func TestServerMethodWithSpecialChars(t *testing.T) {
 		err = raml.ParseFile("../fixtures/special_chars.raml", apiDef)
 		So(err, ShouldBeNil)
 
-		gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, true, targetDir, nil)
+		gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
 		_, err = gs.generateServerResources(targetDir)
 		So(err, ShouldBeNil)
 
 		rootFixture := "./fixtures/method/special_chars/server"
 		files := []string{
-			"escape_type_api_Post",
-			"uri_api_users_idGet",
+			filepath.Join(serverAPIDir, "escape_type", "escape_type_api_Post"),
+			filepath.Join(serverAPIDir, "uri", "uri_api_Users_idGet"),
 			"uri_if",
 		}
 

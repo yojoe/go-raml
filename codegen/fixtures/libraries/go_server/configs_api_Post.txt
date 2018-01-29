@@ -1,0 +1,15 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package configs
+
+import (
+	"encoding/json"
+	"examples.com/ramlcode/types"
+	"net/http"
+)
+
+// Post is the handler for POST /configs
+func (api ConfigsAPI) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var respBody types.Place
+	json.NewEncoder(w).Encode(&respBody)
+}

@@ -1,28 +1,6 @@
-package main
-
-import (
-	"encoding/json"
-	"net/http"
-)
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+package users
 
 // UsersAPI is API implementation of /users root endpoint
 type UsersAPI struct {
-}
-
-// createUsers is the handler for POST /users
-func (api UsersAPI) createUsers(w http.ResponseWriter, r *http.Request) {
-	var reqBody User
-
-	// decode request
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		w.WriteHeader(400)
-		return
-	}
-
-	// validate request
-	if err := reqBody.Validate(); err != nil {
-		w.WriteHeader(400)
-		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
-		return
-	}
 }

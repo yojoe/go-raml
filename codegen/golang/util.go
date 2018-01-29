@@ -5,7 +5,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"unicode"
 )
 
 // try to set root import path based on target dir
@@ -44,17 +43,4 @@ func setRootImportPath(importPath, targetDir string) string {
 
 	// re-join because otherwise windows will use `\`
 	return path.Join(strings.Split(newImportPath, string(filepath.Separator))...)
-}
-
-// escape identifier to meet this spec
-// https://golang.org/ref/spec#Identifiers
-// - firstChar need to be letter, prepend "The_" if it is not
-// - replace "-" with "_"
-func escapeIdentifier(str string) string {
-	r := []rune(str)
-	if !unicode.IsLetter(r[0]) {
-		r = append([]rune("The_"), r...)
-	}
-	str = string(r)
-	return strings.Replace(str, "-", "_", -1)
 }

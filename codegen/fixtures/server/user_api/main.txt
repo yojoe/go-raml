@@ -1,3 +1,4 @@
+// THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 package main
 
 import (
@@ -24,9 +25,7 @@ func main() {
 	// apidocs
 	r.PathPrefix("/apidocs/").Handler(http.StripPrefix("/apidocs/", http.FileServer(http.Dir("./apidocs/"))))
 
-	HelloworldInterfaceRoutes(r, HelloworldAPI{})
-
-	UsersInterfaceRoutes(r, UsersAPI{})
+	initRoutes(r)
 
 	log.Println("starting server")
 	http.ListenAndServe(":5000", r)

@@ -12,7 +12,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestClient(t *testing.T) {
+func TestClientBasic(t *testing.T) {
 	Convey("Test client", t, func() {
 		var apiDef raml.APIDefinition
 		targetDir, err := ioutil.TempDir("", "")

@@ -44,7 +44,6 @@ func TestClientMethodWithSpecialChars(t *testing.T) {
 		}
 
 		Reset(func() {
-			return
 			os.RemoveAll(targetDir)
 		})
 	})
