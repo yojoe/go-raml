@@ -1,6 +1,6 @@
 -- THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
-schema = require("handlers.schemas.schema")
+local schema = require("handlers.schemas.schema")
 
 function usersusername_get_handler(request)
     -- handler for GET /users/:username
