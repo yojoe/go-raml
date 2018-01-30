@@ -21,24 +21,23 @@ func TestServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/server/user_api/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			s := Server{
-				apiDef:     apiDef,
-				TargetDir:  targetDir,
-				APIDocsDir: "apidocs",
-			}
+			s := NewServer(apiDef, "apidocs", targetDir)
 			s.generateResources()
 			err := s.generateMain()
 			So(err, ShouldBeNil)
-			err = s.generateHandlers()
+			err = s.generateResources()
 			So(err, ShouldBeNil)
 
 			rootFixture := "./fixtures/server/"
 			checks := []string{
 				"main.lua",
-				"handlers/helloworld_handler.lua",
-				"handlers/users_handler.lua",
-				"handlers/usersuserId_handler.lua",
-				"handlers/usersuserIdaddressaddressId_handler.lua",
+				"users_api.lua",
+				"handlers/handlers.lua",
+				"handlers/users_get_handler.lua",
+				"handlers/users_post_handler.lua",
+				"handlers/usersuser_id_get_handler.lua",
+				"handlers/usersuser_id_delete_handler.lua",
+				"handlers/get_user_address_by_id_handler.lua",
 			}
 			for _, check := range checks {
 				s, err := utils.TestLoadFileRemoveID(filepath.Join(targetDir, check))

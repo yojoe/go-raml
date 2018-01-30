@@ -1,0 +1,23 @@
+{{- define "server_method_handler" -}}
+-- THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
+
+local schema = require("handlers.schemas.schema")
+
+function {{.Handler}}(request)
+    -- handler for {{.Verb}} {{.URI}}
+    {{- if .ReqBody}}
+    -- request body should match schema.{{.ReqBody}}
+    {{- end}}
+    {{- range $k, $v := .Responses}}
+    -- response body for {{$v.Code}} should match schema.{{$v.RespType}}
+    {{- end}}
+
+    local resp = {
+    }
+    return resp
+end
+
+return {{.Handler}}
+{{- end -}}
+
+

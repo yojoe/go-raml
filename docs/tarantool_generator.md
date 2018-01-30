@@ -2,6 +2,8 @@
 
 ## Server
 
+The server is run using [tarantool](https://tarantool.org/en/download/download.html)
+
 Generated server code uses these libraries:
 - [tarantool-http](https://github.com/tarantool/http/) as router
 
