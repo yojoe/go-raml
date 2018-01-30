@@ -86,7 +86,8 @@ Resources in the server are mapped to:
     - interface name = [resource]Interface
 
 - API implementation that implements the interface
-    - file name = handlers/[resource]/[resource]_api.go
+    - main API file = handlers/[resource]/[resource]_api.go
+    - per method API files also generated in the same directory as the main API file
     - only generated when the file is not present
     - struct name = [resource]API
 
