@@ -95,6 +95,14 @@ Resources in the server are mapped to:
     - func name = [Resource]InterfaceRoutes
     - generated in the same file as interface file
 
+#### Catch-All route
+
+`{path:*}` could be used to express Catch-All route.
+For example /path/{path:*} is going to match:
+  - /path/a    -> path = a
+  - /path/a/b  -> path = a/b
+  - /path/a/b/c -> path = a/b/c
+
 ### Client
 
 Resourcess in the client are implemented as services.

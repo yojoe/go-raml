@@ -9,6 +9,10 @@ import (
 	"github.com/Jumpscale/go-raml/raml"
 )
 
+const (
+	muxCatchAllRoute = "{path:.*}"
+)
+
 type serverMethod struct {
 	*method
 	Middlewares string
@@ -36,6 +40,10 @@ func serverMethodName(endpoint, displayName, verb, resName string) string {
 
 func (gm serverMethod) RespBody() string {
 	return gm.firstSuccessRespBodyType()
+}
+
+func (gm serverMethod) Route() string {
+	return strings.Replace(gm.Endpoint, resource.CatchAllRoute, muxCatchAllRoute, 1)
 }
 
 // setup go server method, initializes all needed variables

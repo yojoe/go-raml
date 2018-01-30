@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 	"github.com/Jumpscale/go-raml/utils"
 
@@ -47,4 +48,15 @@ func TestServerMethodWithSpecialChars(t *testing.T) {
 		})
 	})
 
+}
+
+func TestCatchAllRoute(t *testing.T) {
+	Convey("TestServerMethodWithSpecialChars", t, func() {
+		sm := serverMethod{
+			method: &method{},
+		}
+		sm.Endpoint = "/users/" + resource.CatchAllRoute
+
+		So(sm.Route(), ShouldEqual, "/users/"+muxCatchAllRoute)
+	})
 }

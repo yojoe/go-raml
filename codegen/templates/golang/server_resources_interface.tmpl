@@ -22,9 +22,9 @@ type {{.Name}}Interface interface{
 func {{.Name}}InterfaceRoutes(r *mux.Router, i {{.Name}}Interface)  {
 	{{- range $k, $v := .Methods }}
         {{- if $v.Middlewares }}
-        r.Handle("{{$v.Endpoint}}", alice.New({{$v.Middlewares}}).Then(http.HandlerFunc(i.{{$v.MethodName}}))).Methods("{{$v.Verb}}")
+        r.Handle("{{$v.Route}}", alice.New({{$v.Middlewares}}).Then(http.HandlerFunc(i.{{$v.MethodName}}))).Methods("{{$v.Verb}}")
         {{- else }}
-		r.HandleFunc("{{$v.Endpoint}}", i.{{$v.MethodName}}).Methods("{{$v.Verb}}")
+		r.HandleFunc("{{$v.Route}}", i.{{$v.MethodName}}).Methods("{{$v.Verb}}")
         {{- end }}
 	{{- end }}
 }
