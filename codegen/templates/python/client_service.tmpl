@@ -16,7 +16,7 @@ class {{.Name}}:
         {{$vf}}{{end}}
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
-        uri = self.client.base_url + {{$v.ResourcePath}}
+        uri = self.client.base_url {{$v.Route}}
         {{- if (and $v.HasRespBody $UnmarshallResponse ) }}
         resp = {{$v.PRCall}}({{$v.PRArgs}})
         try:

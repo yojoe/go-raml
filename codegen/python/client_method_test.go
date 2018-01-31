@@ -86,3 +86,72 @@ func TestClientMethodWithSpecialChars(t *testing.T) {
 	})
 
 }
+
+func TestClientMethodWithCatchAllRecursiveURL(t *testing.T) {
+	Convey("requests", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_url.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		client := NewClient(apiDef, clientNameRequests, true)
+
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/client/requests"
+		files := []string{
+			"files_service.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+	Convey("aiohttp", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_url.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		client := NewClient(apiDef, clientNameAiohttp, true)
+
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/client/aiohttp"
+		files := []string{
+			"files_service.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

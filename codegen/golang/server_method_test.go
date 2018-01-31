@@ -60,3 +60,38 @@ func TestCatchAllRoute(t *testing.T) {
 		So(sm.Route(), ShouldEqual, "/users/"+muxCatchAllRoute)
 	})
 }
+
+func TestServerMethodWithCatchAllRoute(t *testing.T) {
+	Convey("TestServerMethodWithCatchAllRoute", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_url.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
+		_, err = gs.generateServerResources(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/server"
+		files := []string{
+			"files_if",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

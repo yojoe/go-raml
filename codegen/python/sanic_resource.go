@@ -22,12 +22,34 @@ func newSanicRouteView(endpoint string) sanicRouteView {
 	name = strings.Replace(name, ">/", "_", -1)
 	name = strings.Replace(name, "/", "_", -1)
 	name = strings.Replace(name, ">", "", -1)
+	name = commons.NormalizeIdentifier(name)
 
 	return sanicRouteView{
 		Name:     name,
 		Endpoint: endpoint,
 	}
 }
+
+func (srv sanicRouteView) Route() string {
+	if len(srv.Methods) == 0 {
+		return srv.Endpoint
+	}
+	// first method is enough to generate route
+	// because all methods has same route
+	return srv.Methods[0].Route()
+}
+
+func (srv sanicRouteView) RouteCatchAll() string {
+	return srv.Methods[0].RouteCatchAll()
+}
+
+func (srv sanicRouteView) IsCatchAllRoute() bool {
+	if len(srv.Methods) == 0 {
+		return false
+	}
+	return srv.Methods[0].IsCatchAllRoute()
+}
+
 func (s SanicServer) generateResources(dir string) error {
 	if err := generateResources(s.ResourcesDef, s.Template, dir); err != nil {
 		return err

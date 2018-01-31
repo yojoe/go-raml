@@ -14,6 +14,11 @@ var (
 	reEndpoint = regexp.MustCompile(`[^/<A-Za-z0-9>]+`)
 )
 
+const (
+	catchAllRouteSuffix      = "<path:*>"
+	catchAllRouteSuffixFlask = "<path:path>"
+)
+
 type method struct {
 	resource.Method
 	reqBody string
@@ -24,7 +29,7 @@ func (m method) ReqBody() string {
 	return commons.NormalizeIdentifierWithLib(m.reqBody, globAPIDef)
 }
 
-func (m method) EscapedEndpoint() string {
+func (m method) escapedEndpoint() string {
 	return reEndpoint.ReplaceAllString(m.Endpoint, "_")
 }
 

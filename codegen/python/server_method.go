@@ -81,6 +81,28 @@ func (sm serverMethod) HasReqValidator() bool {
 	return !commons.IsBuiltinType(jsObj.T.TypeString())
 }
 
+func (sm serverMethod) Route() string {
+	if !sm.IsCatchAllRoute() {
+		return sm.escapedEndpoint()
+	}
+	return strings.Replace(sm.Endpoint, catchAllRouteSuffix, catchAllRouteSuffixFlask, 1)
+}
+
+func (sm serverMethod) RouteCatchAll() string {
+	return strings.TrimSuffix(sm.Endpoint, catchAllRouteSuffix)
+}
+
+func (sm serverMethod) IsCatchAllRoute() bool {
+	return strings.HasSuffix(sm.Endpoint, catchAllRouteSuffix)
+}
+
+func (sm serverMethod) ParamsSanicWithCatchAll() string {
+	if !sm.IsCatchAllRoute() {
+		return sm.Params
+	}
+	return strings.Replace(sm.Params, "path", `path=""`, 1)
+}
+
 func setServerReqBodyName(bodyName string) string {
 	if !commons.IsArrayType(bodyName) {
 		return bodyName

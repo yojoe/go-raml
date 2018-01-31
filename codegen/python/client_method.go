@@ -79,3 +79,17 @@ func (pcm clientMethod) imports() []string {
 func (pcm clientMethod) HasRespBody() bool {
 	return len(pcm.resps) > 0
 }
+
+func (pcm clientMethod) Route() string {
+	if pcm.ResourcePath == "" {
+		return ""
+	}
+
+	route := "+ " + pcm.ResourcePath
+	if !pcm.IsCatchAllRoute() {
+		return route
+	}
+
+	return strings.Replace(route, `/"`, `"`, 1)
+
+}

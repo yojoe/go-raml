@@ -124,3 +124,72 @@ func TestServerMethodWithSpecialChars(t *testing.T) {
 	})
 
 }
+
+func TestServerMethodWithCatchAllRecursiveURL(t *testing.T) {
+	Convey("Flask ", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_url.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		fs := NewFlaskServer(apiDef, "apidocs", true, nil, false)
+
+		err = fs.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/server/flask"
+		files := []string{
+			"files_api.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+	Convey("Sanic ", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_url.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		fs := NewSanicServer(apiDef, "apidocs", true, nil)
+
+		err = fs.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/server/sanic"
+		files := []string{
+			"files_if.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

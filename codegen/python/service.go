@@ -28,6 +28,8 @@ func newService(endpoint string, methods []resource.Method, unmarshallResponse b
 	}
 }
 
+// Imports returns slice of packages
+// need to be imported by this service
 func (s service) Imports() []string {
 	if !s.UnmarshallResponse {
 		return nil
@@ -42,8 +44,10 @@ func (s service) Imports() []string {
 			ipMap[importLine] = struct{}{}
 		}
 	}
-	return sortImportPaths(ipMap)
+	return commons.MapToSortedStrings(ipMap)
 }
+
+// filename returns generated filename of this service
 func (s service) filename(dir string) string {
 	return filepath.Join(dir, s.FilenameNoExt) + ".py"
 }
@@ -59,13 +63,4 @@ func (b byEndoint) Less(i, j int) bool {
 func (s *service) generate(tmpl clientTemplate, dir string) error {
 	sort.Sort(byEndoint(s.Methods))
 	return commons.GenerateFile(s, tmpl.serviceFile, tmpl.serviceName, s.filename(dir), true)
-}
-
-func sortImportPaths(ip map[string]struct{}) []string {
-	libs := []string{}
-	for k := range ip {
-		libs = append(libs, k)
-	}
-	sort.Strings(libs)
-	return libs
 }

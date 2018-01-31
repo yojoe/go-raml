@@ -14,13 +14,15 @@ from .{{$v.ImportPath}} import {{$v.Name}}{{ end }}
 {{ range $k, $v := .RouteView}}
 class {{$v.Name}}View(HTTPMethodView):
     {{ range $km, $vm := $v.Methods }}
-    async def {{$vm.Verb| ToLower}}(self, {{$vm.Params}}):
+    async def {{$vm.Verb| ToLower}}(self, {{$vm.ParamsSanicWithCatchAll}}):
      {{range $kmw, $vmw := $vm.MiddlewaresArr -}}{{if eq $vmw.Type "oauth2"}}
         if not await {{$vmw.Name}}([{{$vmw.Args}}]).check_token(request):
             return text('', 401)
         {{end}}{{end}}
         return await {{$resName}}_api.{{$vm.MethodName}}({{$vm.Params}})
     {{end}}
-{{$resName}}_if.add_route({{$v.Name}}View.as_view(), '{{$v.Endpoint}}')
+
+{{ if $v.IsCatchAllRoute}}{{$resName}}_if.add_route({{$v.Name}}View.as_view(), '{{$v.RouteCatchAll}}', strict_slashes=True){{end}}
+{{$resName}}_if.add_route({{$v.Name}}View.as_view(), '{{$v.Route}}')
 {{end}}
 {{end}}

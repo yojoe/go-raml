@@ -40,6 +40,12 @@ func newMethod(r *raml.Resource, rd *Resource, m *raml.Method, methodName string
 	return method
 }
 
+// IsCatchAllRoute returns true if this method
+// use go-raml Catch-All route
+func (m Method) IsCatchAllRoute() bool {
+	return strings.HasSuffix(m.Endpoint, CatchAllRoute)
+}
+
 // byEndpoint implements sort interface to sort methods
 // based on its endpoint address
 type byEndpoint []Method

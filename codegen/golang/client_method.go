@@ -93,3 +93,17 @@ func (gcm clientMethod) ReturnTypes() string {
 func (gcm clientMethod) needImportGoraml() bool {
 	return gcm.HasRespBody()
 }
+
+func (gcm clientMethod) Route() string {
+	if gcm.ResourcePath == "" {
+		return ""
+	}
+
+	route := "+" + gcm.ResourcePath
+
+	if !gcm.IsCatchAllRoute() {
+		return route
+	}
+
+	return strings.Replace(route, `/"`, `"`, 1)
+}
