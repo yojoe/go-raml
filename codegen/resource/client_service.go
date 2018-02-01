@@ -16,7 +16,7 @@ type ClientService struct {
 }
 
 func NewClientService(rootEndpoint string) ClientService {
-	normalizedEndpoint := commons.NormalizeURI(rootEndpoint)
+	normalizedEndpoint := commons.NormalizeIdentifier(commons.NormalizeURI(rootEndpoint))
 	return ClientService{
 		Name:          strings.Title(normalizedEndpoint) + "Service",
 		EndpointName:  normalizedEndpoint,

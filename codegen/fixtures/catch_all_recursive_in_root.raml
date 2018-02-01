@@ -1,0 +1,19 @@
+#%RAML 1.0
+title: Catch All Recursive path
+description: shows goraml support for catch all recursive path
+baseUri: http://localhost:5000
+mediaType: application/json
+
+types:
+  File:
+    properties:
+        name:
+          type: string
+
+/{path:*}:
+    get:
+      description: 
+      responses:
+        200:
+          body:
+            type: File

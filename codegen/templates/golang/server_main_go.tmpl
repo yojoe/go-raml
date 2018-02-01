@@ -17,7 +17,7 @@ func main() {
     validator.SetValidationFunc("multipleOf", goraml.MultipleOf)
 
 	r := mux.NewRouter()
-
+    {{ if .ShowAPIDocsAndIndex}}
     // home page
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "index.html")
@@ -27,7 +27,7 @@ func main() {
     // apidocs
     r.PathPrefix("/{{.APIDocsDir}}/").Handler(http.StripPrefix("/{{.APIDocsDir}}/", http.FileServer(http.Dir("./apidocs/"))))
     {{ end }}
-
+    {{ end }}
     initRoutes(r)
 
 	log.Println("starting server")

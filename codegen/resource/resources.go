@@ -27,7 +27,7 @@ func New(apiDef *raml.APIDefinition, r *raml.Resource, endpoint string, sortMeth
 	res := Resource{
 		Endpoint: endpoint,
 		APIDef:   apiDef,
-		Name:     strings.Title(commons.NormalizeURI(endpoint)),
+		Name:     commons.NormalizeIdentifier(strings.Title(commons.NormalizeURI(endpoint))),
 	}
 	res.generateMethods(r)
 	if sortMethod {

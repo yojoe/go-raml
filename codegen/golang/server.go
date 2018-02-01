@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -125,4 +126,8 @@ func (gs Server) RouteImports() []string {
 		imports[baseAPIDir+"/"+rd.PackageName] = struct{}{}
 	}
 	return commons.MapToSortedStrings(imports)
+}
+
+func (gs Server) ShowAPIDocsAndIndex() bool {
+	return !resource.HasCatchAllInRootRoute(gs.apiDef)
 }

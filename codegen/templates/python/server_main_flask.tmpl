@@ -13,7 +13,7 @@ app = Flask(__name__)
 {{range $k, $v := .ResourcesDef -}}
 app.register_blueprint({{.Name | ToLower }}_api)
 {{end}}
-
+{{if .ShowAPIDocsAndIndex}}
 {{ if .APIDocsDir }}
 @app.route('/{{.APIDocsDir}}/<path:path>')
 def send_js(path):
@@ -23,7 +23,7 @@ def send_js(path):
 @app.route('/', methods=['GET'])
 def home():
     return send_file(dir_path + '/index.html')
-
+{{end}}
 if __name__ == "__main__":
     app.run(debug=True)
 

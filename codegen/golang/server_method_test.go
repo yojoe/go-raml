@@ -95,3 +95,39 @@ func TestServerMethodWithCatchAllRoute(t *testing.T) {
 	})
 
 }
+
+func TestServerMethodWithCatchAllRouteInRoot(t *testing.T) {
+	Convey("TestServerMethodWithCatchAllRouteInRoot", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/catch_all_recursive_in_root.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		gs := NewServer(apiDef, "main", "apidocs", "examples.com/libro", true, targetDir, nil)
+		err = gs.Generate()
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/catch_all_recursive_url/server-in-root"
+		files := []string{
+			"path_if",
+			"main",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f+".go"))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f+".txt"))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+}

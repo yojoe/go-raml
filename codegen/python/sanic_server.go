@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
+	"github.com/Jumpscale/go-raml/codegen/resource"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -87,4 +88,8 @@ func (s *SanicServer) generateMain(dir string) error {
 
 	return commons.GenerateFile(s, "./templates/python/server_main_sanic.tmpl", "server_main_sanic",
 		filepath.Join(dir, "app.py"), true)
+}
+
+func (s *SanicServer) ShowAPIDocsAndIndex() bool {
+	return !resource.HasCatchAllInRootRoute(s.APIDef)
 }
