@@ -15,15 +15,15 @@ type ClientService struct {
 	Methods     []clientMethod
 }
 
-func newClientService(rootEndpoint, packageName string, resMethods []resource.Method) *ClientService {
+func newClientService(rootEndpoint, packageName string, rd *resource.Resource) *ClientService {
 	var methods []clientMethod
 
-	for _, rm := range resMethods {
+	for _, rm := range rd.Methods {
 		clientMeth := newClientMethod(rm)
 		methods = append(methods, clientMeth)
 	}
 
-	cs := resource.NewClientService(rootEndpoint)
+	cs := resource.NewClientService(rootEndpoint, rd.DisplayName)
 	cs.EndpointName = strings.Title(cs.EndpointName)
 	return &ClientService{
 		ClientService: cs,

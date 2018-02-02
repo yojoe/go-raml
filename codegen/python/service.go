@@ -14,15 +14,15 @@ type service struct {
 	UnmarshallResponse bool
 }
 
-func newService(endpoint string, methods []resource.Method, unmarshallResponse bool) *service {
-	clientMethods := make([]clientMethod, 0, len(methods))
-	for _, rm := range methods {
+func newService(endpoint string, rd *resource.Resource, unmarshallResponse bool) *service {
+	clientMethods := make([]clientMethod, 0, len(rd.Methods))
+	for _, rm := range rd.Methods {
 		cm := newClientMethod(rm)
 		clientMethods = append(clientMethods, cm)
 	}
 
 	return &service{
-		ClientService:      resource.NewClientService(endpoint),
+		ClientService:      resource.NewClientService(endpoint, rd.DisplayName),
 		Methods:            clientMethods,
 		UnmarshallResponse: unmarshallResponse,
 	}

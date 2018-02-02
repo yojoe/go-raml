@@ -76,7 +76,7 @@ func TestServerMethodWithCatchAllRoute(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/server"
 		files := []string{
-			"files_if",
+			"tree_if",
 		}
 
 		for _, f := range files {

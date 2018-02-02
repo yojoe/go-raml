@@ -4,15 +4,15 @@ from .unhandled_api_error import UnhandledAPIError
 from .unmarshall_error import UnmarshallError
 
 
-class FilesService:
+class TreeService:
     def __init__(self, client):
         self.client = client
 
-    async def files_byPath_get(self, path, headers=None, query_params=None, content_type="application/json"):
+    async def get(self, path, headers=None, query_params=None, content_type="application/json"):
         """
-        It is method for GET /files/{path:*}
+        It is method for GET /api/v1/root/{path:*}
         """
-        uri = self.client.base_url + "/files" + path
+        uri = self.client.base_url + "/api/v1/root" + path
         resp = await self.client.get(uri, None, headers, query_params, content_type)
         try:
             if resp.status == 200:

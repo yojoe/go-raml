@@ -1,6 +1,6 @@
 #%RAML 1.0
-title: Catch All Recursive path
-description: shows goraml support for catch all recursive path
+title: "0-metadata"
+description: shows goraml support for catch all recursive path and displayName in root endppoint
 baseUri: http://localhost:5000
 mediaType: application/json
 
@@ -9,9 +9,11 @@ types:
     properties:
         name:
           type: string
-/files:
-  /{path:*}:
+
+/api/v1/root/{path:*}:
+    displayName: tree
     get:
+      displayName: get
       description: 
       responses:
         200:

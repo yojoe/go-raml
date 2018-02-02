@@ -67,7 +67,8 @@ func TestClientMethodCatchAllRecursiveURL(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/client"
 		files := []string{
-			"files_service",
+			"tree_service",
+			"client_the_0_metadata",
 		}
 
 		for _, f := range files {

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"unicode"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -239,10 +240,22 @@ func IsStrInArray(arr []string, str string) bool {
 // - If started with invalid char, we prepend with `The_`
 // - don't replace `.` if it means a library
 func NormalizeIdentifier(s string) string {
+	if s == "" {
+		return s
+	}
+
 	str := regValidIdentifier.ReplaceAllString(s, underscore)
-	if strings.HasPrefix(str, underscore) {
+
+	// it needs to be started with letter
+	// if not, prepend `The_`
+	startedWithLetter := func() bool {
+		r := []rune(str)
+		return unicode.IsLetter(r[0])
+	}()
+	if !startedWithLetter && !strings.HasPrefix(str, "[]") {
 		str = "The_" + str
 	}
+
 	return strings.Trim(str, "_")
 }
 

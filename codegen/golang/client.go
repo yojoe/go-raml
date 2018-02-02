@@ -40,9 +40,9 @@ func NewClient(apiDef *raml.APIDefinition, packageName, rootImportPath, targetDi
 
 	// creates client services objects
 	services := map[string]*ClientService{}
-	for k, res := range apiDef.Resources {
-		rd := resource.New(apiDef, &res, commons.NormalizeURITitle(apiDef.Title), true)
-		services[k] = newClientService(k, packageName, rd.Methods)
+	for endpoint, res := range apiDef.Resources {
+		rd := resource.New(apiDef, &res, commons.NormalizeURITitle(endpoint), true)
+		services[endpoint] = newClientService(endpoint, packageName, &rd)
 	}
 
 	// creates client object

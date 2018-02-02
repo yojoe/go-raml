@@ -9,13 +9,13 @@ import (
 	"examples.com/libro/types"
 )
 
-type FilesService service
+type TreeService service
 
-func (s *FilesService) FilesPath_Get(path string, headers, queryParams map[string]interface{}) (types.File, *http.Response, error) {
+func (s *TreeService) Get(path string, headers, queryParams map[string]interface{}) (types.File, *http.Response, error) {
 	var err error
 	var respBody200 types.File
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/files"+path, headers, queryParams)
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/api/v1/root"+path, headers, queryParams)
 	if err != nil {
 		return respBody200, nil, err
 	}

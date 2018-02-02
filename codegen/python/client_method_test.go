@@ -103,7 +103,8 @@ func TestClientMethodWithCatchAllRecursiveURL(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/client/requests"
 		files := []string{
-			"files_service.py",
+			"tree_service.py",
+			"__init__.py",
 		}
 
 		for _, f := range files {
@@ -136,7 +137,8 @@ func TestClientMethodWithCatchAllRecursiveURL(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/client/aiohttp"
 		files := []string{
-			"files_service.py",
+			"tree_service.py",
+			"__init__.py",
 		}
 
 		for _, f := range files {

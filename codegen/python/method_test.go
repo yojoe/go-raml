@@ -141,7 +141,7 @@ func TestServerMethodWithCatchAllRecursiveURL(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/server/flask"
 		files := []string{
-			"files_api.py",
+			"tree_api.py",
 		}
 
 		for _, f := range files {
@@ -174,7 +174,7 @@ func TestServerMethodWithCatchAllRecursiveURL(t *testing.T) {
 
 		rootFixture := "./fixtures/method/catch_all_recursive_url/server/sanic"
 		files := []string{
-			"files_if.py",
+			"tree_if.py",
 		}
 
 		for _, f := range files {
@@ -194,7 +194,7 @@ func TestServerMethodWithCatchAllRecursiveURL(t *testing.T) {
 
 }
 
-func TestServerMethodWithCatchAllRecursiveURLInRoot(t *testing.T) {
+func TestServerMethodWithInRootCatchAllRecursiveURL(t *testing.T) {
 	Convey("Flask ", t, func() {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)

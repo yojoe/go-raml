@@ -15,11 +15,16 @@ type ClientService struct {
 	FilenameNoExt string
 }
 
-func NewClientService(rootEndpoint string) ClientService {
-	normalizedEndpoint := commons.NormalizeIdentifier(commons.NormalizeURI(rootEndpoint))
+func NewClientService(rootEndpoint, displayName string) ClientService {
+	var normalized string
+	if displayName == "" {
+		normalized = commons.NormalizeIdentifier(commons.NormalizeURI(rootEndpoint))
+	} else {
+		normalized = commons.DisplayNameToFuncName(displayName)
+	}
 	return ClientService{
-		Name:          strings.Title(normalizedEndpoint) + "Service",
-		EndpointName:  normalizedEndpoint,
-		FilenameNoExt: normalizedEndpoint + "_service",
+		Name:          strings.Title(normalized) + "Service",
+		EndpointName:  normalized,
+		FilenameNoExt: normalized + "_service",
 	}
 }

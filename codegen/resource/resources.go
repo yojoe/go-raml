@@ -20,15 +20,25 @@ type Resource struct {
 	Name     string   // resource name
 	Endpoint string   // root endpoint
 	Methods  []Method // all methods of this resource
+	*raml.Resource
 }
 
 // New creates a resource definition
 func New(apiDef *raml.APIDefinition, r *raml.Resource, endpoint string, sortMethod bool) Resource {
+	name := func() string {
+		if r.DisplayName == "" {
+			return commons.NormalizeIdentifier(strings.Title(commons.NormalizeURI(endpoint)))
+		}
+		return strings.Title(commons.DisplayNameToFuncName(r.DisplayName))
+	}()
+
 	res := Resource{
 		Endpoint: endpoint,
 		APIDef:   apiDef,
-		Name:     commons.NormalizeIdentifier(strings.Title(commons.NormalizeURI(endpoint))),
+		Name:     name,
+		Resource: r,
 	}
+
 	res.generateMethods(r)
 	if sortMethod {
 		sort.Sort(byEndpoint(res.Methods))

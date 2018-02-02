@@ -40,7 +40,7 @@ func NewClient(apiDef *raml.APIDefinition, kind string, unmarshallResponse bool)
 	services := map[string]*service{}
 	for uri, res := range apiDef.Resources {
 		rd := resource.New(apiDef, &res, commons.NormalizeURITitle(apiDef.Title), false)
-		services[uri] = newService(uri, rd.Methods, unmarshallResponse)
+		services[uri] = newService(uri, &rd, unmarshallResponse)
 	}
 	switch kind {
 	case "":
