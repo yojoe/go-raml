@@ -2,6 +2,7 @@ package python
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/Jumpscale/go-raml/codegen/commons"
@@ -44,6 +45,7 @@ func (pcm *clientMethod) setup() {
 
 	// construct method signature
 	params = append(params, resource.GetResourceParams(pcm.Resource)...)
+	params = append(params, pcm.queryParams()...)
 	params = append(params, "headers=None", "query_params=None", `content_type="application/json"`)
 	pcm.Params = strings.Join(params, ", ")
 
@@ -62,6 +64,33 @@ func (pcm *clientMethod) setup() {
 	} else {
 		pcm.MethodName = commons.NormalizeIdentifier(snakeCaseResourceURI(pcm.Resource) + "_" + strings.ToLower(pcm.Verb()))
 	}
+}
+
+func (pcm *clientMethod) queryParams() (params []string) {
+	var (
+		paramsWithDefault []string
+		paramsNoDefault   []string
+	)
+
+	for name, qp := range pcm.QueryParameters {
+		if qp.Default == nil {
+			paramsNoDefault = append(paramsNoDefault, name)
+		} else {
+			paramsWithDefault = append(paramsWithDefault, fmt.Sprintf("%s=%v", name, qp.Default))
+		}
+	}
+
+	if len(paramsNoDefault) > 0 {
+		sort.Strings(paramsNoDefault)
+		params = append(params, paramsNoDefault...)
+	}
+
+	if len(paramsWithDefault) > 0 {
+		sort.Strings(paramsWithDefault)
+		params = append(params, paramsWithDefault...)
+	}
+
+	return
 }
 
 func (pcm clientMethod) imports() []string {

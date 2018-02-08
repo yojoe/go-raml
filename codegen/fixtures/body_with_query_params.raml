@@ -1,0 +1,28 @@
+#%RAML 1.0
+title: QueryParams
+mediaType: application/json
+types:
+  animal:
+    type: object
+    properties:
+      name: string
+
+/animals:
+  get:
+    description: test query params
+    queryParameters:
+      depth:
+        type: integer
+        default: 1
+      inspect:
+        type: boolean
+        default: false
+      nodef:
+        type: integer
+      name:
+        type: string
+    responses:
+      201:
+        body:
+          application/json:
+            type: animal[]

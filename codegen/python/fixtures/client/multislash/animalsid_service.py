@@ -10,5 +10,8 @@ class AnimalsidService:
         get animal
         It is method for GET /animals/{id}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/animals/" + id
         return self.client.get(uri, None, headers, query_params, content_type)

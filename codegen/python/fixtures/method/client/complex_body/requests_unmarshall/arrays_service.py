@@ -13,6 +13,9 @@ class ArraysService:
         handle array
         It is method for POST /arrays
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/arrays"
         resp = self.client.post(uri, data, headers, query_params, content_type)
         try:
@@ -37,6 +40,9 @@ class ArraysService:
         another form of array
         It is method for PUT /arrays
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/arrays"
         resp = self.client.put(uri, data, headers, query_params, content_type)
         try:

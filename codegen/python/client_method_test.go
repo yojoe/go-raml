@@ -48,6 +48,74 @@ func TestClientMethodWithComplexBody(t *testing.T) {
 
 }
 
+func TestClientMethodWithQueryParams(t *testing.T) {
+	Convey("TestClientMethodWithQueryParams Requests", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/body_with_query_params.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		client := NewClient(apiDef, clientNameRequests, true)
+
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/client/complex_body/query_params_requests/"
+		files := []string{
+			"animals_service.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+
+	Convey("TestClientMethodWithQueryParams Aiohttp", t, func() {
+		targetDir, err := ioutil.TempDir("", "")
+		So(err, ShouldBeNil)
+
+		apiDef := new(raml.APIDefinition)
+		err = raml.ParseFile("../fixtures/body_with_query_params.raml", apiDef)
+		So(err, ShouldBeNil)
+
+		client := NewClient(apiDef, clientNameAiohttp, true)
+
+		err = client.Generate(targetDir)
+		So(err, ShouldBeNil)
+
+		rootFixture := "./fixtures/method/client/complex_body/query_params_aiohttp/"
+		files := []string{
+			"animals_service.py",
+		}
+
+		for _, f := range files {
+			s, err := utils.TestLoadFile(filepath.Join(targetDir, f))
+			So(err, ShouldBeNil)
+
+			tmpl, err := utils.TestLoadFile(filepath.Join(rootFixture, f))
+			So(err, ShouldBeNil)
+
+			So(s, ShouldEqual, tmpl)
+		}
+
+		Reset(func() {
+			os.RemoveAll(targetDir)
+		})
+	})
+}
+
 func TestClientMethodWithSpecialChars(t *testing.T) {
 	Convey("TestClientMethodWithSpecialChars", t, func() {
 		targetDir, err := ioutil.TempDir("", "")

@@ -12,6 +12,9 @@ class TreeService:
         """
         It is method for GET /api/v1/root/{path:*}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/api/v1/root" + path
         resp = await self.client.get(uri, None, headers, query_params, content_type)
         try:

@@ -12,7 +12,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestClient(t *testing.T) {
+func TestClientBasic(t *testing.T) {
 	Convey("Python client", t, func() {
 		apiDef := new(raml.APIDefinition)
 		err := raml.ParseFile("./fixtures/client/client.raml", apiDef)

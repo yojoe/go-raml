@@ -16,6 +16,11 @@ class {{.Name}}:
         {{$vf}}{{end}}
         It is method for {{$v.Verb}} {{$v.Endpoint}}
         """
+        if query_params is None:
+            query_params = {}
+        {{ range $k, $v := $v.QueryParameters}}
+        query_params['{{$k}}'] = {{$k}}{{ end }}
+
         uri = self.client.base_url {{$v.Route}}
         {{- if (and $v.HasRespBody $UnmarshallResponse ) }}
         resp = {{$v.PRCall}}({{$v.PRArgs}})

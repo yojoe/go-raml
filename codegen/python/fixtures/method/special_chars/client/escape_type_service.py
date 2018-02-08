@@ -12,6 +12,9 @@ class Escape_typeService:
         """
         It is method for POST /escape_type
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/escape_type"
         resp = self.client.post(uri, data, headers, query_params, content_type)
         try:

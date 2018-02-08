@@ -17,6 +17,9 @@ class UsersService:
         of address
         It is method for GET /users/{userId}/address/{addressId}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users/" + userId + "/address/" + addressId
         return self.client.get(uri, None, headers, query_params, content_type)
 
@@ -24,6 +27,9 @@ class UsersService:
         """
         It is method for DELETE /users/{userId}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users/" + userId
         return self.client.delete(uri, None, headers, query_params, content_type)
 
@@ -32,6 +38,9 @@ class UsersService:
         get id
         It is method for GET /users/{userId}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users/" + userId
         return self.client.get(uri, None, headers, query_params, content_type)
 
@@ -40,6 +49,9 @@ class UsersService:
         post without request body
         It is method for POST /users/{userId}
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users/" + userId
         return self.client.post(uri, data, headers, query_params, content_type)
 
@@ -48,6 +60,9 @@ class UsersService:
         delete with request body
         It is method for DELETE /users
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users"
         return self.client.delete(uri, data, headers, query_params, content_type)
 
@@ -57,6 +72,9 @@ class UsersService:
         Second line of comment
         It is method for GET /users
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users"
         return self.client.get(uri, data, headers, query_params, content_type)
 
@@ -64,6 +82,9 @@ class UsersService:
         """
         It is method for OPTIONS /users
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users"
         return self.client.session.options(uri, None, headers, query_params, content_type)
 
@@ -72,5 +93,8 @@ class UsersService:
         create users
         It is method for POST /users
         """
+        if query_params is None:
+            query_params = {}
+
         uri = self.client.base_url + "/users"
         return self.client.post(uri, data, headers, query_params, content_type)
