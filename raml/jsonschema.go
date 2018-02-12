@@ -2,6 +2,7 @@ package raml
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 )
 
@@ -155,7 +156,7 @@ func (js *JSONSchema) isRequired(propName string) bool {
 type property struct {
 	Name     string      `json:"-"`
 	Ref      string      `json:"$ref,omitempty"`
-	Type     string      `json:"type,omitempty"`
+	Type     interface{} `json:"type,omitempty"`
 	Required bool        `json:"-"`
 	Enum     interface{} `json:"enum,omitempty"`
 
@@ -236,6 +237,8 @@ func newProperty(rp Property) property {
 	if rp.IsArray() && !rp.IsBidimensiArray() {
 		p.Type = "array"
 		p.Items = newArrayItem(rp.ArrayType())
+	} else if !p.Required {
+		p.Type = []string{fmt.Sprint(p.Type), "null"}
 	}
 	return p
 }
