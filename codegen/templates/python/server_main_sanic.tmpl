@@ -4,9 +4,15 @@
 from sanic import Sanic
 from sanic.response import json
 
-{{ range $k, $v := .ResourcesDef -}}
-from {{.Name | ToLower}}_if import {{.Name | ToLower}}_if
-{{end }}
+try:
+    {{ range $k, $v := .ResourcesDef -}}
+    from {{.Name | ToLower}}_if import {{.Name | ToLower}}_if
+    {{end }}
+except ImportError:
+    {{ range $k, $v := .ResourcesDef -}}
+    from .{{.Name | ToLower}}_if import {{.Name | ToLower}}_if
+    {{end }}
+
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

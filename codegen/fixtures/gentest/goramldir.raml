@@ -1,0 +1,24 @@
+#%RAML 1.0
+title: goramldir
+description: goraml developers directory
+baseUri: http://localhost:5000
+mediaType: application/json
+
+types:
+  User:
+    properties:
+        username:
+          type: string
+        city:
+          type: string
+          required: false
+
+/users:
+  post:
+    description: create user
+    body:
+      type: User
+    responses:
+      200:
+        body:
+          type: User

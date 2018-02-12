@@ -3,7 +3,12 @@
 from sanic import Sanic
 from sanic.response import json
 
-from helloworld_if import helloworld_if
+try:
+    from helloworld_if import helloworld_if
+
+except ImportError:
+    from .helloworld_if import helloworld_if
+
 
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))

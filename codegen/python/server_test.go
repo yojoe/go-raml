@@ -12,7 +12,7 @@ import (
 	"github.com/Jumpscale/go-raml/utils"
 )
 
-func TestServer(t *testing.T) {
+func TestBasicServer(t *testing.T) {
 	Convey("server generator", t, func() {
 		targetDir, err := ioutil.TempDir("", "")
 		So(err, ShouldBeNil)

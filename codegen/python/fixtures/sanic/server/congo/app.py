@@ -3,8 +3,14 @@
 from sanic import Sanic
 from sanic.response import json
 
-from deliveries_if import deliveries_if
-from drones_if import drones_if
+try:
+    from deliveries_if import deliveries_if
+    from drones_if import drones_if
+
+except ImportError:
+    from .deliveries_if import deliveries_if
+    from .drones_if import drones_if
+
 
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))

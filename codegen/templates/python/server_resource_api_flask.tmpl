@@ -3,10 +3,19 @@
 
 {{ $apiName := .Name -}}
 from flask import Blueprint
-import handlers
-{{ range $k, $v := .MiddlewaresArr}}
-import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
+try:
+    import handlers
+except ImportError:
+    from . import handlers
 
+{{ if .MiddlewaresArr}}
+try:
+{{ range $k, $v := .MiddlewaresArr}}
+    import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
+except ImportError:
+{{ range $k, $v := .MiddlewaresArr}}
+    from . import {{$v.ImportPath}} as {{$v.Name}}{{ end }}
+{{ end }}
 
 {{.Name | ToLower }}_api = Blueprint('{{.Name | ToLower}}_api', __name__)
 {{ range $k, $v := .Methods }}
