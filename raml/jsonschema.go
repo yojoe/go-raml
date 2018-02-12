@@ -237,7 +237,9 @@ func newProperty(rp Property) property {
 	if rp.IsArray() && !rp.IsBidimensiArray() {
 		p.Type = "array"
 		p.Items = newArrayItem(rp.ArrayType())
-	} else if !p.Required {
+	}
+
+	if !p.Required {
 		p.Type = []string{fmt.Sprint(p.Type), "null"}
 	}
 	return p
