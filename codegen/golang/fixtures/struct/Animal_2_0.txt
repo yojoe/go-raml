@@ -4,7 +4,7 @@ package types
 import ()
 
 // type with special characters
-type Animal_2_0 animal
+type Animal_2_0 Animal
 
 func (s Animal_2_0) Validate() error {
 

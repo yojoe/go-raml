@@ -5,13 +5,12 @@ import (
 	"gopkg.in/validator.v2"
 )
 
-type SingleInheritance struct {
-	Animal
-	Name   string `json:"name" validate:"nonzero"`
-	Single bool   `json:"single"`
+// recursive type with small character
+type Leaf struct {
+	Right *Leaf `json:"right" validate:"nonzero"`
 }
 
-func (s SingleInheritance) Validate() error {
+func (s Leaf) Validate() error {
 
 	return validator.Validate(s)
 }

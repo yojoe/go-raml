@@ -19,13 +19,28 @@ type fieldDef struct {
 	Validators string
 }
 
-func newFieldDef(structName string, prop raml.Property, pkg string) fieldDef {
+// newFieldDef creates new struct field from raml property.
+func newFieldDef(apiDef *raml.APIDefinition, structName string, prop raml.Property, pkg string) fieldDef {
+	var fieldType string
+	// for the types, check first if it is user defined type
+	if _, ok := apiDef.Types[prop.TypeString()]; ok {
+		fieldType = strings.Title(prop.TypeString())
+		// check if it is a recursive type
+		if fieldType == strings.Title(structName) {
+			fieldType = "*" + fieldType // add `pointer`, otherwise compiler will complain
+		}
+	} else {
+		fieldType = convertToGoType(prop.TypeString(), prop.Items.Type)
+	}
+
 	fd := fieldDef{
 		Name:      formatFieldName(prop.Name),
-		fieldType: convertToGoType(prop.TypeString(), prop.Items.Type),
+		fieldType: fieldType,
 		IsOmitted: !prop.Required,
 	}
+
 	fd.buildValidators(prop)
+
 	if prop.IsEnum() {
 		fd.Enum = newEnum(structName, prop, pkg, false)
 		fd.fieldType = fd.Enum.Name

@@ -6,8 +6,8 @@ import (
 )
 
 type Catanimal struct {
+	Animal
 	Cat
-	animal
 }
 
 func (s Catanimal) Validate() error {

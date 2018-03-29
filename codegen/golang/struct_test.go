@@ -44,6 +44,7 @@ func TestStruct(t *testing.T) {
 				"NumberFormat",
 				"WithDateTime",
 				"Tree",
+				"Leaf",
 				"Animal_2_0",
 			}
 

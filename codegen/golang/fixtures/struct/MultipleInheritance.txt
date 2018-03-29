@@ -6,8 +6,8 @@ import (
 )
 
 type MultipleInheritance struct {
+	Animal
 	Cat
-	animal
 	Color string `json:"color" validate:"nonzero"`
 }
 

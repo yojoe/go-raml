@@ -77,6 +77,7 @@ func goramlPkgDir() string {
 
 // convert from raml type to go type
 func convertToGoType(tip, items string) string {
+	// check for raml builtin type
 	if v, ok := typeMap[tip]; ok {
 		return v
 	}
@@ -85,6 +86,8 @@ func convertToGoType(tip, items string) string {
 		return v
 	}
 
+	// creates raml.Type object for this type,
+	// so we can use raml.Type methods
 	ramlType := raml.Type{
 		Type:  tip,
 		Items: items,

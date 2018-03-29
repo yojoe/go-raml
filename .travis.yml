@@ -15,4 +15,5 @@ script:
   - ./build_apidocs.sh
   - make install
   - make test
+  - make gentest
   - cd codegen/python/gentest && sudo pip3 install -r requirements.txt && nose2

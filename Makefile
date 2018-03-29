@@ -14,3 +14,5 @@ install:
 
 test:
 	go test $(PACKAGES)
+gentest:
+	cd codegen/golang/gentest; bash test.sh
