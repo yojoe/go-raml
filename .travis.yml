@@ -7,6 +7,7 @@ install:
   - go get -u github.com/jteeuwen/go-bindata/...
   - sudo apt-get install -y python3 python3-pip
   - sudo pip3 install autopep8
+  - sudo pip3 install -r codegen/python/gentest/requirements.txt
 go:
   - 1.8
   - 1.9
@@ -15,5 +16,5 @@ script:
   - ./build_apidocs.sh
   - make install
   - make test
-  - make gentest
-  - cd codegen/python/gentest && sudo pip3 install -r requirements.txt && nose2
+  - make gogentest
+  - make pygentest

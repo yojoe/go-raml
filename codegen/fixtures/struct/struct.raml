@@ -153,6 +153,15 @@ types:
     description: type with special characters
     type: animal
 
+  file:
+    description: types with same name as RAML scalar type
+    properties:
+      name: string
+  dir:
+    description: types which have properties with RAML scalar type as it's name
+    properties:
+      files: file[]
+
 
 /users:
   post:

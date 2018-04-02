@@ -35,7 +35,7 @@ type objectProperty struct {
 }
 
 // create a python class representations
-func newClass(T raml.Type, name string, description string, properties map[string]interface{}, capnp bool) class {
+func newClass(apiDef *raml.APIDefinition, T raml.Type, name string, description string, properties map[string]interface{}, capnp bool) class {
 	pc := class{
 		name:        name,
 		Description: commons.ParseDescription(description),
@@ -68,7 +68,7 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 
 	for propName, propInterface := range mergedProps {
 		op := objectProperties(propName, propInterface)
-		field, err := newField(name, T, propName, propInterface, types, op, typeHierarchy)
+		field, err := newField(name, apiDef, T, propName, propInterface, types, op, typeHierarchy)
 		if err != nil {
 			continue
 		}
@@ -79,8 +79,8 @@ func newClass(T raml.Type, name string, description string, properties map[strin
 	return pc
 }
 
-func newClassFromType(T raml.Type, name string, capnp bool) class {
-	pc := newClass(T, name, T.Description, T.Properties, capnp)
+func newClassFromType(apiDef *raml.APIDefinition, T raml.Type, name string, capnp bool) class {
+	pc := newClass(apiDef, T, name, T.Description, T.Properties, capnp)
 	pc.T = T
 	pc.handleAdvancedType()
 	return pc
@@ -262,13 +262,13 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 			}
 		case types.TypeInBody:
 			newTipName := types.PascalCaseTypeName(tip)
-			pc := newClass(raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
+			pc := newClass(apiDef, raml.Type{Type: "object"}, newTipName, "", tip.Properties, capnp)
 			results, errGen = pc.generate(dir, template, templateName)
 		case raml.Type:
 			if name == "UUID" {
 				continue
 			}
-			pc := newClassFromType(tip, name, capnp)
+			pc := newClassFromType(apiDef, tip, name, capnp)
 			results, errGen = pc.generate(dir, template, templateName)
 		}
 
@@ -283,7 +283,7 @@ func GenerateAllClasses(apiDef *raml.APIDefinition, dir string, capnp bool) ([]s
 			Type: tip,
 		}
 		if parents, isMult := rt.MultipleInheritance(); isMult {
-			pc := newClassFromType(rt, strings.Join(parents, ""), capnp)
+			pc := newClassFromType(apiDef, rt, strings.Join(parents, ""), capnp)
 			results, err := pc.generate(dir, template, templateName)
 			if err != nil {
 				return names, err

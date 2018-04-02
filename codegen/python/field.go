@@ -35,14 +35,14 @@ type field struct {
 	validators map[string][]string // array of validators, only used to build `Validators` field
 }
 
-func newField(className string, T raml.Type, propName string, propInterface interface{},
+func newField(className string, apiDef *raml.APIDefinition, T raml.Type, propName string, propInterface interface{},
 	types map[string]raml.Type, childProperties []objectProperty,
 	typeHierarchy []map[string]raml.Type) (field, error) {
 
 	prop := raml.ToProperty(propName, propInterface)
 
 	f := field{
-		Name:     prop.Name,
+		Name:     commons.NormalizeIdentifier(prop.Name),
 		Required: prop.Required,
 	}
 
@@ -73,15 +73,15 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 			f.Enum = newEnum(className, prop, false)
 		}
 		f.Type = f.Enum.Name
-		f.addImport("."+f.Type, f.Type)
+		f.addImport(apiDef, "."+f.Type, f.Type)
 	} else {
-		f.setType(prop.TypeString(), prop.Items.Type)
+		f.setType(apiDef, prop.TypeString(), prop.Items.Type)
 		if f.Type == "" {
 			return f, fmt.Errorf("unsupported type:%v", prop.Type)
 		}
 	}
 
-	f.DataType, f.HasChildProperties = buildDataType(f, childProperties)
+	f.DataType, f.HasChildProperties = buildDataType(apiDef, f, childProperties)
 
 	// I don't really understand why we need childRequired and mainRequired here.
 	// it is from the original code written by @razor-1
@@ -127,7 +127,7 @@ func newField(className string, T raml.Type, propName string, propInterface inte
 	return f, nil
 }
 
-func buildDataType(f field, childProperties []objectProperty) (string, bool) {
+func buildDataType(apiDef *raml.APIDefinition, f field, childProperties []objectProperty) (string, bool) {
 	/*
 		build a string for the 'datatype' key of an objmap for this property
 		a complete objmap looks like:
@@ -171,10 +171,10 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 		childField := field{
 			Name: objProp.name,
 		}
-		childField.setType(objProp.datatype, "")
+		childField.setType(apiDef, objProp.datatype, "")
 		thisDatatype := childField.Type
 		if len(objProp.childProperties) > 0 {
-			thisDatatype, _ = buildDataType(childField, objProp.childProperties)
+			thisDatatype, _ = buildDataType(apiDef, childField, objProp.childProperties)
 		}
 		thisProp := fmt.Sprintf("'%s': {'datatype': [%s], 'required': %s}", objProp.name, thisDatatype, reqstr)
 		datatypes = append(datatypes, thisProp)
@@ -183,8 +183,9 @@ func buildDataType(f field, childProperties []objectProperty) (string, bool) {
 	return strings.Join(datatypes, ", "), true
 }
 
-func (pf *field) addImport(module, name string) {
-	if commons.IsBuiltinType(name) && !datetimeVariant(name) {
+func (pf *field) addImport(apiDef *raml.APIDefinition, module, name string) {
+	_, userDefined := apiDef.Types[name]
+	if !userDefined && commons.IsBuiltinType(name) && !datetimeVariant(name) {
 		// datetime variant is not builtin type in python
 		return
 	}
@@ -196,12 +197,12 @@ func (pf *field) addImport(module, name string) {
 }
 
 // convert from raml Type to python type
-func (pf *field) setType(t, items string) {
+func (pf *field) setType(apiDef *raml.APIDefinition, t, items string) {
 	pt := toPythonType(t)
 	if pt != nil {
 		pf.Type = pt.name
 		if pt.importName != "" {
-			pf.addImport(pt.importModule, pt.importName)
+			pf.addImport(apiDef, pt.importModule, pt.importName)
 		}
 		return // type already set, no need to go down
 	}
@@ -216,7 +217,7 @@ func (pf *field) setType(t, items string) {
 		log.Info("validator has no support for bidimensional array, ignore it")
 	case ramlType.IsArray(): // array
 		pf.IsList = true
-		pf.setType(ramlType.ArrayType(), "")
+		pf.setType(apiDef, ramlType.ArrayType(), "")
 	case strings.HasSuffix(t, "{}"): // map
 		log.Info("validator has no support for map, ignore it")
 	case ramlType.IsUnion():
@@ -226,13 +227,13 @@ func (pf *field) setType(t, items string) {
 			if v, ok := typeMap[typename]; ok {
 				switch typename {
 				case "datetime":
-					pf.addImport("datetime", "datetime")
+					pf.addImport(apiDef, "datetime", "datetime")
 				case "uuid":
-					pf.addImport("uuid", "UUID")
+					pf.addImport(apiDef, "uuid", "UUID")
 				case "string":
-					pf.addImport("six", "string_types")
+					pf.addImport(apiDef, "six", "string_types")
 				default:
-					pf.addImport("."+typename, typename)
+					pf.addImport(apiDef, "."+typename, typename)
 				}
 				pf.UnionTypes = append(pf.UnionTypes, v)
 			}
@@ -243,7 +244,7 @@ func (pf *field) setType(t, items string) {
 		pf.Type = t[strings.Index(t, ".")+1:]
 	default:
 		pf.Type = t
-		pf.addImport("."+t, t)
+		pf.addImport(apiDef, "."+t, t)
 	}
 }
 
