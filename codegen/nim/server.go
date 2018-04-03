@@ -12,21 +12,26 @@ type Server struct {
 	APIDef     *raml.APIDefinition
 	Dir        string
 	Title      string
-	APIDocsDir string
+	apiDocsDir string
 	Resources  []resource
 }
 
 // NewServer creates a new Nim server
-func NewServer(apiDef *raml.APIDefinition, apiDocsDir, dir string) Server {
-	return Server{
+func NewServer(apiDef *raml.APIDefinition, apiDocsDir, dir string) *Server {
+	return &Server{
 		Title:      apiDef.Title,
 		APIDef:     apiDef,
-		APIDocsDir: apiDocsDir,
+		apiDocsDir: apiDocsDir,
 		Dir:        dir,
 	}
 }
 
-// Generate generates all Nim server files
+// APIDocsDir implements generator.Server.APIDocsDir interface
+func (s *Server) APIDocsDir() string {
+	return s.apiDocsDir
+}
+
+// Generate implements generator.Server.Generate interface
 func (s *Server) Generate() error {
 	s.Resources = getAllResources(s.APIDef, true)
 

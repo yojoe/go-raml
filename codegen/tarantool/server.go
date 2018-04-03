@@ -23,23 +23,28 @@ const (
 // Server represents a tarantool server
 type Server struct {
 	apiDef     *raml.APIDefinition
-	APIDocsDir string // apidocs directory. apidocs won't be generated if it is empty
+	apiDocsDir string // apidocs directory. apidocs won't be generated if it is empty
 	TargetDir  string // root directory of the generated code
 	Resources  []tarantoolResource
 }
 
 // NewServer creates a new tarantool server
-func NewServer(apiDef *raml.APIDefinition, apiDocsDir string, targetDir string) Server {
+func NewServer(apiDef *raml.APIDefinition, apiDocsDir string, targetDir string) *Server {
 	resources := getServerResourcesDefs(apiDef)
-	return Server{
+	return &Server{
 		apiDef:     apiDef,
-		APIDocsDir: apiDocsDir,
+		apiDocsDir: apiDocsDir,
 		TargetDir:  targetDir,
 		Resources:  resources,
 	}
 }
 
-// Generate generates all tarantool server files
+// APIDocsDir implements generator.Server.APIDocsDir interface
+func (s *Server) APIDocsDir() string {
+	return s.apiDocsDir
+}
+
+// Generate implements generator.Server.Generate interface
 func (s *Server) Generate() error {
 	if err := s.generateSchemas(); err != nil {
 		return err

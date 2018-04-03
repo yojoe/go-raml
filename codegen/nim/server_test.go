@@ -24,7 +24,7 @@ func TestGenerateServer(t *testing.T) {
 		ns := Server{
 			Title:      apiDef.Title,
 			APIDef:     &apiDef,
-			APIDocsDir: "apidocs",
+			apiDocsDir: "apidocs",
 			Dir:        targetDir,
 		}
 		err = ns.Generate()

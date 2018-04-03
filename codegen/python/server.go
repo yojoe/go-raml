@@ -3,6 +3,7 @@ package python
 import (
 	log "github.com/Sirupsen/logrus"
 
+	"github.com/Jumpscale/go-raml/codegen/generator"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -18,21 +19,17 @@ const (
 	handlersDir           = "handlers"
 )
 
-// Server represents a python server
-type Server interface {
-	Generate(dir string) error
-}
-
 // NewServer creates a new python server
-func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir string,
-	withMain bool, libRootURLs []string) Server {
+func NewServer(kind string, apiDef *raml.APIDefinition, apiDocsDir, targetDir string,
+	withMain bool, libRootURLs []string) generator.Server {
 	switch kind {
 	case "", serverKindFlask:
-		return NewFlaskServer(apiDef, apiDocsDir, withMain, libRootURLs, false)
+		return NewFlaskServer(apiDef, apiDocsDir, targetDir, withMain, libRootURLs, false)
 	case serverKindGeventFlask:
-		return NewFlaskServer(apiDef, apiDocsDir, true, libRootURLs, true)
+		return NewFlaskServer(apiDef, apiDocsDir, targetDir, true, libRootURLs, true)
 	case serverKindSanic:
-		return NewSanicServer(apiDef, apiDocsDir, withMain, libRootURLs)
+		return NewSanicServer(apiDef, apiDocsDir, targetDir, withMain, libRootURLs)
+
 	default:
 		log.Fatalf("Invalid kind of python server : %v", kind)
 		return nil

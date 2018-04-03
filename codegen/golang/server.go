@@ -28,7 +28,7 @@ type Server struct {
 	apiDef         *raml.APIDefinition
 	ResourcesDef   []*goResource
 	PackageName    string // Name of the package this server resides in
-	APIDocsDir     string // apidocs directory. apidocs won't be generated if it is empty
+	apiDocsDir     string // apidocs directory. apidocs won't be generated if it is empty
 	withMain       bool   // true if we need to generate main file
 	RootImportPath string
 	TargetDir      string   // root directory of the generated code
@@ -37,17 +37,17 @@ type Server struct {
 
 // NewServer creates a new Golang server
 func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPath string,
-	withMain bool, targetDir string, libsRootURLs []string) Server {
+	withMain bool, targetDir string, libsRootURLs []string) *Server {
 	// global variables
 	rootImportPath = setRootImportPath(rootImportPath, targetDir)
 	globAPIDef = apiDef
 	globRootImportPath = rootImportPath
 	globLibRootURLs = libsRootURLs
 
-	return Server{
+	return &Server{
 		apiDef:         apiDef,
 		PackageName:    packageName,
-		APIDocsDir:     apiDocsDir,
+		apiDocsDir:     apiDocsDir,
 		withMain:       withMain,
 		RootImportPath: rootImportPath,
 		TargetDir:      targetDir,
@@ -55,8 +55,13 @@ func NewServer(apiDef *raml.APIDefinition, packageName, apiDocsDir, rootImportPa
 	}
 }
 
-// Generate generates all Go server files
-func (gs Server) Generate() error {
+// APIDocsDir implements codegen.Server.APIDocsDir interface
+func (gs *Server) APIDocsDir() string {
+	return gs.apiDocsDir
+}
+
+// Generate implements codegen.Server.Generate interface
+func (gs *Server) Generate() error {
 	if err := commons.CheckDuplicatedTitleTypes(gs.apiDef); err != nil {
 		return err
 	}
