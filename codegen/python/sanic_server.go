@@ -14,12 +14,13 @@ type SanicServer struct {
 	Title        string
 	ResourcesDef []pythonResource
 	withMain     bool
-	APIDocsDir   string
+	apiDocsDir   string
 	Template     serverTemplate
+	targetDir    string
 }
 
 // NewSanicServer creates new sanic server from an RAML file
-func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool,
+func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir, targetDir string, withMain bool,
 	libRootURLs []string) *SanicServer {
 	var prs []pythonResource
 	for _, rd := range getServerResourcesDefs(apiDef) {
@@ -36,43 +37,49 @@ func NewSanicServer(apiDef *raml.APIDefinition, apiDocsDir string, withMain bool
 	return &SanicServer{
 		APIDef:       apiDef,
 		Title:        apiDef.Title,
-		APIDocsDir:   apiDocsDir,
+		apiDocsDir:   apiDocsDir,
 		withMain:     withMain,
 		ResourcesDef: prs,
 		Template:     templates,
+		targetDir:    targetDir,
 	}
 }
 
-// Generate generates sanic server code
-func (s *SanicServer) Generate(dir string) error {
-	if err := generateJSONSchema(s.APIDef, filepath.Join(dir, handlersDir)); err != nil {
+// APIDocsDir implements generator.Server.APIDocsDir interface
+func (s *SanicServer) APIDocsDir() string {
+	return s.apiDocsDir
+}
+
+// Generate implements generator.Server.Generate interface
+func (s *SanicServer) Generate() error {
+	if err := generateJSONSchema(s.APIDef, filepath.Join(s.targetDir, handlersDir)); err != nil {
 		return err
 	}
-	if err := s.generateResources(dir); err != nil {
+	if err := s.generateResources(s.targetDir); err != nil {
 		return err
 	}
 
 	// security scheme
-	if err := generateServerSecurity(s.APIDef.SecuritySchemes, s.Template, dir); err != nil {
+	if err := generateServerSecurity(s.APIDef.SecuritySchemes, s.Template, s.targetDir); err != nil {
 		return err
 	}
 
 	// python classes and it's helper
 	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
-		"client_support", filepath.Join(dir, "types", "client_support.py"), true); err != nil {
+		"client_support", filepath.Join(s.targetDir, "types", "client_support.py"), true); err != nil {
 		return err
 	}
 
-	_, err := GenerateAllClasses(s.APIDef, filepath.Join(dir, typesDir), false)
+	_, err := GenerateAllClasses(s.APIDef, filepath.Join(s.targetDir, typesDir), false)
 	if err != nil {
 		return err
 	}
 
-	if err := s.generateMain(dir); err != nil {
+	if err := s.generateMain(s.targetDir); err != nil {
 		return err
 	}
 
-	return generateEmptyInitPy(dir)
+	return generateEmptyInitPy(s.targetDir)
 }
 
 func (s *SanicServer) generateMain(dir string) error {

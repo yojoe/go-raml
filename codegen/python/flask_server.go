@@ -16,13 +16,14 @@ type FlaskServer struct {
 	Title        string
 	ResourcesDef []pythonResource
 	WithMain     bool
-	APIDocsDir   string
+	apiDocsDir   string
 	Gevent       bool
 	Template     serverTemplate
+	targetDir    string
 }
 
 // NewFlaskServer creates new flask server from an RAML file
-func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
+func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir, targetDir string,
 	withMain bool, libRootURLs []string, gevent bool) *FlaskServer {
 
 	// TODO : get rid of this global variables
@@ -41,18 +42,24 @@ func NewFlaskServer(apiDef *raml.APIDefinition, apiDocsDir string,
 	return &FlaskServer{
 		APIDef:       apiDef,
 		Title:        apiDef.Title,
-		APIDocsDir:   apiDocsDir,
+		apiDocsDir:   apiDocsDir,
 		WithMain:     withMain,
 		ResourcesDef: prs,
 		Gevent:       gevent,
 		Template:     templates,
+		targetDir:    targetDir,
 	}
 }
 
-// Generate generates all python server files
-func (ps *FlaskServer) Generate(dir string) error {
+// APIDocsDir implements generator.Server.APIDocsDir interface
+func (ps *FlaskServer) APIDocsDir() string {
+	return ps.apiDocsDir
+}
+
+// Generate implements generator.Server.Generate interface
+func (ps *FlaskServer) Generate() error {
 	// python classes and it's helper
-	typesPath := filepath.Join(dir, typesDir)
+	typesPath := filepath.Join(ps.targetDir, typesDir)
 
 	if err := commons.GenerateFile(nil, "./templates/python/client_support.tmpl",
 		"client_support", filepath.Join(typesPath, "client_support.py"), true); err != nil {
@@ -60,7 +67,7 @@ func (ps *FlaskServer) Generate(dir string) error {
 	}
 
 	if ps.Gevent {
-		if err := commons.GenerateFile(ps, "./templates/python/server_gevent.tmpl", "server_gevent", filepath.Join(dir, "server.py"), true); err != nil {
+		if err := commons.GenerateFile(ps, "./templates/python/server_gevent.tmpl", "server_gevent", filepath.Join(ps.targetDir, "server.py"), true); err != nil {
 			return err
 		}
 
@@ -75,45 +82,45 @@ func (ps *FlaskServer) Generate(dir string) error {
 	}
 
 	// json schema
-	if err := generateJSONSchema(ps.APIDef, filepath.Join(dir, handlersDir)); err != nil {
+	if err := generateJSONSchema(ps.APIDef, filepath.Join(ps.targetDir, handlersDir)); err != nil {
 		return err
 	}
 
 	// security scheme
-	if err := generateServerSecurity(ps.APIDef.SecuritySchemes, ps.Template, dir); err != nil {
+	if err := generateServerSecurity(ps.APIDef.SecuritySchemes, ps.Template, ps.targetDir); err != nil {
 		log.Errorf("failed to generate security scheme:%v", err)
 		return err
 	}
 
 	// generate resources
-	if err := generateResources(ps.ResourcesDef, ps.Template, dir); err != nil {
+	if err := generateResources(ps.ResourcesDef, ps.Template, ps.targetDir); err != nil {
 		return err
 	}
 
 	// libraries
-	if err := generateLibraries(ps.APIDef.Libraries, dir); err != nil {
+	if err := generateLibraries(ps.APIDef.Libraries, ps.targetDir); err != nil {
 		return err
 	}
 
 	// requirements.txt file
 	if err := commons.GenerateFile(nil, "./templates/python/requirements_python.tmpl", "requirements_python",
-		filepath.Join(dir, "requirements.txt"), true); err != nil {
+		filepath.Join(ps.targetDir, "requirements.txt"), true); err != nil {
 		return err
 	}
 
 	// generate main
 	if ps.WithMain {
 		// generate HTML front page
-		if err := commons.GenerateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(dir, "index.html"), true); err != nil {
+		if err := commons.GenerateFile(ps, "./templates/index.html.tmpl", "index.html", filepath.Join(ps.targetDir, "index.html"), true); err != nil {
 			return err
 		}
 		// main file
-		if err := commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(dir, "app.py"), true); err != nil {
+		if err := commons.GenerateFile(ps, "./templates/python/server_main_flask.tmpl", "server_main_flask", filepath.Join(ps.targetDir, "app.py"), true); err != nil {
 			return err
 		}
 	}
 
-	return generateEmptyInitPy(dir)
+	return generateEmptyInitPy(ps.targetDir)
 }
 
 func (ps *FlaskServer) ShowAPIDocsAndIndex() bool {

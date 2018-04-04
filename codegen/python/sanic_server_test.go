@@ -22,8 +22,8 @@ func TestSanicServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/raml-examples/helloworld/helloworld.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true, nil)
-			err = server.Generate(targetDir)
+			server := NewSanicServer(apiDef, "apidocs", targetDir, true, nil)
+			err = server.Generate()
 			So(err, ShouldBeNil)
 
 			// check drones API implementation
@@ -54,8 +54,8 @@ func TestSanicServer(t *testing.T) {
 			err = raml.ParseFile("../fixtures/congo/api.raml", apiDef)
 			So(err, ShouldBeNil)
 
-			server := NewSanicServer(apiDef, "apidocs", true, nil)
-			err = server.Generate(targetDir)
+			server := NewSanicServer(apiDef, "apidocs", targetDir, true, nil)
+			err = server.Generate()
 			So(err, ShouldBeNil)
 
 			// check drones API implementation
