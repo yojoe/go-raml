@@ -1,4 +1,5 @@
 #/bin/bash
+set -ex
 
 rm -rf classtest
 go generate

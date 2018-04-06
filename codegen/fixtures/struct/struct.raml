@@ -157,10 +157,17 @@ types:
     description: types with same name as RAML scalar type
     properties:
       name: string
+  
   dir:
     description: types which have properties with RAML scalar type as it's name
     properties:
       files: file[]
+      animals:
+        type: animal[]
+        required: false
+      animal:
+        type: animal
+        required: false
 
 
 /users:

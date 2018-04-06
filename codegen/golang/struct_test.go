@@ -46,6 +46,7 @@ func TestStruct(t *testing.T) {
 				"Tree",
 				"Leaf",
 				"Animal_2_0",
+				"Dir",
 			}
 
 			for _, f := range files {

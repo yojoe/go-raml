@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Jumpscale/go-raml/codegen/commons"
 	"github.com/Jumpscale/go-raml/raml"
 )
 
@@ -21,17 +22,25 @@ type fieldDef struct {
 
 // newFieldDef creates new struct field from raml property.
 func newFieldDef(apiDef *raml.APIDefinition, structName string, prop raml.Property, pkg string) fieldDef {
-	var fieldType string
+	var (
+		fieldType = prop.TypeString()               // the field type
+		basicType = commons.GetBasicType(fieldType) // basic type of the field type
+	)
+
 	// for the types, check first if it is user defined type
-	if _, ok := apiDef.Types[prop.TypeString()]; ok {
-		fieldType = strings.Title(prop.TypeString())
+	if _, ok := apiDef.Types[basicType]; ok {
+		titledType := strings.Title(basicType)
+
 		// check if it is a recursive type
-		if fieldType == strings.Title(structName) {
-			fieldType = "*" + fieldType // add `pointer`, otherwise compiler will complain
+		if titledType == strings.Title(structName) {
+			titledType = "*" + titledType // add `pointer`, otherwise compiler will complain
 		}
-	} else {
-		fieldType = convertToGoType(prop.TypeString(), prop.Items.Type)
+
+		// use strings.Replace instead of simple assignment because the fieldType
+		// might be an array
+		fieldType = strings.Replace(fieldType, basicType, titledType, 1)
 	}
+	fieldType = convertToGoType(fieldType, prop.Items.Type)
 
 	fd := fieldDef{
 		Name:      formatFieldName(prop.Name),
