@@ -56,6 +56,8 @@ class {{.Name}}(object):
 
     def __str__(self):
         return self.as_json(indent=4)
+    
+    __repr__ = __str__
 
     def as_json(self, indent=0):
         return client_support.to_json(self, indent=indent)
